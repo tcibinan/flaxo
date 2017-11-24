@@ -1,0 +1,39 @@
+plugins {
+    id "org.jetbrains.kotlin.jvm" version "1.1.61"
+    id "org.jetbrains.kotlin.plugin.spring" version "1.1.61"
+    id "org.springframework.boot" version "1.5.8.RELEASE"
+    id "org.junit.platform.gradle.plugin" version "1.0.2"
+}
+
+junitPlatform {
+    filters {
+        engines {
+            include 'spek'
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven { url "http://dl.bintray.com/jetbrains/spek" }
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8"
+    testCompile "org.jetbrains.kotlin:kotlin-test-junit"
+    testCompile "io.kotlintest:kotlintest:$kotlin_test"
+
+    compile "org.springframework.boot:spring-boot-starter-web"
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+
+    testCompile "org.jetbrains.spek:spek-api:$spek_version"
+    testCompile "org.jetbrains.spek:spek-data-driven-extension:$spek_version"
+    testRuntime "org.jetbrains.spek:spek-junit-platform-engine:$spek_version"
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
