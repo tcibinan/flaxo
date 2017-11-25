@@ -20,7 +20,7 @@ repositories {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8"
-    testCompile "org.jetbrains.kotlin:kotlin-test-junit"
+    testCompile "org.jetbrains.kotlin:kotlin-test"
     testCompile "io.kotlintest:kotlintest:$kotlin_test"
 
     compile "org.springframework.boot:spring-boot-starter-web"
@@ -28,6 +28,7 @@ dependencies {
 
     testCompile "org.jetbrains.spek:spek-api:$spek_version"
     testCompile "org.jetbrains.spek:spek-data-driven-extension:$spek_version"
+    testCompile "org.jetbrains.spek:spek-subject-extension:$spek_version"
     testRuntime "org.jetbrains.spek:spek-junit-platform-engine:$spek_version"
 }
 
