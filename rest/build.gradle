@@ -6,6 +6,7 @@ plugins {
 
 dependencies {
     compile "org.springframework.boot:spring-boot-starter-web"
+    compile "org.apache.httpcomponents:fluent-hc:4.5.3"
 
     testCompile "org.springframework.boot:spring-boot-starter-test"
 }
