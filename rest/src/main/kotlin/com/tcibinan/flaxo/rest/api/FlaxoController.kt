@@ -15,10 +15,10 @@ import java.util.Random
 @RestController
 class FlaxoController {
 
-    @Value("\${client.id}") lateinit var clientId: String
-    @Value("\${client.secret}") lateinit var clientSecret: String
-    @Value("\${redirect.uri}") lateinit var redirectUri: String
-    @Value("\${home.page}") lateinit var homePage: String
+    @Value("\${CLIENT_ID}") lateinit var clientId: String
+    @Value("\${CLIENT_SECRET}") lateinit var clientSecret: String
+    @Value("\${REDIRECT_URI}") lateinit var redirectUri: String
+    @Value("\${HOME_PAGE}") lateinit var homePage: String
 
     @GetMapping("/")
     fun index() = Echo("Hello world!")
