@@ -10,3 +10,9 @@ dependencies {
 
     testCompile "org.springframework.boot:spring-boot-starter-test"
 }
+
+bootRun {
+    ext.additonalArgs = ["-Xmx500M"]
+    ext.additonalArgs.addAll(jvmArgs)
+    jvmArgs = ext.additonalArgs
+}
