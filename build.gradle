@@ -1,40 +1,37 @@
+buildscript {
+    ext.spek_version = "1.1.5"
+    ext.kotlin_test = "2.0.7"
+}
+
 plugins {
-    id "org.jetbrains.kotlin.jvm" version "1.1.61"
-    id "org.jetbrains.kotlin.plugin.spring" version "1.1.61"
-    id "org.springframework.boot" version "1.5.8.RELEASE"
-    id "org.junit.platform.gradle.plugin" version "1.0.2"
+    id "org.jetbrains.kotlin.jvm" version "1.1.61" apply false
+    id "org.junit.platform.gradle.plugin" version "1.0.2" apply false
 }
 
-junitPlatform {
-    filters {
-        engines {
-            include 'spek'
-        }
+allprojects {
+    apply plugin: 'kotlin'
+    group = 'com.tcibinan'
+    version = '1.0-SNAPSHOT'
+
+    repositories {
+        mavenCentral()
+        maven { url "http://dl.bintray.com/jetbrains/spek" }
     }
-}
 
-repositories {
-    mavenCentral()
-    maven { url "http://dl.bintray.com/jetbrains/spek" }
-}
+    dependencies {
+        compile "org.jetbrains.kotlin:kotlin-stdlib-jre8"
+        compile "org.jetbrains.kotlin:kotlin-reflect"
 
-dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8"
-    testCompile "org.jetbrains.kotlin:kotlin-test"
-    testCompile "io.kotlintest:kotlintest:$kotlin_test"
+        testCompile "org.jetbrains.kotlin:kotlin-test"
 
-    compile "org.springframework.boot:spring-boot-starter-web"
-    testCompile("org.springframework.boot:spring-boot-starter-test")
+        testCompile "io.kotlintest:kotlintest:$kotlin_test"
 
-    testCompile "org.jetbrains.spek:spek-api:$spek_version"
-    testCompile "org.jetbrains.spek:spek-data-driven-extension:$spek_version"
-    testCompile "org.jetbrains.spek:spek-subject-extension:$spek_version"
-    testRuntime "org.jetbrains.spek:spek-junit-platform-engine:$spek_version"
-}
+        testCompile "org.jetbrains.spek:spek-api:$spek_version"
+        testCompile "org.jetbrains.spek:spek-data-driven-extension:$spek_version"
+        testCompile "org.jetbrains.spek:spek-subject-extension:$spek_version"
+        testRuntime "org.jetbrains.spek:spek-junit-platform-engine:$spek_version"
+    }
 
-compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
-compileTestKotlin {
-    kotlinOptions.jvmTarget = "1.8"
+    compileKotlin { kotlinOptions.jvmTarget = "1.8" }
+    compileTestKotlin { kotlinOptions.jvmTarget = "1.8" }
 }
