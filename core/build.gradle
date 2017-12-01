@@ -1,0 +1,9 @@
+plugins {
+    id "org.junit.platform.gradle.plugin"
+    id "io.spring.dependency-management" version "1.0.3.RELEASE"
+}
+
+dependencies {
+    compile 'org.springframework.data:spring-data-jpa:2.0.2.RELEASE'
+    compile 'org.hibernate:hibernate-core:5.2.12.Final'
+}
