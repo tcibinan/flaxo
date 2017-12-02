@@ -18,8 +18,7 @@ class StudentEntity() : ConvertibleEntity<Student> {
 
     constructor(student_id: Long? = null,
                 nickname: String,
-                course: CourseEntity,
-                student_tasks: Set<StudentTaskEntity> = emptySet()) : this() {
+                course: CourseEntity) : this() {
         this.student_id = student_id
         this.nickname = nickname
         this.course = course

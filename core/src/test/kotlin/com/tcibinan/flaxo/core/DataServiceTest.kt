@@ -1,6 +1,7 @@
 package com.tcibinan.flaxo.core
 
 import io.kotlintest.matchers.shouldBe
+import io.kotlintest.matchers.shouldEqual
 import io.kotlintest.matchers.shouldThrow
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
@@ -11,12 +12,15 @@ import org.springframework.dao.DataIntegrityViolationException
 
 class DataServiceTest : SubjectSpek<DataService>({
     val nickname = "nickname"
+    val anotherNickname = "anotherNickname"
     val password = "password"
     val courseName = "course"
     val language = "laguage"
     val testLanguage = "testLanguage"
     val testingFramework = "testingFramework"
     val numberOfTasks = 4
+    val student = "student"
+    val anotherStudent = "anotherStudent"
 
     val context = AnnotationConfigApplicationContext(JpaTestApplication::class.java)
 
@@ -31,9 +35,9 @@ class DataServiceTest : SubjectSpek<DataService>({
             }
         }
 
-        on("addition of the user that already exists") {
+        on("addition user that already exists") {
             it("should throw an exception") {
-                shouldThrow<DataIntegrityViolationException> { subject.addUser(nickname, password) }
+                shouldThrow<EntityAlreadyExistsException> { subject.addUser(nickname, password) }
             }
         }
 
@@ -46,14 +50,41 @@ class DataServiceTest : SubjectSpek<DataService>({
         on("course creation") {
             val owner = subject.getUser(nickname)!!
             val course = subject.createCourse(courseName, language, testLanguage, testingFramework, numberOfTasks, owner)
+
             it("should contain the course") {
                 course.language shouldBe language
                 course.testLanguage shouldBe testLanguage
                 course.testingFramework shouldBe testingFramework
             }
-
             it("should also create necessary tasks") {
                 subject.getTasks(course).count() shouldBe numberOfTasks
+            }
+        }
+
+        on("addition course with name that already exists for the user") {
+            val owner = subject.getUser(nickname)!!
+            it("should throw an exception") {
+                shouldThrow<EntityAlreadyExistsException> {
+                    subject.createCourse(courseName, language, testLanguage, testingFramework, numberOfTasks, owner)
+                }
+            }
+        }
+
+        on("addition course with name that already exists for another the user") {
+            val anotherUser = subject.addUser(anotherNickname, password)
+            it("shouldn't throw an exception") {
+                subject.createCourse(courseName, language, testLanguage, testingFramework, numberOfTasks, anotherUser)
+            }
+        }
+
+        on("addition students to the course") {
+            val owner = subject.getUser(nickname)!!
+            val course = subject.getCourse(courseName, owner)!!
+            subject.addStudent(student, course)
+            subject.addStudent(anotherStudent, course)
+            it("should add all the student to the course") {
+                val studentsNames = subject.getStudents(course).map { it.nickname }.toSet()
+                studentsNames shouldEqual setOf(student, anotherStudent)
             }
         }
 
