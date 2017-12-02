@@ -1,4 +1,4 @@
 package com.tcibinan.flaxo.core
 
-class EntityAlreadyExistsException(message: String) : FlaxoException(message)
+class EntityAlreadyExistsException(override val message: String) : FlaxoException(message)
 open class FlaxoException(message: String) : Exception(message)

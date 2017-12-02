@@ -13,7 +13,7 @@ internal class DataServiceImpl : DataService {
     override fun addUser(nickname: String,
                          password: String): User {
         if (userRepository.findByNickname(nickname) != null) {
-            throw EntityAlreadyExistsException("User with ${nickname} nickname already exists")
+            throw EntityAlreadyExistsException("User with '${nickname}' nickname already exists")
         }
         return userRepository
                 .save(UserEntity(nickname = nickname, credentials = CredentialsEntity(password = password)))
