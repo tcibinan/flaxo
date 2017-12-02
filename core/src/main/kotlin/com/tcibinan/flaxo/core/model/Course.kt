@@ -9,7 +9,7 @@ import javax.persistence.Table
 
 @Entity(name = "course")
 @Table(name = "course")
-class CourseEntity {
+class CourseEntity : ConvertibleEntity<Course> {
     @Id @GeneratedValue
     var course_id: Long? = null
     var name: String? = null
@@ -18,6 +18,25 @@ class CourseEntity {
     var testing_framework: String? = null
     @ManyToOne @JoinColumn(name = "user_id")
     var user: UserEntity? = null
+
+    constructor(name: String, language: String, test_language: String, testing_framework: String, user: UserEntity) {
+        this.name = name
+        this.language = language
+        this.test_language = test_language
+        this.testing_framework = testing_framework
+        this.user = user
+    }
+
+    constructor(course_id: Long, name: String, language: String, test_language: String, testing_framework: String, user: UserEntity) {
+        this.course_id = course_id
+        this.name = name
+        this.language = language
+        this.test_language = test_language
+        this.testing_framework = testing_framework
+        this.user = user
+    }
+
+    override fun toDto() = Course(course_id!!, name!!, language!!, test_language!!, testing_framework!!, user!!.toDto())
 }
 
 data class Course(
@@ -27,4 +46,6 @@ data class Course(
         val testLanguage: String,
         val testingFramework: String,
         val user: User
-)
+) : DataObject<CourseEntity> {
+    override fun toEntity() = CourseEntity(courseId, name, language, testLanguage, testingFramework, user.toEntity())
+}

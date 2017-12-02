@@ -7,19 +7,35 @@ import javax.persistence.Table
 
 @Entity(name = "credentials")
 @Table(name = "credentials")
-class CredentialsEntity {
+class CredentialsEntity : ConvertibleEntity<Credentials> {
     @Id @GeneratedValue
     var credentials_id: Long? = null
     var password: String? = null
     var github_token: String? = null
     var travis_token: String? = null
     var codacy_token: String? = null
+
+    constructor(password: String) {
+        this.password = password
+    }
+
+    constructor(credentials_id: Long, password: String, github_token: String?, travis_token: String?, codacy_token: String?) {
+        this.credentials_id = credentials_id
+        this.password = password
+        this.github_token = github_token
+        this.travis_token = travis_token
+        this.codacy_token = codacy_token
+    }
+
+    override fun toDto() = Credentials(credentials_id!!, password!!, github_token, travis_token, codacy_token)
 }
 
-data class Credentials(
+data class Credentials (
         val credentialsId: Long,
         val password: String,
         val githubToken: String? = null,
         val travisToken: String? = null,
         val codacyToken: String? = null
-)
+) : DataObject<CredentialsEntity> {
+    override fun toEntity() = CredentialsEntity(credentialsId, password, githubToken, travisToken, codacyToken)
+}
