@@ -17,6 +17,11 @@ interface DataService {
                      numberOfTasks: Int,
                      owner: User): Course
 
-    fun addStudent(nickname: String, course: Course): Student
+    fun getCourse(name: String,
+                  owner: User): Course?
+
+    fun addStudent(nickname: String,
+                   course: Course): Student
+
     fun getStudent(nickname: String): Student?
 }
