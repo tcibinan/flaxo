@@ -9,9 +9,11 @@ import com.tcibinan.flaxo.core.model.CourseEntity
 import com.tcibinan.flaxo.core.model.CredentialsEntity
 import com.tcibinan.flaxo.core.model.Student
 import com.tcibinan.flaxo.core.model.StudentEntity
+import com.tcibinan.flaxo.core.model.Task
 import com.tcibinan.flaxo.core.model.TaskEntity
 import com.tcibinan.flaxo.core.model.User
 import com.tcibinan.flaxo.core.model.UserEntity
+import com.tcibinan.flaxo.core.model.toDtos
 import org.springframework.beans.factory.annotation.Autowired
 
 internal class DataServiceImpl : DataService {
@@ -62,4 +64,7 @@ internal class DataServiceImpl : DataService {
 
     override fun getStudent(nickname: String): Student? =
             studentRepository.findByNickname(nickname)?.toDto()
+
+    override fun getTasks(course: Course): Set<Task> =
+            taskRepository.findAllByCourse(course.toEntity()).toDtos()
 }

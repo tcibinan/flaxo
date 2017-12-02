@@ -2,6 +2,7 @@ package com.tcibinan.flaxo.core
 
 import com.tcibinan.flaxo.core.model.Course
 import com.tcibinan.flaxo.core.model.Student
+import com.tcibinan.flaxo.core.model.Task
 import com.tcibinan.flaxo.core.model.User
 
 interface DataService {
@@ -24,4 +25,6 @@ interface DataService {
                    course: Course): Student
 
     fun getStudent(nickname: String): Student?
+
+    fun getTasks(course: Course): Set<Task>
 }
