@@ -1,19 +1,7 @@
 package com.tcibinan.flaxo.core
 
-import com.tcibinan.flaxo.core.dao.CourseRepository
-import com.tcibinan.flaxo.core.dao.StudentRepository
-import com.tcibinan.flaxo.core.dao.TaskRepository
-import com.tcibinan.flaxo.core.dao.UserRepository
-import com.tcibinan.flaxo.core.model.Course
-import com.tcibinan.flaxo.core.model.CourseEntity
-import com.tcibinan.flaxo.core.model.CredentialsEntity
-import com.tcibinan.flaxo.core.model.Student
-import com.tcibinan.flaxo.core.model.StudentEntity
-import com.tcibinan.flaxo.core.model.Task
-import com.tcibinan.flaxo.core.model.TaskEntity
-import com.tcibinan.flaxo.core.model.User
-import com.tcibinan.flaxo.core.model.UserEntity
-import com.tcibinan.flaxo.core.model.toDtos
+import com.tcibinan.flaxo.core.dao.*
+import com.tcibinan.flaxo.core.model.*
 import org.springframework.beans.factory.annotation.Autowired
 
 internal class DataServiceImpl : DataService {
@@ -23,10 +11,14 @@ internal class DataServiceImpl : DataService {
     @Autowired lateinit var studentRepository: StudentRepository
 
     override fun addUser(nickname: String,
-                         password: String): User =
-            userRepository
-                    .save(UserEntity(nickname = nickname, credentials = CredentialsEntity(password = password)))
-                    .toDto()
+                         password: String): User {
+        if (userRepository.findByNickname(nickname) != null) {
+            throw EntityAlreadyExistsException("User with ${nickname} nickname already exists")
+        }
+        return userRepository
+                .save(UserEntity(nickname = nickname, credentials = CredentialsEntity(password = password)))
+                .toDto()
+    }
 
     override fun getUser(nickname: String): User? =
             userRepository.findByNickname(nickname)?.toDto()
@@ -38,7 +30,9 @@ internal class DataServiceImpl : DataService {
             testingFramework: String,
             numberOfTasks: Int,
             owner: User): Course {
-        // TODO: rewrite using one to many approach. Now it might fall due to cascade type
+        if (getCourse(name, owner) != null) {
+            throw EntityAlreadyExistsException("${name} already exists for ${owner}")
+        }
         val courseEntity = courseRepository
                 .save(CourseEntity(
                         name = name,
@@ -62,8 +56,8 @@ internal class DataServiceImpl : DataService {
                             course: Course): Student =
             studentRepository.save(StudentEntity(nickname = nickname, course = course.toEntity())).toDto()
 
-    override fun getStudent(nickname: String): Student? =
-            studentRepository.findByNickname(nickname)?.toDto()
+    override fun getStudents(course: Course): Set<Student> =
+            studentRepository.findByCourse(course.toEntity()).toDtos()
 
     override fun getTasks(course: Course): Set<Task> =
             taskRepository.findAllByCourse(course.toEntity()).toDtos()

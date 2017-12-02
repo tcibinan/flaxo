@@ -24,7 +24,7 @@ interface DataService {
     fun addStudent(nickname: String,
                    course: Course): Student
 
-    fun getStudent(nickname: String): Student?
+    fun getStudents(course: Course): Set<Student>
 
     fun getTasks(course: Course): Set<Task>
 }
