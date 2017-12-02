@@ -16,12 +16,7 @@ class TaskEntity : ConvertibleEntity<Task> {
     @ManyToOne @JoinColumn(name = "course_id")
     var course: CourseEntity? = null
 
-    constructor(task_name: String, course: CourseEntity) {
-        this.task_name = task_name
-        this.course = course
-    }
-
-    constructor(task_id: Long, task_name: String, course: CourseEntity) {
+    constructor(task_id: Long? = null, task_name: String, course: CourseEntity) {
         this.task_id = task_id
         this.task_name = task_name
         this.course = course

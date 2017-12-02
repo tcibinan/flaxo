@@ -15,11 +15,11 @@ class CredentialsEntity : ConvertibleEntity<Credentials> {
     var travis_token: String? = null
     var codacy_token: String? = null
 
-    constructor(password: String) {
-        this.password = password
-    }
-
-    constructor(credentials_id: Long, password: String, github_token: String?, travis_token: String?, codacy_token: String?) {
+    constructor(credentials_id: Long? = null,
+                password: String,
+                github_token: String? = null,
+                travis_token: String? = null,
+                codacy_token: String? = null) {
         this.credentials_id = credentials_id
         this.password = password
         this.github_token = github_token

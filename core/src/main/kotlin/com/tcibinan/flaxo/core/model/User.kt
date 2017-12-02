@@ -17,12 +17,7 @@ class UserEntity: ConvertibleEntity<User> {
     @OneToOne(cascade = arrayOf(CascadeType.ALL)) @JoinColumn(name = "credentials_id")
     var credentials: CredentialsEntity? = null
 
-    constructor(nickname: String, credentials: CredentialsEntity) {
-        this.nickname = nickname
-        this.credentials = credentials
-    }
-
-    constructor(user_id: Long, nickname: String, credentials: CredentialsEntity) {
+    constructor(user_id: Long? = null, nickname: String, credentials: CredentialsEntity) {
         this.user_id = user_id
         this.nickname = nickname
         this.credentials = credentials

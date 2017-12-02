@@ -22,10 +22,12 @@ internal class DataServiceImpl : DataService {
 
     override fun addUser(nickname: String,
                          password: String): User =
-            userRepository.save(UserEntity(nickname, CredentialsEntity(password))).toDto()
+            userRepository
+                    .save(UserEntity(nickname = nickname, credentials = CredentialsEntity(password = password)))
+                    .toDto()
 
     override fun getUser(nickname: String): User? =
-            userRepository.findByNickname(nickname)
+            userRepository.findByNickname(nickname)?.toDto()
 
     override fun createCourse(
             name: String,
@@ -35,22 +37,29 @@ internal class DataServiceImpl : DataService {
             numberOfTasks: Int,
             owner: User): Course {
         // TODO: rewrite using one to many approach. Now it might fall due to cascade type
-        val courseEntity = courseRepository.save(CourseEntity(name, language, testLanguage, testingFramework, owner.toEntity()))
+        val courseEntity = courseRepository
+                .save(CourseEntity(
+                        name = name,
+                        language = language,
+                        test_language = testLanguage,
+                        testing_framework = testingFramework,
+                        user = owner.toEntity())
+                )
         for (i in 1..numberOfTasks) {
-            taskRepository.save(TaskEntity(name, courseEntity))
+            taskRepository.save(TaskEntity(task_name = name, course = courseEntity))
         }
         return getCourse(name, owner) ?: throw RuntimeException("Could not create the course. Check cascade types")
     }
 
     override fun getCourse(name: String,
                            owner: User): Course? =
-            courseRepository.findByNameAndUser(name, owner)
+            courseRepository.findByNameAndUser(name, owner)?.toDto()
 
 
     override fun addStudent(nickname: String,
                             course: Course): Student =
-            studentRepository.save(StudentEntity(nickname, course.toEntity())).toDto()
+            studentRepository.save(StudentEntity(nickname = nickname, course = course.toEntity())).toDto()
 
     override fun getStudent(nickname: String): Student? =
-            studentRepository.findByNickname(nickname)
+            studentRepository.findByNickname(nickname)?.toDto()
 }

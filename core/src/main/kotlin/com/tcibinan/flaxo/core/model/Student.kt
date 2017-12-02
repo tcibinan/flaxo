@@ -16,12 +16,7 @@ class StudentEntity : ConvertibleEntity<Student> {
     @ManyToOne @JoinColumn(name = "course_id")
     var course: CourseEntity? = null
 
-    constructor(nickname: String, course: CourseEntity) {
-        this.nickname = nickname
-        this.course = course
-    }
-
-    constructor(student_id: Long, nickname: String, course: CourseEntity) {
+    constructor(student_id: Long? = null, nickname: String, course: CourseEntity) {
         this.student_id = student_id
         this.nickname = nickname
         this.course = course
