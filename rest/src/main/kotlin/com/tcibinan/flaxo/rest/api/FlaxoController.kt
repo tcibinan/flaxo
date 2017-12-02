@@ -1,6 +1,5 @@
 package com.tcibinan.flaxo.rest.api
 
-import com.tcibinan.flaxo.rest.model.Echo
 import org.apache.http.client.fluent.Content
 import org.apache.http.client.fluent.Form
 import org.apache.http.client.fluent.Request
@@ -53,4 +52,7 @@ class FlaxoController {
 
         println(content)
     }
+
+    data class Echo(val message: String)
+
 }
