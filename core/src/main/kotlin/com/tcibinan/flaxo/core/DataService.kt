@@ -6,6 +6,10 @@ import com.tcibinan.flaxo.core.model.Task
 import com.tcibinan.flaxo.core.model.User
 
 interface DataService {
+    companion object {
+        fun default(): DataService = DataServiceImpl()
+    }
+
     fun addUser(nickname: String,
                 password: String): User
 
