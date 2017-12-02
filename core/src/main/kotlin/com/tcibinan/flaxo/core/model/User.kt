@@ -1,19 +1,23 @@
 package com.tcibinan.flaxo.core.model
 
+import javax.persistence.CascadeType
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.Id
 import javax.persistence.OneToOne
 import javax.persistence.JoinColumn
 import javax.persistence.Table
+import javax.persistence.UniqueConstraint
 
 @Entity(name = "user")
-@Table(name = "user")
+@Table(name = "user",
+        uniqueConstraints = arrayOf(UniqueConstraint(columnNames = arrayOf("nickname"))))
 class UserEntity(): ConvertibleEntity<User> {
     @Id @GeneratedValue
     var user_id: Long? = null
     var nickname: String? = null
-    @OneToOne @JoinColumn(name = "credentials_id")
+    @OneToOne(cascade = arrayOf(CascadeType.ALL))
+    @JoinColumn(name = "credentials_id")
     var credentials: CredentialsEntity? = null
 
     constructor(user_id: Long? = null, nickname: String, credentials: CredentialsEntity) : this() {

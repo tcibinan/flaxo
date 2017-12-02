@@ -1,7 +1,7 @@
 package com.tcibinan.flaxo.core.model
 
-interface ConvertibleEntity<A> {
-    fun toDto(): A
+interface ConvertibleEntity<DTO> {
+    fun toDto(): DTO
 }
 
-internal fun <A> Set<ConvertibleEntity<A>>.toDtos(): Set<A> = this.map { it.toDto() }.toSet()
+internal fun <DTO> Set<ConvertibleEntity<DTO>>.toDtos(): Set<DTO> = this.map { it.toDto() }.toSet()

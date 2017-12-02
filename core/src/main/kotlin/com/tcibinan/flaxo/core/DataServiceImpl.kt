@@ -46,14 +46,14 @@ internal class DataServiceImpl : DataService {
                         user = owner.toEntity())
                 )
         for (i in 1..numberOfTasks) {
-            taskRepository.save(TaskEntity(task_name = name, course = courseEntity))
+            taskRepository.save(TaskEntity(task_name = "${name}-i", course = courseEntity))
         }
         return getCourse(name, owner) ?: throw RuntimeException("Could not create the course. Check cascade types")
     }
 
     override fun getCourse(name: String,
                            owner: User): Course? =
-            courseRepository.findByNameAndUser(name, owner)?.toDto()
+            courseRepository.findByNameAndUser(name, owner.toEntity())?.toDto()
 
 
     override fun addStudent(nickname: String,

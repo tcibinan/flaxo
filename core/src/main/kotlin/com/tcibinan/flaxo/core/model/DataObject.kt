@@ -1,7 +1,7 @@
 package com.tcibinan.flaxo.core.model
 
-interface DataObject<T> {
-    fun toEntity(): T
+interface DataObject<ENTITY> {
+    fun toEntity(): ENTITY
 }
 
-internal fun <A> Set<DataObject<A>>.toEntities(): Set<A> = this.map { it.toEntity() }.toSet()
+internal fun <ENTITY> Set<DataObject<ENTITY>>.toEntities(): Set<ENTITY> = this.map { it.toEntity() }.toSet()

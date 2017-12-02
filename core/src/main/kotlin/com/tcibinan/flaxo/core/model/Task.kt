@@ -16,27 +16,22 @@ class TaskEntity() : ConvertibleEntity<Task> {
     var task_name: String? = null
     @ManyToOne @JoinColumn(name = "course_id")
     var course: CourseEntity? = null
-    @OneToMany(mappedBy = "task_id")
-    var student_tasks: Set<StudentTaskEntity> = emptySet()
 
     constructor(task_id: Long? = null,
                 task_name: String,
-                course: CourseEntity,
-                student_tasks: Set<StudentTaskEntity> = emptySet()) : this() {
+                course: CourseEntity) : this() {
         this.task_id = task_id
         this.task_name = task_name
         this.course = course
-        this.student_tasks = student_tasks
     }
 
-    override fun toDto() = Task(task_id!!, task_name!!, course!!.toDto(), student_tasks.toDtos())
+    override fun toDto() = Task(task_id!!, task_name!!, course!!.toDto())
 }
 
 data class Task(
         val taskId: Long,
         val taskName: String,
-        val course: Course,
-        val studentTasks: Set<StudentTask> = emptySet()
+        val course: Course
 ) : DataObject<TaskEntity> {
-    override fun toEntity() = TaskEntity(taskId, taskName, course.toEntity(), studentTasks.toEntities())
+    override fun toEntity() = TaskEntity(taskId, taskName, course.toEntity())
 }
