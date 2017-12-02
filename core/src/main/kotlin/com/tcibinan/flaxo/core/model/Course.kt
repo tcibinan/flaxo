@@ -5,6 +5,7 @@ import javax.persistence.GeneratedValue
 import javax.persistence.Id
 import javax.persistence.ManyToOne
 import javax.persistence.JoinColumn
+import javax.persistence.OneToMany
 import javax.persistence.Table
 
 @Entity(name = "course")
@@ -18,17 +19,31 @@ class CourseEntity() : ConvertibleEntity<Course> {
     var testing_framework: String? = null
     @ManyToOne @JoinColumn(name = "user_id")
     var user: UserEntity? = null
+    @OneToMany(mappedBy = "course_id")
+    var students: Set<StudentEntity> = emptySet()
+    @OneToMany(mappedBy = "course_id")
+    var tasks: Set<TaskEntity> = emptySet()
 
-    constructor(course_id: Long? = null, name: String, language: String, test_language: String, testing_framework: String, user: UserEntity) : this() {
+    constructor(course_id: Long? = null,
+                name: String,
+                language: String,
+                test_language: String,
+                testing_framework: String,
+                user: UserEntity,
+                students: Set<StudentEntity> = emptySet(),
+                tasks: Set<TaskEntity> = emptySet()) : this() {
         this.course_id = course_id
         this.name = name
         this.language = language
         this.test_language = test_language
         this.testing_framework = testing_framework
         this.user = user
+        this.students = students
+        this.tasks = tasks
     }
 
-    override fun toDto() = Course(course_id!!, name!!, language!!, test_language!!, testing_framework!!, user!!.toDto())
+    override fun toDto() =
+            Course(course_id!!, name!!, language!!, test_language!!, testing_framework!!, user!!.toDto(), students.toDtos(), tasks.toDtos())
 }
 
 data class Course(
@@ -37,7 +52,10 @@ data class Course(
         val language: String,
         val testLanguage: String,
         val testingFramework: String,
-        val user: User
+        val user: User,
+        val students: Set<Student> = emptySet(),
+        val tasks: Set<Task> = emptySet()
 ) : DataObject<CourseEntity> {
-    override fun toEntity() = CourseEntity(courseId, name, language, testLanguage, testingFramework, user.toEntity())
+    override fun toEntity() =
+            CourseEntity(courseId, name, language, testLanguage, testingFramework, user.toEntity(), students.toEntities(), tasks.toEntities())
 }
