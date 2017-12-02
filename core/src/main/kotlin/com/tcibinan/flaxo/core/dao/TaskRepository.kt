@@ -1,7 +1,7 @@
 package com.tcibinan.flaxo.core.dao
 
-import com.tcibinan.flaxo.core.model.Task
+import com.tcibinan.flaxo.core.model.TaskEntity
 import org.springframework.data.repository.CrudRepository
 
-interface TaskRepository : CrudRepository<Task, Long> {
+interface TaskRepository : CrudRepository<TaskEntity, Long> {
 }

@@ -1,7 +1,7 @@
 package com.tcibinan.flaxo.core.dao
 
-import com.tcibinan.flaxo.core.model.StudentTask
+import com.tcibinan.flaxo.core.model.StudentTaskEntity
 import org.springframework.data.repository.CrudRepository
 
-interface StudentTaskRepository : CrudRepository<StudentTask, Long> {
+interface StudentTaskRepository : CrudRepository<StudentTaskEntity, Long> {
 }
