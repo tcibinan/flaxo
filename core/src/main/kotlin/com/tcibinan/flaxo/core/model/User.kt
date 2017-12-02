@@ -17,3 +17,9 @@ class UserEntity {
     @OneToOne(cascade = arrayOf(CascadeType.ALL)) @JoinColumn(name = "credentials_id")
     var credentials: CredentialsEntity? = null
 }
+
+data class User(
+        val userId: Long,
+        val nickname: String,
+        val credentials: Credentials
+)

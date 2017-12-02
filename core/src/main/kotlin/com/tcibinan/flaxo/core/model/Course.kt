@@ -19,3 +19,12 @@ class CourseEntity {
     @ManyToOne @JoinColumn(name = "user_id")
     var user: UserEntity? = null
 }
+
+data class Course(
+        val courseId: Long,
+        val name: String,
+        val language: String,
+        val testLanguage: String,
+        val testingFramework: String,
+        val user: User
+)

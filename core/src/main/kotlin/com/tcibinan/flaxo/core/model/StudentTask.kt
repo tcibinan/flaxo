@@ -18,3 +18,10 @@ class StudentTaskEntity {
     @ManyToOne @JoinColumn(name = "student_id")
     var student: StudentEntity? = null
 }
+
+data class StudentTask(
+        val studentTaskId: Long,
+        val points: Int,
+        val task: TaskEntity,
+        val student: StudentEntity
+)

@@ -15,3 +15,11 @@ class CredentialsEntity {
     var travis_token: String? = null
     var codacy_token: String? = null
 }
+
+data class Credentials(
+        val credentialsId: Long,
+        val password: String,
+        val githubToken: String? = null,
+        val travisToken: String? = null,
+        val codacyToken: String? = null
+)

@@ -16,3 +16,9 @@ class TaskEntity {
     @ManyToOne @JoinColumn(name = "course_id")
     var course: CourseEntity? = null
 }
+
+data class Task(
+        val taskId: Long,
+        val taskName: String,
+        val course: CourseEntity
+)
