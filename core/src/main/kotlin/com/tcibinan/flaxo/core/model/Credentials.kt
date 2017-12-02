@@ -7,7 +7,7 @@ import javax.persistence.Table
 
 @Entity(name = "credentials")
 @Table(name = "credentials")
-class CredentialsEntity : ConvertibleEntity<Credentials> {
+class CredentialsEntity() : ConvertibleEntity<Credentials> {
     @Id @GeneratedValue
     var credentials_id: Long? = null
     var password: String? = null
@@ -19,7 +19,7 @@ class CredentialsEntity : ConvertibleEntity<Credentials> {
                 password: String,
                 github_token: String? = null,
                 travis_token: String? = null,
-                codacy_token: String? = null) {
+                codacy_token: String? = null) : this() {
         this.credentials_id = credentials_id
         this.password = password
         this.github_token = github_token

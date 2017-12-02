@@ -9,7 +9,7 @@ import javax.persistence.Table
 
 @Entity(name = "course")
 @Table(name = "course")
-class CourseEntity : ConvertibleEntity<Course> {
+class CourseEntity() : ConvertibleEntity<Course> {
     @Id @GeneratedValue
     var course_id: Long? = null
     var name: String? = null
@@ -19,7 +19,7 @@ class CourseEntity : ConvertibleEntity<Course> {
     @ManyToOne @JoinColumn(name = "user_id")
     var user: UserEntity? = null
 
-    constructor(course_id: Long? = null, name: String, language: String, test_language: String, testing_framework: String, user: UserEntity) {
+    constructor(course_id: Long? = null, name: String, language: String, test_language: String, testing_framework: String, user: UserEntity) : this() {
         this.course_id = course_id
         this.name = name
         this.language = language

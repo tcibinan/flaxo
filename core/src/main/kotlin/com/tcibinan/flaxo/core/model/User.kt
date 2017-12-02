@@ -10,14 +10,14 @@ import javax.persistence.Table
 
 @Entity(name = "user")
 @Table(name = "user")
-class UserEntity: ConvertibleEntity<User> {
+class UserEntity(): ConvertibleEntity<User> {
     @Id @GeneratedValue
     var user_id: Long? = null
     var nickname: String? = null
     @OneToOne(cascade = arrayOf(CascadeType.ALL)) @JoinColumn(name = "credentials_id")
     var credentials: CredentialsEntity? = null
 
-    constructor(user_id: Long? = null, nickname: String, credentials: CredentialsEntity) {
+    constructor(user_id: Long? = null, nickname: String, credentials: CredentialsEntity) : this() {
         this.user_id = user_id
         this.nickname = nickname
         this.credentials = credentials

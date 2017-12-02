@@ -9,14 +9,14 @@ import javax.persistence.Table
 
 @Entity(name = "student")
 @Table(name = "student")
-class StudentEntity : ConvertibleEntity<Student> {
+class StudentEntity() : ConvertibleEntity<Student> {
     @Id @GeneratedValue
     var student_id: Long? = null
     var nickname: String? = null
     @ManyToOne @JoinColumn(name = "course_id")
     var course: CourseEntity? = null
 
-    constructor(student_id: Long? = null, nickname: String, course: CourseEntity) {
+    constructor(student_id: Long? = null, nickname: String, course: CourseEntity) : this() {
         this.student_id = student_id
         this.nickname = nickname
         this.course = course
