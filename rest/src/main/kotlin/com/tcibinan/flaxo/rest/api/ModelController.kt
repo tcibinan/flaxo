@@ -12,15 +12,16 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/model")
-class ModelController @Autowired constructor(val dataService: DataService) {
-
-    @Autowired lateinit var messageService: MessageService
+class ModelController @Autowired constructor(
+        val dataService: DataService,
+        val messageService: MessageService
+) {
 
     @PostMapping("/register")
     fun register(@RequestParam("nickname") nickname: String, @RequestParam("password") password: String): Response {
         return try {
             dataService.addUser(nickname, password)
-            response(USER_CREATED,messageService.get("model.user.success.created", nickname))
+            response(USER_CREATED, messageService.get("model.user.success.created", nickname))
         } catch (e: EntityAlreadyExistsException) {
             response(USER_ALREADY_EXISTS, messageService.get("model.user.error.already.exists", e.entity))
         } catch (e: Throwable) {

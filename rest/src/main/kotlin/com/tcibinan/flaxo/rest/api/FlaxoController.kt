@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class FlaxoController {
-
-    @Autowired lateinit var messageService: MessageService
+class FlaxoController @Autowired constructor(
+        val messageService: MessageService
+) {
 
     @GetMapping("/")
     fun index() = response(HELLO_WORLD, messageService.get("greeting"))

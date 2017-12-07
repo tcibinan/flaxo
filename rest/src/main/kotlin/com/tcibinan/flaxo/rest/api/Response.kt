@@ -11,7 +11,8 @@ interface Response
 
 fun response(answer: ServerAnswer,
              message: String? = null,
-             payload: Any? = null): Response {
+             payload: Any? = null
+): Response {
     if (payload == null) {
         if (message == null) {
             return ResponseWithCode(answer.code)
