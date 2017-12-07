@@ -15,14 +15,10 @@ class WebSecurityConfigurerImpl(
     override fun configure(auth: AuthenticationManagerBuilder) {
         auth.userDetailsService(userDetailsService)
                 .passwordEncoder(passwordEncoder)
-
     }
 
     override fun configure(http: HttpSecurity) {
-        http.authorizeRequests()
-                .anyRequest().authenticated()
-                .and()
-                .httpBasic()
+        http.httpBasic()
                 .and()
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)

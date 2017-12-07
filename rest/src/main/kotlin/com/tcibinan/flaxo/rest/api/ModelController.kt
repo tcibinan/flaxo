@@ -24,7 +24,7 @@ class ModelController @Autowired constructor(val dataService: DataService) {
         } catch (e: EntityAlreadyExistsException) {
             response(USER_ALREADY_EXISTS, messageService.get("model.user.error.already.exists", e.entity))
         } catch (e: Throwable) {
-            response(SERVER_ERROR)
+            response(SERVER_ERROR, e.message)
         }
     }
 }
