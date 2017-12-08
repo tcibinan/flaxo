@@ -15,6 +15,6 @@ pluginManagement {
     }
 }
 
-include 'rest', 'core'
+include 'rest', 'git', 'core'
 
 rootProject.name = 'flaxo'
