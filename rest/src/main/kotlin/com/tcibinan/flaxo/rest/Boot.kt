@@ -1,6 +1,11 @@
 package com.tcibinan.flaxo.rest
 
 import com.tcibinan.flaxo.core.DataService
+import com.tcibinan.flaxo.core.BasicDataService
+import com.tcibinan.flaxo.core.dao.CourseRepository
+import com.tcibinan.flaxo.core.dao.StudentRepository
+import com.tcibinan.flaxo.core.dao.TaskRepository
+import com.tcibinan.flaxo.core.dao.UserRepository
 import com.tcibinan.flaxo.rest.security.SecuredDataService
 import com.tcibinan.flaxo.rest.services.MessageService
 import com.tcibinan.flaxo.rest.services.NaiveMessageService
@@ -9,6 +14,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.MessageSource
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.PropertySource
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -19,10 +25,16 @@ import org.springframework.security.crypto.password.PasswordEncoder
 @EnableJpaRepositories("com.tcibinan.flaxo.core.dao")
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @EntityScan("com.tcibinan.flaxo.core.model")
+@PropertySource("classpath:secured.properties", ignoreResourceNotFound = true)
 class Application {
 
     @Bean
-    fun nonSecuredDataService() = DataService.default()
+    fun nonSecuredDataService(
+            userRepository: UserRepository,
+            courseRepository: CourseRepository,
+            taskRepository: TaskRepository,
+            studentRepository: StudentRepository
+    ) = BasicDataService(userRepository, courseRepository, taskRepository, studentRepository)
 
     @Bean
     fun dataService(nonSecuredDataService: DataService, passwordEncoder: PasswordEncoder): DataService =
