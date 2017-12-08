@@ -34,10 +34,14 @@ class Application {
             courseRepository: CourseRepository,
             taskRepository: TaskRepository,
             studentRepository: StudentRepository
-    ) = BasicDataService(userRepository, courseRepository, taskRepository, studentRepository)
+    ): DataService =
+            BasicDataService(userRepository, courseRepository, taskRepository, studentRepository)
 
     @Bean
-    fun dataService(nonSecuredDataService: DataService, passwordEncoder: PasswordEncoder): DataService =
+    fun dataService(
+            nonSecuredDataService: DataService,
+            passwordEncoder: PasswordEncoder
+    ): DataService =
             SecuredDataService(nonSecuredDataService, passwordEncoder)
 
     @Bean
