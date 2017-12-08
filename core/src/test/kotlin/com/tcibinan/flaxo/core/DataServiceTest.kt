@@ -1,5 +1,7 @@
 package com.tcibinan.flaxo.core
 
+import io.kotlintest.matchers.haveSubstring
+import io.kotlintest.matchers.should
 import io.kotlintest.matchers.shouldBe
 import io.kotlintest.matchers.shouldEqual
 import io.kotlintest.matchers.shouldThrow
@@ -8,7 +10,6 @@ import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.subject.SubjectSpek
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
-import org.springframework.dao.DataIntegrityViolationException
 
 class DataServiceTest : SubjectSpek<DataService>({
     val nickname = "nickname"
@@ -50,14 +51,25 @@ class DataServiceTest : SubjectSpek<DataService>({
         on("course creation") {
             val owner = subject.getUser(nickname)!!
             val course = subject.createCourse(courseName, language, testLanguage, testingFramework, numberOfTasks, owner)
+            val tasks = subject.getTasks(course)
 
             it("should contain the course") {
                 course.language shouldBe language
                 course.testLanguage shouldBe testLanguage
                 course.testingFramework shouldBe testingFramework
             }
-            it("should also create necessary tasks") {
-                subject.getTasks(course).count() shouldBe numberOfTasks
+
+            it("should also create necessary amount of tasks") {
+                tasks.count() shouldBe numberOfTasks
+            }
+
+            it("should also create tasks with ordered numbers in the title") {
+                tasks.map { it.taskName }
+                        .sorted()
+                        .mapIndexed { index, name -> Pair((index+1).toString(), name) }
+                        .forEach { (taskIndex, taskName) ->
+                            taskName should haveSubstring(taskIndex)
+                        }
             }
         }
 
