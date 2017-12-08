@@ -43,7 +43,7 @@ class BasicDataService(
                         user = owner.toEntity())
                 )
         for (i in 1..numberOfTasks) {
-            taskRepository.save(TaskEntity(task_name = "${name}-i", course = courseEntity))
+            taskRepository.save(TaskEntity(task_name = "${name}-$i", course = courseEntity))
         }
         return getCourse(name, owner) ?: throw Exception("Could not create the course. Check cascade types")
     }
