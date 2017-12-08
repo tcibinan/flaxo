@@ -6,4 +6,5 @@ import org.springframework.data.repository.CrudRepository
 
 interface CourseRepository : CrudRepository<CourseEntity, Long> {
     fun findByNameAndUser(name: String, user: UserEntity): CourseEntity?
+    fun findByUser(user: UserEntity): Set<CourseEntity>
 }

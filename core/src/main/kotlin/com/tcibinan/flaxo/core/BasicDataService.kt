@@ -4,11 +4,12 @@ import com.tcibinan.flaxo.core.dao.*
 import com.tcibinan.flaxo.core.model.*
 import org.springframework.beans.factory.annotation.Autowired
 
-internal class DataServiceImpl : DataService {
-    @Autowired lateinit var userRepository: UserRepository
-    @Autowired lateinit var courseRepository: CourseRepository
-    @Autowired lateinit var taskRepository: TaskRepository
-    @Autowired lateinit var studentRepository: StudentRepository
+class BasicDataService(
+        val userRepository: UserRepository,
+        val courseRepository: CourseRepository,
+        val taskRepository: TaskRepository,
+        val studentRepository: StudentRepository
+) : DataService {
 
     override fun addUser(nickname: String,
                          password: String): User {
@@ -44,13 +45,19 @@ internal class DataServiceImpl : DataService {
         for (i in 1..numberOfTasks) {
             taskRepository.save(TaskEntity(task_name = "${name}-i", course = courseEntity))
         }
-        return getCourse(name, owner) ?: throw RuntimeException("Could not create the course. Check cascade types")
+        return getCourse(name, owner) ?: throw Exception("Could not create the course. Check cascade types")
     }
 
     override fun getCourse(name: String,
                            owner: User): Course? =
             courseRepository.findByNameAndUser(name, owner.toEntity())?.toDto()
 
+    override fun getCourses(userNickname: String): Set<Course> {
+        val user = getUser(userNickname)
+        user ?: throw Exception("Could not find user with $userNickname nickname")
+
+        return courseRepository.findByUser(user.toEntity()).toDtos()
+    }
 
     override fun addStudent(nickname: String,
                             course: Course): Student =

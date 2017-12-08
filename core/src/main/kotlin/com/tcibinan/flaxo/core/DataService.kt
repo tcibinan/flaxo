@@ -6,10 +6,6 @@ import com.tcibinan.flaxo.core.model.Task
 import com.tcibinan.flaxo.core.model.User
 
 interface DataService {
-    companion object {
-        fun default(): DataService = DataServiceImpl()
-    }
-
     fun addUser(nickname: String,
                 password: String): User
 
@@ -24,6 +20,8 @@ interface DataService {
 
     fun getCourse(name: String,
                   owner: User): Course?
+
+    fun getCourses(userNickname: String): Set<Course>
 
     fun addStudent(nickname: String,
                    course: Course): Student
