@@ -16,9 +16,9 @@ import java.util.*
 @RequestMapping("/github")
 class GithubController {
 
-    @Value("\${CLIENT_ID}") lateinit var clientId: String
-    @Value("\${CLIENT_SECRET}") lateinit var clientSecret: String
-    @Value("\${REDIRECT_URI}") lateinit var redirectUri: String
+    @Value("\${GITHUB_ID}") lateinit var clientId: String
+    @Value("\${GITHUB_SECRET}") lateinit var clientSecret: String
+    @Value("\${GITHUB_REDIRECT}") lateinit var redirectUri: String
     @Value("\${HOME_PAGE}") lateinit var homePage: String
 
     @GetMapping("/auth")
