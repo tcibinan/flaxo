@@ -1,5 +1,6 @@
 package com.tcibinan.flaxo.core.model
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import javax.persistence.CascadeType
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
@@ -29,6 +30,7 @@ class UserEntity(): ConvertibleEntity<User> {
     override fun toDto() = User(user_id!!, nickname!!, credentials!!.toDto())
 }
 
+@JsonIgnoreProperties("credentials")
 data class User(
         val userId: Long,
         val nickname: String,
