@@ -1,6 +1,6 @@
 plugins {
-    id "org.jetbrains.kotlin.plugin.spring" version "1.1.61"
     id "org.springframework.boot" version "1.5.8.RELEASE"
+    id "org.jetbrains.kotlin.plugin.spring"
     id "org.junit.platform.gradle.plugin"
 }
 
@@ -9,7 +9,7 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-web"
     compile "org.springframework.boot:spring-boot-starter-data-jpa"
     compile "org.springframework.boot:spring-boot-autoconfigure"
-    compile 'org.springframework.boot:spring-boot-starter-security'
+    compile "org.springframework.boot:spring-boot-starter-security"
     // for post requests - could be replaced with git module in the future
     compile "org.apache.httpcomponents:fluent-hc:4.5.3"
     compile "com.h2database:h2:1.4.196"
