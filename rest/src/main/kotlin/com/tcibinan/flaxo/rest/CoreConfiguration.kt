@@ -18,16 +18,16 @@ import org.springframework.context.annotation.Configuration
 class CoreConfiguration {
 
     @Bean
-    fun supportedLanguages() = listOf(
+    fun supportedLanguages() = namedMap(
             JavaLang,
             KotlinLang
-    ).toNamedMap()
+    )
 
     @Bean
-    fun supportedTestingFrameworks() = listOf(
+    fun supportedTestingFrameworks() = namedMap(
             JUnit4TestingFramework,
             SpekTestingFramework
-    ).toNamedMap()
+    )
 
     @Bean
     fun defaultBuildTools() = mapOf<Language, () -> BuildTool>(
@@ -48,7 +48,7 @@ class CoreConfiguration {
             )
 }
 
-private fun <A: NamedEntity> List<A>.toNamedMap() =
-    groupBy { it.name() }
-            .map { (name, frameworks) -> name to frameworks[0] }
-            .toMap()
+private fun <TYPE: NamedEntity> namedMap(vararg languages: TYPE): Map<String, TYPE> =
+        languages.groupBy { it.name() }
+                .map { (name, entities) -> name to entities[0] }
+                .toMap()

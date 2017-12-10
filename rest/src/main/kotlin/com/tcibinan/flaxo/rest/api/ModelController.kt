@@ -2,10 +2,12 @@ package com.tcibinan.flaxo.rest.api
 
 import com.tcibinan.flaxo.core.DataService
 import com.tcibinan.flaxo.core.EntityAlreadyExistsException
+import com.tcibinan.flaxo.core.env.languages.Language
 import com.tcibinan.flaxo.rest.api.ServerAnswer.*
 import com.tcibinan.flaxo.rest.services.MessageService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -16,7 +18,8 @@ import java.security.Principal
 @RequestMapping("/rest")
 class ModelController @Autowired constructor(
         val dataService: DataService,
-        val messageService: MessageService
+        val messageService: MessageService,
+        val supportedLanguages: Map<String, Language>
 ) {
 
     @PostMapping("/register")
@@ -57,4 +60,20 @@ class ModelController @Autowired constructor(
                 course
         )
     }
+
+    @GetMapping("/supportedLanguages")
+    fun supportedLanguages(): Response =
+            response(
+                    SUPPORTED_LANGUAGES,
+                    payload = supportedLanguages.flatten()
+            )
 }
+
+private fun Map<String, Language>.flatten(): List<Any> =
+        map { (name, language) ->
+            object {
+                val name = name
+                val compatibleTestingLanguages = language.compatibleTestingLanguages().map { it.name() }
+                val compatibleTestingFrameworks = language.compatibleTestingFrameworks().map { it.name() }
+            }
+        }

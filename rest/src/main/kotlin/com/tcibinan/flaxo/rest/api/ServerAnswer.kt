@@ -10,6 +10,7 @@ enum class ServerAnswer(val code: Int) {
     USER_CREATED(2000),
     COURSES_LIST(2001),
     COURSE_CREATED(2002),
+    SUPPORTED_LANGUAGES(2003),
 
     HELLO_WORLD(1000),
     ECHO(1001)
