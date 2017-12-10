@@ -1,6 +1,7 @@
 package com.tcibinan.flaxo.core.env.tools
 
 import com.tcibinan.flaxo.core.env.Environment
+import com.tcibinan.flaxo.core.env.NamedEntity
 
 interface BuildTool : NamedEntity {
     fun addDependency(dependency: Dependency): BuildTool =
@@ -16,7 +17,3 @@ interface BuildTool : NamedEntity {
 
 interface BuildToolPlugin : NamedEntity
 interface Dependency : NamedEntity
-
-interface NamedEntity {
-    fun name(): String
-}
