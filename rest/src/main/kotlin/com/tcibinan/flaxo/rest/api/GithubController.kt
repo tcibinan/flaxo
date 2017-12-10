@@ -13,7 +13,7 @@ import org.springframework.web.servlet.ModelAndView
 import java.util.*
 
 @RestController
-@RequestMapping("/github")
+@RequestMapping("/rest/github")
 class GithubController {
 
     @Value("\${GITHUB_ID}") lateinit var clientId: String
