@@ -1,8 +1,6 @@
 package com.tcibinan.flaxo.core.env.languages
 
-import com.tcibinan.flaxo.core.UnsupportedBuildToolException
 import com.tcibinan.flaxo.core.env.tools.BuildTool
-import com.tcibinan.flaxo.core.env.tools.GradleBuildTool
 import com.tcibinan.flaxo.core.env.frameworks.JUnit4TestingFramework
 import com.tcibinan.flaxo.core.env.tools.javaPlugin
 import com.tcibinan.flaxo.core.env.tools.junitPlatformPlugin
@@ -13,16 +11,10 @@ object JavaLang : Language("java",
 ) {
 
     override fun main(buildTool: BuildTool) {
-        when (buildTool) {
-            is GradleBuildTool -> buildTool.addPlugin(javaPlugin())
-            else -> throw UnsupportedBuildToolException(JavaLang, buildTool)
-        }
+        buildTool.addPlugin(javaPlugin())
     }
 
     override fun test(buildTool: BuildTool) {
-        when (buildTool) {
-            is GradleBuildTool -> buildTool.addPlugin(junitPlatformPlugin())
-            else -> throw UnsupportedBuildToolException(JavaLang, buildTool)
-        }
+        buildTool.addPlugin(junitPlatformPlugin())
     }
 }
