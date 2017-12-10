@@ -5,8 +5,8 @@ import com.tcibinan.flaxo.core.env.frameworks.JUnit4TestingFramework
 import com.tcibinan.flaxo.core.env.tools.javaPlugin
 import com.tcibinan.flaxo.core.env.tools.junitPlatformPlugin
 
-object JavaLang : Language("java",
-        suitableTestLanguages = setOf(JavaLang, KotlinLang),
+object JavaLang : AbstractLanguage("java",
+        suitableTestLanguages = setOf(KotlinLang),
         suitableTestingFrameworks = setOf(JUnit4TestingFramework)
 ) {
 

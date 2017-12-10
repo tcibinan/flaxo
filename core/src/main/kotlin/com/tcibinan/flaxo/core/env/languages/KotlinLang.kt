@@ -8,8 +8,8 @@ import com.tcibinan.flaxo.core.env.tools.kotlinGradlePlugin
 import com.tcibinan.flaxo.core.env.tools.kotlinJreDependency
 import com.tcibinan.flaxo.core.env.tools.kotlinTest
 
-object KotlinLang : Language("kotlin",
-        suitableTestLanguages = setOf(KotlinLang),
+object KotlinLang : AbstractLanguage("kotlin",
+        suitableTestLanguages = setOf(),
         suitableTestingFrameworks = setOf(JUnit4TestingFramework, SpekTestingFramework)
 ) {
 
