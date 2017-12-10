@@ -11,16 +11,21 @@ abstract class AbstractLanguage(
 ) : Language {
     override fun name() = name
 
-    override fun canBeTestedBy(testingLanguage: Language): Boolean =
-            testingLanguage == this || testingLanguage in suitableTestLanguages
+    override fun compatibleTestingLanguages(): Set<Language> = suitableTestLanguages + this
 
-    override fun worksWith(testingFramework: TestingFramework): Boolean =
-            testingFramework in suitableTestingFrameworks
+    override fun compatibleTestingFrameworks(): Set<TestingFramework> = suitableTestingFrameworks
 }
 
 interface Language : NamedEntity {
     fun main(buildTool: BuildTool)
     fun test(buildTool: BuildTool)
-    fun canBeTestedBy(testingLanguage: Language): Boolean
-    fun worksWith(testingFramework: TestingFramework): Boolean
+
+    fun compatibleTestingLanguages(): Set<Language>
+    fun compatibleTestingFrameworks(): Set<TestingFramework>
+
+    fun canBeTestedBy(testingLanguage: Language): Boolean =
+            testingLanguage == this || testingLanguage in compatibleTestingLanguages()
+
+    fun worksWith(testingFramework: TestingFramework): Boolean =
+            testingFramework in compatibleTestingFrameworks()
 }
