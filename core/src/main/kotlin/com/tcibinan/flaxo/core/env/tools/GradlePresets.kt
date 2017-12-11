@@ -2,7 +2,7 @@ package com.tcibinan.flaxo.core.env.tools
 
 private val spekVersion = "1.1.5"
 private val junitVersion = "1.0.2"
-private val kotlinVersion = "1.1.61"
+private val kotlinVersion = "1.2.0"
 
 fun javaPlugin() = GradlePlugin("java")
 
