@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @SpringBootApplication(
-        scanBasePackages = arrayOf("com.tcibinan.flaxo")
+        scanBasePackages = ["com.tcibinan.flaxo"]
 )
 @EnableJpaRepositories("com.tcibinan.flaxo.core.dao")
 @EntityScan("com.tcibinan.flaxo.core.model")
