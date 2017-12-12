@@ -4,7 +4,10 @@ import com.tcibinan.flaxo.core.DataService
 import com.tcibinan.flaxo.core.EntityAlreadyExistsException
 import com.tcibinan.flaxo.core.env.languages.Language
 import com.tcibinan.flaxo.rest.api.ServerAnswer.*
+import com.tcibinan.flaxo.rest.services.GitService
 import com.tcibinan.flaxo.rest.services.MessageService
+import com.tcibinan.flaxo.rest.services.RepositoryEnvironmentService
+import com.tcibinan.flaxo.rest.services.createCourse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
@@ -19,11 +22,16 @@ import java.security.Principal
 class ModelController @Autowired constructor(
         val dataService: DataService,
         val messageService: MessageService,
+        val environmentService: RepositoryEnvironmentService,
+        val gitService: GitService,
         val supportedLanguages: Map<String, Language>
 ) {
 
     @PostMapping("/register")
-    fun register(@RequestParam("nickname") nickname: String, @RequestParam("password") password: String): Response {
+    fun register(
+            @RequestParam("nickname") nickname: String,
+            @RequestParam("password") password: String
+    ): Response {
         return try {
             dataService.addUser(nickname, password)
             response(USER_CREATED, messageService.get("model.user.success.created", nickname))
@@ -44,15 +52,21 @@ class ModelController @Autowired constructor(
             @RequestParam numberOfTasks: Int,
             principal: Principal
     ): Response {
-        val user = dataService.getUser(principal.name)
-        user ?: throw Exception("Could not find user with ${principal.name} nickname")
-        user.credentials.githubToken ?: return response(
-                NO_GITHUB_KEY,
-                messageService.get("operation.need.github.key")
-        )
+        val user = dataService.getUser(principal.name) ?:
+                throw Exception("Could not find user with ${principal.name} nickname")
+
+        val githubToken = user.credentials.githubToken ?:
+                return response(
+                        NO_GITHUB_KEY,
+                        messageService.get("operation.need.github.key")
+                )
 
         val course = dataService.createCourse(courseName, language, testLanguage, testingFramework, numberOfTasks, user)
-        // TODO: 08/12/17 Create github repository
+
+        val environment = environmentService.produceEnvironment(language, testLanguage, testingFramework)
+
+        gitService.with(githubToken)
+                .createCourse(courseName, environment, numberOfTasks)
 
         return response(
                 COURSE_CREATED,
