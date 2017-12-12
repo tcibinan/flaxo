@@ -5,8 +5,9 @@ import com.tcibinan.flaxo.core.EntityAlreadyExistsException
 import com.tcibinan.flaxo.core.env.languages.Language
 import com.tcibinan.flaxo.rest.api.ServerAnswer.*
 import com.tcibinan.flaxo.rest.services.GitService
-import com.tcibinan.flaxo.rest.services.MessageService
 import com.tcibinan.flaxo.rest.services.RepositoryEnvironmentService
+import com.tcibinan.flaxo.rest.services.Response
+import com.tcibinan.flaxo.rest.services.ResponseService
 import com.tcibinan.flaxo.rest.services.createCourse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.access.prepost.PreAuthorize
@@ -21,7 +22,7 @@ import java.security.Principal
 @RequestMapping("/rest")
 class ModelController @Autowired constructor(
         val dataService: DataService,
-        val messageService: MessageService,
+        val responseService: ResponseService,
         val environmentService: RepositoryEnvironmentService,
         val gitService: GitService,
         val supportedLanguages: Map<String, Language>
@@ -34,11 +35,11 @@ class ModelController @Autowired constructor(
     ): Response {
         return try {
             dataService.addUser(nickname, password)
-            response(USER_CREATED, messageService.get("model.user.success.created", nickname))
+            responseService.response(USER_CREATED, args = *arrayOf(nickname))
         } catch (e: EntityAlreadyExistsException) {
-            response(USER_ALREADY_EXISTS, messageService.get("model.user.error.already.exists", e.entity))
+            responseService.response(USER_ALREADY_EXISTS, args = *arrayOf(e.entity))
         } catch (e: Throwable) {
-            response(SERVER_ERROR, e.message)
+            responseService.response(SERVER_ERROR, e.message)
         }
     }
 
@@ -56,10 +57,7 @@ class ModelController @Autowired constructor(
                 throw Exception("Could not find user with ${principal.name} nickname")
 
         val githubToken = user.credentials.githubToken ?:
-                return response(
-                        NO_GITHUB_KEY,
-                        messageService.get("operation.need.github.key")
-                )
+                return responseService.response(NO_GITHUB_KEY)
 
         val course = dataService.createCourse(courseName, language, testLanguage, testingFramework, numberOfTasks, user)
 
@@ -68,19 +66,12 @@ class ModelController @Autowired constructor(
         gitService.with(githubToken)
                 .createCourse(courseName, environment, numberOfTasks)
 
-        return response(
-                COURSE_CREATED,
-                messageService.get("course.success.created", courseName),
-                course
-        )
+        return responseService.response(COURSE_CREATED, args = *arrayOf(courseName), payload = course)
     }
 
     @GetMapping("/supportedLanguages")
     fun supportedLanguages(): Response =
-            response(
-                    SUPPORTED_LANGUAGES,
-                    payload = supportedLanguages.flatten()
-            )
+            responseService.response(SUPPORTED_LANGUAGES, payload = supportedLanguages.flatten())
 }
 
 private fun Map<String, Language>.flatten(): List<Any> =

@@ -2,7 +2,8 @@ package com.tcibinan.flaxo.rest.api
 
 import com.tcibinan.flaxo.core.DataService
 import com.tcibinan.flaxo.rest.api.ServerAnswer.*
-import com.tcibinan.flaxo.rest.services.MessageService
+import com.tcibinan.flaxo.rest.services.Response
+import com.tcibinan.flaxo.rest.services.ResponseService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
@@ -15,23 +16,16 @@ import java.security.Principal
 @RequestMapping("/rest")
 class UserController @Autowired constructor(
         val dataService: DataService,
-        val messageService: MessageService
+        val responseService: ResponseService
 ) {
 
     @GetMapping("user/{nickname}/allCourses")
     @PreAuthorize("hasAuthority('USER')")
     fun allCourses(@PathVariable nickname: String, principal: Principal): Response {
         return if (principal.name == nickname) {
-            response(
-                    COURSES_LIST,
-                    messageService.get("user.success.all.courses"),
-                    dataService.getCourses(nickname)
-            )
+            responseService.response(COURSES_LIST, payload = dataService.getCourses(nickname))
         } else {
-            response(
-                    ANOTHER_USER_DATA,
-                    messageService.get("user.error.get.others.courses", principal.name, nickname)
-            )
+            responseService.response(ANOTHER_USER_DATA, principal.name, nickname)
         }
     }
 

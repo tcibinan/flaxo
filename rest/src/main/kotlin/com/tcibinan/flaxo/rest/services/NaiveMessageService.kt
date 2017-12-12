@@ -8,7 +8,7 @@ class NaiveMessageService(
         val messageSource: MessageSource
 ) : MessageService {
 
-    override fun get(code: String, vararg params: String, locale: Locale): String {
+    override fun get(code: String, vararg params: String?, locale: Locale): String {
         return try {
             messageSource.getMessage(code, params, locale)
         } catch (e: NoSuchElementException) {

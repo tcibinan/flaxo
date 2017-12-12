@@ -1,5 +1,6 @@
 package com.tcibinan.flaxo.rest.api
 
+import com.tcibinan.flaxo.rest.services.ResponseService
 import org.apache.http.client.fluent.Content
 import org.apache.http.client.fluent.Form
 import org.apache.http.client.fluent.Request
@@ -14,7 +15,9 @@ import java.util.*
 
 @RestController
 @RequestMapping("/rest/github")
-class GithubController {
+class GithubController(
+        val responseService: ResponseService
+) {
 
     @Value("\${GITHUB_ID}") lateinit var clientId: String
     @Value("\${GITHUB_SECRET}") lateinit var clientSecret: String
@@ -28,7 +31,7 @@ class GithubController {
                 "redirect_uri" to redirectUri,
                 "state" to Random().nextInt().toString()
         ))
-        return redirect("http://github.com/login/oauth/authorize", model)
+        return responseService.redirect("http://github.com/login/oauth/authorize", model)
     }
 
     @GetMapping("/auth/code")
