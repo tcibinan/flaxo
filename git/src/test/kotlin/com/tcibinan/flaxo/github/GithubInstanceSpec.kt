@@ -28,7 +28,7 @@ object GithubInstanceSpec : SubjectSpek<GitInstance>({
                     .createBranch(branchName)
                     .load(path1, content1)
                     .load(path2, content2)
-                    .createSubBranches(5)
+                    .createSubBranches(5, "task-")
 
             it("should create such a repository") {
                 subject.branches(userName, repositoryName).count() shouldBe 6

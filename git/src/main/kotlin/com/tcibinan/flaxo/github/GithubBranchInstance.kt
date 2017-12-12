@@ -13,7 +13,7 @@ class GithubBranchInstance(
         TODO("not implemented")
     }
 
-    override fun createSubBranches(count: Int): BranchInstance {
+    override fun createSubBranches(count: Int, prefix: String): BranchInstance {
         TODO("not implemented")
     }
 
