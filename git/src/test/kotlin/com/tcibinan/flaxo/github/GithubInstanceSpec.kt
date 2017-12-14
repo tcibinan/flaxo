@@ -1,38 +1,83 @@
 package com.tcibinan.flaxo.github
 
 import com.tcibinan.flaxo.git.GitInstance
+import io.kotlintest.matchers.contain
 import io.kotlintest.matchers.shouldBe
+import io.kotlintest.matchers.shouldHave
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
+import org.jetbrains.spek.api.dsl.xon
 import org.jetbrains.spek.subject.SubjectSpek
+import java.util.*
 
 object GithubInstanceSpec : SubjectSpek<GitInstance>({
 
-    val userName = "some-user"
-    val credentials = "some-credentials"
-    val repositoryName = "some-repository"
-    val branchName = "some-branch"
-    val path1 = "first-path"
-    val path2 = "second-path"
-    val content1 = "first-content"
-    val content2 = "second-content"
+    val properties = Properties()
+    properties.load(GithubInstanceSpec.javaClass.classLoader.getResourceAsStream("secured.properties"))
+
+    val userName = properties.getProperty("github.username")
+    val credentials = properties.getProperty("github.access.token")
+
+    val repository = GithubRepository("temp-testing-repository1", userName)
+    val mainBranch = GithubBranch("main-branch", repository)
+    val subbranch = GithubBranch("sub-branch", repository)
+    val anotherSubbranch = GithubBranch("another-sub-branch", repository)
+    val fileName = "file-name"
 
     subject { GithubInstance(credentials) }
 
+    afterGroup {
+        subject.deleteRepository(repository.name())
+    }
+
     describe("git service") {
 
-        on("creating custom repository with 6 branches") {
-            subject
-                    .createRepository(repositoryName)
-                    .createBranch(branchName)
-                    .load(path1, content1)
-                    .load(path2, content2)
-                    .createSubBranches(5, "task-")
+        on("creating custom repository with single branch") {
+            subject.createRepository(repository.name())
+                    .createBranch(mainBranch.name())
 
-            it("should create such a repository") {
-                subject.branches(userName, repositoryName).count() shouldBe 6
+            it("should create with a single branch") {
+                subject.branches(userName, repository.name()) shouldContain mainBranch
+            }
+        }
+
+        on("creating subbranch") {
+            subject.createSubBranch(repository, mainBranch, subbranch.name())
+
+            it("should create the subbranch with the given name") {
+                subject.branches(userName, repository.name()) shouldContain subbranch
+            }
+        }
+
+        xon("loading file in branch", "getting files list is not supported yet") {
+            subject.load(repository, mainBranch, fileName, "file content")
+
+            it("should exist only in that branch") {
+                subject.branches(userName, repository.name())
+                        .filter {
+                            println(it.name())
+                            true
+                        }
+                        .flatMap { it.files().toList() }
+                        .filter { it.first == fileName }
+                        .count() shouldBe 1
+            }
+        }
+
+        xon("creating subbranch", "getting files list is not supported yet") {
+            subject.createSubBranch(repository, mainBranch, anotherSubbranch.name())
+
+            it("should copy commits") {
+                subject.branches(userName, repository.name())
+                        .flatMap { it.files().toList() }
+                        .filter { it.first == fileName }
+                        .count() shouldBe 2
             }
         }
     }
 })
+
+private infix fun <E> Collection<E>.shouldContain(element: E) {
+    this shouldHave contain(element)
+}
