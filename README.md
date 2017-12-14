@@ -5,7 +5,7 @@ An application for easy creating, managing and reporting online courses of progr
 
 ## Deployment
 
-First of all you should set several system variables
+First of all you should set several system variables.
 
 | System variable  | Description  |
 |---|---|
@@ -14,13 +14,22 @@ First of all you should set several system variables
 | GITHUB_SECRET | Github app client secret |
 | GITHUB_REDIRECT | Redirect uri for github oauth |
 
-To build the app and run all tests
+Also the github api credentials should be set for running integration tests. The access token can be found in account settings.
+```
+git/src/test/resources/secured.properties content:
+
+github.username=placeholder
+github.access.token=placeholder
+```
+
+
+To build the app and run all tests.
 
 ```bash
 ./gradlew build
 ```
 
-To run the app
+To run the app.
 
 ```bash
 ./gradlew bootRun
@@ -32,4 +41,6 @@ To run the app
 - Kotlin language
 - Spring Core, Data, Boot, Security
 - H2 embedded database
+- Kohsuke Github Api
 - Spek
+- Kotlin test
