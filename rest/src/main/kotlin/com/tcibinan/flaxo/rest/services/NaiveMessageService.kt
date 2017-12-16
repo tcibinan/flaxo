@@ -5,7 +5,7 @@ import java.util.*
 import kotlin.NoSuchElementException
 
 class NaiveMessageService(
-        val messageSource: MessageSource
+        private val messageSource: MessageSource
 ) : MessageService {
 
     override fun get(code: String, vararg params: String?, locale: Locale): String {

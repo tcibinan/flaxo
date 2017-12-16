@@ -69,6 +69,25 @@ class ModelController @Autowired constructor(
         return responseService.response(COURSE_CREATED, args = *arrayOf(courseName), payload = course)
     }
 
+    @PostMapping("/deleteCourse")
+    @PreAuthorize("hasAuthority('USER')")
+    fun deleteCourse(
+            @RequestParam courseName: String,
+            principal: Principal
+    ): Response {
+        val user = dataService.getUser(principal.name) ?:
+                throw Exception("Could not find user with ${principal.name} nickname")
+
+        val githubToken = user.credentials.githubToken ?:
+                return responseService.response(NO_GITHUB_KEY)
+
+        dataService.deleteCourse(courseName, user)
+
+        gitService.with(githubToken).deleteRepository(courseName)
+
+        return responseService.response(COURSE_DELETED, args = *arrayOf(courseName))
+    }
+
     @GetMapping("/supportedLanguages")
     fun supportedLanguages(): Response =
             responseService.response(SUPPORTED_LANGUAGES, payload = supportedLanguages.flatten())

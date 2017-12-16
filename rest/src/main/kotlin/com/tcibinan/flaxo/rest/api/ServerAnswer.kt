@@ -11,6 +11,7 @@ enum class ServerAnswer(val code: Int, val defaultAnswer: String? = null) {
     COURSES_LIST(2001),
     COURSE_CREATED(2002, "course.success.created"),
     SUPPORTED_LANGUAGES(2003),
+    COURSE_DELETED(2004, "course.success.deleted"),
 
     HELLO_WORLD(1000, "greeting"),
     ECHO(1001)
