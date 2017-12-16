@@ -2,17 +2,17 @@ package com.tcibinan.flaxo.core
 
 import com.tcibinan.flaxo.core.dao.*
 import com.tcibinan.flaxo.core.model.*
-import org.springframework.beans.factory.annotation.Autowired
 
-class BasicDataService(
-        val userRepository: UserRepository,
-        val courseRepository: CourseRepository,
-        val taskRepository: TaskRepository,
-        val studentRepository: StudentRepository
+class BasicDataService(val userRepository: UserRepository,
+                       val courseRepository: CourseRepository,
+                       val taskRepository: TaskRepository,
+                       val studentRepository: StudentRepository,
+                       val studentTaskRepository: StudentTaskRepository
 ) : DataService {
 
     override fun addUser(nickname: String,
-                         password: String): User {
+                         password: String
+    ): User {
         if (userRepository.findByNickname(nickname) != null) {
             throw EntityAlreadyExistsException("User with '${nickname}' nickname already exists")
         }
@@ -24,13 +24,13 @@ class BasicDataService(
     override fun getUser(nickname: String): User? =
             userRepository.findByNickname(nickname)?.toDto()
 
-    override fun createCourse(
-            name: String,
-            language: String,
-            testLanguage: String,
-            testingFramework: String,
-            numberOfTasks: Int,
-            owner: User): Course {
+    override fun createCourse(name: String,
+                              language: String,
+                              testLanguage: String,
+                              testingFramework: String,
+                              numberOfTasks: Int,
+                              owner: User
+    ): Course {
         if (getCourse(name, owner) != null) {
             throw EntityAlreadyExistsException("${name} already exists for ${owner}")
         }
@@ -45,11 +45,21 @@ class BasicDataService(
         for (i in 1..numberOfTasks) {
             taskRepository.save(TaskEntity(task_name = "${name}-$i", course = courseEntity))
         }
-        return getCourse(name, owner) ?: throw Exception("Could not create the course. Check cascade types")
+        return getCourse(name, owner) ?: throw Exception("Could not create the course")
+    }
+
+    override fun deleteCourse(courseName: String,
+                              owner: User
+    ) {
+        val course = getCourse(courseName, owner)
+                ?: throw EntityNotFound("Repository $courseName")
+
+        courseRepository.delete(course.toEntity())
     }
 
     override fun getCourse(name: String,
-                           owner: User): Course? =
+                           owner: User
+    ): Course? =
             courseRepository.findByNameAndUser(name, owner.toEntity())?.toDto()
 
     override fun getCourses(userNickname: String): Set<Course> {
@@ -60,8 +70,21 @@ class BasicDataService(
     }
 
     override fun addStudent(nickname: String,
-                            course: Course): Student =
-            studentRepository.save(StudentEntity(nickname = nickname, course = course.toEntity())).toDto()
+                            course: Course): Student {
+        val student =
+                studentRepository.save(StudentEntity(nickname = nickname, course = course.toEntity())).toDto()
+
+        val tasks = taskRepository.findAllByCourse(course.toEntity())
+
+        tasks.forEach {
+            studentTaskRepository.save(StudentTaskEntity(task = it, student = student.toEntity()))
+        }
+
+        return studentRepository
+                .findById(student.studentId)
+                .map { it.toDto() }
+                .orElseThrow { Exception("Could not create the student") }
+    }
 
     override fun getStudents(course: Course): Set<Student> =
             studentRepository.findByCourse(course.toEntity()).toDtos()

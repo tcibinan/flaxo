@@ -10,8 +10,8 @@ interface File {
 }
 
 class SimpleFile(
-        val name: String,
-        val content: String
+        private val name: String,
+        private val content: String
 ) : File {
     override fun name() = name
     override fun content() = content

@@ -6,6 +6,8 @@ import com.tcibinan.flaxo.core.env.tools.Dependency
 
 class EntityAlreadyExistsException(val entity: String) : Exception(entity + "already exists")
 
+class EntityNotFound(entity: String) : Exception(entity + "hasn't been found")
+
 class UnsupportedDependencyException(dependency: Dependency, buildTool: BuildTool)
     : Exception("${buildTool.name()} couldn't work with ${dependency::class} dependency type")
 

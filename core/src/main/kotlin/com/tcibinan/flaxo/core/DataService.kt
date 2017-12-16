@@ -18,6 +18,9 @@ interface DataService {
                      numberOfTasks: Int,
                      owner: User): Course
 
+    fun deleteCourse(courseName: String,
+                     owner: User)
+
     fun getCourse(name: String,
                   owner: User): Course?
 
