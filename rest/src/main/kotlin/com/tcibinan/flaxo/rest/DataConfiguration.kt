@@ -4,6 +4,7 @@ import com.tcibinan.flaxo.core.BasicDataService
 import com.tcibinan.flaxo.core.DataService
 import com.tcibinan.flaxo.core.dao.CourseRepository
 import com.tcibinan.flaxo.core.dao.StudentRepository
+import com.tcibinan.flaxo.core.dao.StudentTaskRepository
 import com.tcibinan.flaxo.core.dao.TaskRepository
 import com.tcibinan.flaxo.core.dao.UserRepository
 import com.tcibinan.flaxo.rest.security.SecuredDataService
@@ -19,9 +20,10 @@ class DataConfiguration {
             userRepository: UserRepository,
             courseRepository: CourseRepository,
             taskRepository: TaskRepository,
-            studentRepository: StudentRepository
+            studentRepository: StudentRepository,
+            studentTaskRepository: StudentTaskRepository
     ): DataService =
-            BasicDataService(userRepository, courseRepository, taskRepository, studentRepository)
+            BasicDataService(userRepository, courseRepository, taskRepository, studentRepository, studentTaskRepository)
 
     @Bean
     fun dataService(
