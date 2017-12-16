@@ -15,8 +15,8 @@ class GithubInstance(
 
     private val github: KohsukeGit by lazy { KohsukeGit.connectUsingOAuth(credentials) }
 
-    override fun createRepository(repositoryName: String): RepositoryInstance {
-        val repository = github.createRepository(repositoryName).create()
+    override fun createRepository(repositoryName: String, private: Boolean): RepositoryInstance {
+        val repository = github.createRepository(repositoryName).private_(private).create()
         repository.createContent("# $repositoryName", "Initial commit from flaxo with love", "README.md")
 
         return GithubRepositoryInstance(repositoryName, nickname(), this)
