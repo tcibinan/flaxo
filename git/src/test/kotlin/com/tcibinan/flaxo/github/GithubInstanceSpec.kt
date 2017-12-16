@@ -19,7 +19,7 @@ object GithubInstanceSpec : SubjectSpek<GitInstance>({
     val userName = properties.getProperty("github.username")
     val credentials = properties.getProperty("github.access.token")
 
-    val repository = GithubRepository("temp-testing-repository1", userName)
+    val repository = GithubRepository("temp-testing-repository", userName)
     val mainBranch = GithubBranch("main-branch", repository)
     val subbranch = GithubBranch("sub-branch", repository)
     val anotherSubbranch = GithubBranch("another-sub-branch", repository)
@@ -55,10 +55,6 @@ object GithubInstanceSpec : SubjectSpek<GitInstance>({
 
             it("should exist only in that branch") {
                 subject.branches(userName, repository.name())
-                        .filter {
-                            println(it.name())
-                            true
-                        }
                         .flatMap { it.files().toList() }
                         .filter { it.first == fileName }
                         .count() shouldBe 1

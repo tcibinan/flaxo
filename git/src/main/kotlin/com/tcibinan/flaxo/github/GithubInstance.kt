@@ -2,22 +2,24 @@ package com.tcibinan.flaxo.github
 
 import com.tcibinan.flaxo.git.Branch
 import com.tcibinan.flaxo.git.BranchInstance
-import com.tcibinan.flaxo.git.Git
 import com.tcibinan.flaxo.git.GitInstance
 import com.tcibinan.flaxo.git.Repository
 import com.tcibinan.flaxo.git.RepositoryInstance
-import org.kohsuke.github.GHRepository
 import org.kohsuke.github.GitHub as KohsukeGit
 
 class GithubInstance(
         private val credentials: String
-) : GitInstance, Git by Github() {
+) : GitInstance {
 
     private val github: KohsukeGit by lazy { KohsukeGit.connectUsingOAuth(credentials) }
 
     override fun createRepository(repositoryName: String, private: Boolean): RepositoryInstance {
         val repository = github.createRepository(repositoryName).private_(private).create()
-        repository.createContent("# $repositoryName", "Initial commit from flaxo with love", "README.md")
+        repository.createContent(
+                "# $repositoryName",
+                "Initial commit from flaxo with love",
+                "README.md"
+        )
 
         return GithubRepositoryInstance(repositoryName, nickname(), this)
     }
@@ -45,6 +47,9 @@ class GithubInstance(
         repository.loadFile(content, "feat: Add $path", path, branch.name())
     }
 
+    override fun branches(user: String, repository: String): List<Branch> =
+            github.getUser(user).getRepository(repository).branchesList()
+
     private fun nickname() = github.myself.login
 
     private fun repositoryRef(repositoryName: String) = "${nickname()}/$repositoryName"
@@ -54,8 +59,4 @@ class GithubInstance(
     private fun Repository.loadFile(content: String, message: String, path: String, name: String) {
         ghRepository(name()).createContent(content, message, path, name)
     }
-}
-
-private fun GHRepository.createBranch(branchName: String, sourceSha: String) {
-    createRef("refs/heads/$branchName", sourceSha)
 }
