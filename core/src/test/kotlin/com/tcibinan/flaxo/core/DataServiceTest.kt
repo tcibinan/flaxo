@@ -4,6 +4,7 @@ import io.kotlintest.matchers.haveSubstring
 import io.kotlintest.matchers.should
 import io.kotlintest.matchers.shouldBe
 import io.kotlintest.matchers.shouldEqual
+import io.kotlintest.matchers.shouldNotBe
 import io.kotlintest.matchers.shouldThrow
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
@@ -31,6 +32,7 @@ class DataServiceTest : SubjectSpek<DataService>({
 
         on("user addition") {
             subject.addUser(nickname, password)
+
             it("should contain the user") {
                 subject.getUser(nickname)?.credentials?.password shouldBe password
             }
@@ -75,6 +77,7 @@ class DataServiceTest : SubjectSpek<DataService>({
 
         on("addition course with name that already exists for the user") {
             val owner = subject.getUser(nickname)!!
+
             it("should throw an exception") {
                 shouldThrow<EntityAlreadyExistsException> {
                     subject.createCourse(courseName, language, testLanguage, testingFramework, numberOfTasks, owner)
@@ -84,6 +87,7 @@ class DataServiceTest : SubjectSpek<DataService>({
 
         on("addition course with name that already exists for another the user") {
             val anotherUser = subject.addUser(anotherNickname, password)
+
             it("shouldn't throw an exception") {
                 subject.createCourse(courseName, language, testLanguage, testingFramework, numberOfTasks, anotherUser)
             }
@@ -94,9 +98,27 @@ class DataServiceTest : SubjectSpek<DataService>({
             val course = subject.getCourse(courseName, owner)!!
             subject.addStudent(student, course)
             subject.addStudent(anotherStudent, course)
+
             it("should add all the student to the course") {
                 val studentsNames = subject.getStudents(course).map { it.nickname }.toSet()
                 studentsNames shouldEqual setOf(student, anotherStudent)
+            }
+
+            it("should create new entity for each student-task combination") {
+                subject.getStudents(course)
+                        .map { it.studentTasks }
+                        .filter { it.count() == numberOfTasks }
+                        .count() shouldBe 2
+            }
+        }
+
+        on("course deletion") {
+            val owner = subject.getUser(nickname)!!
+            subject.deleteCourse(courseName, owner)
+
+            it("should delete the course") {
+                subject.getCourses(nickname)
+                        .forEach { it.name shouldNotBe courseName }
             }
         }
 
