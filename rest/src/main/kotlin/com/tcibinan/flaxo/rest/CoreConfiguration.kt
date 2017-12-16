@@ -30,16 +30,15 @@ class CoreConfiguration {
     )
 
     @Bean
-    fun defaultBuildTools() = mapOf<Language, () -> BuildTool>(
-            JavaLang to { GradleBuildTool() },
-            KotlinLang to { GradleBuildTool() }
+    fun defaultBuildTools() = mapOf<Language, BuildTool>(
+            JavaLang to GradleBuildTool(),
+            KotlinLang to GradleBuildTool()
     )
 
     @Bean
-    fun repositoryEnvironmentService(
-            supportedLanguages: Map<String, Language>,
-            supportedTestingFrameworks: Map<String, TestingFramework>,
-            defaultBuildTools: Map<Language, () -> BuildTool>
+    fun repositoryEnvironmentService(supportedLanguages: Map<String, Language>,
+                                     supportedTestingFrameworks: Map<String, TestingFramework>,
+                                     defaultBuildTools: Map<Language, BuildTool>
     ): RepositoryEnvironmentService =
             SimpleRepositoryEnvironmentService(
                     supportedLanguages,
@@ -48,7 +47,7 @@ class CoreConfiguration {
             )
 }
 
-private fun <TYPE: NamedEntity> namedMap(vararg languages: TYPE): Map<String, TYPE> =
+private fun <TYPE : NamedEntity> namedMap(vararg languages: TYPE): Map<String, TYPE> =
         languages.groupBy { it.name() }
                 .map { (name, entities) -> name to entities[0] }
                 .toMap()
