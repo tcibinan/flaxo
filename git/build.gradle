@@ -3,5 +3,5 @@ plugins {
 }
 
 dependencies {
-    compile 'org.kohsuke:github-api:1.90'
+    compile "org.kohsuke:github-api:$kohsuke_github_version"
 }

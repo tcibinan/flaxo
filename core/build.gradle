@@ -4,10 +4,10 @@ plugins {
 }
 
 dependencies {
-    compile "org.springframework.data:spring-data-jpa:2.0.2.RELEASE"
-    compile "org.hibernate:hibernate-core:5.2.12.Final"
-    compile "com.fasterxml.jackson.core:jackson-annotations:2.9.2"
+    compile "org.springframework.data:spring-data-jpa:$spring_data_version"
+    compile "org.hibernate:hibernate-core:$hibernate_version"
+    compile "com.fasterxml.jackson.core:jackson-annotations:$jackson_version"
 
-    testCompile "org.springframework.boot:spring-boot-autoconfigure:1.5.8.RELEASE"
-    testCompile "com.h2database:h2:1.4.196"
+    testCompile "org.springframework.boot:spring-boot-autoconfigure:$spring_autoconfigure_version"
+    testCompile "com.h2database:h2:$h2_version"
 }
