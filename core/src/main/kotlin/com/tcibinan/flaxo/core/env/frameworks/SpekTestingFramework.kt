@@ -1,11 +1,11 @@
 package com.tcibinan.flaxo.core.env.frameworks
 
 import com.tcibinan.flaxo.core.env.tools.BuildTool
-import com.tcibinan.flaxo.core.env.tools.junitPlatformPlugin
-import com.tcibinan.flaxo.core.env.tools.spekApi
-import com.tcibinan.flaxo.core.env.tools.spekDataDriven
-import com.tcibinan.flaxo.core.env.tools.spekJunitRunner
-import com.tcibinan.flaxo.core.env.tools.spekSubject
+import com.tcibinan.flaxo.core.env.tools.gradle.junitPlatformPlugin
+import com.tcibinan.flaxo.core.env.tools.gradle.spekApi
+import com.tcibinan.flaxo.core.env.tools.gradle.spekDataDriven
+import com.tcibinan.flaxo.core.env.tools.gradle.spekJunitRunner
+import com.tcibinan.flaxo.core.env.tools.gradle.spekSubject
 
 object SpekTestingFramework : TestingFramework("spek") {
     override fun test(buildTool: BuildTool) {

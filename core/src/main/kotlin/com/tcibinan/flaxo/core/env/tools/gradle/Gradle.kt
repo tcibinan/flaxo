@@ -1,10 +1,13 @@
-package com.tcibinan.flaxo.core.env.tools
+package com.tcibinan.flaxo.core.env.tools.gradle
 
 import com.tcibinan.flaxo.core.UnsupportedDependencyException
 import com.tcibinan.flaxo.core.UnsupportedPluginException
 import com.tcibinan.flaxo.core.env.Environment
 import com.tcibinan.flaxo.core.env.File
 import com.tcibinan.flaxo.core.env.SimpleFile
+import com.tcibinan.flaxo.core.env.tools.BuildTool
+import com.tcibinan.flaxo.core.env.tools.BuildToolPlugin
+import com.tcibinan.flaxo.core.env.tools.Dependency
 import java.util.*
 
 class GradleBuildTool : BuildTool {
@@ -61,38 +64,10 @@ class GradleBuildTool : BuildTool {
     }
 }
 
-data class GradlePlugin(
-        val id: String,
-        val version: String? = null,
-        val dependencies: Set<GradleDependency> = emptySet()
-) : BuildToolPlugin {
-
-    override fun name() = id
-}
-
-data class GradleDependency(
-        val group: String,
-        val name: String,
-        val version: String,
-        val repositories: Set<GradleRepository> = emptySet(),
-        private val test: Boolean = false
-) : Dependency {
-
-    override fun name() = "$group:$name:$version"
-    fun isTesting() = test
-}
-
-data class GradleRepository(
-        val address: String
-)
-
 private fun StringJoiner.addDependencies(dependencies: MutableCollection<GradleDependency>): StringJoiner {
     if (dependencies.count() > 0) {
         add("dependencies {")
-        dependencies.forEach {
-            val dependencyString = """${it.group}:${it.name}:${it.version}"""
-            add("""    ${if (it.isTesting()) "testCompile" else "compile"} "$dependencyString" """)
-        }
+        dependencies.forEach { add("""    $it""") }
         add("}")
     }
     return this
