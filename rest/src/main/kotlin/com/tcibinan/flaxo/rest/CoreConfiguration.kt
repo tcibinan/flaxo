@@ -30,15 +30,15 @@ class CoreConfiguration {
     )
 
     @Bean
-    fun defaultBuildTools() = mapOf<Language, BuildTool>(
-            JavaLang to GradleBuildTool(),
-            KotlinLang to GradleBuildTool()
+    fun defaultBuildTools() = mapOf<Language, () -> BuildTool>(
+            JavaLang to { GradleBuildTool() },
+            KotlinLang to { GradleBuildTool() }
     )
 
     @Bean
     fun repositoryEnvironmentService(supportedLanguages: Map<String, Language>,
                                      supportedTestingFrameworks: Map<String, TestingFramework>,
-                                     defaultBuildTools: Map<Language, BuildTool>
+                                     defaultBuildTools: Map<Language, () -> BuildTool>
     ): RepositoryEnvironmentService =
             SimpleRepositoryEnvironmentService(
                     supportedLanguages,

@@ -13,7 +13,7 @@ import com.tcibinan.flaxo.rest.UnsupportedTestingFramework
 class SimpleRepositoryEnvironmentService(
         val languages: Map<String, Language>,
         val testingFrameworks: Map<String, TestingFramework>,
-        val defaultBuildTools: Map<Language, BuildTool>
+        val defaultBuildTools: Map<Language, () -> BuildTool>
 ) : RepositoryEnvironmentService {
 
     override fun produceEnvironment(languageName: String,
@@ -30,8 +30,10 @@ class SimpleRepositoryEnvironmentService(
         testingLanguage.shouldSuited(language)
         testingFramework.shouldSuited(testingLanguage)
 
-        val buildTool = defaultBuildTools[language]
+        val buildToolProducer = defaultBuildTools[language]
                 ?: throw NoDefaultBuildTool(language)
+
+        val buildTool = buildToolProducer.invoke()
 
         language.main(buildTool)
         testingLanguage.test(buildTool)

@@ -35,12 +35,14 @@ class BasicDataService(val userRepository: UserRepository,
             throw EntityAlreadyExistsException("${name} already exists for ${owner}")
         }
         val courseEntity = courseRepository
-                .save(CourseEntity(
-                        name = name,
-                        language = language,
-                        test_language = testLanguage,
-                        testing_framework = testingFramework,
-                        user = owner.toEntity())
+                .save(
+                        CourseEntity(
+                                name = name,
+                                language = language,
+                                test_language = testLanguage,
+                                testing_framework = testingFramework,
+                                user = owner.toEntity()
+                        )
                 )
         for (i in 1..numberOfTasks) {
             taskRepository.save(TaskEntity(task_name = "${name}-$i", course = courseEntity))
