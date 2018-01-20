@@ -13,8 +13,9 @@ import java.util.*
 
 object GithubInstanceSpec : SubjectSpek<GitInstance>({
 
-    val properties = Properties()
-    properties.load(GithubInstanceSpec.javaClass.classLoader.getResourceAsStream("secured.properties"))
+    val properties = Properties().apply {
+        load(GithubInstanceSpec.javaClass.classLoader.getResourceAsStream("secured.properties"))
+    }
 
     val userName = properties.getProperty("github.username")
     val credentials = properties.getProperty("github.access.token")
@@ -25,7 +26,7 @@ object GithubInstanceSpec : SubjectSpek<GitInstance>({
     val anotherSubbranch = GithubBranch("another-sub-branch", repository)
     val fileName = "file-name"
 
-    subject { GithubInstance(credentials) }
+    subject { GithubInstance(credentials, "http://example.com") }
 
     afterGroup {
         subject.deleteRepository(repository.name())
