@@ -1,4 +1,4 @@
-package com.tcibinan.flaxo.core.model
+package com.tcibinan.flaxo.core.entity
 
 interface ConvertibleEntity<DTO> {
     fun toDto(): DTO

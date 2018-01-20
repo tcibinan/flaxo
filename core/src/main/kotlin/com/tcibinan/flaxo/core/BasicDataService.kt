@@ -1,6 +1,13 @@
 package com.tcibinan.flaxo.core
 
 import com.tcibinan.flaxo.core.dao.*
+import com.tcibinan.flaxo.core.entity.CourseEntity
+import com.tcibinan.flaxo.core.entity.CredentialsEntity
+import com.tcibinan.flaxo.core.entity.StudentEntity
+import com.tcibinan.flaxo.core.entity.StudentTaskEntity
+import com.tcibinan.flaxo.core.entity.TaskEntity
+import com.tcibinan.flaxo.core.entity.UserEntity
+import com.tcibinan.flaxo.core.entity.toDtos
 import com.tcibinan.flaxo.core.model.*
 
 class BasicDataService(val userRepository: UserRepository,
@@ -41,6 +48,7 @@ class BasicDataService(val userRepository: UserRepository,
                                 language = language,
                                 test_language = testLanguage,
                                 testing_framework = testingFramework,
+                                status = CourseStatus.INIT,
                                 user = owner.toEntity()
                         )
                 )
