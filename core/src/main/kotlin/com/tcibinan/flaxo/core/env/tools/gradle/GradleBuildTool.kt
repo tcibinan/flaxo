@@ -62,58 +62,59 @@ class GradleBuildTool : BuildTool {
 
         }
     }
-}
 
-private fun StringJoiner.addDependencies(dependencies: MutableCollection<GradleDependency>): StringJoiner {
-    if (dependencies.count() > 0) {
-        add("dependencies {")
-        dependencies.forEach { add("""    $it""") }
+    private fun StringJoiner.addDependencies(dependencies: MutableCollection<GradleDependency>): StringJoiner {
+        if (dependencies.count() > 0) {
+            add("dependencies {")
+            dependencies.forEach { add("""    $it""") }
+            add("}")
+        }
+        return this
+    }
+
+    private fun StringJoiner.addIndependentPlugins(plugins: MutableCollection<GradlePlugin>): StringJoiner {
+        if (plugins.count() > 0) {
+            add("plugins {")
+            plugins.forEach { add("""    id "${it.id}"""") }
+            add("}")
+        }
+        return this
+    }
+
+    private fun StringJoiner.addRepositories(repositories: MutableCollection<GradleRepository>): StringJoiner {
+        add("repositories {")
+        repositories.forEach { add("""    ${it.address}""") }
         add("}")
+        return this
     }
-    return this
-}
 
-private fun StringJoiner.addIndependentPlugins(plugins: MutableCollection<GradlePlugin>): StringJoiner {
-    if (plugins.count() > 0) {
-        add("plugins {")
-        plugins.forEach { add("""    id "${it.id}"""") }
+    private fun StringJoiner.addBuildScript(
+            pluginsRepositories: MutableCollection<GradleRepository>,
+            pluginsDependencies: MutableCollection<GradleDependency>,
+            plugins: MutableCollection<GradlePlugin>
+    ) {
+        add("buildscript {")
+        addRepositories(pluginsRepositories)
+        addDependencies(pluginsDependencies)
         add("}")
+        addPluginApplyings(plugins)
     }
-    return this
-}
 
-private fun StringJoiner.addRepositories(repositories: MutableCollection<GradleRepository>): StringJoiner {
-    add("repositories {")
-    repositories.forEach { add("""    ${it.address}""") }
-    add("}")
-    return this
-}
-
-private fun StringJoiner.addBuildScript(
-        pluginsRepositories: MutableCollection<GradleRepository>,
-        pluginsDependencies: MutableCollection<GradleDependency>,
-        plugins: MutableCollection<GradlePlugin>
-) {
-    add("buildscript {")
-    addRepositories(pluginsRepositories)
-    addDependencies(pluginsDependencies)
-    add("}")
-    addPluginApplyings(plugins)
-}
-
-private fun StringJoiner.addPluginApplyings(plugins: MutableCollection<GradlePlugin>) {
-    plugins.forEach { add("""apply plugin: "${it.id}"""") }
-}
-
-private fun StringJoiner.addPlugins(
-        pluginsRepositories: MutableCollection<GradleRepository>,
-        pluginsDependencies: MutableCollection<GradleDependency>,
-        plugins: MutableCollection<GradlePlugin>
-): StringJoiner {
-    if (pluginsDependencies.count() > 0) {
-        addBuildScript(pluginsRepositories, pluginsDependencies, plugins)
-    } else {
-        addIndependentPlugins(plugins)
+    private fun StringJoiner.addPluginApplyings(plugins: MutableCollection<GradlePlugin>) {
+        plugins.forEach { add("""apply plugin: "${it.id}"""") }
     }
-    return this
+
+    private fun StringJoiner.addPlugins(
+            pluginsRepositories: MutableCollection<GradleRepository>,
+            pluginsDependencies: MutableCollection<GradleDependency>,
+            plugins: MutableCollection<GradlePlugin>
+    ): StringJoiner {
+        if (pluginsDependencies.count() > 0) {
+            addBuildScript(pluginsRepositories, pluginsDependencies, plugins)
+        } else {
+            addIndependentPlugins(plugins)
+        }
+        return this
+    }
+
 }

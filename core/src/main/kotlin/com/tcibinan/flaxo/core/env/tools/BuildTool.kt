@@ -14,6 +14,3 @@ interface BuildTool : NamedEntity {
 
     fun buildEnvironment(): Environment
 }
-
-interface BuildToolPlugin : NamedEntity
-interface Dependency : NamedEntity
