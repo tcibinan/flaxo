@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 @Configuration
 @EnableWebSecurity
 class SecurityConfiguration {
+
     @Bean
     fun userDetailsService(dataService: DataService): UserDetailsService =
             UserDetailsServiceImpl(dataService)

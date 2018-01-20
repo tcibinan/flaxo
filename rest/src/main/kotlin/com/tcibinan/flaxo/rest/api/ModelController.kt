@@ -109,20 +109,20 @@ class ModelController @Autowired constructor(
     @GetMapping("/supportedLanguages")
     fun supportedLanguages(): Response =
             responseService.response(SUPPORTED_LANGUAGES, payload = supportedLanguages.flatten())
+
+    private fun Collection<StudentTask>.reports(): List<Any> =
+            map {
+                object {
+                    val totalPoints = it.points
+                }
+            }
+
+    private fun Map<String, Language>.flatten(): List<Any> =
+            map { (name, language) ->
+                object {
+                    val name = name
+                    val compatibleTestingLanguages = language.compatibleTestingLanguages().map { it.name() }
+                    val compatibleTestingFrameworks = language.compatibleTestingFrameworks().map { it.name() }
+                }
+            }
 }
-
-private fun Collection<StudentTask>.reports(): List<Any> =
-        map {
-            object {
-                val totalPoints = it.points
-            }
-        }
-
-private fun Map<String, Language>.flatten(): List<Any> =
-        map { (name, language) ->
-            object {
-                val name = name
-                val compatibleTestingLanguages = language.compatibleTestingLanguages().map { it.name() }
-                val compatibleTestingFrameworks = language.compatibleTestingFrameworks().map { it.name() }
-            }
-        }

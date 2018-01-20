@@ -45,9 +45,10 @@ class CoreConfiguration {
                     supportedTestingFrameworks,
                     defaultBuildTools
             )
+
+    private fun <TYPE : NamedEntity> namedMap(vararg namedEntity: TYPE): Map<String, TYPE> =
+            namedEntity.groupBy { it.name() }
+                    .map { (name, entities) -> name to entities.first() }
+                    .toMap()
 }
 
-private fun <TYPE : NamedEntity> namedMap(vararg languages: TYPE): Map<String, TYPE> =
-        languages.groupBy { it.name() }
-                .map { (name, entities) -> name to entities[0] }
-                .toMap()

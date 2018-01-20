@@ -14,4 +14,3 @@ interface ResponseService {
     fun redirect(path: String, model: ModelMap): ModelAndView
 }
 
-interface Response

@@ -24,9 +24,10 @@ class SimpleResponseService(
 
     override fun redirect(path: String, model: ModelMap) =
             ModelAndView("redirect:/${path}", model)
+
+    data class ResponseWithMessageAndPayload(val code: Int, val message: String, val payload: Any) : Response
+    data class ResponseWithPayload(val code: Int, val payload: Any) : Response
+    data class ResponseWithMessage(val code: Int, val message: String) : Response
+    data class ResponseWithCode(val code: Int) : Response
 }
 
-data class ResponseWithMessageAndPayload(val code: Int, val message: String, val payload: Any) : Response
-data class ResponseWithPayload(val code: Int, val payload: Any) : Response
-data class ResponseWithMessage(val code: Int, val message: String) : Response
-data class ResponseWithCode(val code: Int) : Response

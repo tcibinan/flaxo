@@ -28,8 +28,7 @@ class Application {
     @Bean
     fun responseService(messageService: MessageService): ResponseService = SimpleResponseService(messageService)
 
-}
-
-fun main(args: Array<String>) {
-    SpringApplication.run(Application::class.java, *args)
+    fun main(args: Array<String>) {
+        SpringApplication.run(Application::class.java, *args)
+    }
 }

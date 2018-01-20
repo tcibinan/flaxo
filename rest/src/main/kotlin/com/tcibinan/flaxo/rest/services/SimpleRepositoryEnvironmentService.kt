@@ -40,16 +40,16 @@ class SimpleRepositoryEnvironmentService(
         return buildTool.buildEnvironment()
     }
 
-}
-
-private fun TestingFramework.shouldSuited(testingLanguage: Language) {
-    if (!testingLanguage.worksWith(this)) {
-        throw IncompatibleTestingFramework(this, testingLanguage)
+    private fun TestingFramework.shouldSuited(testingLanguage: Language) {
+        if (!testingLanguage.worksWith(this)) {
+            throw IncompatibleTestingFramework(this, testingLanguage)
+        }
     }
-}
 
-private fun Language.shouldSuited(language: Language) {
-    if (!language.canBeTestedBy(this)) {
-        throw IncompatibleLanguage(language, this)
+    private fun Language.shouldSuited(language: Language) {
+        if (!language.canBeTestedBy(this)) {
+            throw IncompatibleLanguage(language, this)
+        }
     }
+
 }
