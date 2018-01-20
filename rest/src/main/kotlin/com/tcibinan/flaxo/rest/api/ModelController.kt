@@ -23,11 +23,11 @@ import java.security.Principal
 @RestController
 @RequestMapping("/rest")
 class ModelController @Autowired constructor(
-        val dataService: DataService,
-        val responseService: ResponseService,
-        val environmentService: RepositoryEnvironmentService,
-        val gitService: GitService,
-        val supportedLanguages: Map<String, Language>
+        private val dataService: DataService,
+        private val responseService: ResponseService,
+        private val environmentService: RepositoryEnvironmentService,
+        private val gitService: GitService,
+        private val supportedLanguages: Map<String, Language>
 ) {
 
     @PostMapping("/register")
@@ -59,12 +59,24 @@ class ModelController @Autowired constructor(
         val githubToken = user.credentials.githubToken ?:
                 return responseService.response(NO_GITHUB_KEY)
 
-        val course = dataService.createCourse(courseName, language, testLanguage, testingFramework, numberOfTasks, user)
+        val course = dataService.createCourse(
+                courseName,
+                language,
+                testLanguage,
+                testingFramework,
+                numberOfTasks,
+                user
+        )
 
-        val environment = environmentService.produceEnvironment(language, testLanguage, testingFramework)
+        val environment = environmentService.produceEnvironment(
+                language,
+                testLanguage,
+                testingFramework
+        )
 
         gitService.with(githubToken)
                 .createCourse(courseName, environment, numberOfTasks)
+                .addWebHook(courseName)
 
         return responseService.response(COURSE_CREATED, courseName, payload = course)
     }

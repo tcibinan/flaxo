@@ -8,11 +8,12 @@ fun GitInstance.createCourse(
         courseName: String,
         environment: Environment,
         numberOfTasks: Int
-) {
+) : GitInstance {
     createRepository(courseName)
             .createBranch("prerequisites")
             .fillWith(environment)
             .createSubBranches(numberOfTasks, "task-")
+    return this
 }
 
 fun BranchInstance.fillWith(environment: Environment): BranchInstance {
