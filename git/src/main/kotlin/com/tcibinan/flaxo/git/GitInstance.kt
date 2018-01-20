@@ -6,4 +6,5 @@ interface GitInstance : Git {
     fun load(repository: Repository, branch: Branch, path: String, content: String)
     fun createSubBranch(repository: Repository, branch: Branch, subBranchName: String)
     fun deleteRepository(repositoryName: String)
+    fun addWebHook(repositoryName: String)
 }

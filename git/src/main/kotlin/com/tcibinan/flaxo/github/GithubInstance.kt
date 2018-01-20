@@ -5,11 +5,16 @@ import com.tcibinan.flaxo.git.BranchInstance
 import com.tcibinan.flaxo.git.GitInstance
 import com.tcibinan.flaxo.git.Repository
 import com.tcibinan.flaxo.git.RepositoryInstance
+import org.kohsuke.github.GHEvent
+import java.net.URL
 import org.kohsuke.github.GitHub as KohsukeGit
 
 class GithubInstance(
-        private val credentials: String
+        private val credentials: String,
+        rawWebHookUrl: String
 ) : GitInstance {
+
+    private val webHookUrl : URL = URL(rawWebHookUrl)
 
     private val github: KohsukeGit by lazy { KohsukeGit.connectUsingOAuth(credentials) }
 
@@ -49,6 +54,11 @@ class GithubInstance(
 
     override fun branches(user: String, repository: String): List<Branch> =
             github.getUser(user).getRepository(repository).branchesList()
+
+    override fun addWebHook(repositoryName: String) {
+        ghRepository(repositoryName)
+                .createWebHook(webHookUrl, listOf(GHEvent.PULL_REQUEST))
+    }
 
     private fun nickname() = github.myself.login
 
