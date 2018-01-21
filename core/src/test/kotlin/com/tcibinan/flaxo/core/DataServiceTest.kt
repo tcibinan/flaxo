@@ -1,5 +1,6 @@
 package com.tcibinan.flaxo.core
 
+import com.tcibinan.flaxo.core.model.CourseStatus
 import io.kotlintest.matchers.haveSubstring
 import io.kotlintest.matchers.should
 import io.kotlintest.matchers.shouldBe
@@ -73,6 +74,10 @@ class DataServiceTest : SubjectSpek<DataService>({
                             taskName should haveSubstring(taskIndex)
                         }
             }
+
+            it("should have default status") {
+                course.status shouldBe CourseStatus.INIT
+            }
         }
 
         on("addition course with name that already exists for the user") {
@@ -109,6 +114,18 @@ class DataServiceTest : SubjectSpek<DataService>({
                         .map { it.studentTasks }
                         .filter { it.count() == numberOfTasks }
                         .count() shouldBe 2
+            }
+        }
+
+        on("changing course status") {
+            val owner = subject.getUser(nickname)!!
+            val course = subject.getCourse(courseName, owner)!!
+            val updatedCourse = course.copy(status = CourseStatus.RUNNING)
+            subject.updateCourse(updatedCourse)
+
+            it("should change it") {
+                subject.getCourse(courseName, owner)!!
+                        .status shouldBe CourseStatus.RUNNING
             }
         }
 

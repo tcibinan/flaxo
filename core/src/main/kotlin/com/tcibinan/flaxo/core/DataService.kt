@@ -21,6 +21,8 @@ interface DataService {
     fun deleteCourse(courseName: String,
                      owner: User)
 
+    fun updateCourse(updatedCourse: Course)
+
     fun getCourse(name: String,
                   owner: User): Course?
 

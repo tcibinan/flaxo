@@ -67,6 +67,10 @@ class BasicDataService(val userRepository: UserRepository,
         courseRepository.delete(course.toEntity())
     }
 
+    override fun updateCourse(updatedCourse: Course) {
+        courseRepository.save(updatedCourse.toEntity())
+    }
+
     override fun getCourse(name: String,
                            owner: User
     ): Course? =
