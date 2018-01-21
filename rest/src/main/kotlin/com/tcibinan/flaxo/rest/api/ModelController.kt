@@ -3,6 +3,7 @@ package com.tcibinan.flaxo.rest.api
 import com.tcibinan.flaxo.core.DataService
 import com.tcibinan.flaxo.core.EntityAlreadyExistsException
 import com.tcibinan.flaxo.core.env.languages.Language
+import com.tcibinan.flaxo.core.model.CourseStatus
 import com.tcibinan.flaxo.core.model.StudentTask
 import com.tcibinan.flaxo.rest.api.ServerAnswer.*
 import com.tcibinan.flaxo.rest.services.GitService
@@ -97,6 +98,22 @@ class ModelController @Autowired constructor(
         gitService.with(githubToken).deleteRepository(courseName)
 
         return responseService.response(COURSE_DELETED, courseName)
+    }
+
+    @PostMapping("/composeCourse")
+    @PreAuthorize("hasAuhority('USER')")
+    fun composeCourse(@RequestParam courseName: String,
+                      principal: Principal
+    ) : Response {
+        val user = dataService.getUser(principal.name) ?:
+                return responseService.response(USER_NOT_FOUND, principal.name)
+
+        val course = dataService.getCourse(courseName, user) ?:
+                return responseService.response(COURSE_NOT_FOUND, principal.name, courseName)
+
+        dataService.updateCourse(course.copy(status = CourseStatus.RUNNING))
+
+        return responseService.response(COURSE_COMPOSED, courseName)
     }
 
     @GetMapping("/{owner}/{course}/statistics")
