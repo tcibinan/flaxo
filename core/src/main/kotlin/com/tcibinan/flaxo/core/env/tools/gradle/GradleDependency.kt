@@ -10,5 +10,5 @@ data class GradleDependency(
         val type: GradleDependencyType = GradleDependencyType.COMPILE
 ) : Dependency {
     override fun name() = "$group:$id:$version"
-    override fun toString() = "$type ${name()}"
+    override fun toString() = "$type \"${name()}\""
 }

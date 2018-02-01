@@ -14,7 +14,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 object RepositoryEnvironmentServiceSpec: SubjectSpek<RepositoryEnvironmentService>({
     val firstLanguage = "java"
     val secondLanguage = "kotlin"
-    val firstTestingFramework = "junit4"
+    val firstTestingFramework = "junit"
     val secondTestingFramework = "spek"
 
     val context = AnnotationConfigApplicationContext(CoreConfiguration::class.java)

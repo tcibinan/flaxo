@@ -1,7 +1,7 @@
 package com.tcibinan.flaxo.rest
 
 import com.tcibinan.flaxo.core.env.NamedEntity
-import com.tcibinan.flaxo.core.env.frameworks.JUnit4TestingFramework
+import com.tcibinan.flaxo.core.env.frameworks.JUnitTestingFramework
 import com.tcibinan.flaxo.core.env.frameworks.SpekTestingFramework
 import com.tcibinan.flaxo.core.env.frameworks.TestingFramework
 import com.tcibinan.flaxo.core.env.languages.JavaLang
@@ -25,7 +25,7 @@ class CoreConfiguration {
 
     @Bean
     fun supportedTestingFrameworks() = namedMap(
-            JUnit4TestingFramework,
+            JUnitTestingFramework,
             SpekTestingFramework
     )
 

@@ -3,8 +3,14 @@ package com.tcibinan.flaxo.core.env.tools.gradle
 import com.tcibinan.flaxo.core.env.tools.gradle.GradleDependencyType.*
 
 private val spekVersion = "1.1.5"
-private val junitVersion = "1.0.2"
+private val junitVersion = "1.0.3"
 private val kotlinVersion = "1.2.0"
+private val jupiterVersion = "5.0.3"
+
+//repositories
+
+fun mavenCentral() = GradleRepository("mavenCentral()")
+fun jcenter() = GradleRepository("jcenter()")
 
 //plugins
 
@@ -14,30 +20,92 @@ fun junitPlatformPlugin() =
         GradlePlugin(
                 "org.junit.platform.gradle.plugin",
                 junitVersion,
-                setOf(GradleDependency("org.junit.platform", "junit-platform-gradle-plugin", junitVersion))
+                setOf(junitPlatformPluginDependency())
         )
 
 fun kotlinGradlePlugin() =
-        GradlePlugin("kotlin", kotlinVersion,
-                setOf(GradleDependency("org.jetbrains.kotlin", "kotlin-gradle-plugin", kotlinVersion))
+        GradlePlugin(
+                "kotlin",
+                kotlinVersion,
+                setOf(kotlinGradlePluginDependency())
         )
 
 //dependencies
 
-fun kotlinTest() =
-        GradleDependency("org.jetbrains.kotlin", "kotlin-test", kotlinVersion, type = COMPILE_TEST)
+fun kotlinTestDependency() =
+        GradleDependency(
+                "org.jetbrains.kotlin",
+                "kotlin-test",
+                kotlinVersion,
+                type = TEST_COMPILE
+        )
 
 fun kotlinJreDependency(type: GradleDependencyType = COMPILE) =
-        GradleDependency("org.jetbrains.kotlin", "kotlin-stdlib-jre8", kotlinVersion, type = type)
+        GradleDependency(
+                "org.jetbrains.kotlin",
+                "kotlin-stdlib-jre8",
+                kotlinVersion,
+                type = type
+        )
 
-fun spekJunitRunner() =
-        GradleDependency("org.jetbrains.spek", "spek-junit-platform-engine", spekVersion, type = COMPILE_TEST)
+fun spekJunitRunnerDependency() =
+        GradleDependency(
+                "org.jetbrains.spek",
+                "spek-junit-platform-engine",
+                spekVersion,
+                type = TEST_COMPILE
+        )
 
-fun spekSubject() =
-        GradleDependency("org.jetbrains.spek", "spek-subject-extension", spekVersion, type = COMPILE_TEST)
+fun spekSubjectDependency() =
+        GradleDependency(
+                "org.jetbrains.spek",
+                "spek-subject-extension",
+                spekVersion,
+                type = TEST_COMPILE
+        )
 
-fun spekDataDriven() =
-        GradleDependency("org.jetbrains.spek", "spek-data-driven-extension", spekVersion, type = COMPILE_TEST)
+fun spekDataDrivenDependency() =
+        GradleDependency(
+                "org.jetbrains.spek",
+                "spek-data-driven-extension",
+                spekVersion,
+                type = TEST_COMPILE
+        )
 
-fun spekApi() =
-        GradleDependency("org.jetbrains.spek", "spek-api", spekVersion, type = COMPILE_TEST)
+fun spekApiDependency() =
+        GradleDependency(
+                "org.jetbrains.spek",
+                "spek-api",
+                spekVersion,
+                type = TEST_COMPILE
+        )
+
+fun junitPlatformPluginDependency() =
+        GradleDependency(
+                "org.junit.platform",
+                "junit-platform-gradle-plugin",
+                junitVersion,
+                type = CLASSPATH
+        )
+fun kotlinGradlePluginDependency() =
+        GradleDependency(
+                "org.jetbrains.kotlin",
+                "kotlin-gradle-plugin",
+                kotlinVersion
+        )
+
+fun jupiterApiDependency() =
+        GradleDependency(
+                "org.junit.jupiter",
+                "junit-jupiter-api",
+                jupiterVersion,
+                type = TEST_COMPILE
+        )
+
+fun jupiterEngineDependency() =
+        GradleDependency(
+                "org.junit.jupiter",
+                "junit-jupiter-engine",
+                jupiterVersion,
+                type = TEST_RUNTIME
+        )

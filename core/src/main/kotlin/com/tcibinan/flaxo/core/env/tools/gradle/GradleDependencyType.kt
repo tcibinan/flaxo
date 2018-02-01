@@ -1,10 +1,12 @@
 package com.tcibinan.flaxo.core.env.tools.gradle
 
 enum class GradleDependencyType(
-        val type: String
+        private val type: String
 ) {
     COMPILE("compile"),
-    COMPILE_TEST("compileTest"),
+    TEST_COMPILE("testCompile"),
+    TEST_RUNTIME("testRuntime"),
+    CLASSPATH("classpath"),
     COMPILE_KOTLIN("compileKotlin");
 
     override fun toString() = type

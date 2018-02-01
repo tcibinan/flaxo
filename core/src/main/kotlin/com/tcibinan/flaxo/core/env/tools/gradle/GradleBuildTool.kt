@@ -15,12 +15,8 @@ class GradleBuildTool : BuildTool {
     private val dependencies = mutableSetOf<GradleDependency>()
     private val plugins = mutableSetOf<GradlePlugin>()
     private val pluginsDependencies = mutableSetOf<GradleDependency>()
-    private val pluginsRepositories = mutableSetOf<GradleRepository>()
-    private val repositories = mutableSetOf(
-            GradleRepository("maven()"),
-            GradleRepository("mavenCentral()"),
-            GradleRepository("jcenter()")
-    )
+    private val pluginsRepositories = mutableSetOf(mavenCentral(), jcenter())
+    private val repositories = mutableSetOf(mavenCentral(), jcenter())
 
     override fun name() = "gradle"
 
