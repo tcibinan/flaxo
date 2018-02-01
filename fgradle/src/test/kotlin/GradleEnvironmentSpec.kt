@@ -1,5 +1,3 @@
-package com.tcibinan.flaxo.core.env
-
 import com.tcibinan.flaxo.core.env.frameworks.JUnitTestingFramework
 import com.tcibinan.flaxo.core.env.languages.JavaLang
 import com.tcibinan.flaxo.core.env.tools.BuildTool
@@ -21,11 +19,11 @@ object GradleEnvironmentSpec : SubjectSpek<BuildTool>({
     describe("gradle environment") {
 
         on("building environment ($language.$language.$framework)") {
-            language.main(subject)
-            language.test(subject)
-            framework.test(subject)
-
-            val environment = subject.buildEnvironment()
+            val environment =
+                    subject.withLanguage(language)
+                            .withTestingsLanguage(language)
+                            .withTestingFramework(framework)
+                            .buildEnvironment()
 
             val buildFile = environment.getFiles()
                     .find { it.name() == buildFileName }

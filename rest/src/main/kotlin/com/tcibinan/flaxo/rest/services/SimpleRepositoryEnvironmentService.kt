@@ -35,11 +35,11 @@ class SimpleRepositoryEnvironmentService(
 
         val buildTool = buildToolProducer.invoke()
 
-        language.main(buildTool)
-        testingLanguage.test(buildTool)
-        testingFramework.test(buildTool)
-
-        return buildTool.buildEnvironment()
+        return buildTool
+                .withLanguage(language)
+                .withTestingsLanguage(testingLanguage)
+                .withTestingFramework(testingFramework)
+                .buildEnvironment()
     }
 
     private fun TestingFramework.shouldSuited(testingLanguage: Language) {

@@ -5,6 +5,12 @@ import com.tcibinan.flaxo.core.UnsupportedPluginException
 import com.tcibinan.flaxo.core.env.Environment
 import com.tcibinan.flaxo.core.env.File
 import com.tcibinan.flaxo.core.env.SimpleFile
+import com.tcibinan.flaxo.core.env.frameworks.JUnitTestingFramework
+import com.tcibinan.flaxo.core.env.frameworks.SpekTestingFramework
+import com.tcibinan.flaxo.core.env.frameworks.TestingFramework
+import com.tcibinan.flaxo.core.env.languages.JavaLang
+import com.tcibinan.flaxo.core.env.languages.KotlinLang
+import com.tcibinan.flaxo.core.env.languages.Language
 import com.tcibinan.flaxo.core.env.tools.BuildTool
 import com.tcibinan.flaxo.core.env.tools.BuildToolPlugin
 import com.tcibinan.flaxo.core.env.tools.Dependency
@@ -19,6 +25,47 @@ class GradleBuildTool : BuildTool {
     private val repositories = mutableSetOf(mavenCentral(), jcenter())
 
     override fun name() = "gradle"
+
+    override fun withLanguage(language: Language): BuildTool {
+        return when (language) {
+            JavaLang -> addPlugin(javaPlugin())
+
+            KotlinLang -> addPlugin(junitPlatformPlugin())
+                    .addDependency(kotlinTestDependency())
+
+            else -> throw UnsupportedLanguage(language)
+        }
+    }
+
+    override fun withTestingsLanguage(language: Language): BuildTool {
+        return when (language) {
+            JavaLang -> addPlugin(junitPlatformPlugin())
+
+            KotlinLang ->
+                addPlugin(kotlinGradlePlugin())
+                        .addDependency(kotlinJreDependency())
+
+            else -> throw UnsupportedLanguage(language)
+        }
+    }
+
+    override fun withTestingFramework(framework: TestingFramework): BuildTool {
+        return when (framework) {
+            SpekTestingFramework ->
+                addPlugin(junitPlatformPlugin())
+                        .addDependency(spekApiDependency())
+                        .addDependency(spekDataDrivenDependency())
+                        .addDependency(spekSubjectDependency())
+                        .addDependency(spekJunitRunnerDependency())
+
+            JUnitTestingFramework ->
+                addPlugin(junitPlatformPlugin())
+                        .addDependency(jupiterApiDependency())
+                        .addDependency(jupiterEngineDependency())
+
+            else -> throw UnsupportedFramework(framework)
+        }
+    }
 
     override fun addDependency(dependency: Dependency): BuildTool {
         when (dependency) {
@@ -112,5 +159,11 @@ class GradleBuildTool : BuildTool {
         }
         return this
     }
+
+    inner class UnsupportedLanguage(language: Language)
+        : Throwable("Unsupported language ${language.name()} for ${name()} build tool")
+
+    inner class UnsupportedFramework(framework: TestingFramework)
+        : Throwable("Unsupported framework ${framework.name()} for ${name()} build tool")
 
 }
