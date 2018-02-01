@@ -1,32 +1,37 @@
-package com.tcibinan.flaxo.rest.api
+package com.tcibinan.flaxo.core.env
 
-import com.tcibinan.flaxo.rest.CoreConfiguration
-import com.tcibinan.flaxo.rest.services.RepositoryEnvironmentService
+import com.tcibinan.flaxo.core.env.frameworks.JUnitTestingFramework
+import com.tcibinan.flaxo.core.env.languages.JavaLang
+import com.tcibinan.flaxo.core.env.tools.BuildTool
+import com.tcibinan.flaxo.core.env.tools.gradle.GradleBuildTool
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.subject.SubjectSpek
-import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import java.io.File
 
 
-object GradleEnvironmentSpec : SubjectSpek<RepositoryEnvironmentService>({
-    val language = "java"
-    val framework = "junit"
+object GradleEnvironmentSpec : SubjectSpek<BuildTool>({
+    val language = JavaLang
+    val framework = JUnitTestingFramework
     val buildFileName = "build.gradle"
-    val context = AnnotationConfigApplicationContext(CoreConfiguration::class.java)
 
-    subject { context.getBean("repositoryEnvironmentService", RepositoryEnvironmentService::class.java) }
+    subject { GradleBuildTool() }
 
-    describe("environment") {
+    describe("gradle environment") {
 
         on("building environment ($language.$language.$framework)") {
-            val environment = subject.produceEnvironment(language, language, framework)
+            language.main(subject)
+            language.test(subject)
+            framework.test(subject)
+
+            val environment = subject.buildEnvironment()
+
             val buildFile = environment.getFiles()
                     .find { it.name() == buildFileName }
                     ?: throw Exception("$buildFileName wasn't found")
 
-            it("should build project") {
+            it("should create buildable project") {
                 val tempDir = createTempDir("$language.$language.$framework")
                 tempDir.deleteOnExit()
 
