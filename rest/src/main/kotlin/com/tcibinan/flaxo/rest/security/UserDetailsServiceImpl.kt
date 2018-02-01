@@ -1,6 +1,6 @@
 package com.tcibinan.flaxo.rest.security
 
-import com.tcibinan.flaxo.core.DataService
+import com.tcibinan.flaxo.model.DataService
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException

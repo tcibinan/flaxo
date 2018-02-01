@@ -1,6 +1,6 @@
 package com.tcibinan.flaxo.rest.security
 
-import com.tcibinan.flaxo.core.model.User
+import com.tcibinan.flaxo.model.data.User
 import org.springframework.security.core.authority.AuthorityUtils
 import org.springframework.security.core.userdetails.UserDetails
 

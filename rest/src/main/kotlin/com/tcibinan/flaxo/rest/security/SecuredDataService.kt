@@ -1,6 +1,6 @@
 package com.tcibinan.flaxo.rest.security
 
-import com.tcibinan.flaxo.core.DataService
+import com.tcibinan.flaxo.model.DataService
 import org.springframework.security.crypto.password.PasswordEncoder
 
 class SecuredDataService(

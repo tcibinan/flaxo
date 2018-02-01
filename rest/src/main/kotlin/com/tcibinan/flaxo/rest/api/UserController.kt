@@ -1,6 +1,6 @@
 package com.tcibinan.flaxo.rest.api
 
-import com.tcibinan.flaxo.core.DataService
+import com.tcibinan.flaxo.model.DataService
 import com.tcibinan.flaxo.rest.api.ServerAnswer.*
 import com.tcibinan.flaxo.rest.services.Response
 import com.tcibinan.flaxo.rest.services.ResponseService

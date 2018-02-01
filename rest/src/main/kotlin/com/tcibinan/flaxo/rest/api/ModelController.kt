@@ -1,10 +1,10 @@
 package com.tcibinan.flaxo.rest.api
 
-import com.tcibinan.flaxo.core.DataService
-import com.tcibinan.flaxo.core.EntityAlreadyExistsException
+import com.tcibinan.flaxo.model.DataService
+import com.tcibinan.flaxo.model.EntityAlreadyExistsException
 import com.tcibinan.flaxo.core.env.languages.Language
-import com.tcibinan.flaxo.core.model.CourseStatus
-import com.tcibinan.flaxo.core.model.StudentTask
+import com.tcibinan.flaxo.model.data.CourseStatus
+import com.tcibinan.flaxo.model.data.StudentTask
 import com.tcibinan.flaxo.rest.api.ServerAnswer.*
 import com.tcibinan.flaxo.rest.services.GitService
 import com.tcibinan.flaxo.rest.services.RepositoryEnvironmentService

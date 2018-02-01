@@ -1,12 +1,12 @@
 package com.tcibinan.flaxo.rest
 
-import com.tcibinan.flaxo.core.BasicDataService
-import com.tcibinan.flaxo.core.DataService
-import com.tcibinan.flaxo.core.dao.CourseRepository
-import com.tcibinan.flaxo.core.dao.StudentRepository
-import com.tcibinan.flaxo.core.dao.StudentTaskRepository
-import com.tcibinan.flaxo.core.dao.TaskRepository
-import com.tcibinan.flaxo.core.dao.UserRepository
+import com.tcibinan.flaxo.model.BasicDataService
+import com.tcibinan.flaxo.model.DataService
+import com.tcibinan.flaxo.model.dao.CourseRepository
+import com.tcibinan.flaxo.model.dao.StudentRepository
+import com.tcibinan.flaxo.model.dao.StudentTaskRepository
+import com.tcibinan.flaxo.model.dao.TaskRepository
+import com.tcibinan.flaxo.model.dao.UserRepository
 import com.tcibinan.flaxo.rest.security.SecuredDataService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

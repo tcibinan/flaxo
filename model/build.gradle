@@ -1,0 +1,13 @@
+plugins {
+    id "org.junit.platform.gradle.plugin"
+    id "org.jetbrains.kotlin.plugin.spring"
+}
+
+dependencies {
+    compile "org.springframework.data:spring-data-jpa:$spring_data_version"
+    compile "org.hibernate:hibernate-core:$hibernate_version"
+    compile "com.fasterxml.jackson.core:jackson-annotations:$jackson_version"
+
+    testCompile "org.springframework.boot:spring-boot-autoconfigure:$spring_autoconfigure_version"
+    testCompile "com.h2database:h2:$h2_version"
+}

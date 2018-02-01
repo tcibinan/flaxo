@@ -1,6 +1,6 @@
 package com.tcibinan.flaxo.rest
 
-import com.tcibinan.flaxo.core.DataService
+import com.tcibinan.flaxo.model.DataService
 import com.tcibinan.flaxo.rest.security.UserDetailsServiceImpl
 import com.tcibinan.flaxo.rest.security.WebSecurityConfigurerImpl
 import org.springframework.context.annotation.Bean

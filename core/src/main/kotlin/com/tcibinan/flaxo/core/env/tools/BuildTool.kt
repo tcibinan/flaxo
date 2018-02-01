@@ -9,7 +9,7 @@ interface BuildTool : NamedEntity {
 
     fun withLanguage(language: Language): BuildTool
     fun withTestingsLanguage(language: Language): BuildTool
-    fun withTestingFramework(testingFramework: TestingFramework): BuildTool
+    fun withTestingFramework(framework: TestingFramework): BuildTool
 
     fun addDependency(dependency: Dependency): BuildTool =
             throw UnsupportedOperationException(
