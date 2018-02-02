@@ -7,8 +7,9 @@ plugins {
 dependencies {
     compile project(":core")
     compile project(":model")
-    compile project(":git")
     compile project(":fgradle")
+    compile project(":git")
+    compile project(":fgithub")
     compile "org.springframework.boot:spring-boot-starter-web"
     compile "org.springframework.boot:spring-boot-starter-data-jpa"
     compile "org.springframework.boot:spring-boot-autoconfigure"

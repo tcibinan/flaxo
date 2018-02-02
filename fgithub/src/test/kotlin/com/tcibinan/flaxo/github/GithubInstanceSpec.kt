@@ -9,12 +9,14 @@ import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.api.dsl.xon
 import org.jetbrains.spek.subject.SubjectSpek
-import java.util.*
+import java.util.Properties
 
 object GithubInstanceSpec : SubjectSpek<GitInstance>({
 
     val properties = Properties().apply {
-        load(GithubInstanceSpec.javaClass.classLoader.getResourceAsStream("secured.properties"))
+        GithubInstanceSpec.javaClass.classLoader
+                .getResourceAsStream("secured.properties")
+                .use { load(it) }
     }
 
     val userName = properties.getProperty("github.username")

@@ -14,7 +14,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
         scanBasePackages = ["com.tcibinan.flaxo"]
 )
 @EnableJpaRepositories("com.tcibinan.flaxo.model.dao")
-@EntityScan("com.tcibinan.flaxo.core.entity")
+@EntityScan("com.tcibinan.flaxo.model.entity")
 class JpaTestApplication {
     @Bean
     fun dataService(userRepository: UserRepository,

@@ -1,0 +1,8 @@
+plugins {
+    id "org.junit.platform.gradle.plugin"
+}
+
+dependencies {
+    compile project(":git")
+    compile "org.kohsuke:github-api:$kohsuke_github_version"
+}
