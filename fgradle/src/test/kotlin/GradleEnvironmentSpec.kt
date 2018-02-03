@@ -1,7 +1,7 @@
-import com.tcibinan.flaxo.core.env.frameworks.JUnitTestingFramework
-import com.tcibinan.flaxo.core.env.languages.JavaLang
-import com.tcibinan.flaxo.core.env.tools.BuildTool
-import com.tcibinan.flaxo.core.env.tools.gradle.GradleBuildTool
+import com.tcibinan.flaxo.core.framework.JUnitTestingFramework
+import com.tcibinan.flaxo.core.language.JavaLang
+import com.tcibinan.flaxo.core.build.BuildTool
+import com.tcibinan.flaxo.gradle.GradleBuildTool
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on

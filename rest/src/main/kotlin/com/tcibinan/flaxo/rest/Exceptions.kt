@@ -1,7 +1,7 @@
 package com.tcibinan.flaxo.rest
 
-import com.tcibinan.flaxo.core.env.frameworks.TestingFramework
-import com.tcibinan.flaxo.core.env.languages.Language
+import com.tcibinan.flaxo.core.framework.TestingFramework
+import com.tcibinan.flaxo.core.language.Language
 
 class UnsupportedTestingFramework(testingFrameworkName: String)
     : Exception("$testingFrameworkName is not supported")

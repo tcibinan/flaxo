@@ -1,4 +1,4 @@
-package com.tcibinan.flaxo.core.env.tools.gradle
+package com.tcibinan.flaxo.gradle
 
 enum class GradleDependencyType(
         private val type: String

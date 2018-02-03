@@ -1,6 +1,6 @@
-package com.tcibinan.flaxo.core.env.tools.gradle
+package com.tcibinan.flaxo.gradle
 
-import com.tcibinan.flaxo.core.env.tools.gradle.GradleDependencyType.*
+import com.tcibinan.flaxo.gradle.GradleDependencyType.*
 
 private val spekVersion = "1.1.5"
 private val junitVersion = "1.0.3"

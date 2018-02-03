@@ -1,9 +1,9 @@
 package com.tcibinan.flaxo.rest.services
 
-import com.tcibinan.flaxo.core.env.Environment
-import com.tcibinan.flaxo.core.env.frameworks.TestingFramework
-import com.tcibinan.flaxo.core.env.languages.Language
-import com.tcibinan.flaxo.core.env.tools.BuildTool
+import com.tcibinan.flaxo.core.Environment
+import com.tcibinan.flaxo.core.framework.TestingFramework
+import com.tcibinan.flaxo.core.language.Language
+import com.tcibinan.flaxo.core.build.BuildTool
 import com.tcibinan.flaxo.rest.NoDefaultBuildTool
 import com.tcibinan.flaxo.rest.IncompatibleLanguage
 import com.tcibinan.flaxo.rest.IncompatibleTestingFramework

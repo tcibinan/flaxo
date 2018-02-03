@@ -1,19 +1,19 @@
-package com.tcibinan.flaxo.core.env.tools.gradle
+package com.tcibinan.flaxo.gradle
 
 import com.tcibinan.flaxo.core.UnsupportedDependencyException
 import com.tcibinan.flaxo.core.UnsupportedPluginException
-import com.tcibinan.flaxo.core.env.Environment
-import com.tcibinan.flaxo.core.env.File
-import com.tcibinan.flaxo.core.env.SimpleFile
-import com.tcibinan.flaxo.core.env.frameworks.JUnitTestingFramework
-import com.tcibinan.flaxo.core.env.frameworks.SpekTestingFramework
-import com.tcibinan.flaxo.core.env.frameworks.TestingFramework
-import com.tcibinan.flaxo.core.env.languages.JavaLang
-import com.tcibinan.flaxo.core.env.languages.KotlinLang
-import com.tcibinan.flaxo.core.env.languages.Language
-import com.tcibinan.flaxo.core.env.tools.BuildTool
-import com.tcibinan.flaxo.core.env.tools.BuildToolPlugin
-import com.tcibinan.flaxo.core.env.tools.Dependency
+import com.tcibinan.flaxo.core.Environment
+import com.tcibinan.flaxo.core.File
+import com.tcibinan.flaxo.core.SimpleFile
+import com.tcibinan.flaxo.core.framework.JUnitTestingFramework
+import com.tcibinan.flaxo.core.framework.SpekTestingFramework
+import com.tcibinan.flaxo.core.framework.TestingFramework
+import com.tcibinan.flaxo.core.language.JavaLang
+import com.tcibinan.flaxo.core.language.KotlinLang
+import com.tcibinan.flaxo.core.language.Language
+import com.tcibinan.flaxo.core.build.BuildTool
+import com.tcibinan.flaxo.core.build.BuildToolPlugin
+import com.tcibinan.flaxo.core.build.Dependency
 import java.util.*
 
 class GradleBuildTool : BuildTool {

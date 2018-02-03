@@ -1,6 +1,6 @@
-package com.tcibinan.flaxo.core.env.frameworks
+package com.tcibinan.flaxo.core.framework
 
-import com.tcibinan.flaxo.core.env.NamedEntity
+import com.tcibinan.flaxo.core.NamedEntity
 
 abstract class TestingFramework(val name: String) : NamedEntity {
     override fun name() = name

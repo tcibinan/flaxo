@@ -1,6 +1,6 @@
-package com.tcibinan.flaxo.core.env.languages
+package com.tcibinan.flaxo.core.language
 
-import com.tcibinan.flaxo.core.env.frameworks.TestingFramework
+import com.tcibinan.flaxo.core.framework.TestingFramework
 
 abstract class AbstractLanguage(
         private val name: String,

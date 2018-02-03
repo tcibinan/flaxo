@@ -1,6 +1,6 @@
-package com.tcibinan.flaxo.core.env.tools.gradle
+package com.tcibinan.flaxo.gradle
 
-import com.tcibinan.flaxo.core.env.tools.BuildToolPlugin
+import com.tcibinan.flaxo.core.build.BuildToolPlugin
 
 data class GradlePlugin(
         val id: String,

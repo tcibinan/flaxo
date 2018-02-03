@@ -1,3 +1,3 @@
-package com.tcibinan.flaxo.core.env.frameworks
+package com.tcibinan.flaxo.core.framework
 
 object SpekTestingFramework : TestingFramework("spek")

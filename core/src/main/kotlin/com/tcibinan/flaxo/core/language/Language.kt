@@ -1,7 +1,7 @@
-package com.tcibinan.flaxo.core.env.languages
+package com.tcibinan.flaxo.core.language
 
-import com.tcibinan.flaxo.core.env.NamedEntity
-import com.tcibinan.flaxo.core.env.frameworks.TestingFramework
+import com.tcibinan.flaxo.core.NamedEntity
+import com.tcibinan.flaxo.core.framework.TestingFramework
 
 interface Language : NamedEntity {
     fun compatibleTestingLanguages(): Set<Language>

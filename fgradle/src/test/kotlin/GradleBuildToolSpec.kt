@@ -1,10 +1,10 @@
-import com.tcibinan.flaxo.core.env.File
-import com.tcibinan.flaxo.core.env.tools.BuildTool
-import com.tcibinan.flaxo.core.env.tools.gradle.GradleDependency
-import com.tcibinan.flaxo.core.env.tools.gradle.GradlePlugin
-import com.tcibinan.flaxo.core.env.tools.gradle.GradleBuildTool
-import com.tcibinan.flaxo.core.env.tools.gradle.GradleDependencyType.TEST_COMPILE
-import com.tcibinan.flaxo.core.env.tools.gradle.GradleDependencyType.COMPILE_KOTLIN
+import com.tcibinan.flaxo.core.File
+import com.tcibinan.flaxo.core.build.BuildTool
+import com.tcibinan.flaxo.gradle.GradleDependency
+import com.tcibinan.flaxo.gradle.GradlePlugin
+import com.tcibinan.flaxo.gradle.GradleBuildTool
+import com.tcibinan.flaxo.gradle.GradleDependencyType.TEST_COMPILE
+import com.tcibinan.flaxo.gradle.GradleDependencyType.COMPILE_KOTLIN
 import io.kotlintest.matchers.shouldBe
 import io.kotlintest.matchers.shouldHave
 import io.kotlintest.matchers.substring

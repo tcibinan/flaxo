@@ -1,6 +1,6 @@
 package com.tcibinan.flaxo.rest.services
 
-import com.tcibinan.flaxo.core.env.Environment
+import com.tcibinan.flaxo.core.Environment
 import com.tcibinan.flaxo.git.BranchInstance
 import com.tcibinan.flaxo.git.GitInstance
 

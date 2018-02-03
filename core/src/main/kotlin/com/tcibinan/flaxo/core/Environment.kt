@@ -1,4 +1,4 @@
-package com.tcibinan.flaxo.core.env
+package com.tcibinan.flaxo.core
 
 interface Environment {
     fun getFiles(): Set<File>
