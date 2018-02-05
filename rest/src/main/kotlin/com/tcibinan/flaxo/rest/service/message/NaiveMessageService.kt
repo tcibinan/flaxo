@@ -1,4 +1,4 @@
-package com.tcibinan.flaxo.rest.services
+package com.tcibinan.flaxo.rest.service.message
 
 import org.springframework.context.MessageSource
 import java.util.*

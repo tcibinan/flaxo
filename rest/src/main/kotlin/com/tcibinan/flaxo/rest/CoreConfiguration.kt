@@ -9,8 +9,8 @@ import com.tcibinan.flaxo.core.language.KotlinLang
 import com.tcibinan.flaxo.core.language.Language
 import com.tcibinan.flaxo.core.build.BuildTool
 import com.tcibinan.flaxo.gradle.GradleBuildTool
-import com.tcibinan.flaxo.rest.services.RepositoryEnvironmentService
-import com.tcibinan.flaxo.rest.services.SimpleRepositoryEnvironmentService
+import com.tcibinan.flaxo.rest.service.git.RepositoryEnvironmentService
+import com.tcibinan.flaxo.rest.service.git.SimpleRepositoryEnvironmentService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 

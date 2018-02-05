@@ -1,4 +1,4 @@
-package com.tcibinan.flaxo.rest
+package com.tcibinan.flaxo.rest.service
 
 import com.tcibinan.flaxo.core.framework.TestingFramework
 import com.tcibinan.flaxo.core.language.Language

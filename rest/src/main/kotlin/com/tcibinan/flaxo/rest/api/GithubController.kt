@@ -1,6 +1,6 @@
 package com.tcibinan.flaxo.rest.api
 
-import com.tcibinan.flaxo.rest.services.ResponseService
+import com.tcibinan.flaxo.rest.service.response.ResponseService
 import org.apache.http.client.fluent.Content
 import org.apache.http.client.fluent.Form
 import org.apache.http.client.fluent.Request

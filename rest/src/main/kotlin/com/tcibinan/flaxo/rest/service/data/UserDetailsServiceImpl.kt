@@ -1,4 +1,4 @@
-package com.tcibinan.flaxo.rest.security
+package com.tcibinan.flaxo.rest.service.data
 
 import com.tcibinan.flaxo.model.DataService
 import org.springframework.security.core.userdetails.UserDetails

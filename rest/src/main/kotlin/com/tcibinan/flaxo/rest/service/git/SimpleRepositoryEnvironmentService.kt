@@ -1,14 +1,14 @@
-package com.tcibinan.flaxo.rest.services
+package com.tcibinan.flaxo.rest.service.git
 
 import com.tcibinan.flaxo.core.Environment
 import com.tcibinan.flaxo.core.framework.TestingFramework
 import com.tcibinan.flaxo.core.language.Language
 import com.tcibinan.flaxo.core.build.BuildTool
-import com.tcibinan.flaxo.rest.NoDefaultBuildTool
-import com.tcibinan.flaxo.rest.IncompatibleLanguage
-import com.tcibinan.flaxo.rest.IncompatibleTestingFramework
-import com.tcibinan.flaxo.rest.UnsupportedLanguage
-import com.tcibinan.flaxo.rest.UnsupportedTestingFramework
+import com.tcibinan.flaxo.rest.service.NoDefaultBuildTool
+import com.tcibinan.flaxo.rest.service.IncompatibleLanguage
+import com.tcibinan.flaxo.rest.service.IncompatibleTestingFramework
+import com.tcibinan.flaxo.rest.service.UnsupportedLanguage
+import com.tcibinan.flaxo.rest.service.UnsupportedTestingFramework
 
 class SimpleRepositoryEnvironmentService(
         val languages: Map<String, Language>,

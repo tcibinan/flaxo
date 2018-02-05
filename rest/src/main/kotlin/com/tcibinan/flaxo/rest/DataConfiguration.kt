@@ -7,7 +7,7 @@ import com.tcibinan.flaxo.model.dao.StudentRepository
 import com.tcibinan.flaxo.model.dao.StudentTaskRepository
 import com.tcibinan.flaxo.model.dao.TaskRepository
 import com.tcibinan.flaxo.model.dao.UserRepository
-import com.tcibinan.flaxo.rest.security.SecuredDataService
+import com.tcibinan.flaxo.rest.service.data.SecuredDataService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.crypto.password.PasswordEncoder

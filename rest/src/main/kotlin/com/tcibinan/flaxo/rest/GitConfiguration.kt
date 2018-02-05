@@ -1,7 +1,7 @@
 package com.tcibinan.flaxo.rest
 
-import com.tcibinan.flaxo.rest.services.GitService
-import com.tcibinan.flaxo.rest.services.GithubService
+import com.tcibinan.flaxo.rest.service.git.GitService
+import com.tcibinan.flaxo.rest.service.git.GithubService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

@@ -1,7 +1,7 @@
 package com.tcibinan.flaxo.rest.api
 
 import com.tcibinan.flaxo.rest.api.ServerAnswer.*
-import com.tcibinan.flaxo.rest.services.ResponseService
+import com.tcibinan.flaxo.rest.service.response.ResponseService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping

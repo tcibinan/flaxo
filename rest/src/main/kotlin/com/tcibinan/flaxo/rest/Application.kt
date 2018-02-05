@@ -1,10 +1,9 @@
 package com.tcibinan.flaxo.rest
 
-import com.tcibinan.flaxo.rest.services.MessageService
-import com.tcibinan.flaxo.rest.services.NaiveMessageService
-import com.tcibinan.flaxo.rest.services.ResponseService
-import com.tcibinan.flaxo.rest.services.SimpleResponseService
-import org.springframework.boot.SpringApplication
+import com.tcibinan.flaxo.rest.service.message.MessageService
+import com.tcibinan.flaxo.rest.service.message.NaiveMessageService
+import com.tcibinan.flaxo.rest.service.response.ResponseService
+import com.tcibinan.flaxo.rest.service.response.SimpleResponseService
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.MessageSource

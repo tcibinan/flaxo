@@ -6,11 +6,11 @@ import com.tcibinan.flaxo.core.language.Language
 import com.tcibinan.flaxo.model.data.CourseStatus
 import com.tcibinan.flaxo.model.data.StudentTask
 import com.tcibinan.flaxo.rest.api.ServerAnswer.*
-import com.tcibinan.flaxo.rest.services.GitService
-import com.tcibinan.flaxo.rest.services.RepositoryEnvironmentService
-import com.tcibinan.flaxo.rest.services.Response
-import com.tcibinan.flaxo.rest.services.ResponseService
-import com.tcibinan.flaxo.rest.services.createCourse
+import com.tcibinan.flaxo.rest.service.git.GitService
+import com.tcibinan.flaxo.rest.service.git.RepositoryEnvironmentService
+import com.tcibinan.flaxo.rest.service.response.Response
+import com.tcibinan.flaxo.rest.service.response.ResponseService
+import com.tcibinan.flaxo.rest.service.git.createCourse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping

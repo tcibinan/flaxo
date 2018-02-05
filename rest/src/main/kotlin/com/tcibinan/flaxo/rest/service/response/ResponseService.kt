@@ -1,4 +1,4 @@
-package com.tcibinan.flaxo.rest.services
+package com.tcibinan.flaxo.rest.service.response
 
 import com.tcibinan.flaxo.rest.api.ServerAnswer
 import org.springframework.ui.ModelMap
