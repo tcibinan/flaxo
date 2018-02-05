@@ -18,7 +18,7 @@ object GradleEnvironmentSpec : SubjectSpek<BuildTool>({
 
     describe("gradle environment") {
 
-        on("building environment ($language.$language.$framework)") {
+        on("building environment ($language + $language + $framework)") {
             val environment =
                     subject.withLanguage(language)
                             .withTestingsLanguage(language)
@@ -47,17 +47,8 @@ fun writeToFile(dir: File, destinationFile: String, content: String) {
             .use { it.write(content) }
 }
 
-fun performGradleTask(dir: File, task: String, vararg args: String): List<String> {
-    val gradleHome = "/home/andrey/.sdkman/candidates/gradle/current"
-    val gradlePath = gradleHome + "/bin"
-
-    val process =
-            ProcessBuilder(gradlePath + "/gradle", task, *args)
-                    .directory(dir)
-                    .start()
-
-    return onlyOutput(completed(process))
-}
+fun performGradleTask(dir: File, task: String, vararg args: String) =
+        perform(dir, File("../gradlew").absolutePath, task, *args)
 
 fun perform(dir: File, command: String, vararg args: String): List<String> {
     val process =

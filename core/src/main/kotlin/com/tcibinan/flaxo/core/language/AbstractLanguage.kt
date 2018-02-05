@@ -9,6 +9,8 @@ abstract class AbstractLanguage(
 ) : Language {
     override fun name() = name
 
+    override fun toString() = name()
+
     override fun compatibleTestingLanguages(): Set<Language> = suitableTestLanguages + this
 
     override fun compatibleTestingFrameworks(): Set<TestingFramework> = suitableTestingFrameworks
