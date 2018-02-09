@@ -23,3 +23,5 @@ include 'fgradle'
 include 'git'
 include 'fgithub'
 include 'rest'
+include 'gui'
+

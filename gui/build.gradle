@@ -1,0 +1,9 @@
+plugins {
+    id "org.springframework.boot"
+    id "org.jetbrains.kotlin.plugin.spring"
+}
+
+dependencies {
+    compile "org.springframework.boot:spring-boot-starter-web"
+    compile "org.springframework.boot:spring-boot-autoconfigure"
+}
