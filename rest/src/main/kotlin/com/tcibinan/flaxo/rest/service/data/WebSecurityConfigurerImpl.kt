@@ -18,11 +18,10 @@ class WebSecurityConfigurerImpl(
     }
 
     override fun configure(http: HttpSecurity) {
-        http.httpBasic()
-                .and()
+        http.httpBasic().and()
+                .cors().and()
                 .csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .headers().frameOptions().disable()
     }
 }
