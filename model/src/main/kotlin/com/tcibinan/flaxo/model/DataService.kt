@@ -34,4 +34,8 @@ interface DataService {
     fun getStudents(course: Course): Set<Student>
 
     fun getTasks(course: Course): Set<Task>
+
+    fun addToken(userNickname: String,
+                 service: IntegratedService,
+                 accessToken: String): User
 }

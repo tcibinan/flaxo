@@ -1,6 +1,7 @@
 package com.tcibinan.flaxo.model
 
 import com.tcibinan.flaxo.model.dao.CourseRepository
+import com.tcibinan.flaxo.model.dao.CredentialsRepository
 import com.tcibinan.flaxo.model.dao.StudentRepository
 import com.tcibinan.flaxo.model.dao.StudentTaskRepository
 import com.tcibinan.flaxo.model.dao.TaskRepository
@@ -18,12 +19,14 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 class JpaTestApplication {
     @Bean
     fun dataService(userRepository: UserRepository,
+                    credentialsRepository: CredentialsRepository,
                     courseRepository: CourseRepository,
                     taskRepository: TaskRepository,
                     studentRepository: StudentRepository,
                     studentTaskRepository: StudentTaskRepository
     ): DataService = BasicDataService(
             userRepository,
+            credentialsRepository,
             courseRepository,
             taskRepository,
             studentRepository,

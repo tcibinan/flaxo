@@ -4,6 +4,7 @@ import com.tcibinan.flaxo.model.entity.CourseEntity
 import com.tcibinan.flaxo.model.entity.StudentTaskEntity
 import com.tcibinan.flaxo.model.entity.UserEntity
 import com.tcibinan.flaxo.model.dao.CourseRepository
+import com.tcibinan.flaxo.model.dao.CredentialsRepository
 import com.tcibinan.flaxo.model.dao.StudentRepository
 import com.tcibinan.flaxo.model.dao.StudentTaskRepository
 import com.tcibinan.flaxo.model.dao.TaskRepository
@@ -18,11 +19,12 @@ import com.tcibinan.flaxo.model.entity.StudentEntity
 import com.tcibinan.flaxo.model.entity.TaskEntity
 import com.tcibinan.flaxo.model.entity.toDtos
 
-class BasicDataService(val userRepository: UserRepository,
-                       val courseRepository: CourseRepository,
-                       val taskRepository: TaskRepository,
-                       val studentRepository: StudentRepository,
-                       val studentTaskRepository: StudentTaskRepository
+class BasicDataService(private val userRepository: UserRepository,
+                       private val credentialsRepository: CredentialsRepository,
+                       private val courseRepository: CourseRepository,
+                       private val taskRepository: TaskRepository,
+                       private val studentRepository: StudentRepository,
+                       private val studentTaskRepository: StudentTaskRepository
 ) : DataService {
 
     override fun addUser(nickname: String,
@@ -113,4 +115,29 @@ class BasicDataService(val userRepository: UserRepository,
 
     override fun getTasks(course: Course): Set<Task> =
             taskRepository.findAllByCourse(course.toEntity()).toDtos()
+
+    override fun addToken(userNickname: String,
+                          service: IntegratedService,
+                          accessToken: String
+    ): User {
+        getUser(userNickname)
+                ?.credentials
+                ?.toEntity()
+                ?.withServiceToken(service, accessToken)
+                ?.apply { credentialsRepository.save(this) }
+                ?: throw Exception("Could not find user with $userNickname nickname")
+
+        return getUser(userNickname)
+                ?: throw Exception("Could not find user with $userNickname nickname")
+    }
+
+    private fun CredentialsEntity.withServiceToken(service: IntegratedService,
+                                                   accessToken: String
+    ): CredentialsEntity {
+        when (service) {
+            IntegratedService.GITHUB -> this.github_token = accessToken
+        }
+        return this
+    }
+
 }
