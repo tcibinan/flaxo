@@ -11,15 +11,14 @@ import org.kohsuke.github.GitHub as KohsukeGit
 
 class GithubInstance(
         private val credentials: String,
-        rawWebHookUrl: String
+        rawWebHookUrl: String,
+        private val webHookUrl: URL = URL(rawWebHookUrl)
 ) : GitInstance {
-
-    private val webHookUrl : URL = URL(rawWebHookUrl)
 
     private val github: KohsukeGit by lazy { KohsukeGit.connectUsingOAuth(credentials) }
 
     override fun createRepository(repositoryName: String, private: Boolean): RepositoryInstance {
-        val repository = github.createRepository(repositoryName).private_(private).create()
+        val repository = github.createRepository(repositoryName).create()
         repository.createContent(
                 "# $repositoryName",
                 "Initial commit from flaxo with love",
