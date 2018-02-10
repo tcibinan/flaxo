@@ -34,7 +34,8 @@ class GithubController(
             val params = mapOf(
                     "client_id" to clientId,
                     "redirect_uri" to redirectUri,
-                    "state" to Random().nextInt().toString()
+                    "state" to Random().nextInt().toString(),
+                    "scope" to listOf("delete_repo", "repo").joinToString(separator = " ")
             )
         })
     }
