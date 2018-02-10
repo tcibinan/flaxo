@@ -12,18 +12,21 @@
 <p>Flaxo is here <span class="badge badge-secondary">bootstrap</span></p>
 <div>
     <p>Auth with github!</p>
-    <div>
+    <form id="register-user-form"
+          onsubmit="event.preventDefault(); registerUser(document.querySelector('#register-user-form'));">
         <label for="nickname">
-            <input type="text" id="nickname"/>
+            <input type="text" id="nickname" name="nickname"/>
         </label>
         <label for="password">
-            <input type="password" id="password"/>
+            <input type="password" id="password" name="password"/>
         </label>
-    </div>
-    <button onclick="echo()">echo</button>
-    <button onclick="authWithGithub()">auth</button>
+        <button type="submit">register</button>
+    </form>
 </div>
+<button onclick="echo('message')">echo</button>
+<button onclick="authWithGithub()">auth</button>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/immutable/3.8.2/immutable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script rel="script" src="components.js"></script>
 <script rel="script" src="scripts.js"></script>

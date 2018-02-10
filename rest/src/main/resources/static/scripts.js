@@ -4,33 +4,55 @@ function authWithGithub() {
             baseURL: restUrl(),
             auth: credentials()
         })
-        .then(response => {
-            const payload = response.data.payload;
-            const params = new URLSearchParams();
-            const redirectParams = Immutable.Map(payload.params)
-                .forEach((value, key) => params.append(key, value));
-
-            window.location = payload.redirect + "?" + params.toString()
-        })
-        .catch(logResponse);
+        .then(redirectToGithubAuth())
+        .catch(logResponse());
 }
 
+function registerUser(form) {
+    const elements = Immutable.Seq(form.elements)
+        .filter(element => element.tagName === 'INPUT')
+        .toMap()
+        .mapEntries(([i, element]) => [element.name, element.value]);
 
-function echo() {
+    axios
+        .post('register', {}, {
+            params: elements.toObject(),
+            baseURL: restUrl()
+        })
+        .then(finalizeRegistration(elements))
+        .catch(logResponse())
+}
+
+function finalizeRegistration(elements) {
+    return () => elements.forEach((value, name) => Cookies.set(name, value));
+}
+
+function redirectToGithubAuth() {
+    return response => {
+        const payload = response.data.payload;
+        const params = new URLSearchParams();
+        const redirectParams = Immutable.Map(payload.params)
+            .forEach((value, key) => params.append(key, value));
+
+        window.location = payload.redirect + "?" + params.toString()
+    };
+}
+
+function echo(message) {
     axios
         .get('echo', {
             baseURL: restUrl(),
             auth: credentials(),
             params: {
-                message: "helloworldsfsdfsdm"
+                message: message
             }
         })
-        .then(logResponse)
-        .catch(logResponse);
+        .then(logResponse())
+        .catch(logResponse());
 }
 
-function logResponse(response) {
-    console.log(response);
+function logResponse() {
+    return response => console.log(response);
 }
 
 function credentials() {
@@ -41,14 +63,14 @@ function credentials() {
 }
 
 function username() {
-    return document.querySelector("#nickname").value;
+    return Cookies.get('nickname');
 }
 
 function password() {
-    return document.querySelector("#password").value;
+    return Cookies.get('password');
 }
 
 function restUrl() {
     // TODO 10.02.18: Remove hardcoded url (set it with spring template manager f.e. thymeleaf)
-    return 'http://173.0.157.203:8080/rest';
+    return 'http://localhost:8080/rest';
 }
