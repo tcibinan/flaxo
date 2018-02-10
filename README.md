@@ -12,7 +12,6 @@ First of all you should set several system variables.
 | HOME_PAGE | Home page address of your application |
 | GITHUB_ID | Github app client id |
 | GITHUB_SECRET | Github app client secret |
-| GITHUB_REDIRECT | Redirect uri for github oauth |
 
 Also the github api credentials should be set for running integration tests. The access token can be found in account settings.
 ```
