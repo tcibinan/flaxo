@@ -11,9 +11,19 @@
 <body>
 <p>Flaxo is here <span class="badge badge-secondary">bootstrap</span></p>
 <div>
-    <p>Auth with github</p>
+    <p>Auth with github!</p>
+    <div>
+        <label for="nickname">
+            <input type="text" id="nickname"/>
+        </label>
+        <label for="password">
+            <input type="password" id="password"/>
+        </label>
+    </div>
+    <button onclick="echo()">echo</button>
     <button onclick="authWithGithub()">auth</button>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/immutable/3.8.2/immutable.min.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script rel="script" src="components.js"></script>
 <script rel="script" src="scripts.js"></script>
