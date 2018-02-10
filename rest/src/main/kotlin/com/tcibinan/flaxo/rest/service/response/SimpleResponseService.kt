@@ -2,8 +2,6 @@ package com.tcibinan.flaxo.rest.service.response
 
 import com.tcibinan.flaxo.rest.api.ServerAnswer
 import com.tcibinan.flaxo.rest.service.message.MessageService
-import org.springframework.ui.ModelMap
-import org.springframework.web.servlet.ModelAndView
 
 class SimpleResponseService(
         val messageService: MessageService
@@ -22,9 +20,6 @@ class SimpleResponseService(
             else ResponseWithMessageAndPayload(answer.code, messageService.get(answer.defaultAnswer, *args), payload)
         }
     }
-
-    override fun redirect(path: String, model: ModelMap) =
-            ModelAndView("redirect:/${path}", model)
 
     data class ResponseWithMessageAndPayload(val code: Int, val message: String, val payload: Any) : Response
     data class ResponseWithPayload(val code: Int, val payload: Any) : Response

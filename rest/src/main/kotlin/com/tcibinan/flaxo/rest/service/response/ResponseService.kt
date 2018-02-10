@@ -1,8 +1,6 @@
 package com.tcibinan.flaxo.rest.service.response
 
 import com.tcibinan.flaxo.rest.api.ServerAnswer
-import org.springframework.ui.ModelMap
-import org.springframework.web.servlet.ModelAndView
 
 interface ResponseService {
 
@@ -11,6 +9,5 @@ interface ResponseService {
                  payload: Any? = null
     ): Response
 
-    fun redirect(path: String, model: ModelMap): ModelAndView
 }
 

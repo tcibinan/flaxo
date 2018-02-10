@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
 import java.util.*
-import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import javax.servlet.http.HttpServletResponse
 
 @RestController
 @RequestMapping("/rest/github")
@@ -39,7 +39,9 @@ class GithubController(
     fun githubAuth(principal: Principal): Any {
         val state = Random().nextInt().toString()
 
-        states[principal.name] = state
+        synchronized(states) {
+            states[principal.name] = state
+        }
 
         return responseService.response(MANUAL_REDIRECT, payload = object {
             val redirect = "$githubAuthUrl/authorize"
@@ -53,40 +55,41 @@ class GithubController(
 
     @GetMapping("/auth/code")
     fun githubAuthToken(@RequestParam("code") code: String,
-                        @RequestParam("state") state: String
+                        @RequestParam("state") state: String,
+                        response: HttpServletResponse
     ) {
-        Executors.newSingleThreadExecutor().execute {
-            val accessToken = Request.Post("$githubAuthUrl/access_token")
-                    .bodyForm(
-                            Form.form().apply {
-                                add("client_id", clientId)
-                                add("client_secret", clientSecret)
-                                add("code", code)
-                                add("state", state)
-                            }.build()
-                    )
-                    .execute()
-                    .returnContent()
-                    .asString()
-                    .split("&")
-                    .find { it.startsWith("access_token") }
-                    ?.split("=")
-                    ?.last()
-                    ?: throw Exception("Access token was not received from github.")
+        val accessToken = Request.Post("$githubAuthUrl/access_token")
+                .bodyForm(
+                        Form.form().apply {
+                            add("client_id", clientId)
+                            add("client_secret", clientSecret)
+                            add("code", code)
+                            add("state", state)
+                        }.build()
+                )
+                .execute()
+                .returnContent()
+                .asString()
+                .split("&")
+                .find { it.startsWith("access_token") }
+                ?.split("=")
+                ?.last()
+                ?: throw Exception("Access token was not received from github.")
 
-            val nickname = synchronized(states) {
-                val key = states.filterValues { it == state }
-                        .apply {
-                            if (size > 1)
-                                throw Exception("Two users have the same random state for github auth.")
-                        }
-                        .keys.first()
+        val nickname = synchronized(states) {
+            val key = states.filterValues { it == state }
+                    .apply {
+                        if (size > 1)
+                            throw Exception("Two users have the same random state for github auth.")
+                    }
+                    .keys.first()
 
-                states.remove(key)
-                key
-            }
-
-            dataService.addToken(nickname, IntegratedService.GITHUB, accessToken)
+            states.remove(key)
+            key
         }
+
+        dataService.addToken(nickname, IntegratedService.GITHUB, accessToken)
+
+        response.sendRedirect("/")
     }
 }
