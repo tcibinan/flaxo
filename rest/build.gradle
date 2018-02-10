@@ -5,18 +5,27 @@ plugins {
 }
 
 dependencies {
+    // modules dependencies
     compile project(":core")
     compile project(":model")
     compile project(":fgradle")
     compile project(":git")
     compile project(":fgithub")
+
+    // spring dependencies
     compile "org.springframework.boot:spring-boot-starter-web"
     compile "org.springframework.boot:spring-boot-starter-data-jpa"
     compile "org.springframework.boot:spring-boot-autoconfigure"
     compile "org.springframework.boot:spring-boot-starter-security"
+
     // for post requests - could be replaced with git module in the future
     compile "org.apache.httpcomponents:fluent-hc:4.5.3"
+
+    // embedded database
     compile "com.h2database:h2:1.4.196"
+
+    // apache collections
+    compile "org.apache.commons:commons-collections4:4.1"
 }
 
 bootRun {
