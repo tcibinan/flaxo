@@ -18,5 +18,6 @@ enum class ServerAnswer(val code: Int, val defaultAnswer: String? = null) {
     COURSE_COMPOSED(2008, "course.success.composed"),
 
     HELLO_WORLD(1000, "greeting"),
-    ECHO(1001)
+    ECHO(1001),
+    MANUAL_REDIRECT(1002)
 }
