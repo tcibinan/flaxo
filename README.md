@@ -6,22 +6,16 @@ An application for easy creating, managing and reporting online courses of progr
 
 ## Deployment
 
-First of all you should set several system variables.
+To run tests and application you should set several system variables.
 
-| System variable  | Description  |
+| Variable | Description |
 |---|---|
-| HOME_PAGE | Home page address of your application |
-| GITHUB_ID | Github app client id |
-| GITHUB_SECRET | Github app client secret |
-
-Also the github api credentials should be set for running integration tests. The access token can be found in account settings.
-```
-git/src/test/resources/secured.properties content:
-
-github.username=placeholder
-github.access.token=placeholder
-```
-
+| HOME_PAGE | Home page address of your application. |
+| GITHUB_ID | Github OAuth App id. |
+| GITHUB_SECRET | Github OAuth App secret. |
+| GITHUB_WEB_HOOK_URL | Github web hook redirect absolute url. |
+| GITHUB_TEST_NAME | Account nickname. *It is used for integration tests.* |
+| GITHUB_TEST_TOKEN | Generated account access token with `repo`, `delete_repo` scopes. The access token can be generated in github account developer settings. *It is used for integration tests.* |
 
 To build the app and run all tests.
 
@@ -29,7 +23,7 @@ To build the app and run all tests.
 ./gradlew build
 ```
 
-To run the app.
+To run the app. The application can be found at http://localhost:8080/.
 
 ```bash
 ./gradlew bootRun
@@ -38,9 +32,21 @@ To run the app.
 
 ## What's inside
 
+### Services
+- Github integration
+- **todo:** Travis integration
+- **todo:** Codacy integration
+
+### Back-end technologies
 - Kotlin language
-- Spring Core, Data, Boot, Security
-- H2 embedded database
-- Kohsuke Github Api
-- Spek
-- Kotlin test
+- Gradle build tool
+- Spek testing framework
+- Spring Boot, Spring Data, Spring Security
+- and even more: h2 database, Kohsuke Github api, Kotlin test
+
+### Front-end technologies
+- React
+- Redux
+- axios
+- js-cookie
+- Immutable.js
