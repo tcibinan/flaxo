@@ -1,4 +1,5 @@
 # Flaxo
+[![Build Status](https://travis-ci.org/tcibinan/flaxo.svg?branch=dev)](https://travis-ci.org/tcibinan/flaxo)
 
 An application for easy creating, managing and reporting online courses of programming.
 
