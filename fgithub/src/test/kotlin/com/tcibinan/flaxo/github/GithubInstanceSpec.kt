@@ -9,18 +9,11 @@ import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.api.dsl.xon
 import org.jetbrains.spek.subject.SubjectSpek
-import java.util.Properties
 
 object GithubInstanceSpec : SubjectSpek<GitInstance>({
 
-    val properties = Properties().apply {
-        GithubInstanceSpec.javaClass.classLoader
-                .getResourceAsStream("secured.properties")
-                .use { load(it) }
-    }
-
-    val userName = properties.getProperty("github.username")
-    val credentials = properties.getProperty("github.access.token")
+    val userName = System.getenv("GITHUB_TEST_NAME")
+    val credentials = System.getenv("GITHUB_TEST_TOKEN")
 
     val repository = GithubRepository("temp-testing-repository", userName)
     val mainBranch = GithubBranch("main-branch", repository)
