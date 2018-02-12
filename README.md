@@ -50,3 +50,7 @@ To run the app. The application can be found at http://localhost:8080/.
 - axios
 - js-cookie
 - Immutable.js
+
+## Credits
+
+App icon - flex by  Anton Ivanov from [the Noun Project](https://thenounproject.com).
