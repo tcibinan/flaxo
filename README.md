@@ -3,6 +3,15 @@
 
 An application for easy creating, managing and reporting online courses of programming.
 
+## What?
+
+The main underlying idea is quite clear: 
+
+1. Teacher creates a course with flaxo which is basically a simple git repository.
+2. Teacher fill the course with tests and interfaces that students are going to implement.
+3. Students solve the tasks and create pull requests.
+4. Flaxo make all the necessary arrangements to test and evaluate students solutions.
+5. Teacher receives well-formatted stats and results of his students progress.
 
 ## Deployment
 
