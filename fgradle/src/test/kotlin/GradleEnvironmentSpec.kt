@@ -1,3 +1,4 @@
+import com.tcibinan.flaxo.cmd.perform
 import com.tcibinan.flaxo.core.framework.JUnitTestingFramework
 import com.tcibinan.flaxo.core.language.JavaLang
 import com.tcibinan.flaxo.core.build.BuildTool
@@ -50,27 +51,4 @@ fun writeToFile(dir: File, destinationFile: String, content: String) {
 fun performGradleTask(dir: File, task: String, vararg args: String) =
         perform(dir, File("../gradlew").absolutePath, task, *args)
 
-fun perform(dir: File, command: String, vararg args: String): List<String> {
-    val process =
-            ProcessBuilder(command, *args)
-                    .directory(dir)
-                    .start()
-
-    return onlyOutput(completed(process))
-}
-
-fun completed(process: Process): Pair<Int, List<String>> {
-    process.waitFor()
-
-    return process.exitValue() to process
-            .inputStream.bufferedReader()
-            .useLines { it.toList() }
-}
-
-fun onlyOutput(result: Pair<Int, List<String>>): List<String> {
-    return if (result.first == 0)
-        result.second
-    else
-        throw RuntimeException(result.second.joinToString(separator = System.lineSeparator()))
-}
 

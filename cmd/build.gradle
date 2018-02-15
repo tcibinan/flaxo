@@ -1,0 +1,3 @@
+plugins {
+    id "org.junit.platform.gradle.plugin"
+}
