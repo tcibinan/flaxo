@@ -2,6 +2,8 @@ language: java
 jdk:
   - oraclejdk8
 
+install: gem install travis -v 1.8.8 --no-rdoc --no-ri
+
 # disabling email notifications
 notifications:
   email: false
