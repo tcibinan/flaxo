@@ -25,6 +25,8 @@ To run tests and application you should set several system variables.
 | GITHUB_WEB_HOOK_URL | Github web hook redirect absolute url. |
 | GITHUB_TEST_NAME | Account nickname. *It is used for integration tests.* |
 | GITHUB_TEST_TOKEN | Generated account access token with `repo`, `delete_repo`, `user:email`, `read:org`, `repo_deployment`, `repo:status`, `write:repo_hook` scopes for flaxo and travis needs. The access token can be generated in github account developer settings. *It is used for integration tests.* |
+| GITHUB_REPOSITORY_ID | Repository id to perform travis tests with. *It is used for integration tests.* |
+| TRAVIS_TEST_TOKEN | Generated using travis cli client access token. *It is used for integration tests.* |
 
 ### Travis integration
 
