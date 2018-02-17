@@ -1,17 +1,17 @@
 package com.tcibinan.flaxo.rest.service.travis
 
-import com.tcibinan.flaxo.cmd.perform
+import com.tcibinan.flaxo.cmd.CmdExecutor
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
 
 class TravisSimpleService(private val baseUrl: String) : TravisService {
 
     override fun retrieveTravisToken(githubUsername: String, githubToken: String): String {
-        perform("travis", "login",
+        CmdExecutor.execute("travis", "login",
                 "-u", githubUsername,
                 "-g", githubToken)
 
-        return perform("travis", "token")
+        return CmdExecutor.execute("travis", "token")
                 .first().split(" ").last()
     }
 

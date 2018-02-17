@@ -1,4 +1,4 @@
-import com.tcibinan.flaxo.cmd.perform
+import com.tcibinan.flaxo.cmd.CmdExecutor
 import com.tcibinan.flaxo.core.framework.JUnitTestingFramework
 import com.tcibinan.flaxo.core.language.JavaLang
 import com.tcibinan.flaxo.core.build.BuildTool
@@ -79,7 +79,7 @@ object GradleEnvironmentSpec : SubjectSpek<BuildTool>({
                 val tempDir = createTempDir("$language.$language.$framework")
                 tempDir.deleteOnExit()
 
-                perform(tempDir, "touch", gradleFileName)
+                CmdExecutor.within(tempDir).execute("touch", gradleFileName)
                 File(tempDir, gradleFileName).fillWith(buildFile.content())
                 GradleCmdExecutor.within(tempDir).build()
             }

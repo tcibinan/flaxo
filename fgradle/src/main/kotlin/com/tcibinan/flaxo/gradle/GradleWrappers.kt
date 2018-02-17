@@ -18,7 +18,10 @@ class GradleWrappers private constructor(files: Set<EnvironmentFile>)
             dir.deleteOnExit()
 
             return Try(generateWrappers(dir, gradleBuild))
-                    .onFailure { throw GradleWrappersException(it) }
+                    .onFailure {
+                        dir.deleteRecursively()
+                        throw GradleWrappersException(it)
+                    }
                     .get()
         }
 

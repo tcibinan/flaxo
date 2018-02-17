@@ -1,11 +1,11 @@
 package com.tcibinan.flaxo.gradle
 
-import com.tcibinan.flaxo.cmd.perform
+import com.tcibinan.flaxo.cmd.CmdExecutor
 import java.io.File
 
-class GradleCmdExecutor private constructor(private val dir: File) {
+class GradleCmdExecutor private constructor(private val dir: File?) {
     companion object {
-        fun within(dir: File) = GradleCmdExecutor(dir)
+        fun within(dir: File? = null) = GradleCmdExecutor(dir)
     }
 
     fun build() = performTask("build")
@@ -13,6 +13,7 @@ class GradleCmdExecutor private constructor(private val dir: File) {
     fun wrapper() = performTask("wrapper")
 
     private fun performTask(task: String, vararg args: String) =
-            perform(dir, File("../gradlew").absolutePath, task, *args)
+            CmdExecutor.within(dir)
+                    .execute(File("../gradlew").absolutePath, task, *args)
 
 }
