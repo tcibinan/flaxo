@@ -1,16 +1,19 @@
 package com.tcibinan.flaxo.rest.api
 
+import com.tcibinan.flaxo.core.env.Environment
 import com.tcibinan.flaxo.model.DataService
 import com.tcibinan.flaxo.model.EntityAlreadyExistsException
 import com.tcibinan.flaxo.core.language.Language
+import com.tcibinan.flaxo.git.BranchInstance
 import com.tcibinan.flaxo.model.CourseStatus
+import com.tcibinan.flaxo.model.IntegratedService
 import com.tcibinan.flaxo.model.data.StudentTask
 import com.tcibinan.flaxo.rest.api.ServerAnswer.*
 import com.tcibinan.flaxo.rest.service.git.GitService
 import com.tcibinan.flaxo.rest.service.environment.RepositoryEnvironmentService
 import com.tcibinan.flaxo.rest.service.response.Response
 import com.tcibinan.flaxo.rest.service.response.ResponseService
-import com.tcibinan.flaxo.rest.service.git.createCourse
+import com.tcibinan.flaxo.rest.service.travis.TravisService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
@@ -27,6 +30,7 @@ class ModelController @Autowired constructor(
         private val dataService: DataService,
         private val responseService: ResponseService,
         private val environmentService: RepositoryEnvironmentService,
+        private val travisService: TravisService,
         private val gitService: GitService,
         private val supportedLanguages: Map<String, Language>
 ) {
@@ -54,20 +58,10 @@ class ModelController @Autowired constructor(
                      @RequestParam numberOfTasks: Int,
                      principal: Principal
     ): Response {
-        val user = dataService.getUser(principal.name) ?:
-                return responseService.response(USER_NOT_FOUND, principal.name)
+        val user = dataService.getUser(principal.name)
+                ?: return responseService.response(USER_NOT_FOUND, principal.name)
 
-        val githubToken = user.credentials.githubToken ?:
-                return responseService.response(NO_GITHUB_KEY)
-
-        val course = dataService.createCourse(
-                courseName,
-                language,
-                testLanguage,
-                testingFramework,
-                numberOfTasks,
-                user
-        )
+        val githubToken = user.credentials.githubToken ?: return responseService.response(NO_GITHUB_KEY)
 
         val environment = environmentService.produceEnvironment(
                 language,
@@ -75,9 +69,26 @@ class ModelController @Autowired constructor(
                 testingFramework
         )
 
-        gitService.with(githubToken)
-                .createCourse(courseName, environment, numberOfTasks)
-                .addWebHook(courseName)
+        val git = gitService.with(githubToken)
+
+        val courseRepository = git.createRepository(courseName)
+
+        courseRepository
+                .createBranch("prerequisites")
+                .fillWith(environment)
+                .createSubBranches(numberOfTasks, "task-")
+
+        git.addWebHook(courseName)
+
+        val course = dataService.createCourse(
+                courseName,
+                language,
+                testLanguage,
+                testingFramework,
+                courseRepository.id(),
+                numberOfTasks,
+                user
+        )
 
         return responseService.response(COURSE_CREATED, courseName, payload = course)
     }
@@ -87,11 +98,10 @@ class ModelController @Autowired constructor(
     fun deleteCourse(@RequestParam courseName: String,
                      principal: Principal
     ): Response {
-        val user = dataService.getUser(principal.name) ?:
-                return responseService.response(USER_NOT_FOUND, principal.name)
+        val user = dataService.getUser(principal.name)
+                ?: return responseService.response(USER_NOT_FOUND, principal.name)
 
-        val githubToken = user.credentials.githubToken ?:
-                return responseService.response(NO_GITHUB_KEY)
+        val githubToken = user.credentials.githubToken ?: return responseService.response(NO_GITHUB_KEY)
 
         dataService.deleteCourse(courseName, user)
 
@@ -104,12 +114,29 @@ class ModelController @Autowired constructor(
     @PreAuthorize("hasAuthority('USER')")
     fun composeCourse(@RequestParam courseName: String,
                       principal: Principal
-    ) : Response {
-        val user = dataService.getUser(principal.name) ?:
-                return responseService.response(USER_NOT_FOUND, principal.name)
+    ): Response {
+        val user = dataService.getUser(principal.name)
+                ?: return responseService.response(USER_NOT_FOUND, principal.name)
 
-        val course = dataService.getCourse(courseName, user) ?:
-                return responseService.response(COURSE_NOT_FOUND, principal.name, courseName)
+        val course = dataService.getCourse(courseName, user)
+                ?: return responseService.response(COURSE_NOT_FOUND, principal.name, courseName)
+
+        val githubToken = user.credentials.githubToken
+                ?: return responseService.response(NO_GITHUB_KEY)
+
+        val githubUserId = user.githubId
+                ?: throw Exception("Github id for ${principal.name} is not set.")
+
+        val githubRepositoryId = course.githubRepositoryId
+
+        if (user.credentials.travisToken.isNullOrBlank()) {
+            val travisToken = travisService.retrieveTravisToken(githubUserId, githubToken)
+            dataService.addToken(user.nickname, IntegratedService.TRAVIS, travisToken)
+        }
+
+        travisService.travis(travisToken = user.credentials.travisToken!!)
+                .activate(githubRepositoryId)
+                ?: throw Exception("Travis activation of $githubUserId/$githubRepositoryId repository went bad.")
 
         dataService.updateCourse(course.with(status = CourseStatus.RUNNING))
 
@@ -121,11 +148,10 @@ class ModelController @Autowired constructor(
     fun getCourseStatistics(@PathVariable("owner") ownerNickname: String,
                             @PathVariable("course") courseName: String
     ): Response {
-        val user = dataService.getUser(ownerNickname) ?:
-                return responseService.response(USER_NOT_FOUND, ownerNickname)
+        val user = dataService.getUser(ownerNickname) ?: return responseService.response(USER_NOT_FOUND, ownerNickname)
 
-        val course = dataService.getCourse(courseName, user) ?:
-                return responseService.response(COURSE_NOT_FOUND, ownerNickname, courseName)
+        val course = dataService.getCourse(courseName, user)
+                ?: return responseService.response(COURSE_NOT_FOUND, ownerNickname, courseName)
 
         return responseService.response(
                 STUDENTS_STATISTICS,
@@ -139,19 +165,26 @@ class ModelController @Autowired constructor(
     fun supportedLanguages(): Response =
             responseService.response(SUPPORTED_LANGUAGES, payload = supportedLanguages.flatten())
 
-    private fun Collection<StudentTask>.reports(): List<Any> =
-            map {
-                object {
-                    val totalPoints = it.points
-                }
-            }
+}
 
-    private fun Map<String, Language>.flatten(): List<Any> =
-            map { (name, language) ->
-                object {
-                    val name = name
-                    val compatibleTestingLanguages = language.compatibleTestingLanguages().map { it.name() }
-                    val compatibleTestingFrameworks = language.compatibleTestingFrameworks().map { it.name() }
-                }
+private fun Collection<StudentTask>.reports(): List<Any> =
+        map {
+            object {
+                val totalPoints = it.points
             }
+        }
+
+private fun Map<String, Language>.flatten(): List<Any> =
+        map { (name, language) ->
+            object {
+                val name = name
+                val compatibleTestingLanguages = language.compatibleTestingLanguages().map { it.name() }
+                val compatibleTestingFrameworks = language.compatibleTestingFrameworks().map { it.name() }
+            }
+        }
+
+fun BranchInstance.fillWith(environment: Environment): BranchInstance {
+    environment.getFiles()
+            .forEach { load(it.name(), it.content()) }
+    return this
 }

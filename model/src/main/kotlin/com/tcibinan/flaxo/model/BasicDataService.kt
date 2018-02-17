@@ -10,6 +10,7 @@ import com.tcibinan.flaxo.model.dao.StudentTaskRepository
 import com.tcibinan.flaxo.model.dao.TaskRepository
 import com.tcibinan.flaxo.model.dao.UserRepository
 import com.tcibinan.flaxo.model.data.Course
+import com.tcibinan.flaxo.model.data.Credentials
 import com.tcibinan.flaxo.model.data.Student
 import com.tcibinan.flaxo.model.data.Task
 import com.tcibinan.flaxo.model.data.User
@@ -47,6 +48,7 @@ class BasicDataService(private val userRepository: UserRepository,
                               language: String,
                               testLanguage: String,
                               testingFramework: String,
+                              gitRepositoryId: String,
                               numberOfTasks: Int,
                               owner: User
     ): Course {
@@ -137,19 +139,27 @@ class BasicDataService(private val userRepository: UserRepository,
                 ?.toEntity()
                 ?.withServiceToken(service, accessToken)
                 ?.apply { credentialsRepository.save(this) }
-                ?: throw Exception("Could not find user with $userNickname nickname")
+                ?: throw Exception("Could not find user with $userNickname nickname.")
 
         return getUser(userNickname)
-                ?: throw Exception("Could not find user with $userNickname nickname")
+                ?: throw Exception("Could not find user with $userNickname nickname.")
     }
 
-    private fun CredentialsEntity.withServiceToken(service: IntegratedService,
-                                                   accessToken: String
-    ): CredentialsEntity {
-        when (service) {
-            IntegratedService.GITHUB -> this.github_token = accessToken
-        }
-        return this
+    override fun addGithubId(userNickname: String, githubId: String): User {
+        val user = getUser(userNickname)
+                ?: throw Exception("Could not find user with $userNickname nickname.")
+
+        return userRepository.save(user.with(githubId = githubId).toEntity()).toDto()
     }
 
+}
+
+private fun CredentialsEntity.withServiceToken(service: IntegratedService,
+                                               accessToken: String
+): CredentialsEntity {
+    when (service) {
+        IntegratedService.GITHUB -> this.github_token = accessToken
+        IntegratedService.TRAVIS -> this.travis_token = accessToken
+    }
+    return this
 }

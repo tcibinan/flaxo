@@ -15,6 +15,7 @@ data class Course(private val entity: CourseEntity) : DataObject<CourseEntity> {
     val testingFramework: String by lazy {
         entity.testing_framework ?: throw EntityFieldIsAbsent("course", "testingFramework")
     }
+    val githubRepositoryId: String by lazy { entity.github_repository_id ?: throw EntityFieldIsAbsent("course", "github repository id") }
     val status: String by lazy { entity.status ?: throw EntityFieldIsAbsent("course", "status") }
     val user: User by lazy { User(entity.user ?: throw EntityFieldIsAbsent("course", "user")) }
     val students: Set<Student> by lazy { entity.students.toDtos() }

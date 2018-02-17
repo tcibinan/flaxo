@@ -3,6 +3,7 @@ package com.tcibinan.flaxo.rest.api
 import com.tcibinan.flaxo.model.DataService
 import com.tcibinan.flaxo.model.IntegratedService
 import com.tcibinan.flaxo.rest.api.ServerAnswer.*
+import com.tcibinan.flaxo.rest.service.git.GitService
 import com.tcibinan.flaxo.rest.service.response.ResponseService
 import org.apache.commons.collections4.map.PassiveExpiringMap
 import org.apache.http.client.fluent.Form
@@ -22,7 +23,8 @@ import javax.servlet.http.HttpServletResponse
 @RequestMapping("/rest/github")
 class GithubController(
         private val responseService: ResponseService,
-        private val dataService: DataService
+        private val dataService: DataService,
+        private val gitService: GitService
 ) {
 
     val githubAuthUrl = "https://github.com/login/oauth"
@@ -88,6 +90,9 @@ class GithubController(
             key
         }
 
+        val githubId = gitService.with(accessToken).nickname()
+
+        dataService.addGithubId(nickname, githubId)
         dataService.addToken(nickname, IntegratedService.GITHUB, accessToken)
 
         response.sendRedirect("/")

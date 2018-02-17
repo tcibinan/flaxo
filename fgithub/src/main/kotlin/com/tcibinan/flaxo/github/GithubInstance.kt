@@ -25,7 +25,7 @@ class GithubInstance(
                 "README.md"
         )
 
-        return GithubRepositoryInstance(repositoryName, nickname(), this)
+        return GithubRepositoryInstance(repository.id.toString(), repositoryName, nickname(), this)
     }
 
     override fun deleteRepository(repositoryName: String) {
@@ -37,7 +37,10 @@ class GithubInstance(
         val lastCommitSha = ghRepository.listCommits().asList().last().shA1
 
         ghRepository.createBranch(branchName, lastCommitSha)
-        return GithubBranchInstance(branchName, GithubRepositoryInstance(repository.name(), repository.owner(), this))
+        return GithubBranchInstance(
+                branchName,
+                GithubRepositoryInstance(repository.id(), repository.name(), repository.owner(), this)
+        )
     }
 
     override fun createSubBranch(repository: Repository, branch: Branch, subBranchName: String) {
@@ -59,7 +62,7 @@ class GithubInstance(
                 .createWebHook(webHookUrl, listOf(GHEvent.PULL_REQUEST))
     }
 
-    private fun nickname() = github.myself.login
+    override fun nickname() = github.myself.login
 
     private fun repositoryRef(repositoryName: String) = "${nickname()}/$repositoryName"
 

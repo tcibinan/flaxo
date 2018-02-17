@@ -1,6 +1,7 @@
 package com.tcibinan.flaxo.model
 
 import com.tcibinan.flaxo.model.data.Course
+import com.tcibinan.flaxo.model.data.Credentials
 import com.tcibinan.flaxo.model.data.Student
 import com.tcibinan.flaxo.model.data.Task
 import com.tcibinan.flaxo.model.data.User
@@ -15,6 +16,7 @@ interface DataService {
                      language: String,
                      testLanguage: String,
                      testingFramework: String,
+                     gitRepositoryId: String,
                      numberOfTasks: Int,
                      owner: User): Course
 
@@ -38,4 +40,6 @@ interface DataService {
     fun addToken(userNickname: String,
                  service: IntegratedService,
                  accessToken: String): User
+
+    fun addGithubId(userNickname: String, githubId: String): User
 }
