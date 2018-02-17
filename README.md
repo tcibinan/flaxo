@@ -37,7 +37,7 @@ and [travis cli client](https://github.com/travis-ci/travis.rb#installation) ins
 
 On unix systems installation could look like the following.
 ```bash
-sudo apt-get install ruby-full
+sudo apt-get install ruby-full gcc libffi-dev make
 gem install travis -v 1.8.8 --no-rdoc --no-ri
 ```
 
