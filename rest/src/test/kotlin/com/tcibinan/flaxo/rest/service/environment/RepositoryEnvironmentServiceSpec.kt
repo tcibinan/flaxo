@@ -40,7 +40,7 @@ object RepositoryEnvironmentServiceSpec: SubjectSpek<RepositoryEnvironmentServic
 
         on("creating an environment with compatible languages and framework") {
             it("should successfully create an environment") {
-                subject.produceEnvironment(firstLanguage, secondLanguage, secondTestingFramework)
+                subject.produceEnvironment(firstLanguage, firstLanguage, firstTestingFramework)
             }
         }
     }

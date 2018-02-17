@@ -57,8 +57,6 @@ object GradleBuildToolSpec : SubjectSpek<BuildTool>({
                     .find { it.name() == "build.gradle" }
                     ?: throw Exception("build.gradle wasn't found")
 
-            println(buildGradle.content())
-
             it("should have build.gradle with build.gradle containing single dependency") {
                 buildGradle.shouldHaveName(firstDependency, secondDependency)
             }
