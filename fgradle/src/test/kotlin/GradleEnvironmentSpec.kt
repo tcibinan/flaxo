@@ -2,7 +2,10 @@ import com.tcibinan.flaxo.cmd.perform
 import com.tcibinan.flaxo.core.framework.JUnitTestingFramework
 import com.tcibinan.flaxo.core.language.JavaLang
 import com.tcibinan.flaxo.core.build.BuildTool
+import com.tcibinan.flaxo.core.env.Environment
 import com.tcibinan.flaxo.gradle.GradleBuildTool
+import com.tcibinan.flaxo.gradle.GradleCmdExecutor
+import com.tcibinan.flaxo.gradle.fillWith
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
@@ -14,7 +17,6 @@ object GradleEnvironmentSpec : SubjectSpek<BuildTool>({
     val language = JavaLang
     val framework = JUnitTestingFramework
     val gradleFileName = "build.gradle"
-    val travisFileName = ".travis.yml"
 
     subject { GradleBuildTool(JavaLang, JavaLang, JUnitTestingFramework) }
 
@@ -27,22 +29,40 @@ object GradleEnvironmentSpec : SubjectSpek<BuildTool>({
                             .withTestingFramework(framework)
                             .produceEnvironment()
 
-
-
-            it("should create non-empty $travisFileName") {
-                val travisFile = environment.getFiles()
-                        .find { it.name() == travisFileName }
-                        ?: throw Exception("$travisFileName wasn't found")
-
-                assertTrue { travisFile.content().isNotBlank() }
+            it("should create non-empty $gradleFileName") {
+                assertTrue {
+                    environment.fileIsNotBlank(gradleFileName)
+                }
             }
 
-            it("should create non-empty $gradleFileName") {
-                val gradleFile = environment.getFiles()
-                        .find { it.name() == gradleFileName }
-                        ?: throw Exception("$gradleFileName wasn't found")
+            it("should create non-empty .travis.yml") {
+                assertTrue {
+                    environment.fileIsNotBlank(".travis.yml")
+                }
+            }
 
-                assertTrue { gradleFile.content().isNotBlank() }
+            it("should create non-empty gradlew") {
+                assertTrue {
+                    environment.fileIsNotBlank("gradlew")
+                }
+            }
+
+            it("should create non-empty gradlew.bat") {
+                assertTrue {
+                    environment.fileIsNotBlank("gradlew.bat")
+                }
+            }
+
+            it("should create non-empty gradle/wrapper/gradle-wrapper.jar") {
+                assertTrue {
+                    environment.fileIsNotBlank("gradle/wrapper/gradle-wrapper.jar")
+                }
+            }
+
+            it("should create non-empty gradle/wrapper/gradle-wrapper.properties") {
+                assertTrue {
+                    environment.fileIsNotBlank("gradle/wrapper/gradle-wrapper.properties")
+                }
             }
         }
 
@@ -53,29 +73,19 @@ object GradleEnvironmentSpec : SubjectSpek<BuildTool>({
                             .withTestingFramework(framework)
                             .produceEnvironment()
 
-            val buildFile = environment.getFiles()
-                    .find { it.name() == gradleFileName }
-                    ?: throw Exception("$gradleFileName wasn't found")
+            val buildFile = environment.getFile(gradleFileName)!!
 
             it("should create buildable project") {
                 val tempDir = createTempDir("$language.$language.$framework")
                 tempDir.deleteOnExit()
 
                 perform(tempDir, "touch", gradleFileName)
-                writeToFile(tempDir, gradleFileName, buildFile.content())
-                performGradleTask(tempDir, "build")
+                File(tempDir, gradleFileName).fillWith(buildFile.content())
+                GradleCmdExecutor.within(tempDir).build()
             }
         }
     }
 })
 
-fun writeToFile(dir: File, destinationFile: String, content: String) {
-    File(dir, destinationFile)
-            .outputStream().bufferedWriter()
-            .use { it.write(content) }
-}
-
-fun performGradleTask(dir: File, task: String, vararg args: String) =
-        perform(dir, File("../gradlew").absolutePath, task, *args)
-
-
+private fun Environment.fileIsNotBlank(fileName: String): Boolean =
+        getFile(fileName)!!.content().isNotBlank()

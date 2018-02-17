@@ -1,4 +1,4 @@
-import com.tcibinan.flaxo.core.env.File
+import com.tcibinan.flaxo.core.env.EnvironmentFile
 import com.tcibinan.flaxo.core.build.BuildTool
 import com.tcibinan.flaxo.core.framework.JUnitTestingFramework
 import com.tcibinan.flaxo.core.language.JavaLang
@@ -82,7 +82,7 @@ object GradleBuildToolSpec : SubjectSpek<BuildTool>({
     }
 })
 
-private fun File.shouldHaveName(vararg plugins: GradlePlugin) {
+private fun EnvironmentFile.shouldHaveName(vararg plugins: GradlePlugin) {
     plugins.forEach {
         content() shouldHave
                 substring("apply plugin: \"${it.id}\"")
@@ -90,7 +90,7 @@ private fun File.shouldHaveName(vararg plugins: GradlePlugin) {
     }
 }
 
-private fun File.shouldHaveSingle(vararg plugins: GradlePlugin) {
+private fun EnvironmentFile.shouldHaveSingle(vararg plugins: GradlePlugin) {
     plugins.forEach {
         content()
                 .split(
@@ -100,19 +100,19 @@ private fun File.shouldHaveSingle(vararg plugins: GradlePlugin) {
     }
 }
 
-private fun File.shouldHaveName(vararg dependencies: GradleDependency) {
+private fun EnvironmentFile.shouldHaveName(vararg dependencies: GradleDependency) {
     dependencies.forEach {
         content() shouldHave substring(it.name())
     }
 }
 
-private fun File.shouldHaveDependency(vararg dependencies: GradleDependency) {
+private fun EnvironmentFile.shouldHaveDependency(vararg dependencies: GradleDependency) {
     dependencies.forEach {
         content() shouldHave substring(it.toString())
     }
 }
 
-private fun File.shouldHaveSingleName(vararg dependencies: GradleDependency) {
+private fun EnvironmentFile.shouldHaveSingleName(vararg dependencies: GradleDependency) {
     dependencies.forEach {
         content()
                 .split(it.name())

@@ -1,9 +1,9 @@
 package com.tcibinan.flaxo.core.env
 
-class SimpleFile(
+open class SimpleEnvironmentFile(
         private val name: String,
         private val content: String
-) : File {
+) : EnvironmentFile {
     override fun name() = name
     override fun content() = content
 }

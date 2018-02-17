@@ -2,7 +2,7 @@ package com.tcibinan.flaxo.travis
 
 import com.tcibinan.flaxo.core.env.Environment
 import com.tcibinan.flaxo.core.env.SimpleEnvironment
-import com.tcibinan.flaxo.core.env.SimpleFile
+import com.tcibinan.flaxo.core.env.SimpleEnvironmentFile
 import com.tcibinan.flaxo.core.framework.TestingFramework
 import com.tcibinan.flaxo.core.language.JavaLang
 import com.tcibinan.flaxo.core.language.KotlinLang
@@ -19,7 +19,7 @@ class SimpleTravisEnvironmentTool(private val language: Language,
         if (language in jvmLanguages
                 && testingLanguage in jvmLanguages) {
             return SimpleEnvironment(setOf(
-                    SimpleFile(".travis.yml",
+                    SimpleEnvironmentFile(".travis.yml",
                             """
                                 language: java
                                 jdk:

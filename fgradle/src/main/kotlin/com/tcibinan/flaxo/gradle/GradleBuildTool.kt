@@ -3,7 +3,6 @@ package com.tcibinan.flaxo.gradle
 import com.tcibinan.flaxo.core.UnsupportedDependencyException
 import com.tcibinan.flaxo.core.UnsupportedPluginException
 import com.tcibinan.flaxo.core.env.Environment
-import com.tcibinan.flaxo.core.env.SimpleFile
 import com.tcibinan.flaxo.core.framework.JUnitTestingFramework
 import com.tcibinan.flaxo.core.framework.SpekTestingFramework
 import com.tcibinan.flaxo.core.framework.TestingFramework
@@ -13,9 +12,8 @@ import com.tcibinan.flaxo.core.language.Language
 import com.tcibinan.flaxo.core.build.BuildTool
 import com.tcibinan.flaxo.core.build.BuildToolPlugin
 import com.tcibinan.flaxo.core.build.Dependency
-import com.tcibinan.flaxo.core.env.SimpleEnvironment
+import com.tcibinan.flaxo.core.env.EnvironmentFile
 import com.tcibinan.flaxo.travis.SimpleTravisEnvironmentTool
-import java.util.*
 
 class GradleBuildTool(private val language: Language,
                       private val testingLanguage: Language,
@@ -111,79 +109,27 @@ class GradleBuildTool(private val language: Language,
         }
     }
 
-    override fun produceEnvironment(): Environment {
-        withLanguage(language)
-                .withTestingsLanguage(testingLanguage)
-                .withTestingFramework(framework)
-                .run {
-                    val joiner = StringJoiner("\n")
+    override fun produceEnvironment(): Environment =
+            withLanguage(language)
+                    .withTestingsLanguage(testingLanguage)
+                    .withTestingFramework(framework)
+                    .run { gradleEnvironment() + travisEnvironment() }
 
-                    joiner.addPlugins(pluginsRepositories, pluginsDependencies, plugins)
-                            .addRepositories(repositories)
-                            .addDependencies(dependencies)
+    private fun travisEnvironment(): Environment =
+            SimpleTravisEnvironmentTool(language, testingLanguage, framework)
+                    .produceEnvironment()
 
-                    val buildGradle = SimpleFile("build.gradle", joiner.toString())
-                    val travisEnvironment =
-                            SimpleTravisEnvironmentTool(language, testingLanguage, framework)
-                                    .produceEnvironment()
-
-                    return SimpleEnvironment(setOf(buildGradle)) + travisEnvironment
-                }
+    private fun gradleEnvironment(): Environment {
+        val gradleBuild = produceGradleBuild()
+        return GradleWrappers.with(gradleBuild) + gradleBuild
     }
 
-    private fun StringJoiner.addDependencies(dependencies: Set<GradleDependency>): StringJoiner {
-        if (dependencies.count() > 0) {
-            add("dependencies {")
-            dependencies.forEach { add("""    $it""") }
-            add("}")
-        }
-        return this
-    }
-
-    private fun StringJoiner.addIndependentPlugins(plugins: Set<GradlePlugin>): StringJoiner {
-        if (plugins.count() > 0) {
-            add("plugins {")
-            plugins.forEach { add("""    id "${it.id}"""") }
-            add("}")
-        }
-        return this
-    }
-
-    private fun StringJoiner.addRepositories(repositories: Set<GradleRepository>): StringJoiner {
-        add("repositories {")
-        repositories.forEach { add("""    ${it.address}""") }
-        add("}")
-        return this
-    }
-
-    private fun StringJoiner.addBuildScript(
-            pluginsRepositories: Set<GradleRepository>,
-            pluginsDependencies: Set<GradleDependency>,
-            plugins: Set<GradlePlugin>
-    ) {
-        add("buildscript {")
-        addRepositories(pluginsRepositories)
-        addDependencies(pluginsDependencies)
-        add("}")
-        addPluginsApplying(plugins)
-    }
-
-    private fun StringJoiner.addPluginsApplying(plugins: Set<GradlePlugin>) {
-        plugins.forEach { add("""apply plugin: "${it.id}"""") }
-    }
-
-    private fun StringJoiner.addPlugins(
-            pluginsRepositories: Set<GradleRepository>,
-            pluginsDependencies: Set<GradleDependency>,
-            plugins: Set<GradlePlugin>
-    ): StringJoiner {
-        if (pluginsDependencies.count() > 0) {
-            addBuildScript(pluginsRepositories, pluginsDependencies, plugins)
-        } else {
-            addIndependentPlugins(plugins)
-        }
-        return this
-    }
+    private fun produceGradleBuild(): EnvironmentFile =
+            GradleBuildEnvironmentFile.Builder
+                    .addPlugins(pluginsRepositories, pluginsDependencies, plugins)
+                    .addRepositories(repositories)
+                    .addDependencies(dependencies)
+                    .build()
 
     inner class UnsupportedLanguage(language: Language)
         : Throwable("Unsupported language ${language.name()} for ${name()} build tool")

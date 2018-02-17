@@ -1,6 +1,6 @@
 package com.tcibinan.flaxo.core.env
 
-interface File {
+interface EnvironmentFile {
     fun name(): String
     fun content(): String
 }
