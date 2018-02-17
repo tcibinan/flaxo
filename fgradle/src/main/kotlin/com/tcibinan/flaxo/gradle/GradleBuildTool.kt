@@ -125,7 +125,7 @@ class GradleBuildTool(private val language: Language,
     }
 
     private fun produceGradleBuild(): EnvironmentFile =
-            GradleBuildEnvironmentFile.Builder
+            GradleBuildEnvironmentFile.builder()
                     .addPlugins(pluginsRepositories, pluginsDependencies, plugins)
                     .addRepositories(repositories)
                     .addDependencies(dependencies)

@@ -9,7 +9,11 @@ class GradleBuildEnvironmentFile private constructor(private val content: String
     override fun name() = "build.gradle"
     override fun content() = content
 
-    companion object Builder {
+    companion object {
+        fun builder() = GradleBuildEnvironmentFile.Builder()
+    }
+
+    class Builder {
 
         private val joiner = StringJoiner("\n")
 

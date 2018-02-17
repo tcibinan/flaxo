@@ -4,6 +4,7 @@ import java.io.File
 import java.io.InputStream
 
 class CmdExecutor private constructor(private val dir: File?) {
+
     companion object {
         fun within(dir: File? = null) = CmdExecutor(dir)
         fun execute(command: String, vararg args: String) =
