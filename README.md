@@ -15,7 +15,7 @@ The main underlying idea is quite clear:
 
 ## Deployment
 
-To run tests and application you should set several system variables.
+To run the application you should set several system variables.
 
 | Variable | Description |
 |---|---|
@@ -23,10 +23,17 @@ To run tests and application you should set several system variables.
 | GITHUB_ID | Github OAuth App id. |
 | GITHUB_SECRET | Github OAuth App secret. |
 | GITHUB_WEB_HOOK_URL | Github web hook redirect absolute url. |
-| GITHUB_TEST_NAME | Account nickname. *It is used for integration tests.* |
-| GITHUB_TEST_TOKEN | Generated account access token with `repo`, `delete_repo`, `user:email`, `read:org`, `repo_deployment`, `repo:status`, `write:repo_hook` scopes for flaxo and travis needs. The access token can be generated in github account developer settings. *It is used for integration tests.* |
-| GITHUB_REPOSITORY_ID | Repository id to perform travis tests with. *It is used for integration tests.* |
-| TRAVIS_TEST_TOKEN | Generated using travis cli client access token. *It is used for integration tests.* |
+
+## Testing
+
+Integration tests also requires a few system variables.
+
+| Variable | Description |
+|---|---|
+| GITHUB_TEST_NAME | Account nickname. |
+| GITHUB_TEST_TOKEN | Generated account access token with `repo`, `delete_repo`, `user:email`, `read:org`, `repo_deployment`, `repo:status`, `write:repo_hook` scopes for flaxo and travis needs. The access token can be generated in github account developer settings. |
+| GITHUB_REPOSITORY_ID | Repository id to perform travis tests with. |
+| TRAVIS_TEST_TOKEN | Generated using travis cli client access token. |
 
 ### Travis integration
 
@@ -58,7 +65,6 @@ To run the app. The application can be found at [http://localhost:8080/](http://
 ./gradlew bootRun
 ```
 
-
 ## What's inside
 
 ### Services
@@ -82,4 +88,11 @@ To run the app. The application can be found at [http://localhost:8080/](http://
 
 ## Credits
 
-App icon - flex by  Anton Ivanov from [the Noun Project](https://thenounproject.com).
+```json
+{ 
+  "full_name": "Andrey Tsibin",
+  "email": "tsibin.andr@gmail.com",
+  "vk": "https://vk.com/id24276156",
+  "app_icon": "by Anton Ivanov from the Noun Project"
+}
+```
