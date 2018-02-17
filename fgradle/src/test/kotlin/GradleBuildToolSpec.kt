@@ -1,5 +1,7 @@
-import com.tcibinan.flaxo.core.File
+import com.tcibinan.flaxo.core.env.File
 import com.tcibinan.flaxo.core.build.BuildTool
+import com.tcibinan.flaxo.core.framework.JUnitTestingFramework
+import com.tcibinan.flaxo.core.language.JavaLang
 import com.tcibinan.flaxo.gradle.GradleDependency
 import com.tcibinan.flaxo.gradle.GradlePlugin
 import com.tcibinan.flaxo.gradle.GradleBuildTool
@@ -14,7 +16,7 @@ import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.subject.SubjectSpek
 
 object GradleBuildToolSpec : SubjectSpek<BuildTool>({
-    subject { GradleBuildTool() }
+    subject { GradleBuildTool(JavaLang, JavaLang, JUnitTestingFramework) }
 
     val firstPlugin = GradlePlugin("java")
     val secondPlugin = GradlePlugin("application")
@@ -29,7 +31,7 @@ object GradleBuildToolSpec : SubjectSpek<BuildTool>({
                     subject.addPlugin(firstPlugin)
                             .addPlugin(secondPlugin)
                             .addPlugin(secondPlugin)
-            val environment = buildTool.buildEnvironment()
+            val environment = buildTool.produceEnvironment()
             val buildGradle = environment.getFiles()
                     .find { it.name() == "build.gradle" }
                     ?: throw Exception("build.gradle wasn't found")
@@ -49,7 +51,7 @@ object GradleBuildToolSpec : SubjectSpek<BuildTool>({
                     subject.addDependency(firstDependency)
                             .addDependency(secondDependency)
                             .addDependency(secondDependency)
-            val environment = buildTool.buildEnvironment()
+            val environment = buildTool.produceEnvironment()
             val buildGradle = environment.getFiles()
                     .find { it.name() == "build.gradle" }
                     ?: throw Exception("build.gradle wasn't found")
@@ -67,7 +69,7 @@ object GradleBuildToolSpec : SubjectSpek<BuildTool>({
             val buildTool =
                     subject.addDependency(testingDependency)
                             .addDependency(compileKotlinDependency)
-            val environment = buildTool.buildEnvironment()
+            val environment = buildTool.produceEnvironment()
             val buildGradle = environment.getFiles()
                     .find { it.name() == "build.gradle" }
                     ?: throw Exception("build.gradle wasn't found")

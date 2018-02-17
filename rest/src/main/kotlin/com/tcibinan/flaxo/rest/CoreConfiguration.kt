@@ -9,8 +9,8 @@ import com.tcibinan.flaxo.core.language.KotlinLang
 import com.tcibinan.flaxo.core.language.Language
 import com.tcibinan.flaxo.core.build.BuildTool
 import com.tcibinan.flaxo.gradle.GradleBuildTool
-import com.tcibinan.flaxo.rest.service.git.RepositoryEnvironmentService
-import com.tcibinan.flaxo.rest.service.git.SimpleRepositoryEnvironmentService
+import com.tcibinan.flaxo.rest.service.environment.RepositoryEnvironmentService
+import com.tcibinan.flaxo.rest.service.environment.SimpleRepositoryEnvironmentService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -30,15 +30,16 @@ class CoreConfiguration {
     )
 
     @Bean
-    fun defaultBuildTools() = mapOf<Language, () -> BuildTool>(
-            JavaLang to { GradleBuildTool() },
-            KotlinLang to { GradleBuildTool() }
-    )
+    fun defaultBuildTools(): Map<Language, BuildTool> =
+            mapOf<Language, BuildTool>(
+                    JavaLang to GradleBuildTool(JavaLang, JavaLang, JUnitTestingFramework),
+                    KotlinLang to GradleBuildTool(JavaLang, JavaLang, JUnitTestingFramework)
+            )
 
     @Bean
     fun repositoryEnvironmentService(supportedLanguages: Map<String, Language>,
                                      supportedTestingFrameworks: Map<String, TestingFramework>,
-                                     defaultBuildTools: Map<Language, () -> BuildTool>
+                                     defaultBuildTools: Map<Language, BuildTool>
     ): RepositoryEnvironmentService =
             SimpleRepositoryEnvironmentService(
                     supportedLanguages,

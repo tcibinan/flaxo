@@ -6,4 +6,5 @@ plugins {
 dependencies {
     compile project(":core")
     compile project(":cmd")
+    compile project(":ftravis")
 }

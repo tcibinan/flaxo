@@ -2,9 +2,8 @@ package com.tcibinan.flaxo.gradle
 
 import com.tcibinan.flaxo.core.UnsupportedDependencyException
 import com.tcibinan.flaxo.core.UnsupportedPluginException
-import com.tcibinan.flaxo.core.Environment
-import com.tcibinan.flaxo.core.File
-import com.tcibinan.flaxo.core.SimpleFile
+import com.tcibinan.flaxo.core.env.Environment
+import com.tcibinan.flaxo.core.env.SimpleFile
 import com.tcibinan.flaxo.core.framework.JUnitTestingFramework
 import com.tcibinan.flaxo.core.framework.SpekTestingFramework
 import com.tcibinan.flaxo.core.framework.TestingFramework
@@ -14,17 +13,41 @@ import com.tcibinan.flaxo.core.language.Language
 import com.tcibinan.flaxo.core.build.BuildTool
 import com.tcibinan.flaxo.core.build.BuildToolPlugin
 import com.tcibinan.flaxo.core.build.Dependency
+import com.tcibinan.flaxo.core.env.SimpleEnvironment
+import com.tcibinan.flaxo.travis.SimpleTravisEnvironmentTool
 import java.util.*
 
-class GradleBuildTool : BuildTool {
-
-    private val dependencies = mutableSetOf<GradleDependency>()
-    private val plugins = mutableSetOf<GradlePlugin>()
-    private val pluginsDependencies = mutableSetOf<GradleDependency>()
-    private val pluginsRepositories = mutableSetOf(mavenCentral(), jcenter())
-    private val repositories = mutableSetOf(mavenCentral(), jcenter())
+class GradleBuildTool(private val language: Language,
+                      private val testingLanguage: Language,
+                      private val framework: TestingFramework,
+                      private val dependencies: Set<GradleDependency> = emptySet(),
+                      private val plugins: Set<GradlePlugin> = emptySet(),
+                      private val pluginsDependencies: Set<GradleDependency> = emptySet(),
+                      private val pluginsRepositories: Set<GradleRepository> = setOf(mavenCentral(), jcenter()),
+                      private val repositories: Set<GradleRepository> = setOf(mavenCentral(), jcenter())
+) : BuildTool {
 
     override fun name() = "gradle"
+
+    constructor(gradleBuildTool: GradleBuildTool,
+                language: Language? = null,
+                testingLanguage: Language? = null,
+                framework: TestingFramework? = null,
+                dependencies: Set<GradleDependency> = emptySet(),
+                plugins: Set<GradlePlugin> = emptySet(),
+                pluginsDependencies: Set<GradleDependency> = emptySet(),
+                pluginsRepositories: Set<GradleRepository> = setOf(mavenCentral(), jcenter()),
+                repositories: Set<GradleRepository> = setOf(mavenCentral(), jcenter()))
+            : this(
+            language ?: gradleBuildTool.language,
+            testingLanguage ?: gradleBuildTool.testingLanguage,
+            framework ?: gradleBuildTool.framework,
+            gradleBuildTool.dependencies + dependencies,
+            gradleBuildTool.plugins + plugins,
+            gradleBuildTool.pluginsDependencies + pluginsDependencies,
+            gradleBuildTool.pluginsRepositories + pluginsRepositories,
+            gradleBuildTool.repositories + repositories
+    )
 
     override fun withLanguage(language: Language): BuildTool {
         return when (language) {
@@ -68,45 +91,47 @@ class GradleBuildTool : BuildTool {
     }
 
     override fun addDependency(dependency: Dependency): BuildTool {
-        when (dependency) {
-            is GradleDependency -> {
-                dependencies.add(dependency)
-                repositories.addAll(dependency.repositories)
-            }
+        return when (dependency) {
+            is GradleDependency -> GradleBuildTool(this,
+                    dependencies = dependencies + dependency,
+                    repositories = repositories + dependency.repositories
+            )
             else -> throw UnsupportedDependencyException(dependency, this)
         }
-        return this
     }
 
     override fun addPlugin(plugin: BuildToolPlugin): BuildTool {
-        when (plugin) {
-            is GradlePlugin -> {
-                plugins.add(plugin)
-                pluginsDependencies.addAll(plugin.dependencies)
-                pluginsRepositories.addAll(plugin.dependencies.flatMap { it.repositories }.toSet())
-            }
+        return when (plugin) {
+            is GradlePlugin -> GradleBuildTool(this,
+                    plugins = plugins + plugin,
+                    pluginsDependencies = pluginsDependencies + plugin.dependencies,
+                    pluginsRepositories = pluginsRepositories + plugin.dependencies.flatMap { it.repositories }.toSet()
+            )
             else -> throw UnsupportedPluginException(plugin, this)
         }
-        return this
     }
 
-    override fun buildEnvironment(): Environment {
-        val joiner = StringJoiner("\n")
+    override fun produceEnvironment(): Environment {
+        withLanguage(language)
+                .withTestingsLanguage(testingLanguage)
+                .withTestingFramework(framework)
+                .run {
+                    val joiner = StringJoiner("\n")
 
-        joiner.addPlugins(pluginsRepositories, pluginsDependencies, plugins)
-                .addRepositories(repositories)
-                .addDependencies(dependencies)
+                    joiner.addPlugins(pluginsRepositories, pluginsDependencies, plugins)
+                            .addRepositories(repositories)
+                            .addDependencies(dependencies)
 
-        return object : Environment {
-            override fun getFiles(): Set<File> =
-                    setOf(
-                            SimpleFile("build.gradle", joiner.toString())
-                    )
+                    val buildGradle = SimpleFile("build.gradle", joiner.toString())
+                    val travisEnvironment =
+                            SimpleTravisEnvironmentTool(language, testingLanguage, framework)
+                                    .produceEnvironment()
 
-        }
+                    return SimpleEnvironment(setOf(buildGradle)) + travisEnvironment
+                }
     }
 
-    private fun StringJoiner.addDependencies(dependencies: MutableCollection<GradleDependency>): StringJoiner {
+    private fun StringJoiner.addDependencies(dependencies: Set<GradleDependency>): StringJoiner {
         if (dependencies.count() > 0) {
             add("dependencies {")
             dependencies.forEach { add("""    $it""") }
@@ -115,7 +140,7 @@ class GradleBuildTool : BuildTool {
         return this
     }
 
-    private fun StringJoiner.addIndependentPlugins(plugins: MutableCollection<GradlePlugin>): StringJoiner {
+    private fun StringJoiner.addIndependentPlugins(plugins: Set<GradlePlugin>): StringJoiner {
         if (plugins.count() > 0) {
             add("plugins {")
             plugins.forEach { add("""    id "${it.id}"""") }
@@ -124,7 +149,7 @@ class GradleBuildTool : BuildTool {
         return this
     }
 
-    private fun StringJoiner.addRepositories(repositories: MutableCollection<GradleRepository>): StringJoiner {
+    private fun StringJoiner.addRepositories(repositories: Set<GradleRepository>): StringJoiner {
         add("repositories {")
         repositories.forEach { add("""    ${it.address}""") }
         add("}")
@@ -132,25 +157,25 @@ class GradleBuildTool : BuildTool {
     }
 
     private fun StringJoiner.addBuildScript(
-            pluginsRepositories: MutableCollection<GradleRepository>,
-            pluginsDependencies: MutableCollection<GradleDependency>,
-            plugins: MutableCollection<GradlePlugin>
+            pluginsRepositories: Set<GradleRepository>,
+            pluginsDependencies: Set<GradleDependency>,
+            plugins: Set<GradlePlugin>
     ) {
         add("buildscript {")
         addRepositories(pluginsRepositories)
         addDependencies(pluginsDependencies)
         add("}")
-        addPluginApplyings(plugins)
+        addPluginsApplying(plugins)
     }
 
-    private fun StringJoiner.addPluginApplyings(plugins: MutableCollection<GradlePlugin>) {
+    private fun StringJoiner.addPluginsApplying(plugins: Set<GradlePlugin>) {
         plugins.forEach { add("""apply plugin: "${it.id}"""") }
     }
 
     private fun StringJoiner.addPlugins(
-            pluginsRepositories: MutableCollection<GradleRepository>,
-            pluginsDependencies: MutableCollection<GradleDependency>,
-            plugins: MutableCollection<GradlePlugin>
+            pluginsRepositories: Set<GradleRepository>,
+            pluginsDependencies: Set<GradleDependency>,
+            plugins: Set<GradlePlugin>
     ): StringJoiner {
         if (pluginsDependencies.count() > 0) {
             addBuildScript(pluginsRepositories, pluginsDependencies, plugins)

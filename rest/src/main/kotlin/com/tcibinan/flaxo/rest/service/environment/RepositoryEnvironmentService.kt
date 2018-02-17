@@ -1,6 +1,6 @@
-package com.tcibinan.flaxo.rest.service.git
+package com.tcibinan.flaxo.rest.service.environment
 
-import com.tcibinan.flaxo.core.Environment
+import com.tcibinan.flaxo.core.env.Environment
 
 interface RepositoryEnvironmentService {
     fun produceEnvironment(

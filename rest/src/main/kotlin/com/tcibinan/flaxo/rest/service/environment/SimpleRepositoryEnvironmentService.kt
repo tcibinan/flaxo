@@ -1,6 +1,6 @@
-package com.tcibinan.flaxo.rest.service.git
+package com.tcibinan.flaxo.rest.service.environment
 
-import com.tcibinan.flaxo.core.Environment
+import com.tcibinan.flaxo.core.env.Environment
 import com.tcibinan.flaxo.core.framework.TestingFramework
 import com.tcibinan.flaxo.core.language.Language
 import com.tcibinan.flaxo.core.build.BuildTool
@@ -11,9 +11,9 @@ import com.tcibinan.flaxo.rest.service.UnsupportedLanguage
 import com.tcibinan.flaxo.rest.service.UnsupportedTestingFramework
 
 class SimpleRepositoryEnvironmentService(
-        val languages: Map<String, Language>,
-        val testingFrameworks: Map<String, TestingFramework>,
-        val defaultBuildTools: Map<Language, () -> BuildTool>
+        private val languages: Map<String, Language>,
+        private val testingFrameworks: Map<String, TestingFramework>,
+        private val defaultBuildTools: Map<Language, BuildTool>
 ) : RepositoryEnvironmentService {
 
     override fun produceEnvironment(languageName: String,
@@ -30,16 +30,14 @@ class SimpleRepositoryEnvironmentService(
         testingLanguage.shouldSuited(language)
         testingFramework.shouldSuited(testingLanguage)
 
-        val buildToolProducer = defaultBuildTools[language]
+        val buildTool = defaultBuildTools[language]
                 ?: throw NoDefaultBuildTool(language)
-
-        val buildTool = buildToolProducer.invoke()
 
         return buildTool
                 .withLanguage(language)
                 .withTestingsLanguage(testingLanguage)
                 .withTestingFramework(testingFramework)
-                .buildEnvironment()
+                .produceEnvironment()
     }
 
     private fun TestingFramework.shouldSuited(testingLanguage: Language) {

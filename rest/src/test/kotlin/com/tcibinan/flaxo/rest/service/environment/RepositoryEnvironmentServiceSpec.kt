@@ -1,9 +1,8 @@
-package com.tcibinan.flaxo.rest.api
+package com.tcibinan.flaxo.rest.service.environment
 
 import com.tcibinan.flaxo.rest.CoreConfiguration
 import com.tcibinan.flaxo.rest.service.IncompatibleLanguage
 import com.tcibinan.flaxo.rest.service.IncompatibleTestingFramework
-import com.tcibinan.flaxo.rest.service.git.RepositoryEnvironmentService
 import io.kotlintest.matchers.shouldThrow
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it

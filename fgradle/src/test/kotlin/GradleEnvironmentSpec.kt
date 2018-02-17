@@ -8,34 +8,61 @@ import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.subject.SubjectSpek
 import java.io.File
-
+import kotlin.test.assertTrue
 
 object GradleEnvironmentSpec : SubjectSpek<BuildTool>({
     val language = JavaLang
     val framework = JUnitTestingFramework
-    val buildFileName = "build.gradle"
+    val gradleFileName = "build.gradle"
+    val travisFileName = ".travis.yml"
 
-    subject { GradleBuildTool() }
+    subject { GradleBuildTool(JavaLang, JavaLang, JUnitTestingFramework) }
 
     describe("gradle environment") {
 
-        on("building environment ($language + $language + $framework)") {
+        on("creating environment") {
             val environment =
                     subject.withLanguage(language)
                             .withTestingsLanguage(language)
                             .withTestingFramework(framework)
-                            .buildEnvironment()
+                            .produceEnvironment()
+
+
+
+            it("should create non-empty $travisFileName") {
+                val travisFile = environment.getFiles()
+                        .find { it.name() == travisFileName }
+                        ?: throw Exception("$travisFileName wasn't found")
+
+                assertTrue { travisFile.content().isNotBlank() }
+            }
+
+            it("should create non-empty $gradleFileName") {
+                val gradleFile = environment.getFiles()
+                        .find { it.name() == gradleFileName }
+                        ?: throw Exception("$gradleFileName wasn't found")
+
+                assertTrue { gradleFile.content().isNotBlank() }
+            }
+        }
+
+        on("performing `gradle build` with the environment of ($language + $language + $framework)") {
+            val environment =
+                    subject.withLanguage(language)
+                            .withTestingsLanguage(language)
+                            .withTestingFramework(framework)
+                            .produceEnvironment()
 
             val buildFile = environment.getFiles()
-                    .find { it.name() == buildFileName }
-                    ?: throw Exception("$buildFileName wasn't found")
+                    .find { it.name() == gradleFileName }
+                    ?: throw Exception("$gradleFileName wasn't found")
 
             it("should create buildable project") {
                 val tempDir = createTempDir("$language.$language.$framework")
                 tempDir.deleteOnExit()
 
-                perform(tempDir, "touch", buildFileName)
-                writeToFile(tempDir, buildFileName, buildFile.content())
+                perform(tempDir, "touch", gradleFileName)
+                writeToFile(tempDir, gradleFileName, buildFile.content())
                 performGradleTask(tempDir, "build")
             }
         }

@@ -1,4 +1,4 @@
-package com.tcibinan.flaxo.core
+package com.tcibinan.flaxo.core.env
 
 interface File {
     fun name(): String

@@ -7,7 +7,7 @@ import com.tcibinan.flaxo.model.data.CourseStatus
 import com.tcibinan.flaxo.model.data.StudentTask
 import com.tcibinan.flaxo.rest.api.ServerAnswer.*
 import com.tcibinan.flaxo.rest.service.git.GitService
-import com.tcibinan.flaxo.rest.service.git.RepositoryEnvironmentService
+import com.tcibinan.flaxo.rest.service.environment.RepositoryEnvironmentService
 import com.tcibinan.flaxo.rest.service.response.Response
 import com.tcibinan.flaxo.rest.service.response.ResponseService
 import com.tcibinan.flaxo.rest.service.git.createCourse

@@ -24,4 +24,5 @@ include 'git'
 include 'fgithub'
 include 'rest'
 include 'cmd'
+include 'ftravis'
 
