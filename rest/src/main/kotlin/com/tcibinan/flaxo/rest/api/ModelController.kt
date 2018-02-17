@@ -3,7 +3,7 @@ package com.tcibinan.flaxo.rest.api
 import com.tcibinan.flaxo.model.DataService
 import com.tcibinan.flaxo.model.EntityAlreadyExistsException
 import com.tcibinan.flaxo.core.language.Language
-import com.tcibinan.flaxo.model.data.CourseStatus
+import com.tcibinan.flaxo.model.CourseStatus
 import com.tcibinan.flaxo.model.data.StudentTask
 import com.tcibinan.flaxo.rest.api.ServerAnswer.*
 import com.tcibinan.flaxo.rest.service.git.GitService
@@ -101,7 +101,7 @@ class ModelController @Autowired constructor(
     }
 
     @PostMapping("/composeCourse")
-    @PreAuthorize("hasAuhority('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     fun composeCourse(@RequestParam courseName: String,
                       principal: Principal
     ) : Response {
@@ -111,7 +111,7 @@ class ModelController @Autowired constructor(
         val course = dataService.getCourse(courseName, user) ?:
                 return responseService.response(COURSE_NOT_FOUND, principal.name, courseName)
 
-        dataService.updateCourse(course.copy(status = CourseStatus.RUNNING))
+        dataService.updateCourse(course.with(status = CourseStatus.RUNNING))
 
         return responseService.response(COURSE_COMPOSED, courseName)
     }

@@ -22,16 +22,5 @@ class StudentEntity() : ConvertibleEntity<Student> {
     @OneToMany(mappedBy = "student", orphanRemoval = true, fetch = FetchType.EAGER)
     var student_tasks: Set<StudentTaskEntity> = emptySet()
 
-    constructor(student_id: Long? = null,
-                nickname: String,
-                course: CourseEntity? = null,
-                student_tasks: Set<StudentTaskEntity> = emptySet()
-    ) : this() {
-        this.student_id = student_id
-        this.nickname = nickname
-        this.course = course
-        this.student_tasks = student_tasks
-    }
-
-    override fun toDto() = Student(student_id!!, nickname!!, student_tasks.toDtos())
+    override fun toDto() = Student(this)
 }

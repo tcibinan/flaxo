@@ -1,6 +1,5 @@
 package com.tcibinan.flaxo.model
 
-import com.tcibinan.flaxo.model.data.CourseStatus
 import io.kotlintest.matchers.haveSubstring
 import io.kotlintest.matchers.should
 import io.kotlintest.matchers.shouldBe
@@ -58,7 +57,7 @@ class DataServiceTest : SubjectSpek<DataService>({
 
             it("should contain the course") {
                 course.language shouldBe language
-                course.testLanguage shouldBe testLanguage
+                course.testingLanguage shouldBe testLanguage
                 course.testingFramework shouldBe testingFramework
             }
 
@@ -67,7 +66,7 @@ class DataServiceTest : SubjectSpek<DataService>({
             }
 
             it("should also create tasks with ordered numbers in the title") {
-                tasks.map { it.taskName }
+                tasks.map { it.name }
                         .sorted()
                         .mapIndexed { index, name -> Pair((index+1).toString(), name) }
                         .forEach { (taskIndex, taskName) ->
@@ -120,7 +119,7 @@ class DataServiceTest : SubjectSpek<DataService>({
         on("changing course status") {
             val owner = subject.getUser(nickname)!!
             val course = subject.getCourse(courseName, owner)!!
-            val updatedCourse = course.copy(status = CourseStatus.RUNNING)
+            val updatedCourse = course.with(status = CourseStatus.RUNNING)
             subject.updateCourse(updatedCourse)
 
             it("should change it") {

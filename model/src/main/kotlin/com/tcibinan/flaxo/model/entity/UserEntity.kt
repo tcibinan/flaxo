@@ -10,8 +10,9 @@ import javax.persistence.Table
 import javax.persistence.UniqueConstraint
 
 @Entity(name = "user")
-@Table(name = "user", uniqueConstraints = [(UniqueConstraint(columnNames = ["nickname"]))])
-class UserEntity() : ConvertibleEntity<User> {
+@Table(name = "user", uniqueConstraints = [UniqueConstraint(columnNames = ["nickname"])])
+class UserEntity : ConvertibleEntity<User> {
+
     @Id
     @GeneratedValue
     var user_id: Long? = null
@@ -19,14 +20,5 @@ class UserEntity() : ConvertibleEntity<User> {
     @OneToOne(cascade = [(CascadeType.ALL)])
     var credentials: CredentialsEntity? = null
 
-    constructor(user_id: Long? = null,
-                nickname: String,
-                credentials: CredentialsEntity
-    ) : this() {
-        this.user_id = user_id
-        this.nickname = nickname
-        this.credentials = credentials
-    }
-
-    override fun toDto() = User(user_id!!, nickname!!, credentials!!.toDto())
+    override fun toDto() = User(this)
 }

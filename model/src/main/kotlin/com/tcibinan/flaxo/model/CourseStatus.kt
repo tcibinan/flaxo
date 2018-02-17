@@ -1,4 +1,4 @@
-package com.tcibinan.flaxo.model.data
+package com.tcibinan.flaxo.model
 
 interface CourseStatus {
     companion object {

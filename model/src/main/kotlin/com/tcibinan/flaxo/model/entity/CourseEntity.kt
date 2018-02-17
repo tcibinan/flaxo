@@ -12,6 +12,7 @@ import javax.persistence.Table
 @Entity(name = "course")
 @Table(name = "course")
 class CourseEntity() : ConvertibleEntity<Course> {
+
     @Id
     @GeneratedValue
     var course_id: Long? = null
@@ -27,37 +28,5 @@ class CourseEntity() : ConvertibleEntity<Course> {
     @OneToMany(mappedBy = "course", orphanRemoval = true, fetch = FetchType.EAGER)
     var tasks: Set<TaskEntity> = emptySet()
 
-    constructor(course_id: Long? = null,
-                name: String,
-                language: String,
-                test_language: String,
-                testing_framework: String,
-                status: String,
-                user: UserEntity,
-                students: Set<StudentEntity> = emptySet(),
-                tasks: Set<TaskEntity> = emptySet()
-    ) : this() {
-        this.course_id = course_id
-        this.name = name
-        this.language = language
-        this.test_language = test_language
-        this.testing_framework = testing_framework
-        this.status = status
-        this.user = user
-        this.students = students
-        this.tasks = tasks
-    }
-
-    override fun toDto() =
-            Course(
-                    course_id!!,
-                    name!!,
-                    language!!,
-                    test_language!!,
-                    testing_framework!!,
-                    status!!,
-                    user!!.toDto(),
-                    students.toDtos(),
-                    tasks.toDtos()
-            )
+    override fun toDto(): Course = Course(this)
 }

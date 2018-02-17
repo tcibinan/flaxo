@@ -10,7 +10,6 @@ import com.tcibinan.flaxo.model.dao.StudentTaskRepository
 import com.tcibinan.flaxo.model.dao.TaskRepository
 import com.tcibinan.flaxo.model.dao.UserRepository
 import com.tcibinan.flaxo.model.data.Course
-import com.tcibinan.flaxo.model.data.CourseStatus
 import com.tcibinan.flaxo.model.data.Student
 import com.tcibinan.flaxo.model.data.Task
 import com.tcibinan.flaxo.model.data.User
@@ -34,7 +33,10 @@ class BasicDataService(private val userRepository: UserRepository,
             throw EntityAlreadyExistsException("User with '${nickname}' nickname already exists")
         }
         return userRepository
-                .save(UserEntity(nickname = nickname, credentials = CredentialsEntity(password = password)))
+                .save(UserEntity().apply {
+                    this.nickname = nickname
+                    this.credentials = CredentialsEntity().apply { this.password = password }
+                })
                 .toDto()
     }
 
@@ -52,18 +54,20 @@ class BasicDataService(private val userRepository: UserRepository,
             throw EntityAlreadyExistsException("${name} already exists for ${owner}")
         }
         val courseEntity = courseRepository
-                .save(
-                        CourseEntity(
-                                name = name,
-                                language = language,
-                                test_language = testLanguage,
-                                testing_framework = testingFramework,
-                                status = CourseStatus.INIT,
-                                user = owner.toEntity()
-                        )
-                )
+                .save(CourseEntity().apply {
+                    this.name = name
+                    this.language = language
+                    this.test_language = testLanguage
+                    this.testing_framework = testingFramework
+                    this.status = CourseStatus.INIT
+                    this.user = owner.toEntity()
+                })
         for (i in 1..numberOfTasks) {
-            taskRepository.save(TaskEntity(task_name = "${name}-$i", course = courseEntity))
+            taskRepository
+                    .save(TaskEntity().apply {
+                        this.task_name = "${name}-$i"
+                        this.course = courseEntity
+                    })
         }
         return getCourse(name, owner) ?: throw Exception("Could not create the course")
     }
@@ -96,16 +100,24 @@ class BasicDataService(private val userRepository: UserRepository,
     override fun addStudent(nickname: String,
                             course: Course): Student {
         val student =
-                studentRepository.save(StudentEntity(nickname = nickname, course = course.toEntity())).toDto()
+                studentRepository
+                        .save(StudentEntity().apply {
+                            this.nickname = nickname
+                            this.course = course.toEntity()
+                        })
+                        .toDto()
 
         val tasks = taskRepository.findAllByCourse(course.toEntity())
 
         tasks.forEach {
-            studentTaskRepository.save(StudentTaskEntity(task = it, student = student.toEntity()))
+            studentTaskRepository.save(StudentTaskEntity().apply {
+                this.task = it
+                this.student = student.toEntity()
+            })
         }
 
         return studentRepository
-                .findById(student.studentId)
+                .findById(student.id)
                 .map { it.toDto() }
                 .orElseThrow { Exception("Could not create the student") }
     }
