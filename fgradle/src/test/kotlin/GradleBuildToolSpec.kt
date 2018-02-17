@@ -5,8 +5,7 @@ import com.tcibinan.flaxo.core.language.JavaLang
 import com.tcibinan.flaxo.gradle.GradleDependency
 import com.tcibinan.flaxo.gradle.GradlePlugin
 import com.tcibinan.flaxo.gradle.GradleBuildTool
-import com.tcibinan.flaxo.gradle.GradleDependencyType.TEST_COMPILE
-import com.tcibinan.flaxo.gradle.GradleDependencyType.COMPILE_KOTLIN
+import com.tcibinan.flaxo.gradle.GradleDependencyType
 import com.tcibinan.flaxo.gradle.javaPlugin
 import io.kotlintest.matchers.shouldBe
 import io.kotlintest.matchers.shouldHave
@@ -23,8 +22,8 @@ object GradleBuildToolSpec : SubjectSpek<BuildTool>({
     val secondPlugin = GradlePlugin("application")
     val firstDependency = GradleDependency("a", "b", "c")
     val secondDependency = GradleDependency("1", "2", "3")
-    val testingDependency = GradleDependency("t", "y", "u", type = TEST_COMPILE)
-    val compileKotlinDependency = GradleDependency("t", "y", "u", type = COMPILE_KOTLIN)
+    val testingDependency = GradleDependency("t", "y", "u", type = GradleDependencyType.TEST_COMPILE)
+    val compilingDependency = GradleDependency("t", "y", "u", type = GradleDependencyType.COMPILE)
 
     describe("Gradle build tool") {
         on("plugins addition") {
@@ -58,6 +57,8 @@ object GradleBuildToolSpec : SubjectSpek<BuildTool>({
                     .find { it.name() == "build.gradle" }
                     ?: throw Exception("build.gradle wasn't found")
 
+            println(buildGradle.content())
+
             it("should have build.gradle with build.gradle containing single dependency") {
                 buildGradle.shouldHaveName(firstDependency, secondDependency)
             }
@@ -71,14 +72,14 @@ object GradleBuildToolSpec : SubjectSpek<BuildTool>({
             val buildTool =
                     subject.addPlugin(javaPlugin())
                             .addDependency(testingDependency)
-                            .addDependency(compileKotlinDependency)
+                            .addDependency(compilingDependency)
             val environment = buildTool.produceEnvironment()
             val buildGradle = environment.getFiles()
                     .find { it.name() == "build.gradle" }
                     ?: throw Exception("build.gradle wasn't found")
 
             it("should contain all dependencies") {
-                buildGradle.shouldHaveDependency(testingDependency, compileKotlinDependency)
+                buildGradle.shouldHaveDependency(testingDependency, compilingDependency)
             }
 
         }
