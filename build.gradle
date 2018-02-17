@@ -28,9 +28,14 @@ allprojects {
     }
 
     dependencies {
+        // kotlin
         compile "org.jetbrains.kotlin:kotlin-stdlib-jre8"
         compile "org.jetbrains.kotlin:kotlin-reflect"
 
+        // vavr
+        compile 'io.vavr:vavr:0.9.2'
+
+        // test
         testCompile "org.jetbrains.kotlin:kotlin-test"
 
         testCompile "io.kotlintest:kotlintest:$kotlintest_version"
