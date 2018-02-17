@@ -7,6 +7,7 @@ import com.tcibinan.flaxo.gradle.GradlePlugin
 import com.tcibinan.flaxo.gradle.GradleBuildTool
 import com.tcibinan.flaxo.gradle.GradleDependencyType.TEST_COMPILE
 import com.tcibinan.flaxo.gradle.GradleDependencyType.COMPILE_KOTLIN
+import com.tcibinan.flaxo.gradle.javaPlugin
 import io.kotlintest.matchers.shouldBe
 import io.kotlintest.matchers.shouldHave
 import io.kotlintest.matchers.substring
@@ -48,7 +49,8 @@ object GradleBuildToolSpec : SubjectSpek<BuildTool>({
 
         on("dependency addition") {
             val buildTool =
-                    subject.addDependency(firstDependency)
+                    subject.addPlugin(javaPlugin())
+                            .addDependency(firstDependency)
                             .addDependency(secondDependency)
                             .addDependency(secondDependency)
             val environment = buildTool.produceEnvironment()
@@ -67,7 +69,8 @@ object GradleBuildToolSpec : SubjectSpek<BuildTool>({
 
         on("different types of dependencies addition") {
             val buildTool =
-                    subject.addDependency(testingDependency)
+                    subject.addPlugin(javaPlugin())
+                            .addDependency(testingDependency)
                             .addDependency(compileKotlinDependency)
             val environment = buildTool.produceEnvironment()
             val buildGradle = environment.getFiles()

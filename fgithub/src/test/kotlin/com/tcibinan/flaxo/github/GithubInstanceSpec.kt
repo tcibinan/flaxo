@@ -34,7 +34,8 @@ object GithubInstanceSpec : SubjectSpek<GitInstance>({
                     .createBranch(mainBranch.name())
 
             it("should create with a single branch") {
-                subject.branches(userName, repository.name()) shouldContain mainBranch
+                subject.branches(userName, repository.name())
+                        .map { it.name() } shouldContain mainBranch.name()
             }
         }
 
@@ -42,7 +43,8 @@ object GithubInstanceSpec : SubjectSpek<GitInstance>({
             subject.createSubBranch(repository, mainBranch, subbranch.name())
 
             it("should create the subbranch with the given name") {
-                subject.branches(userName, repository.name()) shouldContain subbranch
+                subject.branches(userName, repository.name())
+                        .map { it.name() } shouldContain subbranch.name()
             }
         }
 
