@@ -55,7 +55,7 @@ object GradleEnvironmentSpec : SubjectSpek<BuildTool>({
 
             it("should create non-empty gradle/wrapper/gradle-wrapper.jar") {
                 assertTrue {
-                    environment.fileIsNotBlank("gradle/wrapper/gradle-wrapper.jar")
+                    environment.binaryFileIsNotEmpty("gradle/wrapper/gradle-wrapper.jar")
                 }
             }
 
@@ -89,3 +89,6 @@ object GradleEnvironmentSpec : SubjectSpek<BuildTool>({
 
 private fun Environment.fileIsNotBlank(fileName: String): Boolean =
         getFile(fileName)!!.content().isNotBlank()
+
+private fun Environment.binaryFileIsNotEmpty(fileName: String): Boolean =
+        getFile(fileName)!!.binaryContent().isNotEmpty()

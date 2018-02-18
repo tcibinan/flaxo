@@ -40,13 +40,13 @@ class GradleWrappers private constructor(files: Set<EnvironmentFile>)
         }
 
         private fun String.loadFrom(dir: File): EnvironmentFile =
-                BinaryEnvironmentFile(this, File(dir, this).readBytes())
-
-        private fun String.loadBinaryFrom(dir: File): EnvironmentFile =
                 File(dir, this)
                         .useLines { it.toList() }
                         .joinToString("\n")
-                        .run { SimpleEnvironmentFile(this@loadBinaryFrom, this@run) }
+                        .run { SimpleEnvironmentFile(this@loadFrom, this@run) }
+
+        private fun String.loadBinaryFrom(dir: File): EnvironmentFile =
+                BinaryEnvironmentFile(this, File(dir, this).readBytes())
 
     }
 

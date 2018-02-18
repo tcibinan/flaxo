@@ -24,6 +24,8 @@ class SimpleTravisEnvironmentTool(private val language: Language,
                                 language: java
                                 jdk:
                                   - oraclejdk8
+                                before_install:
+                                  - chmod +x gradlew
 
                                 # disabling email notifications
                                 notifications:
