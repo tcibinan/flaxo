@@ -13,7 +13,21 @@ The main underlying idea is quite clear:
 4. Flaxo make all the necessary arrangements to test and evaluate students solutions.
 5. Teacher receives well-formatted stats and results of his students progress.
 
-## Deployment
+## Building
+
+To build the app and run all tests. *Notice that the system should have right environment.*
+
+```bash
+./gradlew build
+```
+
+To run the app. The application can be found at [http://localhost:8080/](http://localhost:8080/).
+
+```bash
+./gradlew bootRun
+```
+
+### Building environment
 
 To run the application you should set several system variables.
 
@@ -24,18 +38,16 @@ To run the application you should set several system variables.
 | GITHUB_SECRET | Github OAuth App secret. |
 | GITHUB_WEB_HOOK_URL | Github web hook redirect absolute url. |
 
-## Testing
-
 Integration tests also requires a few system variables.
 
 | Variable | Description |
 |---|---|
 | GITHUB_TEST_NAME | Account nickname. |
-| GITHUB_TEST_TOKEN | Generated account access token with `repo`, `delete_repo`, `user:email`, `read:org`, `repo_deployment`, `repo:status`, `write:repo_hook` scopes for flaxo and travis needs. The access token can be generated in github account developer settings. |
-| GITHUB_REPOSITORY_ID | Repository id to perform travis tests with. |
+| GITHUB_TEST_TOKEN | Generated account access token with `repo`, `delete_repo` scopes. The access token can be generated in github account developer settings. |
+| GITHUB_REPOSITORY_ID | Repository name to perform travis tests with. |
 | TRAVIS_TEST_TOKEN | Generated using travis cli client access token. |
 
-### Travis integration
+## Travis integration
 
 Currently travis doesn't have oauth procedure enabled 
 and the only way to retrieve travis access token is to get it from the travis cli client. 
@@ -51,37 +63,54 @@ gem install travis -v 1.8.8 --no-rdoc --no-ri
 To ensure the installation's finished successfully, type `travis` in a terminal 
 and a list of possible travis cli commands should be listed.
 
-## Building
+## Supported languages and tools
 
-To build the app and run all tests.
+The flaxo system is built to be open and expandable. There is no limitations from the flaxo itself. 
+Nevertheless CI vendors have lists of supported languages and tools. See travis, moss, codacy limitations.
 
-```bash
-./gradlew build
-```
+Moreover the flaxo presents an easy way to generate courses from scratch using api or gui interface.
+The teacher literally doesn't have to create a repository, generate boilerplate branches structure, 
+manage build tools, look for newest tools versions, try to find ones that work well with each other.
+You just click a few buttons or send a single http request and everything will be done in background.
 
-To run the app. The application can be found at [http://localhost:8080/](http://localhost:8080/).
+The course can use different languages to the task itself and the tests it is verified by. Of course language
+should be compatible to each other. The same with the testing framework the testing language uses.
 
-```bash
-./gradlew bootRun
-```
+Currently the only building tool that is used is gradle.
+
+### Languages
+
+- Java 8
+- Kotlin 1.2
+- **todo:** Python
+- **todo:** R
+
+### Testing frameworks
+
+- Junit5
+- Spek (Kotlin testing framework)
+- **todo:** Pytest
 
 ## What's inside
 
-### Services
-- Github integration
-- **todo:** Travis integration
-- **todo:** Codacy integration
+### Integrated services
+
+- Github
+- Travis
+- **todo:** [Moss](https://theory.stanford.edu/~aiken/moss/) plagiarism detecting system
+- **todo:** Codacy
 
 ### Back-end technologies
+
 - Kotlin language
 - Gradle build tool
 - Spek testing framework
 - Spring Boot, Spring Data, Spring Security
+- Retrofit2 http client
 - and even more: h2 database, Kohsuke Github api, Kotlin test
 
 ### Front-end technologies
-- React
-- Redux
+
 - axios
 - js-cookie
 - Immutable.js
