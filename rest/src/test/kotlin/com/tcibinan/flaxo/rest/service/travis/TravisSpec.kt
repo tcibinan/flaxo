@@ -17,7 +17,7 @@ object TravisSpec : SubjectSpek<TravisService>({
     )
     val githubUsername = context.environment.getProperty("GITHUB_TEST_NAME")
     val githubToken = context.environment.getProperty("GITHUB_TEST_TOKEN")
-    val githubRepoId = context.environment.getProperty("GITHUB_REPOSITORY_ID")
+    val githubRepositoryName = context.environment.getProperty("GITHUB_REPOSITORY_ID")
     val travisToken = context.environment.getProperty("TRAVIS_TEST_TOKEN")
 
     subject { context.getBean("travisService", TravisService::class.java) }
@@ -31,7 +31,9 @@ object TravisSpec : SubjectSpek<TravisService>({
 
             it("should return valid token") {
                 val user = travis.getUser()
-                        ?: throw RuntimeException("travis user wasn't retrieved")
+                        .getOrElseThrow { errorBody ->
+                            Exception("Travis user wasn't received due to: ${errorBody.string()}")
+                        }
 
                 user.login shouldBe githubUsername
             }
@@ -42,8 +44,10 @@ object TravisSpec : SubjectSpek<TravisService>({
         val travis = subject.travis(travisToken)
 
         on("deactivating a repository") {
-            val repository = travis.deactivate(githubRepoId)
-                    ?: throw RuntimeException("repository wasn't retrieved")
+            val repository = travis.deactivate(githubUsername, githubRepositoryName)
+                    .getOrElseThrow { errorBody ->
+                        Exception("Travis repository wasn't received due to: ${errorBody.string()}")
+                    }
 
             it("should set repository to inactive status") {
                 repository.active shouldBe false
@@ -51,8 +55,10 @@ object TravisSpec : SubjectSpek<TravisService>({
         }
 
         on("activating a repository") {
-            val repository = travis.activate(githubRepoId)
-                    ?: throw RuntimeException("repository wasn't retrieved")
+            val repository = travis.activate(githubUsername, githubRepositoryName)
+                    .getOrElseThrow { errorBody ->
+                        Exception("Travis user wasn't received due to: ${errorBody.string()}")
+                    }
 
             it("should set repository to active status") {
                 repository.active shouldBe true

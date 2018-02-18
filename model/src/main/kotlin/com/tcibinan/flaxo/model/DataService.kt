@@ -16,7 +16,6 @@ interface DataService {
                      language: String,
                      testLanguage: String,
                      testingFramework: String,
-                     gitRepositoryId: String,
                      numberOfTasks: Int,
                      owner: User): Course
 

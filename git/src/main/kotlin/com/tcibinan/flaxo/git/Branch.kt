@@ -1,7 +1,9 @@
 package com.tcibinan.flaxo.git
 
+import com.tcibinan.flaxo.core.env.EnvironmentFile
+
 interface Branch {
     fun name(): String
     fun repository(): Repository
-    fun files(): Map<String, String>
+    fun files(): Set<EnvironmentFile>
 }

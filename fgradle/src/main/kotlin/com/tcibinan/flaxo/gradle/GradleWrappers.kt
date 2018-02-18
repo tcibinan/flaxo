@@ -1,5 +1,6 @@
 package com.tcibinan.flaxo.gradle
 
+import com.tcibinan.flaxo.core.env.BinaryEnvironmentFile
 import com.tcibinan.flaxo.core.env.EnvironmentFile
 import com.tcibinan.flaxo.core.env.Environment
 import com.tcibinan.flaxo.core.env.SimpleEnvironmentFile
@@ -31,18 +32,21 @@ class GradleWrappers private constructor(files: Set<EnvironmentFile>)
             GradleCmdExecutor.within(dir).wrapper()
 
             GradleWrappers(setOf(
-                    "gradlew".loadFromDir(dir),
-                    "gradlew.bat".loadFromDir(dir),
-                    "gradle/wrapper/gradle-wrapper.jar".loadFromDir(dir),
-                    "gradle/wrapper/gradle-wrapper.properties".loadFromDir(dir)
+                    "gradlew".loadFrom(dir),
+                    "gradlew.bat".loadFrom(dir),
+                    "gradle/wrapper/gradle-wrapper.jar".loadBinaryFrom(dir),
+                    "gradle/wrapper/gradle-wrapper.properties".loadFrom(dir)
             ))
         }
 
-        private fun String.loadFromDir(dir: File): EnvironmentFile =
+        private fun String.loadFrom(dir: File): EnvironmentFile =
+                BinaryEnvironmentFile(this, File(dir, this).readBytes())
+
+        private fun String.loadBinaryFrom(dir: File): EnvironmentFile =
                 File(dir, this)
                         .useLines { it.toList() }
                         .joinToString("\n")
-                        .run { SimpleEnvironmentFile(this@loadFromDir, this) }
+                        .run { SimpleEnvironmentFile(this@loadBinaryFrom, this@run) }
 
     }
 

@@ -6,4 +6,5 @@ open class SimpleEnvironmentFile(
 ) : EnvironmentFile {
     override fun name() = name
     override fun content() = content
+    override fun binaryContent() = content().toByteArray()
 }

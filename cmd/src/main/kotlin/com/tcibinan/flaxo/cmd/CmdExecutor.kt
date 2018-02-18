@@ -22,7 +22,10 @@ class CmdExecutor private constructor(private val dir: File?) {
     private fun completed(process: Process): List<String> {
         return when (process.waitFor()) {
             0 -> process.inputStream.toList()
-            else -> throw RuntimeException(process.errorStream.toList().joinToString())
+            else -> throw Exception(
+                    process.errorStream.toList()
+                            .joinToString("\n", "\n\n")
+            )
         }
     }
 

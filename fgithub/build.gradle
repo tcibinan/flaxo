@@ -3,6 +3,7 @@ plugins {
 }
 
 dependencies {
+    compile project(":core")
     compile project(":git")
     compile "org.kohsuke:github-api:$kohsuke_github_version"
 }

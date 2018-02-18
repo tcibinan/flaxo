@@ -1,5 +1,6 @@
 package com.tcibinan.flaxo.github
 
+import com.tcibinan.flaxo.core.env.EnvironmentFile
 import com.tcibinan.flaxo.git.Branch
 import com.tcibinan.flaxo.git.Repository
 
@@ -10,7 +11,7 @@ data class GithubBranch(
     override fun name() = name
     override fun repository() = repository
 
-    override fun files(): Map<String, String> {
+    override fun files(): Set<EnvironmentFile> {
         TODO("not implemented")
     }
 }

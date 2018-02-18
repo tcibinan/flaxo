@@ -15,15 +15,15 @@ interface TravisClient {
     ): Call<TravisUser>
 
     @Headers("Travis-API-Version: 3")
-    @POST("/repo/{repo}/activate")
+    @POST("/repo/{repository_slug}/activate")
     fun activate(@Header("Authorization") authorization: String,
-                 @Path("repo") repositoryId: String
+                 @Path("repository_slug") repositorySlug: String
     ): Call<TravisRepository>
 
     @Headers("Travis-API-Version: 3")
-    @POST("/repo/{repo}/deactivate")
+    @POST("/repo/{repository_slug}/deactivate")
     fun deactivate(@Header("Authorization") authorization: String,
-                   @Path("repo") repositoryId: String
+                   @Path("repository_slug") repositorySlug: String
     ): Call<TravisRepository>
 
 }

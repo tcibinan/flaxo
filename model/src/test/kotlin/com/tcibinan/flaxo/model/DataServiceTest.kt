@@ -20,7 +20,6 @@ class DataServiceTest : SubjectSpek<DataService>({
     val language = "laguage"
     val testLanguage = "testLanguage"
     val testingFramework = "testingFramework"
-    val repositoryId = "gitRepositoryId"
     val numberOfTasks = 4
     val student = "student"
     val anotherStudent = "anotherStudent"
@@ -53,7 +52,7 @@ class DataServiceTest : SubjectSpek<DataService>({
 
         on("course creation") {
             val owner = subject.getUser(nickname)!!
-            val course = subject.createCourse(courseName, language, testLanguage, testingFramework, repositoryId, numberOfTasks, owner)
+            val course = subject.createCourse(courseName, language, testLanguage, testingFramework, numberOfTasks, owner)
             val tasks = subject.getTasks(course)
 
             it("should contain the course") {
@@ -85,7 +84,7 @@ class DataServiceTest : SubjectSpek<DataService>({
 
             it("should throw an exception") {
                 shouldThrow<EntityAlreadyExistsException> {
-                    subject.createCourse(courseName, language, testLanguage, testingFramework, repositoryId, numberOfTasks, owner)
+                    subject.createCourse(courseName, language, testLanguage, testingFramework, numberOfTasks, owner)
                 }
             }
         }
@@ -94,7 +93,7 @@ class DataServiceTest : SubjectSpek<DataService>({
             val anotherUser = subject.addUser(anotherNickname, password)
 
             it("shouldn't throw an exception") {
-                subject.createCourse(courseName, language, testLanguage, testingFramework, repositoryId, numberOfTasks, anotherUser)
+                subject.createCourse(courseName, language, testLanguage, testingFramework, numberOfTasks, anotherUser)
             }
         }
 

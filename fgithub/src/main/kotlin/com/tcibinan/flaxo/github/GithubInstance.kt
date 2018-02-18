@@ -54,6 +54,10 @@ class GithubInstance(
         repository.loadFile(content, "feat: Add $path", path, branch.name())
     }
 
+    override fun load(repository: Repository, branch: Branch, path: String, bytes: ByteArray) {
+        repository.loadFile(bytes, "feat: Add $path", path, branch.name())
+    }
+
     override fun branches(user: String, repository: String): List<Branch> =
             github.getUser(user).getRepository(repository).branchesList()
 
@@ -70,5 +74,9 @@ class GithubInstance(
 
     private fun Repository.loadFile(content: String, message: String, path: String, name: String) {
         ghRepository(name()).createContent(content, message, path, name)
+    }
+
+    private fun Repository.loadFile(bytes: ByteArray, message: String, path: String, name: String) {
+        ghRepository(name()).createContent(bytes, message, path, name)
     }
 }

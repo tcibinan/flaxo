@@ -1,5 +1,7 @@
 package com.tcibinan.flaxo.github
 
+import com.tcibinan.flaxo.core.env.BinaryEnvironmentFile
+import com.tcibinan.flaxo.core.env.EnvironmentFile
 import com.tcibinan.flaxo.git.Branch
 import com.tcibinan.flaxo.git.BranchInstance
 import com.tcibinan.flaxo.git.RepositoryInstance
@@ -9,9 +11,24 @@ data class GithubBranchInstance(
         private val repositoryInstance: RepositoryInstance
 ) : BranchInstance, Branch by GithubBranch(name, repositoryInstance) {
 
-    override fun load(path: String, content: String): BranchInstance {
+    override fun load(file: EnvironmentFile): BranchInstance {
         repositoryInstance.git()
-                .load(repositoryInstance, this, path, content)
+                .apply {
+                    when (file) {
+                        is BinaryEnvironmentFile -> load(
+                                repositoryInstance,
+                                this@GithubBranchInstance,
+                                file.name(),
+                                file.binaryContent()
+                        )
+                        else -> load(
+                                repositoryInstance,
+                                this@GithubBranchInstance,
+                                file.name(),
+                                file.content()
+                        )
+                    }
+                }
         return this
     }
 

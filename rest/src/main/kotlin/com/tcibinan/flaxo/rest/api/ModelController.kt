@@ -8,6 +8,7 @@ import com.tcibinan.flaxo.git.BranchInstance
 import com.tcibinan.flaxo.model.CourseStatus
 import com.tcibinan.flaxo.model.IntegratedService
 import com.tcibinan.flaxo.model.data.StudentTask
+import com.tcibinan.flaxo.model.data.User
 import com.tcibinan.flaxo.rest.api.ServerAnswer.*
 import com.tcibinan.flaxo.rest.service.git.GitService
 import com.tcibinan.flaxo.rest.service.environment.RepositoryEnvironmentService
@@ -71,9 +72,7 @@ class ModelController @Autowired constructor(
 
         val git = gitService.with(githubToken)
 
-        val courseRepository = git.createRepository(courseName)
-
-        courseRepository
+        git.createRepository(courseName)
                 .createBranch("prerequisites")
                 .fillWith(environment)
                 .createSubBranches(numberOfTasks, "task-")
@@ -85,7 +84,6 @@ class ModelController @Autowired constructor(
                 language,
                 testLanguage,
                 testingFramework,
-                courseRepository.id(),
                 numberOfTasks,
                 user
         )
@@ -127,20 +125,27 @@ class ModelController @Autowired constructor(
         val githubUserId = user.githubId
                 ?: throw Exception("Github id for ${principal.name} is not set.")
 
-        val githubRepositoryId = course.githubRepositoryId
-
-        if (user.credentials.travisToken.isNullOrBlank()) {
-            val travisToken = travisService.retrieveTravisToken(githubUserId, githubToken)
-            dataService.addToken(user.nickname, IntegratedService.TRAVIS, travisToken)
-        }
-
-        travisService.travis(travisToken = user.credentials.travisToken!!)
-                .activate(githubRepositoryId)
-                ?: throw Exception("Travis activation of $githubUserId/$githubRepositoryId repository went bad.")
+        travisService.travis(retrieveTravisToken(user, githubUserId, githubToken))
+                .activate(githubUserId, course.name)
+                .getOrElseThrow { errorBody ->
+                    Exception("Travis activation of $githubUserId/${course.name} repository went bad due to: ${errorBody.string()}")
+                }
 
         dataService.updateCourse(course.with(status = CourseStatus.RUNNING))
 
         return responseService.response(COURSE_COMPOSED, courseName)
+    }
+
+    private fun retrieveTravisToken(user: User, githubUserId: String, githubToken: String): String {
+        return if (user.credentials.travisToken.isNullOrBlank()) {
+            val travisToken = travisService.retrieveTravisToken(githubUserId, githubToken)
+            dataService.addToken(user.nickname, IntegratedService.TRAVIS, travisToken)
+        } else {
+            user
+        }.run {
+            credentials.travisToken
+                    ?: throw Exception("Travis token wasn't found for ${user.nickname}.")
+        }
     }
 
     @GetMapping("/{owner}/{course}/statistics")
@@ -184,7 +189,6 @@ private fun Map<String, Language>.flatten(): List<Any> =
         }
 
 fun BranchInstance.fillWith(environment: Environment): BranchInstance {
-    environment.getFiles()
-            .forEach { load(it.name(), it.content()) }
+    environment.getFiles().forEach { load(it) }
     return this
 }

@@ -48,7 +48,6 @@ class BasicDataService(private val userRepository: UserRepository,
                               language: String,
                               testLanguage: String,
                               testingFramework: String,
-                              gitRepositoryId: String,
                               numberOfTasks: Int,
                               owner: User
     ): Course {
@@ -61,7 +60,6 @@ class BasicDataService(private val userRepository: UserRepository,
                     this.language = language
                     this.test_language = testLanguage
                     this.testing_framework = testingFramework
-                    this.github_repository_id = gitRepositoryId
                     this.status = CourseStatus.INIT
                     this.user = owner.toEntity()
                 })

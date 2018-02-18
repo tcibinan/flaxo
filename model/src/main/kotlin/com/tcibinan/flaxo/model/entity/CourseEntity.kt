@@ -21,7 +21,6 @@ class CourseEntity() : ConvertibleEntity<Course> {
     var test_language: String? = null
     var testing_framework: String? = null
     var status: String? = null
-    var github_repository_id: String? = null
     @ManyToOne
     var user: UserEntity? = null
     @OneToMany(mappedBy = "course", orphanRemoval = true, fetch = FetchType.EAGER)
