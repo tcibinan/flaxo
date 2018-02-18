@@ -61,6 +61,7 @@ class BasicDataService(private val userRepository: UserRepository,
                     this.language = language
                     this.test_language = testLanguage
                     this.testing_framework = testingFramework
+                    this.github_repository_id = gitRepositoryId
                     this.status = CourseStatus.INIT
                     this.user = owner.toEntity()
                 })
