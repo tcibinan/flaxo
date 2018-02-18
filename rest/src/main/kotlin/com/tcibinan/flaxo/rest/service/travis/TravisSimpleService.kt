@@ -1,6 +1,9 @@
 package com.tcibinan.flaxo.rest.service.travis
 
 import com.tcibinan.flaxo.cmd.CmdExecutor
+import com.tcibinan.flaxo.travis.SimpleTravis
+import com.tcibinan.flaxo.travis.Travis
+import com.tcibinan.flaxo.travis.TravisClient
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
 
@@ -25,6 +28,6 @@ class TravisSimpleService(private val baseUrl: String) : TravisService {
     }
 
     private fun TravisClient.with(travisToken: String): Travis =
-            Travis(this, travisToken)
+            SimpleTravis(this, travisToken)
 
 }

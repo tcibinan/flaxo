@@ -1,4 +1,4 @@
-package com.tcibinan.flaxo.rest.service.travis
+package com.tcibinan.flaxo.travis
 
 import retrofit2.Call
 import retrofit2.http.GET

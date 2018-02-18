@@ -4,4 +4,8 @@ plugins {
 
 dependencies {
     compile project(":core")
+
+    // http client
+    compile "com.squareup.retrofit2:retrofit:2.3.0"
+    compile "com.squareup.retrofit2:converter-jackson:2.3.0"
 }

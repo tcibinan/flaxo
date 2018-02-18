@@ -13,7 +13,7 @@ import com.tcibinan.flaxo.core.build.BuildTool
 import com.tcibinan.flaxo.core.build.BuildToolPlugin
 import com.tcibinan.flaxo.core.build.Dependency
 import com.tcibinan.flaxo.core.env.EnvironmentFile
-import com.tcibinan.flaxo.travis.SimpleTravisEnvironmentTool
+import com.tcibinan.flaxo.travis.env.SimpleTravisEnvironmentTool
 
 class GradleBuildTool(private val language: Language,
                       private val testingLanguage: Language,

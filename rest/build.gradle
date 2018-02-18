@@ -22,10 +22,6 @@ dependencies {
     // for post requests - could be replaced with git module in the future
     compile "org.apache.httpcomponents:fluent-hc:4.5.3"
 
-    // http client
-    compile "com.squareup.retrofit2:retrofit:2.3.0"
-    compile "com.squareup.retrofit2:converter-jackson:2.3.0"
-
     // embedded database
     compile "com.h2database:h2:1.4.196"
 

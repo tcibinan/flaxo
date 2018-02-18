@@ -1,4 +1,4 @@
-package com.tcibinan.flaxo.rest.service.travis
+package com.tcibinan.flaxo.travis
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 

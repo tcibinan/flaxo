@@ -9,7 +9,7 @@ import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.subject.SubjectSpek
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
-object TravisSpec : SubjectSpek<TravisService>({
+object TravisServiceSpec : SubjectSpek<TravisService>({
 
     val context = AnnotationConfigApplicationContext(
             TestApplication::class.java,

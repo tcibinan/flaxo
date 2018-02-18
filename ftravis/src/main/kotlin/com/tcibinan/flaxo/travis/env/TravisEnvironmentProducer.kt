@@ -1,4 +1,4 @@
-package com.tcibinan.flaxo.travis
+package com.tcibinan.flaxo.travis.env
 
 import com.tcibinan.flaxo.core.env.EnvironmentTool
 import com.tcibinan.flaxo.core.language.Language

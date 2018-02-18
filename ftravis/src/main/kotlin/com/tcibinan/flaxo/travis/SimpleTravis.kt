@@ -1,26 +1,27 @@
-package com.tcibinan.flaxo.rest.service.travis
+package com.tcibinan.flaxo.travis
 
 import io.vavr.control.Either
 import okhttp3.ResponseBody
 
-class Travis(private val travisClient: TravisClient,
-             private val travisToken: String) {
+class SimpleTravis(private val travisClient: TravisClient,
+                   private val travisToken: String
+) : Travis {
 
-    fun getUser(): Either<ResponseBody, TravisUser> =
+    override fun getUser(): Either<ResponseBody, TravisUser> =
             travisClient.getUser(authorization()).execute()
                     .run {
                         if (isSuccessful) Either.right(body())
                         else Either.left(errorBody())
                     }
 
-    fun activate(userName: String, repositoryName: String): Either<ResponseBody, TravisRepository> =
+    override fun activate(userName: String, repositoryName: String): Either<ResponseBody, TravisRepository> =
             travisClient.activate(authorization(), repositorySlug(userName, repositoryName)).execute()
                     .run {
                         if (isSuccessful) Either.right(body())
                         else Either.left(errorBody())
                     }
 
-    fun deactivate(userName: String, repositoryName: String): Either<ResponseBody, TravisRepository> =
+    override fun deactivate(userName: String, repositoryName: String): Either<ResponseBody, TravisRepository> =
             travisClient.deactivate(authorization(), repositorySlug(userName, repositoryName)).execute()
                     .run {
                         if (isSuccessful) Either.right(body())
