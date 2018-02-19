@@ -25,4 +25,5 @@ include 'fgithub'
 include 'rest'
 include 'cmd'
 include 'ftravis'
+include 'fmoss'
 
