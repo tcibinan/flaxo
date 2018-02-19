@@ -37,6 +37,7 @@ To run the application you should set several system variables.
 | GITHUB_ID | Github OAuth App id. |
 | GITHUB_SECRET | Github OAuth App secret. |
 | GITHUB_WEB_HOOK_URL | Github web hook redirect absolute url. |
+| MOSS_USER_ID | Moss system userid. It can be received from the email or you can find someone else's one on the web and use for you own risk. |
 
 Integration tests also requires a few system variables.
 
