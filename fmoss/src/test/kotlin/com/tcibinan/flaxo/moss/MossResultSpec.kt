@@ -2,6 +2,7 @@ package com.tcibinan.flaxo.moss
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
+import io.kotlintest.matchers.shouldBe
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
@@ -37,22 +38,25 @@ object MossResultSpec : SubjectSpek<MossResult>({
             val matches = subject.matches()
 
             it("should return a set with all matches") {
-                assertTrue { matches.size == 1 }
+               matches.size shouldBe 1
             }
 
             it("should return matches with students nicknames") {
-                assertTrue {
-                    matches.map { it.students() }
-                            .toSet() == setOf(Pair("student1", "student2"))
-                }
+                matches.map { it.students }.toSet() shouldBe setOf(Pair("student1", "student3"))
             }
 
             it("should return matches with counts of lines matched") {
-                assertTrue { matches.map { it.lines() }.toSet() == setOf(9) }
+                matches.map { it.lines }.toSet() shouldBe setOf(9)
             }
 
             it("should return matches with percentages of matching") {
-                assertTrue { matches.map { it.percentage() }.toSet() == setOf(97) }
+                matches.map { it.percentage }.toSet() shouldBe setOf(97)
+            }
+
+            it("should return matches with non-blank links to explicit information") {
+                matches.map { it.link }.forEach {
+                    assertTrue { it.isNotBlank() }
+                }
             }
         }
     }

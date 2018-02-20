@@ -25,9 +25,9 @@ object MossSpec : SubjectSpek<Moss>({
             LocalEnvironmentFile("fmoss/src/test/resources/base/ClassName.java")
     )
     val solutions: Set<EnvironmentFile> = setOf(
-            LocalEnvironmentFile("fmoss/src/test/resources/solution1/ClassName.java"),
-            LocalEnvironmentFile("fmoss/src/test/resources/solution2/ClassName.java"),
-            LocalEnvironmentFile("fmoss/src/test/resources/solution3/ClassName.java")
+            LocalEnvironmentFile("fmoss/src/test/resources/student1/ClassName.java"),
+            LocalEnvironmentFile("fmoss/src/test/resources/student2/ClassName.java"),
+            LocalEnvironmentFile("fmoss/src/test/resources/student3/ClassName.java")
     )
     val client: SocketClient = mock {
         on { resultURL }.thenReturn(mossResultsUrl)

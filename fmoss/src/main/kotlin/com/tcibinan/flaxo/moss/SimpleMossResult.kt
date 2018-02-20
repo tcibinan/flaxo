@@ -19,7 +19,29 @@ class SimpleMossResult(override val url: URL,
                     .select("tr")
                     .drop(1)
                     .map { tr -> tr.select("td") }
-                    .map { tds -> SimpleMossMatch(tds.first(), tds.second(), tds.third()) }
+                    .map { tds ->
+                        val first = tds.first().selectFirst("a")
+                        val second = tds.second().selectFirst("a")
+
+                        val link = first.attr("href")
+
+                        val firstPath = first.text().split(" ").first().split("/")
+                        val secondPath = second.text().split(" ").first().split("/")
+
+                        val students =
+                                firstPath.zip(secondPath)
+                                        .dropWhile { it.first == it.second }
+                                        .first()
+
+                        val lines = tds.third().text().toInt()
+
+                        val percentage = first.text().split(" ")
+                                .last()
+                                .removeSurrounding("(", "%)")
+                                .toInt()
+
+                        MossMatch(students, lines, link, percentage)
+                    }
                     .toSet()
 }
 
