@@ -1,11 +1,11 @@
 package com.tcibinan.flaxo.core.build
 
 import com.tcibinan.flaxo.core.NamedEntity
-import com.tcibinan.flaxo.core.env.EnvironmentTool
+import com.tcibinan.flaxo.core.env.EnvironmentSupplier
 import com.tcibinan.flaxo.core.framework.TestingFramework
 import com.tcibinan.flaxo.core.language.Language
 
-interface BuildTool : NamedEntity, EnvironmentTool {
+interface BuildTool : NamedEntity, EnvironmentSupplier {
 
     fun withLanguage(language: Language): BuildTool
     fun withTestingsLanguage(language: Language): BuildTool

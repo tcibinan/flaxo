@@ -1,12 +1,12 @@
 package com.tcibinan.flaxo.rest.service.environment
 
+import com.tcibinan.flaxo.core.build.BuildTool
 import com.tcibinan.flaxo.core.env.Environment
 import com.tcibinan.flaxo.core.framework.TestingFramework
 import com.tcibinan.flaxo.core.language.Language
-import com.tcibinan.flaxo.core.build.BuildTool
-import com.tcibinan.flaxo.rest.service.NoDefaultBuildTool
 import com.tcibinan.flaxo.rest.service.IncompatibleLanguage
 import com.tcibinan.flaxo.rest.service.IncompatibleTestingFramework
+import com.tcibinan.flaxo.rest.service.NoDefaultBuildTool
 import com.tcibinan.flaxo.rest.service.UnsupportedLanguage
 import com.tcibinan.flaxo.rest.service.UnsupportedTestingFramework
 
@@ -37,7 +37,7 @@ class SimpleRepositoryEnvironmentService(
                 .withLanguage(language)
                 .withTestingsLanguage(testingLanguage)
                 .withTestingFramework(testingFramework)
-                .produceEnvironment()
+                .getEnvironment()
     }
 
     private fun TestingFramework.shouldSuited(testingLanguage: Language) {

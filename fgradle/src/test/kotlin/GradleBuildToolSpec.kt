@@ -1,11 +1,14 @@
-import com.tcibinan.flaxo.core.env.EnvironmentFile
+import com.nhaarman.mockito_kotlin.mock
 import com.tcibinan.flaxo.core.build.BuildTool
+import com.tcibinan.flaxo.core.env.EnvironmentFile
+import com.tcibinan.flaxo.core.env.EnvironmentSupplier
+import com.tcibinan.flaxo.core.env.SimpleEnvironment
 import com.tcibinan.flaxo.core.framework.JUnitTestingFramework
 import com.tcibinan.flaxo.core.language.JavaLang
-import com.tcibinan.flaxo.gradle.GradleDependency
-import com.tcibinan.flaxo.gradle.GradlePlugin
 import com.tcibinan.flaxo.gradle.GradleBuildTool
+import com.tcibinan.flaxo.gradle.GradleDependency
 import com.tcibinan.flaxo.gradle.GradleDependencyType
+import com.tcibinan.flaxo.gradle.GradlePlugin
 import com.tcibinan.flaxo.gradle.javaPlugin
 import io.kotlintest.matchers.shouldBe
 import io.kotlintest.matchers.shouldHave
@@ -16,7 +19,6 @@ import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.subject.SubjectSpek
 
 object GradleBuildToolSpec : SubjectSpek<BuildTool>({
-    subject { GradleBuildTool(JavaLang, JavaLang, JUnitTestingFramework) }
 
     val firstPlugin = GradlePlugin("java")
     val secondPlugin = GradlePlugin("application")
@@ -24,6 +26,11 @@ object GradleBuildToolSpec : SubjectSpek<BuildTool>({
     val secondDependency = GradleDependency("1", "2", "3")
     val testingDependency = GradleDependency("t", "y", "u", type = GradleDependencyType.TEST_COMPILE)
     val compilingDependency = GradleDependency("t", "y", "u", type = GradleDependencyType.COMPILE)
+    val travis: EnvironmentSupplier = mock {
+        on { getEnvironment() }.thenReturn(SimpleEnvironment(emptySet()))
+    }
+
+    subject { GradleBuildTool(JavaLang, JavaLang, JUnitTestingFramework, travis) }
 
     describe("Gradle build tool") {
         on("plugins addition") {
@@ -31,7 +38,7 @@ object GradleBuildToolSpec : SubjectSpek<BuildTool>({
                     subject.addPlugin(firstPlugin)
                             .addPlugin(secondPlugin)
                             .addPlugin(secondPlugin)
-            val environment = buildTool.produceEnvironment()
+            val environment = buildTool.getEnvironment()
             val buildGradle = environment.getFiles()
                     .find { it.name() == "build.gradle" }
                     ?: throw Exception("build.gradle wasn't found")
@@ -52,7 +59,7 @@ object GradleBuildToolSpec : SubjectSpek<BuildTool>({
                             .addDependency(firstDependency)
                             .addDependency(secondDependency)
                             .addDependency(secondDependency)
-            val environment = buildTool.produceEnvironment()
+            val environment = buildTool.getEnvironment()
             val buildGradle = environment.getFiles()
                     .find { it.name() == "build.gradle" }
                     ?: throw Exception("build.gradle wasn't found")
@@ -71,7 +78,7 @@ object GradleBuildToolSpec : SubjectSpek<BuildTool>({
                     subject.addPlugin(javaPlugin())
                             .addDependency(testingDependency)
                             .addDependency(compilingDependency)
-            val environment = buildTool.produceEnvironment()
+            val environment = buildTool.getEnvironment()
             val buildGradle = environment.getFiles()
                     .find { it.name() == "build.gradle" }
                     ?: throw Exception("build.gradle wasn't found")

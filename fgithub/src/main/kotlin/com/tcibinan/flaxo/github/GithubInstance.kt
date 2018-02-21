@@ -11,10 +11,10 @@ import org.kohsuke.github.GitHub as KohsukeGit
 
 class GithubInstance(
         private val credentials: String,
-        rawWebHookUrl: String,
-        private val webHookUrl: URL = URL(rawWebHookUrl)
+        rawWebHookUrl: String
 ) : GitInstance {
 
+    private val webHookUrl: URL = URL(rawWebHookUrl)
     private val github: KohsukeGit by lazy { KohsukeGit.connectUsingOAuth(credentials) }
 
     override fun createRepository(repositoryName: String, private: Boolean): RepositoryInstance {

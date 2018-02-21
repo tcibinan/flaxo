@@ -8,9 +8,6 @@ dependencies {
     // Moss java client
     compile "it.zielke:moji:1.0.2"
 
-    // Mock
-    testCompile "com.nhaarman:mockito-kotlin:1.5.0"
-
     // HTML parser
     compile "org.jsoup:jsoup:1.11.2"
 }
