@@ -5,7 +5,7 @@ import it.zielke.moji.SocketClient
 
 class SimpleMossService(private val userId: String) : MossService {
 
-    override fun client(language: Language): Moss =
+    override fun client(language: String): Moss =
             SimpleMoss(userId, language, SocketClient())
 
 }

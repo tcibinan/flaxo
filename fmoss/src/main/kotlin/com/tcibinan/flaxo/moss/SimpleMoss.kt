@@ -7,7 +7,7 @@ import it.zielke.moji.SocketClient
 import org.jsoup.Jsoup
 
 class SimpleMoss(override val userId: String,
-                 override val language: Language,
+                 override val language: String,
                  private val client: SocketClient
 ) : Moss {
 
@@ -16,7 +16,7 @@ class SimpleMoss(override val userId: String,
 
     init {
         client.userID = userId
-        client.language = language.toString()
+        client.language = language
     }
 
     override fun base(bases: Set<EnvironmentFile>): Moss = apply {

@@ -7,7 +7,6 @@ import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import com.tcibinan.flaxo.core.env.EnvironmentFile
 import com.tcibinan.flaxo.core.env.LocalEnvironmentFile
-import com.tcibinan.flaxo.core.language.JavaLang
 import it.zielke.moji.SocketClient
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
@@ -17,7 +16,7 @@ import java.net.URL
 import kotlin.test.assertTrue
 
 object MossSpec : SubjectSpek<Moss>({
-    val language = JavaLang
+    val language = "java"
     val userId = "test_userid"
     val mossResultsUrl = URL("http://test.url.com/results/2312432")
 
