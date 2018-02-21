@@ -18,7 +18,7 @@ object MossResultSpec : SubjectSpek<MossResult>({
     val mossResultsUrl = URL("http://test.url.com/results/2312432")
 
     val mossAnswerHtml =
-            File("fmoss/src/test/resources/moss-results.html")
+            File("src/test/resources/moss-results.html")
                     .readLines()
                     .joinToString("\n")
 
