@@ -15,12 +15,12 @@ class StudentEntity() : ConvertibleEntity<Student> {
 
     @Id
     @GeneratedValue
-    var student_id: Long? = null
+    var studentId: Long? = null
     var nickname: String? = null
     @ManyToOne
     var course: CourseEntity? = null
     @OneToMany(mappedBy = "student", orphanRemoval = true, fetch = FetchType.EAGER)
-    var student_tasks: Set<StudentTaskEntity> = emptySet()
+    var studentTasks: Set<StudentTaskEntity> = emptySet()
 
     override fun toDto() = Student(this)
 }

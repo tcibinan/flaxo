@@ -12,11 +12,11 @@ class CredentialsEntity() : ConvertibleEntity<Credentials> {
 
     @Id
     @GeneratedValue
-    var credentials_id: Long? = null
+    var credentialsId: Long? = null
     var password: String? = null
-    var github_token: String? = null
-    var travis_token: String? = null
-    var codacy_token: String? = null
+    var githubToken: String? = null
+    var travisToken: String? = null
+    var codacyToken: String? = null
 
     override fun toDto() = Credentials(this)
 }

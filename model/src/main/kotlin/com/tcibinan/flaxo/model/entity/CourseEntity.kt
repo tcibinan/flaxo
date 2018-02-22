@@ -15,11 +15,11 @@ class CourseEntity() : ConvertibleEntity<Course> {
 
     @Id
     @GeneratedValue
-    var course_id: Long? = null
+    var courseId: Long? = null
     var name: String? = null
     var language: String? = null
-    var test_language: String? = null
-    var testing_framework: String? = null
+    var testingLanguage: String? = null
+    var testingFramework: String? = null
     var status: String? = null
     @ManyToOne
     var user: UserEntity? = null

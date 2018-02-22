@@ -13,7 +13,7 @@ class StudentTaskEntity() : ConvertibleEntity<StudentTask> {
 
     @Id
     @GeneratedValue
-    var student_task_id: Long? = null
+    var studentTaskId: Long? = null
     @ManyToOne
     var task: TaskEntity? = null
     @ManyToOne

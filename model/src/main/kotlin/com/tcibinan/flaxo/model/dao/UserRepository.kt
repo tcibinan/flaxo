@@ -5,4 +5,5 @@ import org.springframework.data.repository.CrudRepository
 
 interface UserRepository : CrudRepository<UserEntity, Long> {
     fun findByNickname(nickname: String): UserEntity?
+    fun findByGithubId(githubId: String): UserEntity?
 }

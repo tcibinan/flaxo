@@ -1,23 +1,27 @@
 package com.tcibinan.flaxo.model
 
 import com.tcibinan.flaxo.model.data.Course
-import com.tcibinan.flaxo.model.data.Credentials
 import com.tcibinan.flaxo.model.data.Student
 import com.tcibinan.flaxo.model.data.Task
 import com.tcibinan.flaxo.model.data.User
 
 interface DataService {
+
     fun addUser(nickname: String,
-                password: String): User
+                password: String
+    ): User
 
     fun getUser(nickname: String): User?
 
+    fun getUserByGithubId(githubId: String): User?
+
     fun createCourse(name: String,
                      language: String,
-                     testLanguage: String,
+                     testingLanguage: String,
                      testingFramework: String,
                      numberOfTasks: Int,
-                     owner: User): Course
+                     owner: User
+    ): Course
 
     fun deleteCourse(courseName: String,
                      owner: User)
@@ -25,12 +29,14 @@ interface DataService {
     fun updateCourse(updatedCourse: Course)
 
     fun getCourse(name: String,
-                  owner: User): Course?
+                  owner: User
+    ): Course?
 
     fun getCourses(userNickname: String): Set<Course>
 
     fun addStudent(nickname: String,
-                   course: Course): Student
+                   course: Course
+    ): Student
 
     fun getStudents(course: Course): Set<Student>
 
@@ -38,7 +44,10 @@ interface DataService {
 
     fun addToken(userNickname: String,
                  service: IntegratedService,
-                 accessToken: String): User
+                 accessToken: String
+    ): User
 
-    fun addGithubId(userNickname: String, githubId: String): User
+    fun addGithubId(userNickname: String,
+                    githubId: String
+    ): User
 }

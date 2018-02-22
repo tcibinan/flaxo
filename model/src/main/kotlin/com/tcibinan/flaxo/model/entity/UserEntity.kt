@@ -15,9 +15,9 @@ class UserEntity : ConvertibleEntity<User> {
 
     @Id
     @GeneratedValue
-    var user_id: Long? = null
+    var userId: Long? = null
     var nickname: String? = null
-    var github_id: String? = null
+    var githubId: String? = null
     @OneToOne(cascade = [(CascadeType.ALL)])
     var credentials: CredentialsEntity? = null
 

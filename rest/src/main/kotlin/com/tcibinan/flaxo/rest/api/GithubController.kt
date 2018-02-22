@@ -1,22 +1,26 @@
 package com.tcibinan.flaxo.rest.api
 
+import com.tcibinan.flaxo.git.PullRequest
 import com.tcibinan.flaxo.model.DataService
 import com.tcibinan.flaxo.model.IntegratedService
-import com.tcibinan.flaxo.rest.api.ServerAnswer.*
+import com.tcibinan.flaxo.rest.api.ServerAnswer.MANUAL_REDIRECT
 import com.tcibinan.flaxo.rest.service.git.GitService
 import com.tcibinan.flaxo.rest.service.response.ResponseService
+import com.tcibinan.flaxo.rest.service.travis.TravisService
 import org.apache.commons.collections4.map.PassiveExpiringMap
 import org.apache.http.client.fluent.Form
 import org.apache.http.client.fluent.Request
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
 import java.util.*
 import java.util.concurrent.TimeUnit
+import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 @RestController
@@ -24,6 +28,7 @@ import javax.servlet.http.HttpServletResponse
 class GithubController(
         private val responseService: ResponseService,
         private val dataService: DataService,
+        private val travisService: TravisService,
         private val gitService: GitService
 ) {
 
@@ -97,4 +102,27 @@ class GithubController(
 
         response.sendRedirect("/")
     }
+
+    @PostMapping("/hook")
+    fun webHook(request: HttpServletRequest) {
+        val hook = gitService.parsePayload(request)
+
+        when (hook) {
+            is PullRequest -> {
+                if (hook.isOpened) {
+                    val courseAuthor = dataService.getUserByGithubId(hook.receiverId)
+                            ?: throw Exception("User with githubId ${hook.receiverId} wasn't found in database.")
+
+                    val course = dataService.getCourse(hook.receiverRepositoryName, courseAuthor)
+                            ?: throw Exception("Course ${hook.receiverRepositoryName} wasn't found for user ${courseAuthor.nickname}.")
+
+                    dataService.addStudent(hook.authorId, course)
+                } else {
+                    // do nothing
+                }
+            }
+        }
+    }
+
 }
+

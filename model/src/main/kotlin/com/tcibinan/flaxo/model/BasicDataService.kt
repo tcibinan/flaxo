@@ -1,8 +1,5 @@
 package com.tcibinan.flaxo.model
 
-import com.tcibinan.flaxo.model.entity.CourseEntity
-import com.tcibinan.flaxo.model.entity.StudentTaskEntity
-import com.tcibinan.flaxo.model.entity.UserEntity
 import com.tcibinan.flaxo.model.dao.CourseRepository
 import com.tcibinan.flaxo.model.dao.CredentialsRepository
 import com.tcibinan.flaxo.model.dao.StudentRepository
@@ -10,13 +7,15 @@ import com.tcibinan.flaxo.model.dao.StudentTaskRepository
 import com.tcibinan.flaxo.model.dao.TaskRepository
 import com.tcibinan.flaxo.model.dao.UserRepository
 import com.tcibinan.flaxo.model.data.Course
-import com.tcibinan.flaxo.model.data.Credentials
 import com.tcibinan.flaxo.model.data.Student
 import com.tcibinan.flaxo.model.data.Task
 import com.tcibinan.flaxo.model.data.User
+import com.tcibinan.flaxo.model.entity.CourseEntity
 import com.tcibinan.flaxo.model.entity.CredentialsEntity
 import com.tcibinan.flaxo.model.entity.StudentEntity
+import com.tcibinan.flaxo.model.entity.StudentTaskEntity
 import com.tcibinan.flaxo.model.entity.TaskEntity
+import com.tcibinan.flaxo.model.entity.UserEntity
 import com.tcibinan.flaxo.model.entity.toDtos
 
 class BasicDataService(private val userRepository: UserRepository,
@@ -44,9 +43,12 @@ class BasicDataService(private val userRepository: UserRepository,
     override fun getUser(nickname: String): User? =
             userRepository.findByNickname(nickname)?.toDto()
 
+    override fun getUserByGithubId(githubId: String): User? =
+            userRepository.findByGithubId(githubId)?.toDto()
+
     override fun createCourse(name: String,
                               language: String,
-                              testLanguage: String,
+                              testingLanguage: String,
                               testingFramework: String,
                               numberOfTasks: Int,
                               owner: User
@@ -58,15 +60,15 @@ class BasicDataService(private val userRepository: UserRepository,
                 .save(CourseEntity().apply {
                     this.name = name
                     this.language = language
-                    this.test_language = testLanguage
-                    this.testing_framework = testingFramework
+                    this.testingLanguage = testingLanguage
+                    this.testingFramework = testingFramework
                     this.status = CourseStatus.INIT
                     this.user = owner.toEntity()
                 })
         for (i in 1..numberOfTasks) {
             taskRepository
                     .save(TaskEntity().apply {
-                        this.task_name = "${name}-$i"
+                        this.taskName = "${name}-$i"
                         this.course = courseEntity
                     })
         }
@@ -157,8 +159,8 @@ private fun CredentialsEntity.withServiceToken(service: IntegratedService,
                                                accessToken: String
 ): CredentialsEntity {
     when (service) {
-        IntegratedService.GITHUB -> this.github_token = accessToken
-        IntegratedService.TRAVIS -> this.travis_token = accessToken
+        IntegratedService.GITHUB -> this.githubToken = accessToken
+        IntegratedService.TRAVIS -> this.travisToken = accessToken
     }
     return this
 }
