@@ -121,6 +121,9 @@ class GithubController(
                     // do nothing
                 }
             }
+            else -> {
+                //do nothing
+            }
         }
     }
 

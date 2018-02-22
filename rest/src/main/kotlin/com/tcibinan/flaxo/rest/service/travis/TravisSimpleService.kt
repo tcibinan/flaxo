@@ -4,8 +4,11 @@ import com.tcibinan.flaxo.cmd.CmdExecutor
 import com.tcibinan.flaxo.travis.SimpleTravis
 import com.tcibinan.flaxo.travis.Travis
 import com.tcibinan.flaxo.travis.TravisClient
+import com.tcibinan.flaxo.travis.build.TravisBuild
+import com.tcibinan.flaxo.travis.parseTravisWebHook
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
+import java.io.Reader
 
 class TravisSimpleService(private val baseUrl: String) : TravisService {
 
@@ -29,5 +32,8 @@ class TravisSimpleService(private val baseUrl: String) : TravisService {
 
     private fun TravisClient.with(travisToken: String): Travis =
             SimpleTravis(this, travisToken)
+
+    override fun parsePayload(reader: Reader): TravisBuild? =
+            parseTravisWebHook(reader)
 
 }

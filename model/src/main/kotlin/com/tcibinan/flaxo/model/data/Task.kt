@@ -13,4 +13,19 @@ data class Task(private val entity: TaskEntity) : DataObject<TaskEntity> {
 
     override fun toEntity() = entity
 
+    fun with(id: Long? = null,
+             name: String? = null,
+             course: Course? = null,
+             studentTasks: Set<StudentTask> = emptySet()
+    ): Task = TaskEntity()
+            .apply {
+                this.taskId = id ?: entity.taskId
+                this.taskName = name ?: entity.taskName
+                this.course = course?.toEntity() ?: entity.course
+                this.studentTasks =
+                        if (studentTasks.toEntities().isNotEmpty()) studentTasks.toEntities()
+                        else entity.studentTasks
+            }
+            .toDto()
+
 }

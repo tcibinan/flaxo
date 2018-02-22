@@ -2,6 +2,7 @@ package com.tcibinan.flaxo.model
 
 import com.tcibinan.flaxo.model.data.Course
 import com.tcibinan.flaxo.model.data.Student
+import com.tcibinan.flaxo.model.data.StudentTask
 import com.tcibinan.flaxo.model.data.Task
 import com.tcibinan.flaxo.model.data.User
 
@@ -50,4 +51,6 @@ interface DataService {
     fun addGithubId(userNickname: String,
                     githubId: String
     ): User
+
+    fun updateStudentTask(updatedStudentTask: StudentTask): StudentTask
 }

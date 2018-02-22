@@ -8,6 +8,7 @@ import com.tcibinan.flaxo.model.dao.TaskRepository
 import com.tcibinan.flaxo.model.dao.UserRepository
 import com.tcibinan.flaxo.model.data.Course
 import com.tcibinan.flaxo.model.data.Student
+import com.tcibinan.flaxo.model.data.StudentTask
 import com.tcibinan.flaxo.model.data.Task
 import com.tcibinan.flaxo.model.data.User
 import com.tcibinan.flaxo.model.entity.CourseEntity
@@ -152,6 +153,9 @@ class BasicDataService(private val userRepository: UserRepository,
 
         return userRepository.save(user.with(githubId = githubId).toEntity()).toDto()
     }
+
+    override fun updateStudentTask(updatedStudentTask: StudentTask): StudentTask =
+            studentTaskRepository.save(updatedStudentTask.toEntity()).toDto()
 
 }
 
