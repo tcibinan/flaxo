@@ -49,7 +49,7 @@ object TravisWebHookParserSpec : Spek({
                     ?: throw Exception("Travis pull request web hook wasn't parsed properly.")
 
             it("should get pull request author") {
-                assertTrue { build.authorId == pullRequestAuthor }
+                assertTrue { build.author == pullRequestAuthor }
             }
 
             it("should get pull request branch") {
@@ -61,11 +61,11 @@ object TravisWebHookParserSpec : Spek({
             }
 
             it("should get pull request repository owner") {
-                assertTrue { build.receiverId == repositoryOwner }
+                assertTrue { build.repositoryOwner == repositoryOwner }
             }
 
             it("should get pull request repository name") {
-                assertTrue { build.receiverRepositoryName == repositoryName }
+                assertTrue { build.repositoryName == repositoryName }
             }
         }
     }

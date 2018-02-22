@@ -47,21 +47,21 @@ class TravisController @Autowired constructor(private val travisService: TravisS
     }
 
     private fun getStudentTaskBy(hook: TravisPullRequestBuild): StudentTask {
-        val user = dataService.getUser(hook.receiverId)
-                ?: throw Exception("User with the required nickname ${hook.receiverId} wasn't found.")
+        val user = dataService.getUser(hook.repositoryOwner)
+                ?: throw Exception("User with the required nickname ${hook.repositoryOwner} wasn't found.")
 
-        val course = dataService.getCourse(hook.receiverRepositoryName, user)
-                ?: throw Exception("Course with name ${hook.receiverRepositoryName} wasn't found " +
+        val course = dataService.getCourse(hook.repositoryName, user)
+                ?: throw Exception("Course with name ${hook.repositoryName} wasn't found " +
                         "for user ${user.nickname}.")
 
         val student = course.students
-                .find { it.nickname == hook.authorId }
-                ?: throw Exception("Student ${hook.authorId} wasn't found " +
-                        "in course ${hook.receiverId}/${hook.receiverRepositoryName}.")
+                .find { it.nickname == hook.author }
+                ?: throw Exception("Student ${hook.author} wasn't found " +
+                        "in course ${hook.repositoryOwner}/${hook.repositoryName}.")
 
         return student.studentTasks
                 .find { it.task.name == hook.branch }
-                ?: throw Exception("Student task ${hook.branch} wasn't found for student ${hook.authorId} " +
-                        "in course ${hook.receiverId}/${hook.receiverRepositoryName}.")
+                ?: throw Exception("Student task ${hook.branch} wasn't found for student ${hook.author} " +
+                        "in course ${hook.repositoryOwner}/${hook.repositoryName}.")
     }
 }
