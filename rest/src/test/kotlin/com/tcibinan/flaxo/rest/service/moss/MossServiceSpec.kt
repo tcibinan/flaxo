@@ -2,13 +2,18 @@ package com.tcibinan.flaxo.rest.service.moss
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
+import com.tcibinan.flaxo.core.env.EnvironmentFile
 import com.tcibinan.flaxo.core.language.JavaLang
 import com.tcibinan.flaxo.core.language.Language
+import com.tcibinan.flaxo.git.Branch
 import com.tcibinan.flaxo.git.GitInstance
 import com.tcibinan.flaxo.model.data.Course
-import com.tcibinan.flaxo.model.data.Student
-import com.tcibinan.flaxo.model.data.StudentTask
-import com.tcibinan.flaxo.model.data.User
+import com.tcibinan.flaxo.model.entity.CourseEntity
+import com.tcibinan.flaxo.model.entity.CredentialsEntity
+import com.tcibinan.flaxo.model.entity.StudentEntity
+import com.tcibinan.flaxo.model.entity.StudentTaskEntity
+import com.tcibinan.flaxo.model.entity.TaskEntity
+import com.tcibinan.flaxo.model.entity.UserEntity
 import com.tcibinan.flaxo.rest.service.git.GitService
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
@@ -25,77 +30,69 @@ object MossServiceSpec : SubjectSpek<MossService>({
     val student2Name = "student2"
 
     val supportedLanguages: Map<String, Language> = mapOf("java" to JavaLang)
-    val student1Tasks: Set<StudentTask> = setOf(
-            mock {
-                on { anyBuilds }.thenReturn(true)
-                on { buildSucceed }.thenReturn(true)
-                on { task }.thenReturn(
-                        mock { on { name }.thenReturn("task1") }
-                )
+    val studentTaskEntities1: Set<StudentTaskEntity> = setOf(
+            StudentTaskEntity().also {
+                it.anyBuilds = true
+                it.buildSucceed = true
+                it.task = TaskEntity().also {
+                    it.taskName = "task1"
+                }
             }
     )
-    val student1: Student = mock {
-        on { nickname }.thenReturn(student1Name)
-        on { studentTasks }.thenReturn(student1Tasks)
+    val student1 = StudentEntity().also {
+        it.nickname = student1Name
+        it.studentTasks = studentTaskEntities1
     }
-    val student2Tasks: Set<StudentTask> = setOf(
-            mock {
-                on { anyBuilds }.thenReturn(true)
-                on { buildSucceed }.thenReturn(false)
-                on { task }.thenReturn(
-                        mock { on { name }.thenReturn("task1") }
-                )
+    val studentTaskEntities2: Set<StudentTaskEntity> = setOf(
+            StudentTaskEntity().also {
+                it.anyBuilds = true
+                it.buildSucceed = false
+                it.task = TaskEntity().also {
+                    it.taskName = "task1"
+                }
             }
     )
-    val student2: Student = mock {
-        on { nickname }.thenReturn(student2Name)
-        on { studentTasks }.thenReturn(student2Tasks)
+    val student2 = StudentEntity().also {
+        it.nickname = student2Name
+        it.studentTasks = studentTaskEntities2
     }
+    val user = UserEntity().also {
+        val credentials = CredentialsEntity().also {
+            it.githubToken = "userGithubToken"
+        }
+        it.nickname = userName
+        it.githubId = "userGithubId"
+        it.credentials = credentials
+    }
+    val course = Course(CourseEntity().also {
+        it.name = courseName
+        it.user = user
+        it.language = language
+        it.students = setOf(student1, student2)
+    })
     val git: GitInstance = mock {
-        on { branches(student1Name, courseName) }
-                .thenReturn(listOf(
-                        mock {
-                            on { name() }.thenReturn("task1")
-                            on { files() }.thenReturn(setOf(
-                                    mock { on { name() }.thenReturn("A.java") },
-                                    mock { on { name() }.thenReturn("B.java") },
-                                    mock { on { name() }.thenReturn("C.anotherFile") }
-                            ))
-                        }
-                ))
-        on { branches(student1Name, courseName) }
-                .thenReturn(listOf(
-                        mock {
-                            on { name() }.thenReturn("task1")
-                            on { files() }.thenReturn(setOf(
-                                    mock { on { name() }.thenReturn("A.java") }
-                            ))
-                        }
-                ))
-        on { branches(userName, courseName) }
-                .thenReturn(listOf(
-                        mock {
-                            on { name() }.thenReturn("task1")
-                            on { files() }.thenReturn(setOf(
-                                    mock { on { name() }.thenReturn("A.java") }
-                            ))
-                        }
-                ))
+        val student1Branches: List<Branch> = listOf(
+                mock {
+                    val file1: EnvironmentFile = mock { on { name() }.thenReturn("A.java") }
+                    val file2: EnvironmentFile = mock { on { name() }.thenReturn("B.kt") }
+                    on { name() }.thenReturn("task1")
+                    on { files() }.thenReturn(setOf(file1, file2))
+                }
+        )
+        val student2Branches: List<Branch> = listOf(
+                mock {
+                    val file1: EnvironmentFile = mock { on { name() }.thenReturn("A.java") }
+                    on { name() }.thenReturn("task1")
+                    on { files() }.thenReturn(setOf(file1))
+                }
+        )
+        val student3Branches: List<Branch> = student2Branches
+        on { branches(student1Name, courseName) }.thenReturn(student1Branches)
+        on { branches(student1Name, courseName) }.thenReturn(student2Branches)
+        on { branches(userName, courseName) }.thenReturn(student3Branches)
     }
     val gitService: GitService = mock {
         on { with(any()) }.thenReturn(git)
-    }
-    val user: User = mock {
-        on { nickname }.thenReturn(userName)
-        on { githubId }.thenReturn("userGithubId")
-        on { credentials }.thenReturn(
-                mock { on { githubToken }.thenReturn("userGithubToken") }
-        )
-    }
-    val course: Course = mock {
-        on { name }.thenReturn(courseName)
-        on { user }.thenReturn(user)
-        on { students }.thenReturn(setOf(student1, student2))
     }
 
     subject { SimpleMossService(userId, gitService, supportedLanguages) }
