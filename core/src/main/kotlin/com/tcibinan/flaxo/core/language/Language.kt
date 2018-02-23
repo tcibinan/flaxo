@@ -4,7 +4,11 @@ import com.tcibinan.flaxo.core.NamedEntity
 import com.tcibinan.flaxo.core.framework.TestingFramework
 
 interface Language : NamedEntity {
+
+    val extension: String
+
     fun compatibleTestingLanguages(): Set<Language>
+
     fun compatibleTestingFrameworks(): Set<TestingFramework>
 
     fun canBeTestedBy(testingLanguage: Language): Boolean =

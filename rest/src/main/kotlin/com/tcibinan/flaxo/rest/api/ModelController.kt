@@ -1,17 +1,18 @@
 package com.tcibinan.flaxo.rest.api
 
 import com.tcibinan.flaxo.core.env.Environment
-import com.tcibinan.flaxo.model.DataService
-import com.tcibinan.flaxo.model.EntityAlreadyExistsException
 import com.tcibinan.flaxo.core.language.Language
 import com.tcibinan.flaxo.git.BranchInstance
 import com.tcibinan.flaxo.model.CourseStatus
+import com.tcibinan.flaxo.model.DataService
+import com.tcibinan.flaxo.model.EntityAlreadyExistsException
 import com.tcibinan.flaxo.model.IntegratedService
 import com.tcibinan.flaxo.model.data.StudentTask
 import com.tcibinan.flaxo.model.data.User
 import com.tcibinan.flaxo.rest.api.ServerAnswer.*
-import com.tcibinan.flaxo.rest.service.git.GitService
 import com.tcibinan.flaxo.rest.service.environment.RepositoryEnvironmentService
+import com.tcibinan.flaxo.rest.service.git.GitService
+import com.tcibinan.flaxo.rest.service.moss.MossService
 import com.tcibinan.flaxo.rest.service.response.Response
 import com.tcibinan.flaxo.rest.service.response.ResponseService
 import com.tcibinan.flaxo.rest.service.travis.TravisService
@@ -33,6 +34,7 @@ class ModelController @Autowired constructor(
         private val environmentService: RepositoryEnvironmentService,
         private val travisService: TravisService,
         private val gitService: GitService,
+        private val mossService: MossService,
         private val supportedLanguages: Map<String, Language>
 ) {
 
@@ -136,24 +138,32 @@ class ModelController @Autowired constructor(
         return responseService.response(COURSE_COMPOSED, courseName)
     }
 
-    private fun retrieveTravisToken(user: User, githubUserId: String, githubToken: String): String {
-        return if (user.credentials.travisToken.isNullOrBlank()) {
-            val travisToken = travisService.retrieveTravisToken(githubUserId, githubToken)
-            dataService.addToken(user.nickname, IntegratedService.TRAVIS, travisToken)
-        } else {
-            user
-        }.run {
-            credentials.travisToken
-                    ?: throw Exception("Travis token wasn't found for ${user.nickname}.")
-        }
-    }
+    private fun retrieveTravisToken(user: User,
+                                    githubUserId: String,
+                                    githubToken: String
+    ): String = retrieveUserWithTravisToken(user, githubUserId, githubToken)
+            .credentials
+            .travisToken
+            ?: throw Exception("Travis token wasn't found for ${user.nickname}.")
+
+    private fun retrieveUserWithTravisToken(user: User,
+                                            githubUserId: String,
+                                            githubToken: String
+    ): User = user
+            .takeUnless { it.credentials.travisToken.isNullOrBlank() }
+            ?: dataService.addToken(
+                    user.nickname,
+                    IntegratedService.TRAVIS,
+                    travisService.retrieveTravisToken(githubUserId, githubToken)
+            )
 
     @GetMapping("/{owner}/{course}/statistics")
     @PreAuthorize("hasAuthority('USER')")
     fun getCourseStatistics(@PathVariable("owner") ownerNickname: String,
                             @PathVariable("course") courseName: String
     ): Response {
-        val user = dataService.getUser(ownerNickname) ?: return responseService.response(USER_NOT_FOUND, ownerNickname)
+        val user = dataService.getUser(ownerNickname)
+                ?: return responseService.response(USER_NOT_FOUND, ownerNickname)
 
         val course = dataService.getCourse(courseName, user)
                 ?: return responseService.response(COURSE_NOT_FOUND, ownerNickname, courseName)
@@ -170,22 +180,40 @@ class ModelController @Autowired constructor(
     fun supportedLanguages(): Response =
             responseService.response(SUPPORTED_LANGUAGES, payload = supportedLanguages.flatten())
 
+    @PostMapping("/analysePlagiarism")
+    @PreAuthorize("hasAuthority('USER')")
+    fun analysePlagiarism(@RequestParam courseName: String,
+                          principal: Principal
+    ) {
+        val user = dataService.getUser(principal.name)
+                ?: throw Exception("User with the required nickname ${principal.name} wasn't found.")
+
+        val course = dataService.getCourse(courseName, user)
+                ?: throw Exception("Course $courseName wasn't found for user ${principal.name}.")
+
+        mossService.extractMossTasks(course)
+        // TODO: 23/02/18 Call tasks asychronously
+
+    }
 }
 
 private fun Collection<StudentTask>.reports(): List<Any> =
         map {
-            object {
-                val totalPoints = it.points
-            }
+            mapOf(
+                    "builded" to it.anyBuilds,
+                    "succeed" to it.buildSucceed
+            )
         }
 
 private fun Map<String, Language>.flatten(): List<Any> =
         map { (name, language) ->
-            object {
-                val name = name
-                val compatibleTestingLanguages = language.compatibleTestingLanguages().map { it.name() }
-                val compatibleTestingFrameworks = language.compatibleTestingFrameworks().map { it.name() }
-            }
+            mapOf(
+                    "name" to name,
+                    "compatibleTestingLanguages"
+                            to language.compatibleTestingLanguages().map { it.name() },
+                    "compatibleTestingFrameworks"
+                            to language.compatibleTestingFrameworks().map { it.name() }
+            )
         }
 
 fun BranchInstance.fillWith(environment: Environment): BranchInstance {
