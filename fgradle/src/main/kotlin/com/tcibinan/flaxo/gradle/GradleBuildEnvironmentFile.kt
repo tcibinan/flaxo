@@ -7,7 +7,10 @@ class GradleBuildEnvironmentFile private constructor(private val content: String
     : EnvironmentFile {
 
     override fun name() = "build.gradle"
+
     override fun content() = content
+
+    override fun with(path: String): EnvironmentFile = this
 
     companion object {
         fun builder() = GradleBuildEnvironmentFile.Builder()

@@ -11,4 +11,7 @@ class BinaryEnvironmentFile(private val name: String,
 
     override fun binaryContent() = bytes
 
+    override fun with(path: String): EnvironmentFile =
+            BinaryEnvironmentFile(path, bytes)
+
 }

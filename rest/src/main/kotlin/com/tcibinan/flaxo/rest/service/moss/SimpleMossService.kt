@@ -7,6 +7,7 @@ import com.tcibinan.flaxo.moss.Moss
 import com.tcibinan.flaxo.moss.SimpleMoss
 import com.tcibinan.flaxo.rest.service.git.GitService
 import it.zielke.moji.SocketClient
+import java.nio.file.Paths
 
 class SimpleMossService(private val userId: String,
                         private val gitService: GitService,
@@ -16,7 +17,7 @@ class SimpleMossService(private val userId: String,
     override fun client(language: String): Moss =
             SimpleMoss(userId, language, SocketClient())
 
-    override fun extractMossTasks(course: Course): Set<MossTask> {
+    override fun extractMossTasks(course: Course): List<MossTask> {
         val user = course.user
 
         val githubToken = user.credentials.githubToken
@@ -31,7 +32,7 @@ class SimpleMossService(private val userId: String,
                 ?: throw Exception("Language ${course.language} is not supported for analysis yet.")
 
 
-        val studentsSolutionsFiles = course.students
+        val tasksSolutions = course.students
                 .map { student ->
                     student.nickname to
                             student.studentTasks
@@ -49,36 +50,44 @@ class SimpleMossService(private val userId: String,
                 }
                 .groupBy { (_, branch) -> branch.name() }
                 .mapValues { (_, solutions) ->
-                    solutions.map { (student, branch) ->
-                        student to branch.files().withLanguageExtension(language)
+                    solutions.flatMap { (student, branch) ->
+                        branch.files()
+                                .filterBy(language)
+                                .map(toFileInFolder(student))
                     }
                 }
+                .toMap()
 
-        val baseFiles =
+        val tasksBases =
                 git.branches(userGithubId, course.name)
-                        .map { it.name() to it.files().withLanguageExtension(language) }
-                        .filter { (task, _) ->
-                            task in studentsSolutionsFiles.keys
+                        .map { branch ->
+                            branch.name() to branch.files()
+                                    .filterBy(language)
+                                    .map(toFileInFolder("base"))
                         }
+                        .filter { (task, _) -> task in tasksSolutions.keys }
+                        .filter { (_, files) -> files.isNotEmpty() }
+                        .toMap()
 
-        // TODO: 23/02/18 Cut files same prefix
-
-        return baseFiles
-                .map { (branch, files) ->
-                    files to
-                            studentsSolutionsFiles[branch].orEmpty()
-                                    .flatMap {
-                                        // TODO: 23/02/18 Add root folder with student name to file path
-                                        it.second
-                                    }
-                                    .toSet()
+        return tasksBases.keys
+                .map { branch ->
+                    Triple(
+                            "${user.nickname}/${course.name}/$branch",
+                            tasksBases[branch].orEmpty(),
+                            tasksSolutions[branch].orEmpty()
+                    )
                 }
-                .map { (base, solutions) -> MossTask(base, solutions) }
-                .toSet()
+                .filter { (_, _, solutions) -> solutions.isNotEmpty() }
+                .map { (taskName, base, solutions) ->
+                    MossTask(taskName, base, solutions)
+                }
     }
+
+    private fun toFileInFolder(student: String): (EnvironmentFile) -> EnvironmentFile =
+            { it.with("$student/${Paths.get(it.name()).fileName}") }
 
 }
 
-private fun Set<EnvironmentFile>.withLanguageExtension(language: Language): Set<EnvironmentFile> =
-        filter { it.name().endsWith(language.extension) }.toSet()
+private fun List<EnvironmentFile>.filterBy(language: Language): List<EnvironmentFile> =
+        filter { it.name().endsWith(language.extension) }
 

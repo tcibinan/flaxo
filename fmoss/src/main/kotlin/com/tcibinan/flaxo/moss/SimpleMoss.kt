@@ -2,7 +2,7 @@ package com.tcibinan.flaxo.moss
 
 import com.tcibinan.flaxo.core.env.EnvironmentFile
 import com.tcibinan.flaxo.core.env.LocalEnvironmentFile
-import com.tcibinan.flaxo.core.language.Language
+import com.tcibinan.flaxo.core.env.RemoteEnvironmentFile
 import it.zielke.moji.SocketClient
 import org.jsoup.Jsoup
 
@@ -46,7 +46,8 @@ class SimpleMoss(override val userId: String,
     private fun loadFile(file: EnvironmentFile, isBase: Boolean = false) {
         when (file) {
             is LocalEnvironmentFile -> client.uploadFile(file.file(), isBase)
-            else -> TODO("Add support for in-memory uploading")
+            is RemoteEnvironmentFile -> client.uploadFile(file.file(), isBase)
+            else -> throw Exception("Unsupported environment file type ${this::class} to be used with moss.")
         }
     }
 

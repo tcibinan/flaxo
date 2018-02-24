@@ -13,6 +13,9 @@ class LocalEnvironmentFile(location: String) : EnvironmentFile {
     override fun content() =
             path.toFile().useLines { it.joinToString("\n") }
 
+    override fun with(path: String): EnvironmentFile =
+            LocalEnvironmentFile(path)
+
     fun file(): File = path.toFile()
 
 }

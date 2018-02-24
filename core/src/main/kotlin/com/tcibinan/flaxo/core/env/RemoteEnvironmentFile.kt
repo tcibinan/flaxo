@@ -6,17 +6,18 @@ import java.io.File
 import java.io.InputStream
 import java.nio.file.Files
 
-
 class RemoteEnvironmentFile(private val path: String,
                             private val inputStream: InputStream
 ) : EnvironmentFile {
-
 
     override fun name() = path
 
     override fun content(): String =
             inputStream.reader()
                     .useLines { it.joinToString("\n") }
+
+    override fun with(path: String): EnvironmentFile =
+            RemoteEnvironmentFile(path, inputStream)
 
     fun file(): File {
         val fs = Jimfs.newFileSystem(Configuration.unix())
