@@ -2,7 +2,7 @@ package com.tcibinan.flaxo.rest.api
 
 import com.tcibinan.flaxo.core.env.Environment
 import com.tcibinan.flaxo.core.language.Language
-import com.tcibinan.flaxo.git.BranchInstance
+import com.tcibinan.flaxo.git.Branch
 import com.tcibinan.flaxo.model.CourseStatus
 import com.tcibinan.flaxo.model.DataService
 import com.tcibinan.flaxo.model.EntityAlreadyExistsException
@@ -216,7 +216,7 @@ private fun Map<String, Language>.flatten(): List<Any> =
             )
         }
 
-fun BranchInstance.fillWith(environment: Environment): BranchInstance {
+fun Branch.fillWith(environment: Environment): Branch {
     environment.getFiles().forEach { load(it) }
     return this
 }

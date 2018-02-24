@@ -5,5 +5,7 @@ import com.tcibinan.flaxo.core.env.EnvironmentFile
 interface Branch {
     fun name(): String
     fun repository(): Repository
-    fun files(): Set<EnvironmentFile>
+    fun files(): List<EnvironmentFile>
+    fun load(file: EnvironmentFile): Branch
+    fun createSubBranches(count: Int, prefix: String): Branch
 }

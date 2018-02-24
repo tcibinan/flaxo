@@ -1,6 +1,7 @@
 package com.tcibinan.flaxo.github
 
-import com.tcibinan.flaxo.git.GitInstance
+import com.nhaarman.mockito_kotlin.mock
+import com.tcibinan.flaxo.git.Git
 import io.kotlintest.matchers.contain
 import io.kotlintest.matchers.shouldBe
 import io.kotlintest.matchers.shouldHave
@@ -10,18 +11,20 @@ import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.api.dsl.xon
 import org.jetbrains.spek.subject.SubjectSpek
 
-object GithubInstanceSpec : SubjectSpek<GitInstance>({
+object GithubSpec : SubjectSpek<Git>({
 
     val userName = System.getenv("GITHUB_TEST_NAME")
     val credentials = System.getenv("GITHUB_TEST_TOKEN")
 
-    val repository = GithubRepository("invalid_id", "temp-testing-repository", userName)
-    val mainBranch = GithubBranch("main-branch", repository)
-    val subbranch = GithubBranch("sub-branch", repository)
-    val anotherSubbranch = GithubBranch("another-sub-branch", repository)
+    val github: Github = mock { }
+
+    val repository = GithubRepository("temp-testing-repository", userName, github)
+    val mainBranch = GithubBranch("main-branch", repository, github)
+    val subbranch = GithubBranch("sub-branch", repository, github)
+    val anotherSubbranch = GithubBranch("another-sub-branch", repository, github)
     val fileName = "file-name"
 
-    subject { GithubInstance(credentials, "http://example.com") }
+    subject { Github(credentials, "http://example.com") }
 
     afterGroup {
         subject.deleteRepository(repository.name())

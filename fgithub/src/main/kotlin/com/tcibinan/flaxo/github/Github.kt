@@ -1,23 +1,23 @@
 package com.tcibinan.flaxo.github
 
+import com.tcibinan.flaxo.core.env.EnvironmentFile
+import com.tcibinan.flaxo.core.env.RemoteEnvironmentFile
 import com.tcibinan.flaxo.git.Branch
-import com.tcibinan.flaxo.git.BranchInstance
-import com.tcibinan.flaxo.git.GitInstance
+import com.tcibinan.flaxo.git.Git
 import com.tcibinan.flaxo.git.Repository
-import com.tcibinan.flaxo.git.RepositoryInstance
 import org.kohsuke.github.GHEvent
 import java.net.URL
 import org.kohsuke.github.GitHub as KohsukeGit
 
-class GithubInstance(
+class Github(
         private val credentials: String,
         rawWebHookUrl: String
-) : GitInstance {
+) : Git {
 
     private val webHookUrl: URL = URL(rawWebHookUrl)
     private val github: KohsukeGit by lazy { KohsukeGit.connectUsingOAuth(credentials) }
 
-    override fun createRepository(repositoryName: String, private: Boolean): RepositoryInstance {
+    override fun createRepository(repositoryName: String, private: Boolean): Repository {
         val repository = github.createRepository(repositoryName).private_(private).create()
         repository.createContent(
                 "# $repositoryName",
@@ -25,21 +25,22 @@ class GithubInstance(
                 "README.md"
         )
 
-        return GithubRepositoryInstance(repository.id.toString(), repositoryName, nickname(), this)
+        return GithubRepository(repositoryName, nickname(), this)
     }
 
     override fun deleteRepository(repositoryName: String) {
         ghRepository(repositoryName).delete()
     }
 
-    override fun createBranch(repository: Repository, branchName: String): BranchInstance {
+    override fun createBranch(repository: Repository, branchName: String): Branch {
         val ghRepository = ghRepository(repository.name())
         val lastCommitSha = ghRepository.listCommits().asList().last().shA1
 
         ghRepository.createBranch(branchName, lastCommitSha)
-        return GithubBranchInstance(
+        return GithubBranch(
                 branchName,
-                GithubRepositoryInstance(repository.id(), repository.name(), repository.owner(), this)
+                GithubRepository(repository.name(), repository.owner(), this),
+                this
         )
     }
 
@@ -59,7 +60,25 @@ class GithubInstance(
     }
 
     override fun branches(user: String, repository: String): List<Branch> =
-            github.getUser(user).getRepository(repository).branchesList()
+            github.getUser(user)
+                    .getRepository(repository)
+                    .branches
+                    .values
+                    .map { branch ->
+                        GithubBranch(
+                                branch.name,
+                                GithubRepository(branch.owner.name, branch.owner.ownerName, this@Github),
+                                this@Github
+                        )
+                    }
+
+    override fun files(user: String, repository: String, branch: String): List<EnvironmentFile> =
+            github.getUser(user)
+                    .getRepository(repository)
+                    .getTreeRecursive(branch, 1)
+                    .tree
+                    .filter { it.type == "blob" }
+                    .map { RemoteEnvironmentFile(it.path, it.readAsBlob()) }
 
     override fun addWebHook(repositoryName: String) {
         ghRepository(repositoryName)

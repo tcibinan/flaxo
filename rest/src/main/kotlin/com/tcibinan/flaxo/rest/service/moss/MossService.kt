@@ -5,6 +5,6 @@ import com.tcibinan.flaxo.moss.Moss
 
 interface MossService {
     fun client(language: String): Moss
-    fun extractMossTasks(course: Course): Set<MossTask>
+    fun extractMossTasks(course: Course): List<MossTask>
 }
 
