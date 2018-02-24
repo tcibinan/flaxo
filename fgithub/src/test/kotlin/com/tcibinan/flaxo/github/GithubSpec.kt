@@ -16,8 +16,7 @@ object GithubSpec : SubjectSpek<Git>({
     val userName = System.getenv("GITHUB_TEST_NAME")
     val credentials = System.getenv("GITHUB_TEST_TOKEN")
 
-    val github: Github = mock { }
-
+    val github: Git = mock { }
     val repository = GithubRepository("temp-testing-repository", userName, github)
     val mainBranch = GithubBranch("main-branch", repository, github)
     val subbranch = GithubBranch("sub-branch", repository, github)

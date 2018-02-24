@@ -9,9 +9,8 @@ import org.kohsuke.github.GHEvent
 import java.net.URL
 import org.kohsuke.github.GitHub as KohsukeGit
 
-class Github(
-        private val credentials: String,
-        rawWebHookUrl: String
+class Github(private val credentials: String,
+             rawWebHookUrl: String
 ) : Git {
 
     private val webHookUrl: URL = URL(rawWebHookUrl)
