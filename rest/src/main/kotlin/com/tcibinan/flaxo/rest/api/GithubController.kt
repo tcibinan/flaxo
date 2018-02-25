@@ -10,6 +10,7 @@ import com.tcibinan.flaxo.rest.service.travis.TravisService
 import org.apache.commons.collections4.map.PassiveExpiringMap
 import org.apache.http.client.fluent.Form
 import org.apache.http.client.fluent.Request
+import org.apache.log4j.LogManager
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
@@ -32,14 +33,15 @@ class GithubController(
         private val gitService: GitService
 ) {
 
-    val githubAuthUrl = "https://github.com/login/oauth"
-    val states: MutableMap<String, String> = PassiveExpiringMap(
+    private val githubAuthUrl = "https://github.com/login/oauth"
+    private val states: MutableMap<String, String> = PassiveExpiringMap(
             TimeUnit.MILLISECONDS.convert(5, TimeUnit.MINUTES)
     )
+    private val logger = LogManager.getLogger(GithubController::class.java)
     @Value("\${GITHUB_ID}")
-    lateinit var clientId: String
+    private lateinit var clientId: String
     @Value("\${GITHUB_SECRET}")
-    lateinit var clientSecret: String
+    private lateinit var clientSecret: String
 
     @GetMapping("/auth")
     @PreAuthorize("hasAuthority('USER')")
@@ -110,6 +112,9 @@ class GithubController(
         when (hook) {
             is PullRequest -> {
                 if (hook.isOpened) {
+                    logger.info("Github opening pull request web hook received from ${hook.authorId} " +
+                            "to ${hook.receiverId}/${hook.receiverRepositoryName}")
+
                     val courseAuthor = dataService.getUserByGithubId(hook.receiverId)
                             ?: throw Exception("User with githubId ${hook.receiverId} wasn't found in database.")
 
@@ -118,10 +123,15 @@ class GithubController(
 
                     dataService.addStudent(hook.authorId, course)
                 } else {
+                    logger.info("Github updating pull request web hook received from ${hook.authorId} " +
+                            "to ${hook.receiverId}/${hook.receiverRepositoryName}.")
+
                     // do nothing
                 }
             }
             else -> {
+                logger.info("Github custom web hook received from request: $request.")
+
                 //do nothing
             }
         }

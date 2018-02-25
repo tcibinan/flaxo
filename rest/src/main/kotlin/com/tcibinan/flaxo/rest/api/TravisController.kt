@@ -5,6 +5,7 @@ import com.tcibinan.flaxo.model.data.StudentTask
 import com.tcibinan.flaxo.rest.service.travis.TravisService
 import com.tcibinan.flaxo.travis.build.BuildStatus
 import com.tcibinan.flaxo.travis.build.TravisPullRequestBuild
+import org.apache.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.PostMapping
@@ -17,6 +18,8 @@ class TravisController @Autowired constructor(private val travisService: TravisS
                                               private val dataService: DataService
 ) {
 
+    private val logger = LogManager.getLogger(TravisController::class.java)
+
     @PostMapping("/hook")
     fun travisWebHook(request: HttpServletRequest) {
         val hook = travisService.parsePayload(request.reader)
@@ -25,23 +28,42 @@ class TravisController @Autowired constructor(private val travisService: TravisS
         when (hook) {
             is TravisPullRequestBuild ->
                 when (hook.status) {
-                    BuildStatus.SUCCEED ->
+                    BuildStatus.SUCCEED -> {
+                        logger.info("Travis pull request successful build web hook received " +
+                                "for ${hook.repositoryOwner}/${hook.repositoryName}.")
+
                         dataService.updateStudentTask(getStudentTaskBy(hook).with(
                                 anyBuilds = true,
                                 buildSucceed = true
                         ))
-                    BuildStatus.FAILED ->
+                    }
+                    BuildStatus.FAILED -> {
+                        logger.info("Travis pull request failed build web hook received " +
+                                "for ${hook.repositoryOwner}/${hook.repositoryName}.")
+
                         dataService.updateStudentTask(getStudentTaskBy(hook).with(
                                 anyBuilds = true,
                                 buildSucceed = false
                         ))
+                    }
                     BuildStatus.IN_PROGRESS -> {
+                        logger.info("Travis pull request in progress build web hook received " +
+                                "for ${hook.repositoryOwner}/${hook.repositoryName}.")
+
                         // ignore
                     }
                     else -> {
+                        logger.info("Custom travis pull request web hook received " +
+                                "for ${hook.repositoryOwner}/${hook.repositoryName}.")
+
                         // do nothing
                     }
                 }
+            else -> {
+                logger.info("Custom travis web hook received from request $request.")
+
+                //do nothing
+            }
         }
 
     }
