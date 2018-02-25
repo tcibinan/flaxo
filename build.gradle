@@ -2,7 +2,7 @@ buildscript {
     ext.spek_version = "1.1.5"
     ext.kotlintest_version = "2.0.7"
     ext.spring_autoconfigure_version = "1.5.10.RELEASE"
-    ext.spring_data_version = "2.0.3.RELEASE"
+    ext.spring_data_version = "2.0.4.RELEASE"
     ext.hibernate_version = "5.2.12.Final"
     ext.jackson_version = "2.9.2"
     ext.h2_version = "1.4.196"
