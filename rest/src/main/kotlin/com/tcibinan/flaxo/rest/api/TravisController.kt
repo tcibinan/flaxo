@@ -24,8 +24,8 @@ class TravisController @Autowired constructor(private val travisService: TravisS
 
     @PostMapping("/hook")
     fun travisWebHook(request: HttpServletRequest) {
-        val bodyReader: Reader = request.reader
-        val hook: TravisBuild = travisService.parsePayload(bodyReader)
+        val payload: Reader = request.getParameter("payload").reader()
+        val hook: TravisBuild = travisService.parsePayload(payload)
                 ?: throw UnsupportedOperationException("Unsupported travis web hook type")
 
         when (hook) {

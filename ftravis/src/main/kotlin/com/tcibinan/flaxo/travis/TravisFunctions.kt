@@ -16,7 +16,7 @@ fun parseTravisWebHook(reader: Reader): TravisBuild? =
                 .withoutFeatures(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
                 .readValue<TravisWebHook>(reader)
                 .run {
-                    when (payload.type) {
+                    when (type) {
                         "pull_request" -> SimpleTravisPullRequestBuild(this)
                         else -> null
                     }

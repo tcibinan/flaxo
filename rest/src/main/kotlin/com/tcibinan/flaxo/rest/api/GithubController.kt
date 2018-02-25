@@ -109,13 +109,13 @@ class GithubController(
 
     @PostMapping("/hook")
     fun webHook(request: HttpServletRequest) {
-        val bodyReader: Reader = request.reader
+        val payloadReader: Reader = request.getParameter("payload").reader()
         val headers: Map<String, List<String>> =
                 request.headerNames
                         .toList()
                         .map { it.toLowerCase() to listOf(request.getHeader(it)) }
                         .toMap()
-        val hook: GitPayload? = gitService.parsePayload(bodyReader, headers)
+        val hook: GitPayload? = gitService.parsePayload(payloadReader, headers)
 
         when (hook) {
             is PullRequest -> {

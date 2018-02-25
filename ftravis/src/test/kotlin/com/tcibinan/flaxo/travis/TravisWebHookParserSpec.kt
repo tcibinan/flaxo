@@ -17,17 +17,15 @@ object TravisWebHookParserSpec : Spek({
 
     val webHookBody = """
         {
-            "payload": {
-                "status_message": "Passed",
-                "type": "pull_request",
-                "branch": "$branch",
-                "author_name": "$pullRequestAuthor",
-                "extra1": "extra property1",
-                "repository": {
-                    "extra2": "extra property2",
-                    "name": "$repositoryName",
-                    "owner_name": "$repositoryOwner"
-                }
+            "status_message": "Passed",
+            "type": "pull_request",
+            "branch": "$branch",
+            "author_name": "$pullRequestAuthor",
+            "extra1": "extra property1",
+            "repository": {
+                "extra2": "extra property2",
+                "name": "$repositoryName",
+                "owner_name": "$repositoryOwner"
             }
         }
     """.trimIndent()
