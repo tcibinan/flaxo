@@ -12,6 +12,10 @@ class GithubService(
     override fun with(credentials: String) = Github(credentials, webHookUrl)
 
     override fun parsePayload(reader: Reader, headers: Map<String, List<String>>): GitPayload? {
-        return parseGithubEvent(reader, headers["X-GitHub-Event"].orEmpty().first())
+        val types = headers["X-GitHub-Event"].orEmpty()
+                .also {
+                    if (it.isEmpty()) throw Exception("Github payload type wasn't found in headers.")
+                }
+        return parseGithubEvent(reader, types.first())
     }
 }

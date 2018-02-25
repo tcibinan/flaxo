@@ -23,8 +23,8 @@ class TravisController @Autowired constructor(private val travisService: TravisS
     private val logger = LogManager.getLogger(TravisController::class.java)
 
     @PostMapping("/hook")
-    fun travisWebHook(requestEntity: HttpEntity<ByteArray>) {
-        val bodyReader: Reader = requestEntity.body.inputStream().reader()
+    fun travisWebHook(requestEntity: HttpEntity<String>) {
+        val bodyReader: Reader = requestEntity.body.reader()
         val hook: TravisBuild = travisService.parsePayload(bodyReader)
                 ?: throw UnsupportedOperationException("Unsupported travis web hook type")
 

@@ -108,8 +108,8 @@ class GithubController(
     }
 
     @PostMapping("/hook")
-    fun webHook(requestEntity: HttpEntity<ByteArray>) {
-        val bodyReader: Reader = requestEntity.body.inputStream().reader()
+    fun webHook(requestEntity: HttpEntity<String>) {
+        val bodyReader: Reader = requestEntity.body.reader()
         val headers: Map<String, List<String>> = requestEntity.headers.toMap()
         val hook: GitPayload? = gitService.parsePayload(bodyReader, headers)
 
