@@ -13,7 +13,6 @@ import org.apache.http.client.fluent.Form
 import org.apache.http.client.fluent.Request
 import org.apache.log4j.LogManager
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -24,6 +23,7 @@ import java.io.Reader
 import java.security.Principal
 import java.util.*
 import java.util.concurrent.TimeUnit
+import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 @RestController
@@ -108,9 +108,13 @@ class GithubController(
     }
 
     @PostMapping("/hook")
-    fun webHook(requestEntity: HttpEntity<String>) {
-        val bodyReader: Reader = requestEntity.body.reader()
-        val headers: Map<String, List<String>> = requestEntity.headers.toMap()
+    fun webHook(request: HttpServletRequest) {
+        val bodyReader: Reader = request.reader
+        val headers: Map<String, List<String>> =
+                request.headerNames
+                        .toList()
+                        .map { it.toLowerCase() to listOf(request.getHeader(it)) }
+                        .toMap()
         val hook: GitPayload? = gitService.parsePayload(bodyReader, headers)
 
         when (hook) {
@@ -134,7 +138,7 @@ class GithubController(
                 }
             }
             else -> {
-                logger.info("Github custom web hook received from request: $requestEntity.")
+                logger.info("Github custom web hook received from request: $request.")
 
                 //do nothing
             }

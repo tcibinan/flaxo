@@ -8,11 +8,11 @@ import com.tcibinan.flaxo.travis.build.TravisBuild
 import com.tcibinan.flaxo.travis.build.TravisPullRequestBuild
 import org.apache.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import java.io.Reader
+import javax.servlet.http.HttpServletRequest
 
 @Controller
 @RequestMapping("/rest/travis")
@@ -23,8 +23,8 @@ class TravisController @Autowired constructor(private val travisService: TravisS
     private val logger = LogManager.getLogger(TravisController::class.java)
 
     @PostMapping("/hook")
-    fun travisWebHook(requestEntity: HttpEntity<String>) {
-        val bodyReader: Reader = requestEntity.body.reader()
+    fun travisWebHook(request: HttpServletRequest) {
+        val bodyReader: Reader = request.reader
         val hook: TravisBuild = travisService.parsePayload(bodyReader)
                 ?: throw UnsupportedOperationException("Unsupported travis web hook type")
 
@@ -63,7 +63,7 @@ class TravisController @Autowired constructor(private val travisService: TravisS
                     }
                 }
             else -> {
-                logger.info("Custom travis web hook received from request $requestEntity.")
+                logger.info("Custom travis web hook received from request $request.")
 
                 //do nothing
             }
