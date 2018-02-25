@@ -16,6 +16,7 @@ enum class ServerAnswer(val code: Int, val defaultAnswer: String? = null) {
     USER_NOT_FOUND(2006, "user.not.found"),
     STUDENTS_STATISTICS(2007),
     COURSE_COMPOSED(2008, "course.success.composed"),
+    PLAGIARISM_ANALYSIS_SCHEDULED(2009, "plagiarism.analysis.scheduled"),
 
     HELLO_WORLD(1000, "greeting"),
     ECHO(1001),

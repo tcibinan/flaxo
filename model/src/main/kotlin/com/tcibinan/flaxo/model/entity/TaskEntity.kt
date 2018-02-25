@@ -17,6 +17,7 @@ class TaskEntity() : ConvertibleEntity<Task> {
     @GeneratedValue
     var taskId: Long? = null
     var taskName: String? = null
+    var mossUrl: String? = null
     @ManyToOne
     var course: CourseEntity? = null
     @OneToMany(mappedBy = "task", orphanRemoval = true, fetch = FetchType.EAGER)

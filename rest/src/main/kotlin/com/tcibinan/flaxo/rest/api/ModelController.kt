@@ -8,11 +8,14 @@ import com.tcibinan.flaxo.model.DataService
 import com.tcibinan.flaxo.model.EntityAlreadyExistsException
 import com.tcibinan.flaxo.model.IntegratedService
 import com.tcibinan.flaxo.model.data.StudentTask
+import com.tcibinan.flaxo.model.data.Task
 import com.tcibinan.flaxo.model.data.User
+import com.tcibinan.flaxo.moss.MossResult
 import com.tcibinan.flaxo.rest.api.ServerAnswer.*
 import com.tcibinan.flaxo.rest.service.environment.RepositoryEnvironmentService
 import com.tcibinan.flaxo.rest.service.git.GitService
 import com.tcibinan.flaxo.rest.service.moss.MossService
+import com.tcibinan.flaxo.rest.service.moss.MossTask
 import com.tcibinan.flaxo.rest.service.response.Response
 import com.tcibinan.flaxo.rest.service.response.ResponseService
 import com.tcibinan.flaxo.rest.service.travis.TravisService
@@ -25,6 +28,8 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
+import java.util.concurrent.Executor
+import java.util.concurrent.Executors
 
 @RestController
 @RequestMapping("/rest")
@@ -37,6 +42,8 @@ class ModelController @Autowired constructor(
         private val mossService: MossService,
         private val supportedLanguages: Map<String, Language>
 ) {
+
+    private val executor: Executor = Executors.newCachedThreadPool()
 
     @PostMapping("/register")
     fun register(@RequestParam("nickname") nickname: String,
@@ -184,16 +191,40 @@ class ModelController @Autowired constructor(
     @PreAuthorize("hasAuthority('USER')")
     fun analysePlagiarism(@RequestParam courseName: String,
                           principal: Principal
-    ) {
+    ): Response {
         val user = dataService.getUser(principal.name)
                 ?: throw Exception("User with the required nickname ${principal.name} wasn't found.")
 
         val course = dataService.getCourse(courseName, user)
                 ?: throw Exception("Course $courseName wasn't found for user ${principal.name}.")
 
-        mossService.extractMossTasks(course)
-        // TODO: 23/02/18 Call tasks asychronously
+        val mossTasks: List<MossTask> = mossService.extractMossTasks(course)
 
+        synchronized(executor) {
+            mossTasks.forEach { mossTask ->
+                executor.execute {
+                    val taskShortName: String = mossTask.taskName.split("/").last()
+
+                    val task: Task =
+                            course.tasks
+                                    .find { it.name == taskShortName }
+                                    ?: throw Exception("Moss task ${mossTask.taskName} aim course task $taskShortName " +
+                                            "wasn't found for course ${course.name}")
+
+                    val result: MossResult = mossService.client(course.language)
+                            .base(mossTask.base)
+                            .solutions(mossTask.solutions)
+                            .analyse()
+
+                    dataService.updateTask(task.with(mossUrl = result.url.toString()))
+                }
+            }
+        }
+
+        return responseService.response(
+                PLAGIARISM_ANALYSIS_SCHEDULED,
+                mossTasks.map { it.taskName }.toString()
+        )
     }
 }
 

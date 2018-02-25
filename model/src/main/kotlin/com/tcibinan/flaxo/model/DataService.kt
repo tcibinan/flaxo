@@ -53,4 +53,6 @@ interface DataService {
     ): User
 
     fun updateStudentTask(updatedStudentTask: StudentTask): StudentTask
+
+    fun updateTask(updatedTask: Task): Task
 }

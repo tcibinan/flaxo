@@ -11,19 +11,19 @@ class SimpleMoss(override val userId: String,
                  private val client: SocketClient
 ) : Moss {
 
-    private lateinit var bases: Set<EnvironmentFile>
-    private lateinit var solutions: Set<EnvironmentFile>
+    private lateinit var bases: List<EnvironmentFile>
+    private lateinit var solutions: List<EnvironmentFile>
 
     init {
         client.userID = userId
         client.language = language
     }
 
-    override fun base(bases: Set<EnvironmentFile>): Moss = apply {
+    override fun base(bases: List<EnvironmentFile>): Moss = apply {
         this.bases = bases
     }
 
-    override fun solutions(solutions: Set<EnvironmentFile>): Moss = apply {
+    override fun solutions(solutions: List<EnvironmentFile>): Moss = apply {
         this.solutions = solutions
     }
 

@@ -157,6 +157,8 @@ class BasicDataService(private val userRepository: UserRepository,
     override fun updateStudentTask(updatedStudentTask: StudentTask): StudentTask =
             studentTaskRepository.save(updatedStudentTask.toEntity()).toDto()
 
+    override fun updateTask(updatedTask: Task): Task =
+            taskRepository.save(updatedTask.toEntity()).toDto()
 }
 
 private fun CredentialsEntity.withServiceToken(service: IntegratedService,
