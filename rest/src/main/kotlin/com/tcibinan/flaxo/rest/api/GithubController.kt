@@ -1,5 +1,6 @@
 package com.tcibinan.flaxo.rest.api
 
+import com.tcibinan.flaxo.git.GitPayload
 import com.tcibinan.flaxo.git.PullRequest
 import com.tcibinan.flaxo.model.DataService
 import com.tcibinan.flaxo.model.IntegratedService
@@ -12,16 +13,17 @@ import org.apache.http.client.fluent.Form
 import org.apache.http.client.fluent.Request
 import org.apache.log4j.LogManager
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.io.Reader
 import java.security.Principal
 import java.util.*
 import java.util.concurrent.TimeUnit
-import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 @RestController
@@ -106,8 +108,10 @@ class GithubController(
     }
 
     @PostMapping("/hook")
-    fun webHook(request: HttpServletRequest) {
-        val hook = gitService.parsePayload(request)
+    fun webHook(requestEntity: HttpEntity<ByteArray>) {
+        val bodyReader: Reader = requestEntity.body.inputStream().reader()
+        val headers: Map<String, List<String>> = requestEntity.headers.toMap()
+        val hook: GitPayload? = gitService.parsePayload(bodyReader, headers)
 
         when (hook) {
             is PullRequest -> {
@@ -130,7 +134,7 @@ class GithubController(
                 }
             }
             else -> {
-                logger.info("Github custom web hook received from request: $request.")
+                logger.info("Github custom web hook received from request: $requestEntity.")
 
                 //do nothing
             }
