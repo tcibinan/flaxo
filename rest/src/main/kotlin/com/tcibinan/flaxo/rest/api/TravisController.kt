@@ -72,7 +72,7 @@ class TravisController @Autowired constructor(private val travisService: TravisS
     }
 
     private fun getStudentTaskBy(hook: TravisPullRequestBuild): StudentTask {
-        val user = dataService.getUser(hook.repositoryOwner)
+        val user = dataService.getUserByGithubId(hook.repositoryOwner)
                 ?: throw Exception("User with the required nickname ${hook.repositoryOwner} wasn't found.")
 
         val course = dataService.getCourse(hook.repositoryName, user)
