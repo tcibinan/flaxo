@@ -2,10 +2,12 @@ package com.tcibinan.flaxo.travis
 
 import com.tcibinan.flaxo.travis.build.BuildStatus
 import com.tcibinan.flaxo.travis.build.TravisPullRequestBuild
+import io.vavr.kotlin.Try
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 object TravisWebHookParserSpec : Spek({
@@ -30,6 +32,20 @@ object TravisWebHookParserSpec : Spek({
         }
     """.trimIndent()
 
+    val nonPullRequestWebHookBody = """
+        {
+            "status_message": "Passed",
+            "type": "unknown_type",
+            "branch": "$branch",
+            "extra1": "extra property1",
+            "repository": {
+                "extra2": "extra property2",
+                "name": "$repositoryName",
+                "owner_name": "$repositoryOwner"
+            }
+        }
+    """.trimIndent()
+
     describe("Travis web hook parsing function") {
 
         on("parsing web hook") {
@@ -38,6 +54,18 @@ object TravisWebHookParserSpec : Spek({
 
             it("should get web hook type") {
                 assertTrue { build is TravisPullRequestBuild }
+            }
+        }
+
+        on("parsing non-pull request web hook") {
+            val build = Try { parseTravisWebHook(nonPullRequestWebHookBody.reader()) }
+
+            it("should not fail with absence of pull_request_number field in raw travis web hook") {
+                assertTrue { build.isSuccess }
+            }
+
+            it("should return on unknown web hook type") {
+                assertNull(build.get())
             }
         }
 

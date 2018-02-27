@@ -4,7 +4,7 @@ class TravisWebHook {
     lateinit var status_message: String
     lateinit var type: String
     lateinit var branch: String
-    lateinit var pull_request_number: String
+    var pull_request_number: String? = null
     lateinit var repository: TravisWebHookRepository
 }
 
