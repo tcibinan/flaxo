@@ -98,8 +98,8 @@ Currently the only building tool that is used is gradle.
 ### Integrated services
 
 - Github
-- Travis
-- **todo:** [Moss](https://theory.stanford.edu/~aiken/moss/) plagiarism detecting system
+- Travis CI
+- [Moss](https://theory.stanford.edu/~aiken/moss/) plagiarism detecting system
 - **todo:** Codacy
 
 ### Back-end technologies
@@ -109,13 +109,19 @@ Currently the only building tool that is used is gradle.
 - Spek testing framework
 - Spring Boot, Spring Data, Spring Security
 - Retrofit2 http client
-- and even more: h2 database, Kohsuke Github api, Kotlin test
+- and even more: h2 database, Kohsuke Github api, Kotlin test, Vavr, google/jimfs, mockito-kotlin, moji, jsoup, commons-collections4
 
 ### Front-end technologies
 
 - axios
 - js-cookie
 - Immutable.js
+
+## TODO-list
+
+- **todo:** Simple user interface where a teacher could register, authorize, authorize using github, create a course, start course plagiarism analysis, get course stats.
+- **todo:** The ability to init a flaxo course from the existing repository
+- **todo:** Transparent api to get course statistics in json, xls formats
 
 ## Credits
 
