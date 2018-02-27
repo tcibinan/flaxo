@@ -17,15 +17,15 @@ object GithubWebHookParserSpec : Spek({
         {
             "action": "opened",
             "pull_request": {
+                "user": {
+                    "login": "$pullRequestAuthor"
+                }
             },
             "repository": {
                 "name": "$repositoryName",
                 "owner": {
                     "login": "$repositoryOwner"
                 }
-            },
-            "sender": {
-                "login": "$pullRequestAuthor"
             }
         }
     """.trimIndent()
