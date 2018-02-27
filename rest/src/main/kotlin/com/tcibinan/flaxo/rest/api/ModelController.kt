@@ -175,10 +175,44 @@ class ModelController @Autowired constructor(private val dataService: DataServic
                 ?: return responseService.response(COURSE_NOT_FOUND, ownerNickname, courseName)
 
         return responseService.response(
-                STUDENTS_STATISTICS,
+                COURSE_STATISTICS,
                 payload = course.students
                         .map { it.nickname to it.studentTasks.reports() }
                         .toMap()
+        )
+    }
+
+    @GetMapping("/{owner}/{course}/tasks")
+    @PreAuthorize("hasAuthority('USER')")
+    fun getCourseTasks(@PathVariable("owner") ownerNickname: String,
+                       @PathVariable("course") courseName: String
+    ): Response {
+        val user = dataService.getUser(ownerNickname)
+                ?: return responseService.response(USER_NOT_FOUND, ownerNickname)
+
+        val course = dataService.getCourse(courseName, user)
+                ?: return responseService.response(COURSE_NOT_FOUND, ownerNickname, courseName)
+
+        return responseService.response(
+                COURSE_TASKS,
+                payload = course.tasks.map { it.name }
+        )
+    }
+
+    @GetMapping("/{owner}/{course}/students")
+    @PreAuthorize("hasAuthority('USER')")
+    fun getCourseStudents(@PathVariable("owner") ownerNickname: String,
+                       @PathVariable("course") courseName: String
+    ): Response {
+        val user = dataService.getUser(ownerNickname)
+                ?: return responseService.response(USER_NOT_FOUND, ownerNickname)
+
+        val course = dataService.getCourse(courseName, user)
+                ?: return responseService.response(COURSE_NOT_FOUND, ownerNickname, courseName)
+
+        return responseService.response(
+                COURSE_STUDENTS,
+                payload = course.students.map { it.nickname }
         )
     }
 
