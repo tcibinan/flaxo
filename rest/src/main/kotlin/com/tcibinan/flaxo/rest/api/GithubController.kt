@@ -123,13 +123,16 @@ class GithubController(
                     logger.info("Github opening pull request web hook received from ${hook.authorId} " +
                             "to ${hook.receiverId}/${hook.receiverRepositoryName}")
 
-                    val courseAuthor = dataService.getUserByGithubId(hook.receiverId)
+                    val user = dataService.getUserByGithubId(hook.receiverId)
                             ?: throw Exception("User with githubId ${hook.receiverId} wasn't found in database.")
 
-                    val course = dataService.getCourse(hook.receiverRepositoryName, courseAuthor)
-                            ?: throw Exception("Course ${hook.receiverRepositoryName} wasn't found for user ${courseAuthor.nickname}.")
+                    val course = dataService.getCourse(hook.receiverRepositoryName, user)
+                            ?: throw Exception("Course ${hook.receiverRepositoryName} wasn't found for user ${user.nickname}.")
 
-                    dataService.addStudent(hook.authorId, course)
+                    val student = course.students.find { it.nickname == hook.authorId }
+                            ?: dataService.addStudent(hook.authorId, course)
+
+                    logger.info("Student ${student.nickname} was initialised for course ${user.nickname}/${course.name}.")
                 } else {
                     logger.info("Github updating pull request web hook received from ${hook.authorId} " +
                             "to ${hook.receiverId}/${hook.receiverRepositoryName}.")
