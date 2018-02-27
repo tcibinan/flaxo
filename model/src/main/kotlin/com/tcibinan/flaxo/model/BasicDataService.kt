@@ -70,7 +70,7 @@ class BasicDataService(private val userRepository: UserRepository,
         for (i in 1..numberOfTasks) {
             taskRepository
                     .save(TaskEntity().apply {
-                        this.taskName = "$tasksPrefix-$i"
+                        this.taskName = "$tasksPrefix$i"
                         this.course = courseEntity
                     })
         }
