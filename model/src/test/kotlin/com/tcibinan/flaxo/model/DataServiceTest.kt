@@ -17,7 +17,7 @@ class DataServiceTest : SubjectSpek<DataService>({
     val anotherNickname = "anotherNickname"
     val password = "password"
     val courseName = "course"
-    val language = "laguage"
+    val language = "language"
     val testLanguage = "testLanguage"
     val testingFramework = "testingFramework"
     val numberOfTasks = 4

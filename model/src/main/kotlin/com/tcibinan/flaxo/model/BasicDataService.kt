@@ -121,9 +121,9 @@ class BasicDataService(private val userRepository: UserRepository,
         }
 
         return studentRepository
-                .findById(student.id)
-                .map { it.toDto() }
-                .orElseThrow { Exception("Could not create the student") }
+                .findOne(student.id)
+                ?.toDto()
+                ?: throw Exception("Could not create the student $nickname for course ${course.user.nickname}/${course.name}.")
     }
 
     override fun getStudents(course: Course): Set<Student> =
