@@ -47,19 +47,20 @@ class BasicDataService(private val userRepository: UserRepository,
     override fun getUserByGithubId(githubId: String): User? =
             userRepository.findByGithubId(githubId)?.toDto()
 
-    override fun createCourse(name: String,
+    override fun createCourse(courseName: String,
                               language: String,
                               testingLanguage: String,
                               testingFramework: String,
+                              tasksPrefix: String,
                               numberOfTasks: Int,
                               owner: User
     ): Course {
-        if (getCourse(name, owner) != null) {
-            throw EntityAlreadyExistsException("${name} already exists for ${owner}")
+        if (getCourse(courseName, owner) != null) {
+            throw EntityAlreadyExistsException("${courseName} already exists for ${owner}")
         }
         val courseEntity = courseRepository
                 .save(CourseEntity().apply {
-                    this.name = name
+                    this.name = courseName
                     this.language = language
                     this.testingLanguage = testingLanguage
                     this.testingFramework = testingFramework
@@ -69,11 +70,11 @@ class BasicDataService(private val userRepository: UserRepository,
         for (i in 1..numberOfTasks) {
             taskRepository
                     .save(TaskEntity().apply {
-                        this.taskName = "${name}-$i"
+                        this.taskName = "$tasksPrefix-$i"
                         this.course = courseEntity
                     })
         }
-        return getCourse(name, owner) ?: throw Exception("Could not create the course")
+        return getCourse(courseName, owner) ?: throw Exception("Could not create the course")
     }
 
     override fun deleteCourse(courseName: String,

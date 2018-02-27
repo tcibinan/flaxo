@@ -6,6 +6,7 @@ import io.kotlintest.matchers.shouldBe
 import io.kotlintest.matchers.shouldEqual
 import io.kotlintest.matchers.shouldNotBe
 import io.kotlintest.matchers.shouldThrow
+import io.kotlintest.matchers.startWith
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
@@ -20,6 +21,7 @@ class DataServiceTest : SubjectSpek<DataService>({
     val language = "language"
     val testLanguage = "testLanguage"
     val testingFramework = "testingFramework"
+    val tasksPrefix = "task-"
     val numberOfTasks = 4
     val student = "student"
     val anotherStudent = "anotherStudent"
@@ -52,7 +54,15 @@ class DataServiceTest : SubjectSpek<DataService>({
 
         on("course creation") {
             val owner = subject.getUser(nickname)!!
-            val course = subject.createCourse(courseName, language, testLanguage, testingFramework, numberOfTasks, owner)
+            val course = subject.createCourse(
+                    courseName,
+                    language,
+                    testLanguage,
+                    testingFramework,
+                    tasksPrefix,
+                    numberOfTasks,
+                    owner
+            )
             val tasks = subject.getTasks(course)
 
             it("should contain the course") {
@@ -65,13 +75,18 @@ class DataServiceTest : SubjectSpek<DataService>({
                 tasks.count() shouldBe numberOfTasks
             }
 
-            it("should also create tasks with ordered numbers in the title") {
+            it("should also create tasks with ordered numbers in the titles") {
                 tasks.map { it.name }
                         .sorted()
-                        .mapIndexed { index, name -> Pair((index+1).toString(), name) }
+                        .mapIndexed { index, name -> Pair((index + 1).toString(), name) }
                         .forEach { (taskIndex, taskName) ->
                             taskName should haveSubstring(taskIndex)
                         }
+            }
+
+            it("should also create tasks with the given tasks prefix in the titles") {
+                tasks.map { it.name }
+                        .forEach { it should startWith(tasksPrefix) }
             }
 
             it("should have default status") {
@@ -84,7 +99,15 @@ class DataServiceTest : SubjectSpek<DataService>({
 
             it("should throw an exception") {
                 shouldThrow<EntityAlreadyExistsException> {
-                    subject.createCourse(courseName, language, testLanguage, testingFramework, numberOfTasks, owner)
+                    subject.createCourse(
+                            courseName,
+                            language,
+                            testLanguage,
+                            testingFramework,
+                            tasksPrefix,
+                            numberOfTasks,
+                            owner
+                    )
                 }
             }
         }
@@ -93,7 +116,15 @@ class DataServiceTest : SubjectSpek<DataService>({
             val anotherUser = subject.addUser(anotherNickname, password)
 
             it("shouldn't throw an exception") {
-                subject.createCourse(courseName, language, testLanguage, testingFramework, numberOfTasks, anotherUser)
+                subject.createCourse(
+                        courseName,
+                        language,
+                        testLanguage,
+                        testingFramework,
+                        tasksPrefix,
+                        numberOfTasks,
+                        anotherUser
+                )
             }
         }
 

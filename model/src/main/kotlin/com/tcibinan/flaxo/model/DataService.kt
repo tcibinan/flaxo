@@ -16,10 +16,11 @@ interface DataService {
 
     fun getUserByGithubId(githubId: String): User?
 
-    fun createCourse(name: String,
+    fun createCourse(courseName: String,
                      language: String,
                      testingLanguage: String,
                      testingFramework: String,
+                     tasksPrefix: String,
                      numberOfTasks: Int,
                      owner: User
     ): Course

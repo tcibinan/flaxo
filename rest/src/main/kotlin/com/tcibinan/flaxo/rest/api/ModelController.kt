@@ -43,6 +43,7 @@ class ModelController @Autowired constructor(private val dataService: DataServic
 ) {
 
     private val executor: Executor = Executors.newCachedThreadPool()
+    private val tasksPrefix = "task-"
 
     @PostMapping("/register")
     fun register(@RequestParam("nickname") nickname: String,
@@ -83,7 +84,7 @@ class ModelController @Autowired constructor(private val dataService: DataServic
         git.createRepository(courseName)
                 .createBranch("prerequisites")
                 .fillWith(environment)
-                .createSubBranches(numberOfTasks, "task-")
+                .createSubBranches(numberOfTasks, tasksPrefix)
 
         git.addWebHook(courseName)
 
@@ -92,6 +93,7 @@ class ModelController @Autowired constructor(private val dataService: DataServic
                 language,
                 testLanguage,
                 testingFramework,
+                tasksPrefix,
                 numberOfTasks,
                 user
         )
@@ -202,7 +204,7 @@ class ModelController @Autowired constructor(private val dataService: DataServic
     @GetMapping("/{owner}/{course}/students")
     @PreAuthorize("hasAuthority('USER')")
     fun getCourseStudents(@PathVariable("owner") ownerNickname: String,
-                       @PathVariable("course") courseName: String
+                          @PathVariable("course") courseName: String
     ): Response {
         val user = dataService.getUser(ownerNickname)
                 ?: return responseService.response(USER_NOT_FOUND, ownerNickname)
