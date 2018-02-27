@@ -8,8 +8,6 @@ data class StudentTask(private val entity: StudentTaskEntity) : DataObject<Stude
     val id: Long by lazy { entity.studentTaskId ?: throw EntityFieldIsAbsent("student task", "id") }
     val task: Task by lazy { Task(entity.task ?: throw EntityFieldIsAbsent("student task", "task")) }
     val student: Student by lazy { Student(entity.student ?: throw EntityFieldIsAbsent("student task", "student")) }
-    @Deprecated("It should be calculated lazily.")
-    val points: Int by lazy { entity.points }
     val anyBuilds: Boolean by lazy { entity.anyBuilds }
     val buildSucceed: Boolean by lazy { entity.buildSucceed }
 
@@ -17,7 +15,6 @@ data class StudentTask(private val entity: StudentTaskEntity) : DataObject<Stude
     fun with(id: Long? = null,
              task: Task? = null,
              student: Student? = null,
-             points: Int? = null,
              anyBuilds: Boolean? = null,
              buildSucceed: Boolean? = null
     ): StudentTask = StudentTaskEntity()
@@ -25,7 +22,6 @@ data class StudentTask(private val entity: StudentTaskEntity) : DataObject<Stude
                 this.studentTaskId = id ?: entity.studentTaskId
                 this.task = task?.toEntity() ?: entity.task
                 this.student = student?.toEntity() ?: entity.student
-                this.points = points ?: entity.points
                 this.anyBuilds = anyBuilds ?: entity.anyBuilds
                 this.buildSucceed = buildSucceed ?: entity.buildSucceed
             }

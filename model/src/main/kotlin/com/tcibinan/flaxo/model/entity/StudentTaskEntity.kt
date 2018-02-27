@@ -20,8 +20,6 @@ class StudentTaskEntity() : ConvertibleEntity<StudentTask> {
     var student: StudentEntity? = null
     var anyBuilds: Boolean = false
     var buildSucceed: Boolean = false
-    @Deprecated("It should be calculated lazily.")
-    var points: Int = 0
 
     override fun toDto() = StudentTask(this)
 }
