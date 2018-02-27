@@ -33,14 +33,13 @@ import java.util.concurrent.Executors
 
 @RestController
 @RequestMapping("/rest")
-class ModelController @Autowired constructor(
-        private val dataService: DataService,
-        private val responseService: ResponseService,
-        private val environmentService: RepositoryEnvironmentService,
-        private val travisService: TravisService,
-        private val gitService: GitService,
-        private val mossService: MossService,
-        private val supportedLanguages: Map<String, Language>
+class ModelController @Autowired constructor(private val dataService: DataService,
+                                             private val responseService: ResponseService,
+                                             private val environmentService: RepositoryEnvironmentService,
+                                             private val travisService: TravisService,
+                                             private val gitService: GitService,
+                                             private val mossService: MossService,
+                                             private val supportedLanguages: Map<String, Language>
 ) {
 
     private val executor: Executor = Executors.newCachedThreadPool()

@@ -10,7 +10,7 @@ import kotlin.test.assertTrue
 
 object TravisWebHookParserSpec : Spek({
 
-    val pullRequestAuthor = "pullRequestAuthor"
+    val pullRequestNumber = 777
     val branch = "somebranch"
     val repositoryName = "repositoryName"
     val repositoryOwner = "repositoryOwner"
@@ -20,7 +20,7 @@ object TravisWebHookParserSpec : Spek({
             "status_message": "Passed",
             "type": "pull_request",
             "branch": "$branch",
-            "author_name": "$pullRequestAuthor",
+            "pull_request_number": $pullRequestNumber,
             "extra1": "extra property1",
             "repository": {
                 "extra2": "extra property2",
@@ -46,8 +46,8 @@ object TravisWebHookParserSpec : Spek({
                     as TravisPullRequestBuild?
                     ?: throw Exception("Travis pull request web hook wasn't parsed properly.")
 
-            it("should get pull request author") {
-                assertTrue { build.author == pullRequestAuthor }
+            it("should get pull request github number") {
+                assertTrue { build.number == pullRequestNumber }
             }
 
             it("should get pull request branch") {

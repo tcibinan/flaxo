@@ -4,6 +4,7 @@ import com.tcibinan.flaxo.core.env.EnvironmentFile
 import com.tcibinan.flaxo.core.env.RemoteEnvironmentFile
 import com.tcibinan.flaxo.git.Branch
 import com.tcibinan.flaxo.git.Git
+import com.tcibinan.flaxo.git.PullRequest
 import com.tcibinan.flaxo.git.Repository
 import org.kohsuke.github.GHEvent
 import java.net.URL
@@ -97,4 +98,9 @@ class Github(private val credentials: String,
     private fun Repository.loadFile(bytes: ByteArray, message: String, path: String, name: String) {
         ghRepository(name()).createContent(bytes, message, path, name)
     }
+
+    override fun getPullRequest(repository: String, pullRequestNumber: Int): PullRequest =
+            ghRepository(repository).getPullRequest(pullRequestNumber)
+                    ?.let { GithubPullRequest(it) }
+                    ?: throw Exception("Pull request $pullRequestNumber wasn't found for repository ${nickname()}/$repository.")
 }

@@ -16,7 +16,7 @@ class SimpleTravisPullRequestBuild(webHook: TravisWebHook) : TravisPullRequestBu
 
     override val repositoryName: String = webHook.repository.name
 
-    override val author: String = webHook.author_name
+    override val number: Int = webHook.pull_request_number.toInt()
 
     override val branch: String = webHook.branch
 

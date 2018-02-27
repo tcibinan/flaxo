@@ -13,4 +13,5 @@ interface Git {
     fun deleteRepository(repositoryName: String)
     fun addWebHook(repositoryName: String)
     fun files(user: String, repository: String, branch: String): List<EnvironmentFile>
+    fun getPullRequest(repository: String, pullRequestNumber: Int): PullRequest
 }
