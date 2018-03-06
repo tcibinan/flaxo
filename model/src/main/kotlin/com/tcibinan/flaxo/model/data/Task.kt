@@ -25,9 +25,7 @@ data class Task(private val entity: TaskEntity) : DataObject<TaskEntity> {
                 this.taskName = name ?: entity.taskName
                 this.course = course?.toEntity() ?: entity.course
                 this.mossUrl = mossUrl ?: entity.mossUrl
-                this.studentTasks =
-                        if (studentTasks.toEntities().isNotEmpty()) studentTasks.toEntities()
-                        else entity.studentTasks
+                this.studentTasks = studentTasks.takeIf { it.isNotEmpty() }?.toEntities() ?: entity.studentTasks
             }
             .toDto()
 

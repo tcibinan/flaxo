@@ -19,6 +19,9 @@ import com.tcibinan.flaxo.model.entity.TaskEntity
 import com.tcibinan.flaxo.model.entity.UserEntity
 import com.tcibinan.flaxo.model.entity.toDtos
 
+/**
+ * Data service implementation based on jpa repositories.
+ */
 class BasicDataService(private val userRepository: UserRepository,
                        private val credentialsRepository: CredentialsRepository,
                        private val courseRepository: CourseRepository,
@@ -56,7 +59,7 @@ class BasicDataService(private val userRepository: UserRepository,
                               owner: User
     ): Course {
         if (getCourse(courseName, owner) != null) {
-            throw EntityAlreadyExistsException("${courseName} already exists for ${owner}")
+            throw EntityAlreadyExistsException("$courseName already exists for $owner")
         }
         val courseEntity = courseRepository
                 .save(CourseEntity().apply {
@@ -97,7 +100,7 @@ class BasicDataService(private val userRepository: UserRepository,
 
     override fun getCourses(userNickname: String): Set<Course> {
         val user = getUser(userNickname)
-        user ?: throw Exception("Could not find user with $userNickname nickname")
+                ?: throw Exception("Could not find user with $userNickname nickname")
 
         return courseRepository.findByUser(user.toEntity()).toDtos()
     }

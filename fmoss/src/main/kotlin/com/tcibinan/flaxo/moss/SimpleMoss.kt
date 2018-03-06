@@ -28,9 +28,6 @@ class SimpleMoss(override val userId: String,
     }
 
     override fun analyse(): MossResult {
-        val tempDir = createTempDir("moss-analyse")
-        tempDir.deleteOnExit()
-
         client.run()
 
         bases.forEach { loadBaseFile(it) }

@@ -1,9 +1,11 @@
 package com.tcibinan.flaxo.model.data
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.tcibinan.flaxo.model.EntityFieldIsAbsent
 import com.tcibinan.flaxo.model.entity.CourseEntity
 import com.tcibinan.flaxo.model.entity.toDtos
 
+@JsonIgnoreProperties("students", "tasks")
 data class Course(private val entity: CourseEntity) : DataObject<CourseEntity> {
 
     val id: Long by lazy { entity.courseId ?: throw EntityFieldIsAbsent("course", "id") }
@@ -32,16 +34,16 @@ data class Course(private val entity: CourseEntity) : DataObject<CourseEntity> {
              students: Set<Student> = emptySet(),
              tasks: Set<Task> = emptySet()
     ) = CourseEntity()
-            .apply {
-                this.courseId = id ?: entity.courseId
-                this.name = name ?: entity.name
-                this.language = language ?: entity.language
-                this.language = testingLanguage ?: entity.language
-                this.testingLanguage = testingFramework ?: entity.testingLanguage
-                this.status = status ?: entity.status
-                this.user = user?.toEntity() ?: entity.user
-                this.students = if (students.isNotEmpty()) students.toEntities() else entity.students
-                this.tasks = if (tasks.isNotEmpty()) tasks.toEntities() else entity.tasks
+            .also {
+                it.courseId = id ?: entity.courseId
+                it.name = name ?: entity.name
+                it.language = language ?: entity.language
+                it.testingLanguage = testingLanguage ?: entity.testingLanguage
+                it.testingFramework = testingFramework ?: entity.testingFramework
+                it.status = status ?: entity.status
+                it.user = user?.toEntity() ?: entity.user
+                it.students = students.takeIf { it.isNotEmpty() }?.toEntities() ?: entity.students
+                it.tasks = tasks.takeIf { it.isNotEmpty() }?.toEntities() ?: entity.tasks
             }
             .toDto()
 }
