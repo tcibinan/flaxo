@@ -53,7 +53,8 @@ class DataServiceTest : SubjectSpek<DataService>({
         }
 
         on("course creation") {
-            val owner = subject.getUser(nickname)!!
+            val owner = subject.getUser(nickname)
+                    ?: throw EntityNotFound("User $nickname")
             val course = subject.createCourse(
                     courseName,
                     language,
@@ -95,7 +96,8 @@ class DataServiceTest : SubjectSpek<DataService>({
         }
 
         on("addition course with name that already exists for the user") {
-            val owner = subject.getUser(nickname)!!
+            val owner = subject.getUser(nickname)
+                    ?: throw EntityNotFound("User $nickname")
 
             it("should throw an exception") {
                 shouldThrow<EntityAlreadyExistsException> {
@@ -129,14 +131,17 @@ class DataServiceTest : SubjectSpek<DataService>({
         }
 
         on("addition students to the course") {
-            val owner = subject.getUser(nickname)!!
-            val course = subject.getCourse(courseName, owner)!!
+            val owner = subject.getUser(nickname)
+                    ?: throw EntityNotFound("User $nickname")
+            val course = subject.getCourse(courseName, owner)
+                    ?: throw EntityNotFound("Course $courseName")
             subject.addStudent(student, course)
             subject.addStudent(anotherStudent, course)
 
             it("should add all the student to the course") {
-                val studentsNames = subject.getStudents(course).map { it.nickname }.toSet()
-                studentsNames shouldEqual setOf(student, anotherStudent)
+                subject.getStudents(course)
+                        .map { it.nickname }
+                        .toSet() shouldEqual setOf(student, anotherStudent)
             }
 
             it("should create new entity for each student-task combination") {
@@ -148,19 +153,21 @@ class DataServiceTest : SubjectSpek<DataService>({
         }
 
         on("changing course status") {
-            val owner = subject.getUser(nickname)!!
-            val course = subject.getCourse(courseName, owner)!!
+            val owner = subject.getUser(nickname)
+                    ?: throw EntityNotFound("User $nickname")
+            val course = subject.getCourse(courseName, owner)
+                    ?: throw EntityNotFound("Course $courseName")
             val updatedCourse = course.with(status = CourseStatus.RUNNING)
-            subject.updateCourse(updatedCourse)
+                    .also { subject.updateCourse(it) }
 
             it("should change it") {
-                subject.getCourse(courseName, owner)!!
-                        .status shouldBe CourseStatus.RUNNING
+                updatedCourse.status shouldBe CourseStatus.RUNNING
             }
         }
 
         on("course deletion") {
-            val owner = subject.getUser(nickname)!!
+            val owner = subject.getUser(nickname)
+                    ?: throw EntityNotFound("User $nickname")
             subject.deleteCourse(courseName, owner)
 
             it("should delete the course") {

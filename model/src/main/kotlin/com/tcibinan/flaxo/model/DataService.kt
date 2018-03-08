@@ -61,7 +61,7 @@ interface DataService {
     /**
      * Changes existing course.
      */
-    fun updateCourse(updatedCourse: Course)
+    fun updateCourse(updatedCourse: Course): Course
 
     /**
      * Retrieves course by name and owner-user.

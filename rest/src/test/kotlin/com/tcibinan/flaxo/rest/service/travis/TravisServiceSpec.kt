@@ -16,9 +16,13 @@ object TravisServiceSpec : SubjectSpek<TravisService>({
             TravisConfiguration::class.java
     )
     val githubUsername = context.environment.getProperty("GITHUB_TEST_NAME")
+            ?: throw RuntimeException("GITHUB_TEST_NAME is not set in the current environment.")
     val githubToken = context.environment.getProperty("GITHUB_TEST_TOKEN")
+            ?: throw RuntimeException("GITHUB_TEST_TOKEN is not set in the current environment.")
     val githubRepositoryName = context.environment.getProperty("GITHUB_REPOSITORY_ID")
+            ?: throw RuntimeException("GITHUB_REPOSITORY_ID is not set in the current environment.")
     val travisToken = context.environment.getProperty("TRAVIS_TEST_TOKEN")
+            ?: throw RuntimeException("TRAVIS_TEST_TOKEN is not set in the current environment.")
 
     subject { context.getBean("travisService", TravisService::class.java) }
 

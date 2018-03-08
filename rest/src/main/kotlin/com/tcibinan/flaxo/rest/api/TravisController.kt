@@ -7,7 +7,7 @@ import com.tcibinan.flaxo.rest.service.travis.TravisService
 import com.tcibinan.flaxo.travis.build.BuildStatus
 import com.tcibinan.flaxo.travis.build.TravisBuild
 import com.tcibinan.flaxo.travis.build.TravisPullRequestBuild
-import org.apache.log4j.LogManager
+import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.PostMapping

@@ -33,8 +33,8 @@ class BasicDataService(private val userRepository: UserRepository,
     override fun addUser(nickname: String,
                          password: String
     ): User {
-        userRepository.findByNickname(nickname)
-                ?: throw EntityAlreadyExistsException("User $nickname")
+        if (userRepository.findByNickname(nickname) != null)
+            throw EntityAlreadyExistsException("User $nickname")
 
         return userRepository
                 .save(UserEntity().also {
@@ -58,8 +58,8 @@ class BasicDataService(private val userRepository: UserRepository,
                               numberOfTasks: Int,
                               owner: User
     ): Course {
-        getCourse(courseName, owner)
-                ?: throw EntityAlreadyExistsException("Course $owner/$courseName")
+        if (getCourse(courseName, owner) != null)
+            throw EntityAlreadyExistsException("Course $owner/$courseName")
 
         val courseEntity = courseRepository
                 .save(CourseEntity().also {
@@ -92,9 +92,8 @@ class BasicDataService(private val userRepository: UserRepository,
                 ?: throw EntityNotFound("Repository $courseName")
     }
 
-    override fun updateCourse(updatedCourse: Course) {
-        courseRepository.save(updatedCourse.toEntity())
-    }
+    override fun updateCourse(updatedCourse: Course): Course =
+            courseRepository.save(updatedCourse.toEntity()).toDto()
 
     override fun getCourse(name: String,
                            owner: User
