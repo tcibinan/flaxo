@@ -9,9 +9,12 @@ import javax.persistence.OneToOne
 import javax.persistence.Table
 import javax.persistence.UniqueConstraint
 
+/**
+ * User entity object.
+ */
 @Entity(name = "user")
 @Table(name = "user", uniqueConstraints = [UniqueConstraint(columnNames = ["nickname"])])
-class UserEntity : ConvertibleEntity<User> {
+class UserEntity : EntityObject<User> {
 
     @Id
     @GeneratedValue

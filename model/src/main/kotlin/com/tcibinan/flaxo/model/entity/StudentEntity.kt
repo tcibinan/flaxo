@@ -9,9 +9,12 @@ import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
 import javax.persistence.Table
 
+/**
+ * Student entity object.
+ */
 @Entity(name = "student")
 @Table(name = "student")
-class StudentEntity() : ConvertibleEntity<Student> {
+class StudentEntity : EntityObject<Student> {
 
     @Id
     @GeneratedValue

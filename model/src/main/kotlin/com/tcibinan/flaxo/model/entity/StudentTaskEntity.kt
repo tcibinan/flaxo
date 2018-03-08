@@ -7,9 +7,12 @@ import javax.persistence.Id
 import javax.persistence.ManyToOne
 import javax.persistence.Table
 
+/**
+ * Student task entity object.
+ */
 @Entity(name = "student_task")
 @Table(name = "student_task")
-class StudentTaskEntity() : ConvertibleEntity<StudentTask> {
+class StudentTaskEntity : EntityObject<StudentTask> {
 
     @Id
     @GeneratedValue

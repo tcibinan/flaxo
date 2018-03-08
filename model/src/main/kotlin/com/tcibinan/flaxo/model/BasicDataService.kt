@@ -33,13 +33,13 @@ class BasicDataService(private val userRepository: UserRepository,
     override fun addUser(nickname: String,
                          password: String
     ): User {
-        if (userRepository.findByNickname(nickname) != null) {
-            throw EntityAlreadyExistsException("User with '${nickname}' nickname already exists")
-        }
+        userRepository.findByNickname(nickname)
+                ?: throw EntityAlreadyExistsException("User $nickname")
+
         return userRepository
-                .save(UserEntity().apply {
-                    this.nickname = nickname
-                    this.credentials = CredentialsEntity().apply { this.password = password }
+                .save(UserEntity().also {
+                    it.nickname = nickname
+                    it.credentials = CredentialsEntity().also { it.password = password }
                 })
                 .toDto()
     }
@@ -58,35 +58,38 @@ class BasicDataService(private val userRepository: UserRepository,
                               numberOfTasks: Int,
                               owner: User
     ): Course {
-        if (getCourse(courseName, owner) != null) {
-            throw EntityAlreadyExistsException("$courseName already exists for $owner")
-        }
+        getCourse(courseName, owner)
+                ?: throw EntityAlreadyExistsException("Course $owner/$courseName")
+
         val courseEntity = courseRepository
-                .save(CourseEntity().apply {
-                    this.name = courseName
-                    this.language = language
-                    this.testingLanguage = testingLanguage
-                    this.testingFramework = testingFramework
-                    this.status = CourseStatus.INIT
-                    this.user = owner.toEntity()
+                .save(CourseEntity().also {
+                    it.name = courseName
+                    it.language = language
+                    it.testingLanguage = testingLanguage
+                    it.testingFramework = testingFramework
+                    it.status = CourseStatus.INIT
+                    it.user = owner.toEntity()
                 })
+
         for (i in 1..numberOfTasks) {
             taskRepository
-                    .save(TaskEntity().apply {
-                        this.taskName = "$tasksPrefix$i"
-                        this.course = courseEntity
+                    .save(TaskEntity().also {
+                        it.taskName = "$tasksPrefix$i"
+                        it.course = courseEntity
                     })
         }
-        return getCourse(courseName, owner) ?: throw Exception("Could not create the course")
+
+        return getCourse(courseName, owner)
+                ?: throw ModelException("Could not create the course")
     }
 
     override fun deleteCourse(courseName: String,
                               owner: User
     ) {
-        val course = getCourse(courseName, owner)
+        getCourse(courseName, owner)
+                ?.toEntity()
+                ?.also { courseRepository.delete(it) }
                 ?: throw EntityNotFound("Repository $courseName")
-
-        courseRepository.delete(course.toEntity())
     }
 
     override fun updateCourse(updatedCourse: Course) {
@@ -100,7 +103,7 @@ class BasicDataService(private val userRepository: UserRepository,
 
     override fun getCourses(userNickname: String): Set<Course> {
         val user = getUser(userNickname)
-                ?: throw Exception("Could not find user with $userNickname nickname")
+                ?: throw ModelException("Could not find user with $userNickname nickname")
 
         return courseRepository.findByUser(user.toEntity()).toDtos()
     }
@@ -109,25 +112,27 @@ class BasicDataService(private val userRepository: UserRepository,
                             course: Course): Student {
         val student =
                 studentRepository
-                        .save(StudentEntity().apply {
-                            this.nickname = nickname
-                            this.course = course.toEntity()
+                        .save(StudentEntity().also {
+                            it.nickname = nickname
+                            it.course = course.toEntity()
                         })
                         .toDto()
 
-        val tasks = taskRepository.findAllByCourse(course.toEntity())
-
-        tasks.forEach {
-            studentTaskRepository.save(StudentTaskEntity().apply {
-                this.task = it
-                this.student = student.toEntity()
-            })
-        }
+        taskRepository
+                .findAllByCourse(course.toEntity())
+                .forEach { task ->
+                    studentTaskRepository
+                            .save(StudentTaskEntity().also {
+                                it.task = task
+                                it.student = student.toEntity()
+                            })
+                }
 
         return studentRepository
                 .findOne(student.id)
                 ?.toDto()
-                ?: throw Exception("Could not create the student $nickname for course ${course.user.nickname}/${course.name}.")
+                ?: throw ModelException("Could not create the student $nickname " +
+                        "for course ${course.user.nickname}/${course.name}")
     }
 
     override fun getStudents(course: Course): Set<Student> =
@@ -140,20 +145,20 @@ class BasicDataService(private val userRepository: UserRepository,
                           service: IntegratedService,
                           accessToken: String
     ): User {
-        getUser(userNickname)
-                ?.credentials
+        val user: User? = getUser(userNickname)
+
+        user?.credentials
                 ?.toEntity()
                 ?.withServiceToken(service, accessToken)
-                ?.apply { credentialsRepository.save(this) }
-                ?: throw Exception("Could not find user with $userNickname nickname.")
+                ?.also { credentialsRepository.save(it) }
+                ?: throw ModelException("Could not find user with $userNickname nickname")
 
-        return getUser(userNickname)
-                ?: throw Exception("Could not find user with $userNickname nickname.")
+        return user
     }
 
     override fun addGithubId(userNickname: String, githubId: String): User {
         val user = getUser(userNickname)
-                ?: throw Exception("Could not find user with $userNickname nickname.")
+                ?: throw ModelException("Could not find user with $userNickname nickname")
 
         return userRepository.save(user.with(githubId = githubId).toEntity()).toDto()
     }
@@ -167,10 +172,9 @@ class BasicDataService(private val userRepository: UserRepository,
 
 private fun CredentialsEntity.withServiceToken(service: IntegratedService,
                                                accessToken: String
-): CredentialsEntity {
+): CredentialsEntity = also {
     when (service) {
-        IntegratedService.GITHUB -> this.githubToken = accessToken
-        IntegratedService.TRAVIS -> this.travisToken = accessToken
+        IntegratedService.GITHUB -> it.githubToken = accessToken
+        IntegratedService.TRAVIS -> it.travisToken = accessToken
     }
-    return this
 }

@@ -9,9 +9,12 @@ import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
 import javax.persistence.Table
 
+/**
+ * Task entity object.
+ */
 @Entity(name = "task")
 @Table(name = "task")
-class TaskEntity() : ConvertibleEntity<Task> {
+class TaskEntity : EntityObject<Task> {
 
     @Id
     @GeneratedValue

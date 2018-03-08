@@ -6,9 +6,12 @@ import javax.persistence.GeneratedValue
 import javax.persistence.Id
 import javax.persistence.Table
 
+/**
+ * Credentials entity object.
+ */
 @Entity(name = "credentials")
 @Table(name = "credentials")
-class CredentialsEntity() : ConvertibleEntity<Credentials> {
+class CredentialsEntity : EntityObject<Credentials> {
 
     @Id
     @GeneratedValue

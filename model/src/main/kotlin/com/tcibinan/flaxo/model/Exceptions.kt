@@ -1,7 +1,21 @@
 package com.tcibinan.flaxo.model
 
-class EntityAlreadyExistsException(val entity: String) : Exception(entity + "already exists")
+/**
+ * Entity already exists exception.
+ */
+class EntityAlreadyExistsException(entity: String) : ModelException(entity + " already exists")
 
-class EntityNotFound(entity: String) : Exception(entity + "hasn't been found")
+/**
+ * Entity not found exception.
+ */
+class EntityNotFound(entity: String) : ModelException(entity + " hasn't been found")
 
-class EntityFieldIsAbsent(entity: String, field: String) : Exception("Entity $entity doesn't have $field initialized.")
+/**
+ * Entity field not initialised exception.
+ */
+class EntityFieldIsAbsent(entity: String, field: String) : ModelException("Entity $entity doesn't have $field initialized")
+
+/**
+ * Base model exception class.
+ */
+open class ModelException(message: String) : RuntimeException(message)

@@ -3,7 +3,11 @@ package com.tcibinan.flaxo.model.data
 import com.tcibinan.flaxo.model.EntityFieldIsAbsent
 import com.tcibinan.flaxo.model.entity.StudentTaskEntity
 
-data class StudentTask(private val entity: StudentTaskEntity) : DataObject<StudentTaskEntity> {
+/**
+ * Student task data object.
+ */
+data class StudentTask(private val entity: StudentTaskEntity)
+    : DataObject<StudentTaskEntity> {
 
     val id: Long by lazy { entity.studentTaskId ?: throw EntityFieldIsAbsent("student task", "id") }
     val task: Task by lazy { Task(entity.task ?: throw EntityFieldIsAbsent("student task", "task")) }

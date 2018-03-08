@@ -4,8 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.tcibinan.flaxo.model.EntityFieldIsAbsent
 import com.tcibinan.flaxo.model.entity.UserEntity
 
+/**
+ * User data object.
+ */
 @JsonIgnoreProperties("credentials")
-data class User(private val entity: UserEntity) : DataObject<UserEntity> {
+data class User(private val entity: UserEntity)
+    : DataObject<UserEntity> {
+
     val id: Long by lazy { entity.userId ?: throw EntityFieldIsAbsent("user", "id") }
     val githubId: String? by lazy { entity.githubId }
     val nickname: String by lazy { entity.nickname ?: throw EntityFieldIsAbsent("user", "nickname") }

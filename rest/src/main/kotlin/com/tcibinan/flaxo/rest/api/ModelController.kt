@@ -53,7 +53,7 @@ class ModelController @Autowired constructor(private val dataService: DataServic
             dataService.addUser(nickname, password)
             responseService.response(USER_CREATED, nickname)
         } catch (e: EntityAlreadyExistsException) {
-            responseService.response(USER_ALREADY_EXISTS, e.entity)
+            responseService.response(USER_ALREADY_EXISTS, "User $nickname")
         } catch (e: Throwable) {
             responseService.response(SERVER_ERROR, e.message)
         }
