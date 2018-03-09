@@ -9,6 +9,9 @@ import com.tcibinan.flaxo.core.language.JavaLang
 import com.tcibinan.flaxo.core.language.KotlinLang
 import com.tcibinan.flaxo.core.language.Language
 
+/**
+ * Travis environment supplier implementation class.
+ */
 class SimpleTravisEnvironmentSupplier(private val language: Language,
                                       private val testingLanguage: Language = language,
                                       private val framework: TestingFramework,

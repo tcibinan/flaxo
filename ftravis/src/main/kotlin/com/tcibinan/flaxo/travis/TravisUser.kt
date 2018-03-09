@@ -2,11 +2,14 @@ package com.tcibinan.flaxo.travis
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
+/**
+ * Travis user class.
+ */
 @JsonIgnoreProperties(
         "@type", "@href", "@representation", "@permissions",
         "avatar_url", "is_syncing", "synced_at"
 )
-class TravisUser() {
+class TravisUser {
     var id: String = ""
     var login: String = ""
     var name: String = ""

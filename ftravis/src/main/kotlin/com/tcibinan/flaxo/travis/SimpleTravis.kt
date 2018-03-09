@@ -3,6 +3,9 @@ package com.tcibinan.flaxo.travis
 import io.vavr.control.Either
 import okhttp3.ResponseBody
 
+/**
+ * Travis client implementation class.
+ */
 class SimpleTravis(private val travisClient: TravisClient,
                    private val travisToken: String
 ) : Travis {

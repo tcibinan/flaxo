@@ -2,11 +2,14 @@ package com.tcibinan.flaxo.travis
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
+/**
+ * Travis repository class.
+ */
 @JsonIgnoreProperties(
         "@type", "@href", "@representation", "@permissions",
         "default_branch", "starred", "description", "github_language"
 )
-class TravisRepository() {
+class TravisRepository {
     var id: Int = 0
     var name: String = ""
     var slug: String = ""

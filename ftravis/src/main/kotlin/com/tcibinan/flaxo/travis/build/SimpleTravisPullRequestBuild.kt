@@ -2,7 +2,11 @@ package com.tcibinan.flaxo.travis.build
 
 import com.tcibinan.flaxo.travis.webhook.TravisWebHook
 
-class SimpleTravisPullRequestBuild(webHook: TravisWebHook) : TravisPullRequestBuild {
+/**
+ * Travis pull request build implementation class.
+ */
+class SimpleTravisPullRequestBuild(webHook: TravisWebHook)
+    : TravisPullRequestBuild {
 
     override val status: BuildStatus =
             when (webHook.status_message) {

@@ -9,15 +9,18 @@ import com.tcibinan.flaxo.travis.build.TravisBuild
 import com.tcibinan.flaxo.travis.webhook.TravisWebHook
 import java.io.Reader
 
+/**
+ * Travis web hook parser function.
+ */
 fun parseTravisWebHook(reader: Reader): TravisBuild? =
         ObjectMapper()
                 .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.NONE)
                 .readerFor(TravisWebHook::class.java)
                 .withoutFeatures(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
                 .readValue<TravisWebHook>(reader)
-                .run {
-                    when (type) {
-                        "pull_request" -> SimpleTravisPullRequestBuild(this)
+                .let {
+                    when (it.type) {
+                        "pull_request" -> SimpleTravisPullRequestBuild(it)
                         else -> null
                     }
                 }
