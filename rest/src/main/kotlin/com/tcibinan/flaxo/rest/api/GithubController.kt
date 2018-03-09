@@ -30,7 +30,9 @@ import javax.servlet.http.HttpServletResponse
 class GithubController(
         private val responseService: ResponseService,
         private val dataService: DataService,
-        private val gitService: GitService
+        private val gitService: GitService,
+        @Value("\${GITHUB_ID}") private val clientId: String,
+        @Value("\${GITHUB_SECRET}") private val clientSecret: String
 ) {
 
     private val githubAuthUrl = "https://github.com/login/oauth"
@@ -38,10 +40,6 @@ class GithubController(
             TimeUnit.MILLISECONDS.convert(5, TimeUnit.MINUTES)
     )
     private val logger = LogManager.getLogger(GithubController::class.java)
-    @Value("\${GITHUB_ID}")
-    private lateinit var clientId: String
-    @Value("\${GITHUB_SECRET}")
-    private lateinit var clientSecret: String
 
     @GetMapping("/auth")
     @PreAuthorize("hasAuthority('USER')")

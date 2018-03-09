@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration
 class MossConfiguration {
 
     @Bean
-    fun mossService(@Value("MOSS_USER_ID") userId: String,
+    fun mossService(@Value("\${MOSS_USER_ID}") userId: String,
                     gitService: GitService,
                     supportedLanguages: Map<String, Language>
     ): MossService =

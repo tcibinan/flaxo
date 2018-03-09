@@ -9,9 +9,7 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class GitConfiguration {
 
-    @Value("\${GITHUB_WEB_HOOK_URL}")
-    private lateinit var githubWebHookUrl: String
-
     @Bean
-    fun gitService(): GitService = GithubService(githubWebHookUrl)
+    fun gitService(@Value("\${GITHUB_WEB_HOOK_URL}") githubWebHookUrl: String
+    ): GitService = GithubService(githubWebHookUrl)
 }
