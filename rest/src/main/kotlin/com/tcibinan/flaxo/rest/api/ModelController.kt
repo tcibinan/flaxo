@@ -6,9 +6,9 @@ import com.tcibinan.flaxo.model.DataService
 import com.tcibinan.flaxo.model.EntityAlreadyExistsException
 import com.tcibinan.flaxo.model.EntityNotFound
 import com.tcibinan.flaxo.model.IntegratedService
-import com.tcibinan.flaxo.model.data.StudentTask
 import com.tcibinan.flaxo.model.data.Task
 import com.tcibinan.flaxo.model.data.User
+import com.tcibinan.flaxo.model.data.toViews
 import com.tcibinan.flaxo.moss.MossResult
 import com.tcibinan.flaxo.rest.api.ServerAnswer.*
 import com.tcibinan.flaxo.rest.service.environment.RepositoryEnvironmentService
@@ -46,6 +46,12 @@ class ModelController @Autowired constructor(private val dataService: DataServic
     private val logger = LogManager.getLogger(ModelController::class.java)
     private val tasksPrefix = "task-"
 
+    /**
+     * Register user in the flaxo system.
+     *
+     * @param nickname Of the creating user.
+     * @param password Of the creating user.
+     */
     @PostMapping("/register")
     fun register(@RequestParam("nickname") nickname: String,
                  @RequestParam("password") password: String
@@ -65,6 +71,16 @@ class ModelController @Autowired constructor(private val dataService: DataServic
         }
     }
 
+    /**
+     * Creates a course and related git repository.
+     *
+     * @param courseName Name of the course and related git repository.
+     * @param language Language of the course.
+     * @param testLanguage Language used for tests.
+     * @param testingFramework Testing framework which is used for testing.
+     * @param numberOfTasks Number of tasks in the course and number of tasks branches
+     * in the git repository.
+     */
     @PostMapping("/createCourse")
     @PreAuthorize("hasAuthority('USER')")
     fun createCourse(@RequestParam courseName: String,
@@ -120,6 +136,11 @@ class ModelController @Autowired constructor(private val dataService: DataServic
         return responseService.response(COURSE_CREATED, courseName, payload = course)
     }
 
+    /**
+     * Deletes a current user course from the flaxo system and delete git repository as well.
+     *
+     * @param courseName Name of the course and related git repository.
+     */
     @PostMapping("/deleteCourse")
     @PreAuthorize("hasAuthority('USER')")
     fun deleteCourse(@RequestParam courseName: String,
@@ -146,6 +167,13 @@ class ModelController @Autowired constructor(private val dataService: DataServic
         return responseService.response(COURSE_DELETED, courseName)
     }
 
+    /**
+     * Composes course and enable travis builds on the git repository pull requests.
+     *
+     * It is called after the teacher has finished creating tasks.
+     *
+     * @param courseName Name of the course and related git repository.
+     */
     @PostMapping("/composeCourse")
     @PreAuthorize("hasAuthority('USER')")
     fun composeCourse(@RequestParam courseName: String,
@@ -202,6 +230,11 @@ class ModelController @Autowired constructor(private val dataService: DataServic
                     travisService.retrieveTravisToken(githubUserId, githubToken)
             )
 
+    /**
+     * Returns full information about the current user's course with the given [courseName].
+     *
+     * @param courseName Name of the course and related git repository.
+     */
     @GetMapping("course")
     @PreAuthorize("hasAuthority('USER')")
     fun course(@RequestParam("courseName") courseName: String,
@@ -216,6 +249,11 @@ class ModelController @Autowired constructor(private val dataService: DataServic
         return responseService.response(COURSES_LIST, payload = course.view())
     }
 
+    /**
+     * Returns full information about all courses of the given user.
+     *
+     * @param nickname User nickname to retrieve courses from.
+     */
     @GetMapping("allCourses")
     @PreAuthorize("hasAuthority('USER')")
     fun allCourses(@RequestParam("nickname") nickname: String,
@@ -223,12 +261,18 @@ class ModelController @Autowired constructor(private val dataService: DataServic
     ): Response =
             if (principal.name == nickname) {
                 responseService.response(COURSES_LIST,
-                        payload = dataService.getCourses(nickname).map { it.view() }
+                        payload = dataService.getCourses(nickname).toViews()
                 )
             } else {
                 responseService.response(ANOTHER_USER_DATA, principal.name, nickname)
             }
 
+    /**
+     * Returns all statistics of the course.
+     *
+     * @param ownerNickname Course owner nickname.
+     * @param courseName Name of the course and related git repository.
+     */
     @GetMapping("/{owner}/{course}/statistics")
     @PreAuthorize("hasAuthority('USER')")
     fun getCourseStatistics(@PathVariable("owner") ownerNickname: String,
@@ -244,13 +288,13 @@ class ModelController @Autowired constructor(private val dataService: DataServic
 
         logger.info("Aggregating course $ownerNickname/$courseName students statistics")
 
-        val studentsStatistics = course.students
-                .map { it.nickname to it.studentTasks.reports() }
+        val studentsStatistics: Map<String, List<Any>> = course.students
+                .map { it.nickname to it.studentTasks.toViews() }
                 .toMap()
 
         logger.info("Aggregating course $ownerNickname/$courseName tasks statistics")
 
-        val tasksStatistics = course.tasks
+        val tasksStatistics: Map<String, Any> = course.tasks
                 .map { task ->
                     task.name to object {
                         val mossResultUrl = task.mossUrl
@@ -274,6 +318,12 @@ class ModelController @Autowired constructor(private val dataService: DataServic
         )
     }
 
+    /**
+     * Returns all tasks of the course.
+     *
+     * @param ownerNickname Course owner nickname.
+     * @param courseName Name of the course and related git repository.
+     */
     @GetMapping("/{owner}/{course}/tasks")
     @PreAuthorize("hasAuthority('USER')")
     fun getCourseTasks(@PathVariable("owner") ownerNickname: String,
@@ -291,6 +341,12 @@ class ModelController @Autowired constructor(private val dataService: DataServic
         )
     }
 
+    /**
+     * Returns all students of the course.
+     *
+     * @param ownerNickname Course owner nickname.
+     * @param courseName Name of the course and related git repository.
+     */
     @GetMapping("/{owner}/{course}/students")
     @PreAuthorize("hasAuthority('USER')")
     fun getCourseStudents(@PathVariable("owner") ownerNickname: String,
@@ -308,10 +364,18 @@ class ModelController @Autowired constructor(private val dataService: DataServic
         )
     }
 
+    /**
+     * Returns a list of supported languages by flaxo.
+     */
     @GetMapping("/supportedLanguages")
     fun supportedLanguages(): Response =
             responseService.response(SUPPORTED_LANGUAGES, payload = supportedLanguages.flatten())
 
+    /**
+     * Starts current user's course plagiarism analysis.
+     *
+     * @param courseName Name of the course and related git repository.
+     */
     @PostMapping("/analysePlagiarism")
     @PreAuthorize("hasAuthority('USER')")
     fun analysePlagiarism(@RequestParam courseName: String,
@@ -352,14 +416,6 @@ class ModelController @Autowired constructor(private val dataService: DataServic
         )
     }
 }
-
-private fun Collection<StudentTask>.reports(): List<Any> =
-        map {
-            mapOf(
-                    "builded" to it.anyBuilds,
-                    "succeed" to it.buildSucceed
-            )
-        }
 
 private fun Map<String, Language>.flatten(): List<Any> =
         map { (name, language) ->

@@ -16,6 +16,17 @@ data class StudentTask(private val entity: StudentTaskEntity)
     val buildSucceed: Boolean by lazy { entity.buildSucceed }
 
     override fun toEntity() = entity
+
+    override fun view(): Any = let { studentTask ->
+        object {
+            val id = studentTask.id
+            val task = studentTask.task.name
+            val student = studentTask.student.nickname
+            val built = studentTask.anyBuilds
+            val succeed = studentTask.buildSucceed
+        }
+    }
+
     fun with(id: Long? = null,
              task: Task? = null,
              student: Student? = null,

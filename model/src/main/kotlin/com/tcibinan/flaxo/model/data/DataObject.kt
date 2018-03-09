@@ -18,5 +18,7 @@ interface DataObject<out ENTITY> {
     }
 }
 
+fun Set<DataObject<*>>.toViews(): List<Any> = map { it.view() }
+
 internal fun <ENTITY> Set<DataObject<ENTITY>>.toEntities(): Set<ENTITY> =
         this.map { it.toEntity() }.toSet()
