@@ -1,11 +1,10 @@
 package com.tcibinan.flaxo.rest.api
 
-import com.tcibinan.flaxo.core.env.Environment
 import com.tcibinan.flaxo.core.language.Language
-import com.tcibinan.flaxo.git.Branch
 import com.tcibinan.flaxo.model.CourseStatus
 import com.tcibinan.flaxo.model.DataService
 import com.tcibinan.flaxo.model.EntityAlreadyExistsException
+import com.tcibinan.flaxo.model.EntityNotFound
 import com.tcibinan.flaxo.model.IntegratedService
 import com.tcibinan.flaxo.model.data.StudentTask
 import com.tcibinan.flaxo.model.data.Task
@@ -57,10 +56,10 @@ class ModelController @Autowired constructor(private val dataService: DataServic
             logger.info("User $nickname was registered successfully")
             responseService.response(USER_CREATED, nickname)
         } catch (e: EntityAlreadyExistsException) {
-            logger.info("User with $nickname nickname is already registered")
+            logger.info("Trying to create user with $nickname nickname that is already registered")
             responseService.response(USER_ALREADY_EXISTS, "User $nickname")
         } catch (e: Throwable) {
-            logger.info("Unexpected server error while registering user " +
+            logger.error("Unexpected server error while registering user " +
                     "with $nickname nickname. Cause: " + e.message)
             responseService.response(SERVER_ERROR, e.message)
         }
@@ -75,10 +74,16 @@ class ModelController @Autowired constructor(private val dataService: DataServic
                      @RequestParam numberOfTasks: Int,
                      principal: Principal
     ): Response {
+        logger.info("Trying to create course ${principal.name}/$courseName")
+
         val user = dataService.getUser(principal.name)
                 ?: return responseService.response(USER_NOT_FOUND, principal.name)
 
-        val githubToken = user.credentials.githubToken ?: return responseService.response(NO_GITHUB_KEY)
+        val githubToken = user.credentials.githubToken
+                ?: return responseService.response(NO_GITHUB_KEY)
+
+        logger.info("Producing course ${principal.name}/$courseName " +
+                "environment: $language, $testLanguage, $testingFramework")
 
         val environment = environmentService.produceEnvironment(
                 language,
@@ -86,14 +91,19 @@ class ModelController @Autowired constructor(private val dataService: DataServic
                 testingFramework
         )
 
-        val git = gitService.with(githubToken)
+        logger.info("Creating git repository for course ${principal.name}/$courseName")
 
-        git.createRepository(courseName)
-                .createBranch("prerequisites")
-                .fillWith(environment)
-                .createSubBranches(numberOfTasks, tasksPrefix)
+        gitService.with(githubToken)
+                .apply {
+                    createRepository(courseName)
+                            .createBranch("prerequisites")
+                            .also { branch -> environment.getFiles().forEach { branch.load(it) } }
+                            .createSubBranches(numberOfTasks, tasksPrefix)
 
-        git.addWebHook(courseName)
+                    addWebHook(courseName)
+                }
+
+        logger.info("Creating course ${principal.name}/$courseName in database")
 
         val course = dataService.createCourse(
                 courseName,
@@ -105,6 +115,8 @@ class ModelController @Autowired constructor(private val dataService: DataServic
                 user
         )
 
+        logger.info("Course ${principal.name}/$courseName has been successfully created")
+
         return responseService.response(COURSE_CREATED, courseName, payload = course)
     }
 
@@ -113,14 +125,23 @@ class ModelController @Autowired constructor(private val dataService: DataServic
     fun deleteCourse(@RequestParam courseName: String,
                      principal: Principal
     ): Response {
+        logger.info("Trying to delete course ${principal.name}/$courseName")
+
         val user = dataService.getUser(principal.name)
                 ?: return responseService.response(USER_NOT_FOUND, principal.name)
 
-        val githubToken = user.credentials.githubToken ?: return responseService.response(NO_GITHUB_KEY)
+        val githubToken = user.credentials.githubToken
+                ?: return responseService.response(NO_GITHUB_KEY)
+
+        logger.info("Deleting course ${principal.name}/$courseName from the database")
 
         dataService.deleteCourse(courseName, user)
 
+        logger.info("Deleting course ${principal.name}/$courseName git repository")
+
         gitService.with(githubToken).deleteRepository(courseName)
+
+        logger.info("Course ${principal.name}/$courseName has been successfully deleted")
 
         return responseService.response(COURSE_DELETED, courseName)
     }
@@ -130,6 +151,8 @@ class ModelController @Autowired constructor(private val dataService: DataServic
     fun composeCourse(@RequestParam courseName: String,
                       principal: Principal
     ): Response {
+        logger.info("Trying to compose course ${principal.name}/$courseName")
+
         val user = dataService.getUser(principal.name)
                 ?: return responseService.response(USER_NOT_FOUND, principal.name)
 
@@ -142,13 +165,20 @@ class ModelController @Autowired constructor(private val dataService: DataServic
         val githubUserId = user.githubId
                 ?: throw Exception("Github id for ${principal.name} is not set.")
 
+        logger.info("Activating git repository of the course ${principal.name}/$courseName for travis CI")
+
         travisService.travis(retrieveTravisToken(user, githubUserId, githubToken))
                 .activate(githubUserId, course.name)
                 .getOrElseThrow { errorBody ->
-                    Exception("Travis activation of $githubUserId/${course.name} repository went bad due to: ${errorBody.string()}")
+                    Exception("Travis activation of $githubUserId/${course.name} " +
+                            "repository went bad due to: ${errorBody.string()}")
                 }
 
+        logger.info("Changing course ${principal.name}/$courseName status to running")
+
         dataService.updateCourse(course.with(status = CourseStatus.RUNNING))
+
+        logger.info("Course ${principal.name}/$courseName has been successfully composed")
 
         return responseService.response(COURSE_COMPOSED, courseName)
     }
@@ -172,22 +202,75 @@ class ModelController @Autowired constructor(private val dataService: DataServic
                     travisService.retrieveTravisToken(githubUserId, githubToken)
             )
 
+    @GetMapping("course")
+    @PreAuthorize("hasAuthority('USER')")
+    fun course(@RequestParam("courseName") courseName: String,
+               principal: Principal
+    ): Response {
+        val user = dataService.getUser(principal.name)
+                ?: throw EntityNotFound("User ${principal.name}")
+
+        val course = dataService.getCourse(courseName, user)
+                ?: throw EntityNotFound("Course ${user.nickname}/$courseName")
+
+        return responseService.response(COURSES_LIST, payload = course.view())
+    }
+
+    @GetMapping("allCourses")
+    @PreAuthorize("hasAuthority('USER')")
+    fun allCourses(@RequestParam("nickname") nickname: String,
+                   principal: Principal
+    ): Response =
+            if (principal.name == nickname) {
+                responseService.response(COURSES_LIST,
+                        payload = dataService.getCourses(nickname).map { it.view() }
+                )
+            } else {
+                responseService.response(ANOTHER_USER_DATA, principal.name, nickname)
+            }
+
     @GetMapping("/{owner}/{course}/statistics")
     @PreAuthorize("hasAuthority('USER')")
     fun getCourseStatistics(@PathVariable("owner") ownerNickname: String,
                             @PathVariable("course") courseName: String
     ): Response {
+        logger.info("Trying to aggregate course $ownerNickname/$courseName statistics")
+
         val user = dataService.getUser(ownerNickname)
                 ?: return responseService.response(USER_NOT_FOUND, ownerNickname)
 
         val course = dataService.getCourse(courseName, user)
                 ?: return responseService.response(COURSE_NOT_FOUND, ownerNickname, courseName)
 
+        logger.info("Aggregating course $ownerNickname/$courseName students statistics")
+
+        val studentsStatistics = course.students
+                .map { it.nickname to it.studentTasks.reports() }
+                .toMap()
+
+        logger.info("Aggregating course $ownerNickname/$courseName tasks statistics")
+
+        val tasksStatistics = course.tasks
+                .map { task ->
+                    task.name to object {
+                        val mossResultUrl = task.mossUrl
+                        val mossPlagiarismMatches =
+                                task.mossUrl
+                                        ?.let { mossService.retrieveAnalysisResult(it) }
+                                        ?.matches()
+                                        .orEmpty()
+                    }
+                }
+                .toMap()
+
+        logger.info("Course $ownerNickname/$courseName statistics has been successfully aggregated")
+
         return responseService.response(
                 COURSE_STATISTICS,
-                payload = course.students
-                        .map { it.nickname to it.studentTasks.reports() }
-                        .toMap()
+                payload = object {
+                    val perStudentStats = studentsStatistics
+                    val perTaskStats = tasksStatistics
+                }
         )
     }
 
@@ -288,8 +371,3 @@ private fun Map<String, Language>.flatten(): List<Any> =
                             to language.compatibleTestingFrameworks().map { it.name() }
             )
         }
-
-fun Branch.fillWith(environment: Environment): Branch {
-    environment.getFiles().forEach { load(it) }
-    return this
-}

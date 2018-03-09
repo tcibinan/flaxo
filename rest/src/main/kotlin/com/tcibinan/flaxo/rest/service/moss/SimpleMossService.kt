@@ -4,9 +4,13 @@ import com.tcibinan.flaxo.core.env.EnvironmentFile
 import com.tcibinan.flaxo.core.language.Language
 import com.tcibinan.flaxo.model.data.Course
 import com.tcibinan.flaxo.moss.Moss
+import com.tcibinan.flaxo.moss.MossResult
 import com.tcibinan.flaxo.moss.SimpleMoss
+import com.tcibinan.flaxo.moss.SimpleMossResult
 import com.tcibinan.flaxo.rest.service.git.GitService
 import it.zielke.moji.SocketClient
+import org.jsoup.Jsoup
+import java.net.URL
 import java.nio.file.Paths
 
 class SimpleMossService(private val userId: String,
@@ -82,6 +86,9 @@ class SimpleMossService(private val userId: String,
                     MossTask(taskName, base, solutions)
                 }
     }
+
+    override fun retrieveAnalysisResult(mossResultUrl: String): MossResult =
+            SimpleMossResult(URL(mossResultUrl), { url -> Jsoup.connect(url) })
 
     private fun toFileInFolder(student: String): (EnvironmentFile) -> EnvironmentFile =
             { it.with("$student/${Paths.get(it.name()).fileName}") }

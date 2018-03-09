@@ -1,6 +1,5 @@
 package com.tcibinan.flaxo.model.data
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.tcibinan.flaxo.model.EntityFieldIsAbsent
 import com.tcibinan.flaxo.model.entity.CourseEntity
 import com.tcibinan.flaxo.model.entity.toDtos
@@ -8,7 +7,6 @@ import com.tcibinan.flaxo.model.entity.toDtos
 /**
  * Course data object.
  */
-@JsonIgnoreProperties("students", "tasks")
 data class Course(private val entity: CourseEntity)
     : DataObject<CourseEntity> {
 
@@ -32,6 +30,21 @@ data class Course(private val entity: CourseEntity)
             by lazy { entity.tasks.toDtos() }
 
     override fun toEntity() = entity
+
+    override fun view(): Any = let { course ->
+        object {
+            val id = course.id
+            val name = course.name
+            val language = course.language
+            val testingLanguage = course.testingLanguage
+            val testingFramework = course.testingFramework
+            val status = course.status
+            val user = course.user.nickname
+            val userGithubId = course.user.githubId
+            val students = course.students.map { it.nickname }
+            val tasks = course.tasks.map { it.name }
+        }
+    }
 
     fun with(id: Long? = null,
              name: String? = null,
