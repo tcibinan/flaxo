@@ -12,7 +12,7 @@ package com.tcibinan.flaxo.model
  */
 interface CourseStatus {
     companion object {
-        val INIT = "init"
-        val RUNNING = "running"
+        const val INIT = "init"
+        const val RUNNING = "running"
     }
 }

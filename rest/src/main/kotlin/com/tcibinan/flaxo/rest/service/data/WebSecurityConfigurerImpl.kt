@@ -8,8 +8,8 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.password.PasswordEncoder
 
 class WebSecurityConfigurerImpl(
-        val userDetailsService: UserDetailsService,
-        val passwordEncoder: PasswordEncoder
+        private val userDetailsService: UserDetailsService,
+        private val passwordEncoder: PasswordEncoder
 ) : WebSecurityConfigurerAdapter() {
 
     override fun configure(auth: AuthenticationManagerBuilder) {

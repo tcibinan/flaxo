@@ -3,7 +3,7 @@ package com.tcibinan.flaxo.model.data
 /**
  * Data object interface.
  */
-interface DataObject<ENTITY> {
+interface DataObject<out ENTITY> {
     fun toEntity(): ENTITY
 }
 

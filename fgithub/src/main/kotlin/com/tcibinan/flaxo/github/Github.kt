@@ -88,18 +88,20 @@ class Github(private val credentials: String,
                 .createWebHook(webHookUrl, listOf(KohsukeGithubEvent.PULL_REQUEST))
     }
 
-    override fun nickname() = github.myself.login
+    override fun nickname(): String =
+            github.myself.login
+                    ?: throw NullPointerException("Associated user nickname not found for the current github client")
 
     private fun repositoryRef(repositoryName: String) = "${nickname()}/$repositoryName"
 
     private fun ghRepository(repositoryName: String) = github.getRepository(repositoryRef(repositoryName))
 
-    private fun Repository.loadFile(content: String, message: String, path: String, name: String) {
-        ghRepository(name).createContent(content, message, path, name)
+    private fun Repository.loadFile(content: String, message: String, path: String, branchName: String) {
+        ghRepository(this.name).createContent(content, message, path, branchName)
     }
 
-    private fun Repository.loadFile(bytes: ByteArray, message: String, path: String, name: String) {
-        ghRepository(name).createContent(bytes, message, path, name)
+    private fun Repository.loadFile(bytes: ByteArray, message: String, path: String, branchName: String) {
+        ghRepository(this.name).createContent(bytes, message, path, branchName)
     }
 
     override fun getPullRequest(repositoryName: String, pullRequestNumber: Int): PullRequest =

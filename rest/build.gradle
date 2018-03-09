@@ -9,6 +9,7 @@ dependencies {
     compile project(":core")
     compile project(":model")
     compile project(":fgradle")
+    compile project(":ftravis")
     compile project(":git")
     compile project(":fgithub")
     compile project(":cmd")

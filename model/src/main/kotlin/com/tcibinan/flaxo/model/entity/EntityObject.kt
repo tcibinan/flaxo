@@ -3,7 +3,7 @@ package com.tcibinan.flaxo.model.entity
 /**
  * Entity object interface.
  */
-interface EntityObject<DTO> {
+interface EntityObject<out DTO> {
     fun toDto(): DTO
 }
 

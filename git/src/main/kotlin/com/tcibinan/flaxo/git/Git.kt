@@ -60,7 +60,7 @@ interface Git {
              content: String)
 
     /**
-     * Commits and pushes a file with the given [path] and [content].
+     * Commits and pushes a file with the given [path] and [bytes] content.
      *
      * @param repository To push file to.
      * @param branch To push file to.

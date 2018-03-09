@@ -32,6 +32,7 @@ object MossServiceSpec : SubjectSpek<MossService>({
     val userGithubId = "userGithubId"
     val courseName = "courseName"
     val student1Name = "student1"
+    val userTaskFile = "task/package/Solution.java"
     val student1SolutionFile = "/some/path/student1Solution.java"
     val student1ExtraFile = "/some/path/$student1Name/student1ExtraFile.kt"
     val student2Name = "student2"
@@ -86,7 +87,9 @@ object MossServiceSpec : SubjectSpek<MossService>({
         val student2Branches = listOf(
                 branch(task1, emptyFile(student2SolutionFile))
         )
-        val userBranches = student2Branches
+        val userBranches = listOf(
+                branch(task1, emptyFile(userTaskFile))
+        )
         on { branches(student1Name, courseName) }.thenReturn(student1Branches)
         on { branches(student2Name, courseName) }.thenReturn(student2Branches)
         on { branches(userGithubId, courseName) }.thenReturn(userBranches)
@@ -160,16 +163,16 @@ object MossServiceSpec : SubjectSpek<MossService>({
 
 class MossTaskNotFound(taskPostfix: String) : RuntimeException(taskPostfix)
 
-private fun branch(name: String, vararg files: EnvironmentFile): Branch {
+private fun branch(branchName: String, vararg files: EnvironmentFile): Branch {
     return mock {
-        on { name }.thenReturn(name)
+        on { name }.thenReturn(branchName)
         on { files() }.thenReturn(files.toList())
     }
 }
 
-private fun emptyFile(student1SolutionFile: String) =
-        RemoteEnvironmentFile(student1SolutionFile, "".byteInputStream())
+private fun emptyFile(filePath: String) =
+        RemoteEnvironmentFile(filePath, "".byteInputStream())
 
-private fun filesWithFileNameOf(student1SolutionFile: String): (EnvironmentFile) -> Boolean =
-        { it.name().endsWith(Paths.get(student1SolutionFile).fileName.toString()) }
+private fun filesWithFileNameOf(filePath: String): (EnvironmentFile) -> Boolean =
+        { it.name().endsWith(Paths.get(filePath).fileName.toString()) }
 

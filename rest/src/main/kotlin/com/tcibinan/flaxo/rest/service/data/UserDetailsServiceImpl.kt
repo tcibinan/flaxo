@@ -6,14 +6,12 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 
 class UserDetailsServiceImpl(
-        val dataService: DataService
+        private val dataService: DataService
 ) : UserDetailsService {
 
-    override fun loadUserByUsername(username: String): UserDetails {
-        val user = dataService.getUser(username)
-        user ?: throw UsernameNotFoundException(username)
-
-        return UserDetailsImpl(user)
-    }
+    override fun loadUserByUsername(username: String): UserDetails =
+            dataService.getUser(username)
+                    ?.let { UserDetailsImpl(it) }
+                    ?: throw UsernameNotFoundException(username)
 
 }

@@ -7,7 +7,6 @@ import com.tcibinan.flaxo.model.IntegratedService
 import com.tcibinan.flaxo.rest.api.ServerAnswer.MANUAL_REDIRECT
 import com.tcibinan.flaxo.rest.service.git.GitService
 import com.tcibinan.flaxo.rest.service.response.ResponseService
-import com.tcibinan.flaxo.rest.service.travis.TravisService
 import org.apache.commons.collections4.map.PassiveExpiringMap
 import org.apache.http.client.fluent.Form
 import org.apache.http.client.fluent.Request
@@ -31,7 +30,6 @@ import javax.servlet.http.HttpServletResponse
 class GithubController(
         private val responseService: ResponseService,
         private val dataService: DataService,
-        private val travisService: TravisService,
         private val gitService: GitService
 ) {
 

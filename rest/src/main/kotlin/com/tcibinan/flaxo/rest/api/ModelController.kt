@@ -19,6 +19,7 @@ import com.tcibinan.flaxo.rest.service.moss.MossTask
 import com.tcibinan.flaxo.rest.service.response.Response
 import com.tcibinan.flaxo.rest.service.response.ResponseService
 import com.tcibinan.flaxo.rest.service.travis.TravisService
+import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
@@ -43,18 +44,24 @@ class ModelController @Autowired constructor(private val dataService: DataServic
 ) {
 
     private val executor: Executor = Executors.newCachedThreadPool()
+    private val logger = LogManager.getLogger(ModelController::class.java)
     private val tasksPrefix = "task-"
 
     @PostMapping("/register")
     fun register(@RequestParam("nickname") nickname: String,
                  @RequestParam("password") password: String
     ): Response {
+        logger.info("Trying to register user $nickname")
         return try {
             dataService.addUser(nickname, password)
+            logger.info("User $nickname was registered successfully")
             responseService.response(USER_CREATED, nickname)
         } catch (e: EntityAlreadyExistsException) {
+            logger.info("User with $nickname nickname is already registered")
             responseService.response(USER_ALREADY_EXISTS, "User $nickname")
         } catch (e: Throwable) {
+            logger.info("Unexpected server error while registering user " +
+                    "with $nickname nickname. Cause: " + e.message)
             responseService.response(SERVER_ERROR, e.message)
         }
     }

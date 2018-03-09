@@ -2,10 +2,10 @@ package com.tcibinan.flaxo.gradle
 
 import com.tcibinan.flaxo.gradle.GradleDependencyType.*
 
-private val spekVersion = "1.1.5"
-private val junitVersion = "1.0.3"
-private val kotlinVersion = "1.2.0"
-private val jupiterVersion = "5.0.3"
+private const val spekVersion = "1.1.5"
+private const val junitVersion = "1.0.3"
+private const val kotlinVersion = "1.2.0"
+private const val jupiterVersion = "5.0.3"
 
 //repositories
 
