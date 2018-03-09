@@ -86,7 +86,8 @@ object GradleEnvironmentSpec : SubjectSpek<BuildTool>({
                             .withTestingFramework(framework)
                             .getEnvironment()
 
-            val buildFile = environment.getFile(gradleFileName)!!
+            val buildFile = environment.getFile(gradleFileName)
+                    ?: throw EnvironmentFileNotFound("$gradleFileName wasn't found in the environment")
 
             it("should create buildable project") {
                 val tempDir = createTempDir("$language.$language.$framework")
@@ -100,8 +101,16 @@ object GradleEnvironmentSpec : SubjectSpek<BuildTool>({
     }
 })
 
+class EnvironmentFileNotFound(message: String) : RuntimeException(message)
+
 private fun Environment.fileIsNotBlank(fileName: String): Boolean =
-        getFile(fileName)!!.content().isNotBlank()
+        getFile(fileName)
+                ?.content()
+                ?.isNotBlank()
+                ?: throw EnvironmentFileNotFound("$fileName wasn't found in the environment")
 
 private fun Environment.binaryFileIsNotEmpty(fileName: String): Boolean =
-        getFile(fileName)!!.binaryContent().isNotEmpty()
+        getFile(fileName)
+                ?.binaryContent()
+                ?.isNotEmpty()
+                ?: throw EnvironmentFileNotFound("$fileName wasn't found in the environment")

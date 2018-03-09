@@ -27,13 +27,25 @@ object TravisEnvironmentSpec : SubjectSpek<TravisEnvironmentSupplier>({
             }
 
             it("should contain non blank .travis.yml") {
-                assertTrue { travisYml!!.content().isNotBlank() }
+                assertTrue {
+                    travisYml
+                            ?.content()
+                            ?.isNotBlank()
+                            ?: throw EnvironmentFileNotFound("$travisYml file not found in the environment")
+                }
             }
 
             it("should contain .travis.yml with webhookurl") {
-                assertTrue { travisYml!!.content().contains(travisWebHookUrl) }
+                assertTrue {
+                    travisYml
+                            ?.content()
+                            ?.contains(travisWebHookUrl)
+                            ?: throw EnvironmentFileNotFound("$travisYml file not found in the environment")
+                }
             }
         }
     }
 
 })
+
+class EnvironmentFileNotFound(message: String) : RuntimeException(message)

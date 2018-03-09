@@ -124,7 +124,8 @@ object MossServiceSpec : SubjectSpek<MossService>({
             }
 
             it("should only contain tasks where is at least one succeed solutions") {
-                val task: MossTask = mossTasks.find { it.taskName.endsWith(task1) }!!
+                val task: MossTask = mossTasks.find { it.taskName.endsWith(task1) }
+                        ?: throw MossTaskNotFound("Moss task with postfix $task1 not found")
 
                 assertTrue { task.solutions.any(filesWithFileNameOf(student1SolutionFile)) }
                 assertFalse { task.solutions.any(filesWithFileNameOf(student2SolutionFile)) }
@@ -156,6 +157,8 @@ object MossServiceSpec : SubjectSpek<MossService>({
     }
 
 })
+
+class MossTaskNotFound(taskPostfix: String) : RuntimeException(taskPostfix)
 
 private fun branch(name: String, vararg files: EnvironmentFile): Branch {
     return mock {
