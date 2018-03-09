@@ -9,24 +9,21 @@ import org.jsoup.Jsoup
  */
 class SimpleMoss(override val userId: String,
                  override val language: String,
-                 private val client: SocketClient
+                 private val client: SocketClient,
+                 private val bases: List<EnvironmentFile> = emptyList(),
+                 private val solutions: List<EnvironmentFile> = emptyList()
 ) : Moss {
-
-    private lateinit var bases: List<EnvironmentFile>
-    private lateinit var solutions: List<EnvironmentFile>
 
     init {
         client.userID = userId
         client.language = language
     }
 
-    override fun base(bases: List<EnvironmentFile>): Moss = apply {
-        this.bases = bases
-    }
+    override fun base(bases: List<EnvironmentFile>): Moss =
+            SimpleMoss(userId, language, client, bases, solutions)
 
-    override fun solutions(solutions: List<EnvironmentFile>): Moss = apply {
-        this.solutions = solutions
-    }
+    override fun solutions(solutions: List<EnvironmentFile>): Moss =
+            SimpleMoss(userId, language, client, bases, solutions)
 
     override fun analyse(): MossResult {
         client.run()

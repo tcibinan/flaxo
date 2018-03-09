@@ -6,6 +6,6 @@ package com.tcibinan.flaxo.travis.webhook
  * Uses to map json to object model.
  */
 class TravisWebHookRepository {
-    lateinit var name: String
-    lateinit var owner_name: String
+    var name: String = ""
+    var owner_name: String = ""
 }
