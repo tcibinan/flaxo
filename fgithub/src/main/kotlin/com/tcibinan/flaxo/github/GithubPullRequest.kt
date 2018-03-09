@@ -1,24 +1,27 @@
 package com.tcibinan.flaxo.github
 
 import com.tcibinan.flaxo.git.PullRequest
-import org.kohsuke.github.GHEventPayload
-import org.kohsuke.github.GHIssueState
-import org.kohsuke.github.GHPullRequest
+import org.kohsuke.github.GHEventPayload as KohsukeGithubEventPayload
+import org.kohsuke.github.GHIssueState as KohsukeGithubIssueState
+import org.kohsuke.github.GHPullRequest as KohsukeGithubPullRequest
 
+/**
+ * Github pull request class.
+ */
 class GithubPullRequest : PullRequest {
 
-    constructor(payload: GHEventPayload.PullRequest) {
-        this.authorId = payload.pullRequest.user.login
-        this.receiverId = payload.repository.owner.login
-        this.receiverRepositoryName = payload.repository.name
-        this.isOpened = payload.action == "opened"
+    constructor(pullRequestEventPayload: KohsukeGithubEventPayload.PullRequest) {
+        this.authorId = pullRequestEventPayload.pullRequest.user.login
+        this.receiverId = pullRequestEventPayload.repository.owner.login
+        this.receiverRepositoryName = pullRequestEventPayload.repository.name
+        this.isOpened = pullRequestEventPayload.action == "opened"
     }
 
-    constructor(pullRequest: GHPullRequest) {
+    constructor(pullRequest: KohsukeGithubPullRequest) {
         this.authorId = pullRequest.user.login
         this.receiverId = pullRequest.repository.owner.login
         this.receiverRepositoryName = pullRequest.repository.name
-        this.isOpened = pullRequest.state == GHIssueState.OPEN
+        this.isOpened = pullRequest.state == KohsukeGithubIssueState.OPEN
     }
 
     override val authorId: String

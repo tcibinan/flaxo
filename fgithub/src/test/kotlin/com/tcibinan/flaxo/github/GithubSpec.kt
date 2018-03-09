@@ -26,27 +26,27 @@ object GithubSpec : SubjectSpek<Git>({
     subject { Github(credentials, "http://example.com") }
 
     afterGroup {
-        subject.deleteRepository(repository.name())
+        subject.deleteRepository(repository.name)
     }
 
     describe("git service") {
 
         on("creating custom repository with single branch") {
-            subject.createRepository(repository.name())
-                    .createBranch(mainBranch.name())
+            subject.createRepository(repository.name)
+                    .createBranch(mainBranch.name)
 
             it("should create with a single branch") {
-                subject.branches(userName, repository.name())
-                        .map { it.name() } shouldContain mainBranch.name()
+                subject.branches(userName, repository.name)
+                        .map { it.name } shouldContain mainBranch.name
             }
         }
 
         on("creating subbranch") {
-            subject.createSubBranch(repository, mainBranch, subbranch.name())
+            subject.createSubBranch(repository, mainBranch, subbranch.name)
 
             it("should create the subbranch with the given name") {
-                subject.branches(userName, repository.name())
-                        .map { it.name() } shouldContain subbranch.name()
+                subject.branches(userName, repository.name)
+                        .map { it.name } shouldContain subbranch.name
             }
         }
 
@@ -54,7 +54,7 @@ object GithubSpec : SubjectSpek<Git>({
             subject.load(repository, mainBranch, fileName, "file content")
 
             it("should exist only in that branch") {
-                subject.branches(userName, repository.name())
+                subject.branches(userName, repository.name)
                         .flatMap { it.files() }
                         .filter { it.name() == fileName }
                         .count() shouldBe 1
@@ -62,10 +62,10 @@ object GithubSpec : SubjectSpek<Git>({
         }
 
         xon("creating subbranch", "getting files list is not supported yet") {
-            subject.createSubBranch(repository, mainBranch, anotherSubbranch.name())
+            subject.createSubBranch(repository, mainBranch, anotherSubbranch.name)
 
             it("should copy commits") {
-                subject.branches(userName, repository.name())
+                subject.branches(userName, repository.name)
                         .flatMap { it.files() }
                         .filter { it.name() == fileName }
                         .count() shouldBe 2

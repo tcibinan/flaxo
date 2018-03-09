@@ -6,13 +6,13 @@ import com.tcibinan.flaxo.git.Branch
 import com.tcibinan.flaxo.git.Git
 import com.tcibinan.flaxo.git.Repository
 
-data class GithubBranch(private val name: String,
-                        private val repository: Repository,
+/**
+ * Github repository branch class.
+ */
+data class GithubBranch(override val name: String,
+                        override val repository: Repository,
                         private val git: Git
 ) : Branch {
-
-    override fun name() = name
-    override fun repository() = repository
 
     override fun load(file: EnvironmentFile): Branch = also {
         when (file) {
@@ -28,6 +28,6 @@ data class GithubBranch(private val name: String,
     }
 
     override fun files(): List<EnvironmentFile> =
-            git.files(repository.owner(), repository.name(), name)
+            git.files(repository.owner, repository.name, name)
 
 }

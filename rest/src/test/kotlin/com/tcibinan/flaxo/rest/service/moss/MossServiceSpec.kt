@@ -162,7 +162,7 @@ class MossTaskNotFound(taskPostfix: String) : RuntimeException(taskPostfix)
 
 private fun branch(name: String, vararg files: EnvironmentFile): Branch {
     return mock {
-        on { name() }.thenReturn(name)
+        on { name }.thenReturn(name)
         on { files() }.thenReturn(files.toList())
     }
 }

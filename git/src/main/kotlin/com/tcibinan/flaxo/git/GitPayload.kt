@@ -1,5 +1,6 @@
 package com.tcibinan.flaxo.git
 
-interface GitPayload {
-
-}
+/**
+ * Git payload marker interface.
+ */
+interface GitPayload

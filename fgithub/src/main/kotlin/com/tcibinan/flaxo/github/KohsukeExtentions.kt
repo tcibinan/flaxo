@@ -1,7 +1,7 @@
 package com.tcibinan.flaxo.github
 
-import org.kohsuke.github.GHRepository
+import org.kohsuke.github.GHRepository as KohsukeGithubRepository
 
-fun GHRepository.createBranch(branchName: String, sourceSha: String) {
+fun KohsukeGithubRepository.createBranch(branchName: String, sourceSha: String) {
     createRef("refs/heads/$branchName", sourceSha)
 }

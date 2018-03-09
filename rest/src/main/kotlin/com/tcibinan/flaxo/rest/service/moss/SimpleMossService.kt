@@ -43,12 +43,12 @@ class SimpleMossService(private val userId: String,
                 .map { (student, solvedTasks) ->
                     student to
                             git.branches(student, course.name)
-                                    .filter { branch -> branch.name() in solvedTasks }
+                                    .filter { branch -> branch.name in solvedTasks }
                 }
                 .flatMap { (student, branches) ->
                     branches.map { student to it }
                 }
-                .groupBy { (_, branch) -> branch.name() }
+                .groupBy { (_, branch) -> branch.name }
                 .mapValues { (_, solutions) ->
                     solutions.flatMap { (student, branch) ->
                         branch.files()
@@ -61,7 +61,7 @@ class SimpleMossService(private val userId: String,
         val tasksBases =
                 git.branches(userGithubId, course.name)
                         .map { branch ->
-                            branch.name() to branch.files()
+                            branch.name to branch.files()
                                     .filterBy(language)
                                     .map(toFileInFolder("base"))
                         }
