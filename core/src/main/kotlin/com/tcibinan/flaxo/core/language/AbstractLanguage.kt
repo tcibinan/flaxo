@@ -2,6 +2,9 @@ package com.tcibinan.flaxo.core.language
 
 import com.tcibinan.flaxo.core.framework.TestingFramework
 
+/**
+ * Abstract language class.
+ */
 abstract class AbstractLanguage(
         private val name: String,
         override val extension: String,

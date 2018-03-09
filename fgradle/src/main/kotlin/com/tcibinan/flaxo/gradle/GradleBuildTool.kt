@@ -3,8 +3,8 @@ package com.tcibinan.flaxo.gradle
 import com.tcibinan.flaxo.core.UnsupportedDependencyException
 import com.tcibinan.flaxo.core.UnsupportedPluginException
 import com.tcibinan.flaxo.core.build.BuildTool
-import com.tcibinan.flaxo.core.build.BuildToolPlugin
 import com.tcibinan.flaxo.core.build.Dependency
+import com.tcibinan.flaxo.core.build.Plugin
 import com.tcibinan.flaxo.core.env.Environment
 import com.tcibinan.flaxo.core.env.EnvironmentFile
 import com.tcibinan.flaxo.core.env.EnvironmentSupplier
@@ -108,7 +108,7 @@ class GradleBuildTool(private val language: Language,
         }
     }
 
-    override fun addPlugin(plugin: BuildToolPlugin): BuildTool {
+    override fun addPlugin(plugin: Plugin): BuildTool {
         return when (plugin) {
             is GradlePlugin -> GradleBuildTool(this,
                     plugins = plugins + plugin,

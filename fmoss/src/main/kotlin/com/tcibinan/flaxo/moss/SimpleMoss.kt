@@ -6,6 +6,9 @@ import com.tcibinan.flaxo.core.env.RemoteEnvironmentFile
 import it.zielke.moji.SocketClient
 import org.jsoup.Jsoup
 
+/**
+ * Simple moss analysis implementation.
+ */
 class SimpleMoss(override val userId: String,
                  override val language: String,
                  private val client: SocketClient

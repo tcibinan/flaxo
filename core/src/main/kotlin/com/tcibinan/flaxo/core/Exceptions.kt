@@ -1,11 +1,17 @@
 package com.tcibinan.flaxo.core
 
 import com.tcibinan.flaxo.core.build.BuildTool
-import com.tcibinan.flaxo.core.build.BuildToolPlugin
 import com.tcibinan.flaxo.core.build.Dependency
+import com.tcibinan.flaxo.core.build.Plugin
 
+/**
+ * Unsupported dependency exception.
+ */
 class UnsupportedDependencyException(dependency: Dependency, buildTool: BuildTool)
     : Exception("${buildTool.name()} couldn't work with ${dependency::class} dependency type")
 
-class UnsupportedPluginException(plugin: BuildToolPlugin, buildTool: BuildTool)
+/**
+ * Unsupported plugin exception.
+ */
+class UnsupportedPluginException(plugin: Plugin, buildTool: BuildTool)
     : Exception("${buildTool.name()} couldn't work with ${plugin::class} plugin type")

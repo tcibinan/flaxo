@@ -3,6 +3,9 @@ package com.tcibinan.flaxo.cmd
 import java.io.File
 import java.io.InputStream
 
+/**
+ * Command line handy wrapper.
+ */
 class CmdExecutor private constructor(private val dir: File?) {
 
     companion object {

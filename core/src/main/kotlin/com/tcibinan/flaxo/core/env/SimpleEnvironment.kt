@@ -1,5 +1,8 @@
 package com.tcibinan.flaxo.core.env
 
+/**
+ * Environment implementation class.
+ */
 class SimpleEnvironment(private val files: Set<EnvironmentFile>) : Environment {
 
     override operator fun plus(environment: Environment): Environment =

@@ -6,6 +6,15 @@ import java.io.File
 import java.io.InputStream
 import java.nio.file.Files
 
+/**
+ * Remote environment file.
+ *
+ * Uses given [inputStream] and form a virtual file
+ * that can be retrieved by calling [file] method.
+ *
+ * It is the most easiest and fast way to avoid
+ * loading file and saving it to the real file system.
+ */
 class RemoteEnvironmentFile(private val path: String,
                             private val inputStream: InputStream
 ) : EnvironmentFile {
@@ -19,7 +28,7 @@ class RemoteEnvironmentFile(private val path: String,
     override fun with(path: String): EnvironmentFile =
             RemoteEnvironmentFile(path, inputStream)
 
-    fun file(): File {
+    override fun file(): File {
         val fs = Jimfs.newFileSystem(Configuration.unix())
         val inMemoryFile = fs.getPath(path)
 

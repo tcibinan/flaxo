@@ -1,10 +1,13 @@
 package com.tcibinan.flaxo.moss
 
 import org.jsoup.Connection
-import java.net.URL
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
+import java.net.URL
 
+/**
+ * Moss result implementation.
+ */
 class SimpleMossResult(override val url: URL,
                        connectionSupplier: (String) -> Connection
 ) : MossResult {

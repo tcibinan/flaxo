@@ -1,5 +1,8 @@
 package com.tcibinan.flaxo.core.env
 
+/**
+ * In-memory environment file implementation.
+ */
 class SimpleEnvironmentFile(
         private val name: String,
         private val content: String
