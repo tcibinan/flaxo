@@ -1,7 +1,9 @@
 import '../styles/style.css';
-import React from "react";
+import React from 'react';
+import Immutable from 'immutable';
+import Cookies from 'js-cookie';
 import axios from 'axios'
-import {credentials, restUrl} from "../scripts.js";
+import {restUrl} from "../scripts.js";
 
 export {Github}
 
@@ -9,6 +11,10 @@ class Github extends React.Component {
 
     constructor(props) {
         super(props);
+
+        this.authWithGithub = this.authWithGithub.bind(this);
+        this.redirectToGithubAuth = this.redirectToGithubAuth.bind(this);
+
         this.state = {isGithubAuthorized: props.isGithubAuthorized};
     }
 
@@ -30,23 +36,24 @@ class Github extends React.Component {
         axios
             .get('github/auth', {
                 baseURL: restUrl(),
-                auth: credentials()
+                auth: {
+                    username: Cookies.get('nickname'),
+                    password: Cookies.get('password')
+                }
             })
-            .then(this.redirectToGithubAuth())
+            .then(this.redirectToGithubAuth)
             .catch(response => {
-                console.log("github auth failed");
+                console.log('github auth failed');
                 console.log(response);
             });
     }
 
-    redirectToGithubAuth() {
-        return response => {
-            const payload = response.data.payload;
-            const params = new URLSearchParams();
-            const redirectParams = Immutable.Map(payload.params)
-                .forEach((value, key) => params.append(key, value));
+    redirectToGithubAuth(response) {
+        const payload = response.data.payload;
+        const params = new URLSearchParams();
+        Immutable.Map(payload.params)
+            .forEach((value, key) => params.append(key, value));
 
-            window.location = payload.redirect + "?" + params.toString();
-        };
+        window.location = payload.redirect + '?' + params.toString();
     }
 }

@@ -4,8 +4,6 @@ import ReactDOM from 'react-dom';
 import {Authentication} from './components/Authentication';
 
 ReactDOM.render(
-    <Authentication
-        isLoggedIn={false}
-        isGithubAuthorized={false}/>,
+    <Authentication/>,
     document.getElementById('root')
 );

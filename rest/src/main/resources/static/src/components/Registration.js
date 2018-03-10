@@ -22,7 +22,8 @@ class Registration extends React.Component {
         this.state = {
             show: false,
             nickname: null,
-            password: null
+            password: null,
+            onSuccess: props.onSuccess
         };
     }
 
@@ -34,7 +35,7 @@ class Registration extends React.Component {
                 </Button>
                 <Modal show={this.state.show} onHide={this.handleClose}>
                     <form id="register-form">
-                        <Modal.Header closeButton>
+                        <Modal.Header>
                             <Modal.Title>Register</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
@@ -97,7 +98,10 @@ class Registration extends React.Component {
             .then(() => {
                 Cookies.set("nickname", this.state.nickname);
                 Cookies.set("password", this.state.password);
-                ReactDOM.render(<RegistrationSuccessful/>, document.getElementById('root'))
+
+                ReactDOM.render(<RegistrationSuccessful/>, document.getElementById('notifications'));
+
+                this.state.onSuccess();
             })
             .catch((response) => {
                 console.log("Registration failed");
@@ -111,7 +115,7 @@ class Registration extends React.Component {
 class RegistrationSuccessful extends React.Component {
     render() {
         return (
-            <Alert bsStyle="success">
+            <Alert bsStyle="success" closeLabel="Close alert">
                 Registration has been finished successful
             </Alert>
         );
