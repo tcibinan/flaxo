@@ -1,3 +1,5 @@
+import Cookies from 'js-cookie';
+
 function authWithGithub() {
     axios
         .get('github/auth', {
