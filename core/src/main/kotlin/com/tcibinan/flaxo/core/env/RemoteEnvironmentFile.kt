@@ -13,7 +13,8 @@ import java.nio.file.Paths
  * Loads the given [inputStream] to the local tmp directory by the given [path].
  * **Notice:** Local file and the tmp directory will be deleted only after
  * the jvm will stop. So the proper way to use [RemoteEnvironmentFile] is the
- * one where you delete [file] after all calculations have been done.
+ * one where you call [close] after all calculations have been done. It will
+ * delete [file] from the file system if there is one.
  */
 class RemoteEnvironmentFile(private val path: String,
                             private val inputStream: InputStream
@@ -53,6 +54,10 @@ class RemoteEnvironmentFile(private val path: String,
             rootDirectory.toFile().deleteRecursively()
             throw RemoteFileRetrievingException(path, e)
         }
+    }
+
+    override fun close() {
+        file?.delete()
     }
 }
 

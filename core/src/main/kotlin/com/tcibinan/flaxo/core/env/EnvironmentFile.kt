@@ -5,10 +5,12 @@ import java.io.File
 /**
  * Repository file.
  *
- * It could be task, solution, doc file in
- * string or binary representation.
+ * It could be task, solution, doc file in string or binary representation.
+ *
+ * Sometimes there is need to close and free resources so the proper way to
+ * use [EnvironmentFile] is to use it as a typical [AutoCloseable] resource.
  */
-interface EnvironmentFile {
+interface EnvironmentFile: AutoCloseable {
 
     /**
      * @return Full path of the environment file.
@@ -44,4 +46,9 @@ interface EnvironmentFile {
      * @return an environment file with the new [path] and the same content.
      */
     fun with(path: String): EnvironmentFile
+
+    override fun close() {
+        // There is nothing to close by default
+    }
+
 }

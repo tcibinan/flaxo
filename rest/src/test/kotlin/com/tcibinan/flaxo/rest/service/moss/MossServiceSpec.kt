@@ -159,10 +159,10 @@ object MossServiceSpec : SubjectSpek<MossService>({
 
             it("should contains tasks where each environment file could be retrieved as a valid java.io.File") {
                 val task: MossTask = mossTasks.first()
-                val base: List<EnvironmentFile> = task.base
+                val files: List<EnvironmentFile> = task.base + task.solutions
 
                 assertTrue {
-                    base.map { it.file() }
+                    files.map { it.file() }
                             .map { it.readLines().joinToString("") }
                             .all { it.isNotBlank() }
                 }
