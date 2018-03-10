@@ -8,10 +8,10 @@ import com.tcibinan.flaxo.core.build.Plugin
  * Unsupported dependency exception.
  */
 class UnsupportedDependencyException(dependency: Dependency, buildTool: BuildTool)
-    : Exception("${buildTool.name()} couldn't work with ${dependency::class} dependency type")
+    : RuntimeException("${buildTool.name()} couldn't work with ${dependency::class} dependency type")
 
 /**
  * Unsupported plugin exception.
  */
 class UnsupportedPluginException(plugin: Plugin, buildTool: BuildTool)
-    : Exception("${buildTool.name()} couldn't work with ${plugin::class} plugin type")
+    : RuntimeException("${buildTool.name()} couldn't work with ${plugin::class} plugin type")

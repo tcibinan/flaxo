@@ -381,13 +381,19 @@ class ModelController @Autowired constructor(private val dataService: DataServic
     fun analysePlagiarism(@RequestParam courseName: String,
                           principal: Principal
     ): Response {
+        logger.info("Trying to start plagiarism analysis for ${principal.name}/$courseName")
+
         val user = dataService.getUser(principal.name)
                 ?: throw Exception("User with the required nickname ${principal.name} wasn't found.")
 
         val course = dataService.getCourse(courseName, user)
                 ?: throw Exception("Course $courseName wasn't found for user ${principal.name}.")
 
+        logger.info("Extracting moss tasks for ${user.nickname}/$courseName")
+
         val mossTasks: List<MossTask> = mossService.extractMossTasks(course)
+
+        logger.info("Scheduling moss tasks to execute for ${user.nickname}/$courseName")
 
         synchronized(executor) {
             mossTasks.forEach { mossTask ->
@@ -400,15 +406,21 @@ class ModelController @Autowired constructor(private val dataService: DataServic
                                     ?: throw Exception("Moss task ${mossTask.taskName} aim course task $taskShortName " +
                                             "wasn't found for course ${course.name}")
 
+                    logger.info("Analysing ${mossTask.taskName} moss task")
+
                     val result: MossResult = mossService.client(course.language)
                             .base(mossTask.base)
                             .solutions(mossTask.solutions)
                             .analyse()
 
+                    logger.info("Moss task analysis ${mossTask.taskName} has finished successfully")
+
                     dataService.updateTask(task.with(mossUrl = result.url.toString()))
                 }
             }
         }
+
+        logger.info("Moss plagiarism analysis has been started for ${principal.name}/$courseName")
 
         return responseService.response(
                 PLAGIARISM_ANALYSIS_SCHEDULED,

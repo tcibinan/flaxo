@@ -1,40 +1,60 @@
 package com.tcibinan.flaxo.core.env
 
-import com.google.common.jimfs.Configuration
-import com.google.common.jimfs.Jimfs
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.InputStream
 import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
 
 /**
  * Remote environment file.
  *
- * Uses given [inputStream] and form a virtual file
- * that can be retrieved by calling [file] method.
- *
- * It is the most easiest and fast way to avoid
- * loading file and saving it to the real file system.
+ * Loads the given [inputStream] to the local tmp directory by the given [path].
+ * **Notice:** Local file and the tmp directory will be deleted only after
+ * the jvm will stop. So the proper way to use [RemoteEnvironmentFile] is the
+ * one where you delete [file] after all calculations have been done.
  */
 class RemoteEnvironmentFile(private val path: String,
                             private val inputStream: InputStream
 ) : EnvironmentFile {
 
+    private var file: File? = null
+
     override fun name() = path
 
     override fun content(): String =
-            inputStream.reader()
-                    .useLines { it.joinToString("\n") }
+            (file ?: run { file() })
+                    .readLines()
+                    .joinToString("\n")
+
 
     override fun with(path: String): EnvironmentFile =
             RemoteEnvironmentFile(path, inputStream)
 
-    override fun file(): File {
-        val fs = Jimfs.newFileSystem(Configuration.unix())
-        val inMemoryFile = fs.getPath(path)
+    override fun file(): File = file ?: run {
+        val rootDirectory: Path = Files.createTempDirectory("moss-analysis")
+                .apply { toFile().deleteOnExit() }
 
-        inputStream.use { Files.copy(it, inMemoryFile) }
+        try {
+            val fileName = name().split("/").last()
 
-        return inMemoryFile.toFile()
+            this.file =
+                    Paths.get(name().replace(fileName, ""))
+                            .let { rootDirectory.resolve(it) }
+                            .let { Files.createDirectories(it) }
+                            .resolve(fileName)
+                            .also { Files.copy(inputStream, it) }
+                            .toFile()
+
+            return this.file
+                    ?: throw FileNotFoundException("File ${name()} was not loaded properly")
+        } catch (e: Throwable) {
+            rootDirectory.toFile().deleteRecursively()
+            throw RemoteFileRetrievingException(path, e)
+        }
     }
 }
 
+class RemoteFileRetrievingException(path: String, cause: Throwable)
+    : RuntimeException(path, cause)

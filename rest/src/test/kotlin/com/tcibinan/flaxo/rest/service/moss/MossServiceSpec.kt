@@ -156,6 +156,17 @@ object MossServiceSpec : SubjectSpek<MossService>({
                 assertTrue { base.isNotEmpty() }
                 assertTrue { base.all { it.name().split("/").first() == "base" } }
             }
+
+            it("should contains tasks where each environment file could be retrieved as a valid java.io.File") {
+                val task: MossTask = mossTasks.first()
+                val base: List<EnvironmentFile> = task.base
+
+                assertTrue {
+                    base.map { it.file() }
+                            .map { it.readLines().joinToString("") }
+                            .all { it.isNotBlank() }
+                }
+            }
         }
     }
 
@@ -171,7 +182,7 @@ private fun branch(branchName: String, vararg files: EnvironmentFile): Branch {
 }
 
 private fun emptyFile(filePath: String) =
-        RemoteEnvironmentFile(filePath, "".byteInputStream())
+        RemoteEnvironmentFile(filePath, "files content".byteInputStream())
 
 private fun filesWithFileNameOf(filePath: String): (EnvironmentFile) -> Boolean =
         { it.name().endsWith(Paths.get(filePath).fileName.toString()) }

@@ -3,6 +3,7 @@ package com.tcibinan.flaxo.moss
 import com.tcibinan.flaxo.core.env.EnvironmentFile
 import it.zielke.moji.SocketClient
 import org.jsoup.Jsoup
+import java.io.File
 
 /**
  * Simple moss analysis implementation.
@@ -38,13 +39,18 @@ class SimpleMoss(override val userId: String,
 
     private fun loadBaseFile(file: EnvironmentFile) = loadFile(file, isBase = true)
 
-    private fun loadFile(file: EnvironmentFile, isBase: Boolean = false) =
-            try {
-                client.uploadFile(file.file(), isBase)
-            } catch (e: Throwable) {
-                throw MossException("Unsupported environment file type ${this::class} " +
-                        "to be used with moss.", e)
-            }
+    private fun loadFile(environmentFile: EnvironmentFile, isBase: Boolean = false) {
+        val file: File = environmentFile.file()
+
+        try {
+            client.uploadFile(file, isBase)
+        } catch (e: Throwable) {
+            throw MossException("Can't load ${if (isBase) "base" else "solutions"} " +
+                    "file ${environmentFile.name()} to moss server", e)
+        } finally {
+            file.delete()
+        }
+    }
 
 }
 

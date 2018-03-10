@@ -2,8 +2,3 @@ plugins {
     id "org.junit.platform.gradle.plugin"
     id "org.jetbrains.kotlin.plugin.spring"
 }
-
-dependencies {
-    // Virtual File System library
-    compile "com.google.jimfs:jimfs:1.1"
-}
