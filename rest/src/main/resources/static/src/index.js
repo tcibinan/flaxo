@@ -1,10 +1,10 @@
 import './styles/style.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {AuthorizationPanel} from './components.js';
+import {Authentication} from './components/Authentication';
 
 ReactDOM.render(
-    <AuthorizationPanel
+    <Authentication
         isLoggedIn={false}
         isGithubAuthorized={false}/>,
     document.getElementById('root')

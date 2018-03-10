@@ -1,11 +1,7 @@
 import Cookies from 'js-cookie';
 import React from 'react';
 
-export {logResponse, credentials, username, password, restUrl}
-
-function logResponse() {
-    return response => console.log(response);
-}
+export {credentials, username, password, restUrl}
 
 function username() {
     return Cookies.get('nickname');
