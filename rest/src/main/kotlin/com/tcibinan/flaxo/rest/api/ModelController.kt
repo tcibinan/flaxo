@@ -72,6 +72,20 @@ class ModelController @Autowired constructor(private val dataService: DataServic
     }
 
     /**
+     * Returns user account information.
+     */
+    @GetMapping("/account")
+    @PreAuthorize("hasAuthority('USER')")
+    fun user(principal: Principal): Response {
+        logger.info("Trying to retrieve user")
+
+        val user = dataService.getUser(principal.name)
+                ?: return responseService.response(USER_NOT_FOUND, principal.name)
+
+        return responseService.response(ACCOUNT, payload = user.view())
+    }
+
+    /**
      * Creates a course and related git repository.
      *
      * @param courseName Name of the course and related git repository.

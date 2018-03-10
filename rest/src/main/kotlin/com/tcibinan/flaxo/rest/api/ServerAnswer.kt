@@ -19,6 +19,7 @@ enum class ServerAnswer(val code: Int, val defaultAnswer: String? = null) {
     PLAGIARISM_ANALYSIS_SCHEDULED(2009, "plagiarism.analysis.scheduled"),
     COURSE_TASKS(2010),
     COURSE_STUDENTS(2011),
+    ACCOUNT(2012),
 
     HELLO_WORLD(1000, "greeting"),
     ECHO(1001),

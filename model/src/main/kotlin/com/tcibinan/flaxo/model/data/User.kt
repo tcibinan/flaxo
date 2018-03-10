@@ -11,12 +11,27 @@ import com.tcibinan.flaxo.model.entity.UserEntity
 data class User(private val entity: UserEntity)
     : DataObject<UserEntity> {
 
-    val id: Long by lazy { entity.userId ?: throw EntityFieldIsAbsent("user", "id") }
-    val githubId: String? by lazy { entity.githubId }
-    val nickname: String by lazy { entity.nickname ?: throw EntityFieldIsAbsent("user", "nickname") }
-    val credentials: Credentials by lazy { Credentials(entity.credentials ?: throw EntityFieldIsAbsent("user", "credentials")) }
+    val id: Long
+            by lazy { entity.userId ?: throw EntityFieldIsAbsent("user", "id") }
+    val githubId: String?
+            by lazy { entity.githubId }
+    val nickname: String
+            by lazy { entity.nickname ?: throw EntityFieldIsAbsent("user", "nickname") }
+    val credentials: Credentials
+            by lazy { Credentials(entity.credentials ?: throw EntityFieldIsAbsent("user", "credentials")) }
 
     override fun toEntity() = entity
+
+    override fun view(): Any = let { user ->
+        object {
+            val id = user.id
+            val githubId = user.githubId
+            val nickname = user.nickname
+            val isGithubAuthorized = user.credentials.githubToken != null
+            val isTravisAuthorized = user.credentials.travisToken != null
+            val isCodacyAuthorized = user.credentials.codacyToken != null
+        }
+    }
 
     fun with(id: Long? = null,
              githubId: String? = null,
