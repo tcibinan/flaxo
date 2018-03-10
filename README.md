@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/tcibinan/flaxo.svg?branch=dev)](https://travis-ci.org/tcibinan/flaxo)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/5b599e5082814d26b34c778670c9985c)](https://www.codacy.com/app/NameOfTheLaw/flaxo?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tcibinan/flaxo&amp;utm_campaign=Badge_Grade)
 
-An application for easy creating, managing and reporting online courses of programming.
+Flaxo educational platform is a pragmatic way to organise, manage and report programming studying process.
 
 ## What?
 
@@ -14,12 +14,57 @@ The main underlying idea is quite clear:
 4. Flaxo make all the necessary arrangements to test and evaluate students solutions.
 5. Teacher receives well-formatted stats and results of his students progress.
 
+Key features:
+
+- Continuous integration results aggregating.
+- Plagiarism analysis.
+- Git-based courses support.
+
+Prerequisites: Github account which is authorized with Travis.
+
+## Supported languages and tools
+
+The flaxo system is built to be open and expandable. There is no limitations from the flaxo itself. 
+Nevertheless CI vendors have lists of supported languages and tools. _See travis, moss, codacy limitations._
+
+Moreover the flaxo presents an easy way to generate courses from scratch using api or gui interface.
+A user doesn't have to create a repository, generate boilerplate branches structure, 
+manage build tools, look for newest tools versions trying to find ones that work well with each other.
+You just click a few buttons or send a single http request and everything will be done in a few seconds.
+
+The course can use different languages for the tasks themselves and the tests they are verified by. 
+Languages should be compatible to each other and testing framework should be compatible with a language 
+it is going to be used with.
+
+Currently the default build tool for all courses is gradle.
+
+### Languages
+
+- Java 8
+- Kotlin 1.2
+- **todo:** Python
+- **todo:** R
+
+### Testing frameworks
+
+- Junit5
+- Spek (Kotlin testing framework)
+- **todo:** Pytest
+
 ## Building
 
-To build the app and run all tests. *Notice that the system should have right environment.*
+To build the app and run all tests. Notice that the system should have right environment.
 
 ```bash
 ./gradlew build
+```
+
+To produce a front-end bundle. Notice that `$REST_URL` should be replaced by the actual 
+application page url. Most likely it should be home page url with `/rest` at the end.
+
+```bash
+cd rest/src/main/resources/static
+npx webpack --env.REST_URL=$REST_URL
 ```
 
 To run the app. The application can be found at [http://localhost:8080/](http://localhost:8080/).
@@ -52,7 +97,7 @@ Integration tests also requires a few system variables.
 
 ## Travis integration
 
-Currently travis doesn't have oauth procedure enabled 
+Currently travis platform doesn't have oauth procedure enabled 
 and the only way to retrieve travis access token is to get it from the travis cli client. 
 Flaxo now uses this client and it is necessary to have [ruby](https://www.ruby-lang.org/en/documentation/installation/) 
 and [travis cli client](https://github.com/travis-ci/travis.rb#installation) installed on the machine.
@@ -65,34 +110,6 @@ gem install travis -v 1.8.8 --no-rdoc --no-ri
 
 To ensure the installation's finished successfully, type `travis` in a terminal 
 and a list of possible travis cli commands should be listed.
-
-## Supported languages and tools
-
-The flaxo system is built to be open and expandable. There is no limitations from the flaxo itself. 
-Nevertheless CI vendors have lists of supported languages and tools. See travis, moss, codacy limitations.
-
-Moreover the flaxo presents an easy way to generate courses from scratch using api or gui interface.
-The teacher literally doesn't have to create a repository, generate boilerplate branches structure, 
-manage build tools, look for newest tools versions, try to find ones that work well with each other.
-You just click a few buttons or send a single http request and everything will be done in background.
-
-The course can use different languages to the task itself and the tests it is verified by. Of course language
-should be compatible to each other. The same with the testing framework the testing language uses.
-
-Currently the only building tool that is used is gradle.
-
-### Languages
-
-- Java 8
-- Kotlin 1.2
-- **todo:** Python
-- **todo:** R
-
-### Testing frameworks
-
-- Junit5
-- Spek (Kotlin testing framework)
-- **todo:** Pytest
 
 ## What's inside
 
@@ -114,6 +131,9 @@ Currently the only building tool that is used is gradle.
 
 ### Front-end technologies
 
+- Javascript (ECMAScript 6)
+- Webpack build tool
+- React
 - axios
 - js-cookie
 - Immutable.js
@@ -121,8 +141,8 @@ Currently the only building tool that is used is gradle.
 ## TODO-list
 
 - **todo:** Simple user interface where a teacher could register, authorize, authorize using github, create a course, start course plagiarism analysis, get course stats.
-- **todo:** The ability to init a flaxo course from the existing repository
-- **todo:** Transparent api to get course statistics in json, xls formats
+- **todo:** The ability to init a flaxo course from the existing repository.
+- **todo:** Transparent api to get course statistics in json, xls formats.
 
 ## Credits
 
@@ -131,6 +151,8 @@ Currently the only building tool that is used is gradle.
   "full_name": "Andrey Tsibin",
   "email": "tsibin.andr@gmail.com",
   "vk": "https://vk.com/id24276156",
-  "app_icon": "by Anton Ivanov from the Noun Project"
+  "app_icon": "by Anton Ivanov from the Noun Project",
+  "year": 2018,
+  "city": "Saint-Petersburg"
 }
 ```
