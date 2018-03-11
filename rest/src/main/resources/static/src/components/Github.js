@@ -15,12 +15,12 @@ class Github extends React.Component {
         this.authWithGithub = this.authWithGithub.bind(this);
         this.redirectToGithubAuth = this.redirectToGithubAuth.bind(this);
 
-        this.state = {isGithubAuthorized: props.isGithubAuthorized};
+        this.state = {isAuthorized: props.isAuthorized};
     }
 
     render() {
-        if (this.state.isGithubAuthorized) {
-            return <Label bsStyle="primary">Github authorized</Label>;
+        if (this.state.isAuthorized) {
+            return <Label bsStyle="primary">Github</Label>;
         } else {
             return (
                 <button type="button" className="btn btn-primary" onClick={this.authWithGithub}>

@@ -30,7 +30,7 @@ class Registration extends React.Component {
     render() {
         return (
             <div>
-                <Button bsStyle="primary" bsSize="large" onClick={this.handleShow}>
+                <Button onClick={this.handleShow}>
                     Register
                 </Button>
                 <Modal show={this.state.show} onHide={this.handleClose}>

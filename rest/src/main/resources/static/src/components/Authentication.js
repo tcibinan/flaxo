@@ -1,11 +1,13 @@
 import '../styles/style.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Alert, Button, ControlLabel, FormControl, FormGroup, HelpBlock} from 'react-bootstrap';
+import {Alert, Button, ControlLabel, FormControl, FormGroup, HelpBlock, Panel} from 'react-bootstrap';
 import Cookies from 'js-cookie';
-import {Github} from './Github';
-import {Registration} from "./Registration";
 import {Api, credentials} from "../scripts";
+import {Registration} from "./Registration";
+import {Github} from './Github';
+import {Travis} from "./Travis";
+import {Codacy} from "./Codacy";
 
 export {Authentication}
 
@@ -42,17 +44,25 @@ class Authentication extends React.Component {
     render() {
         if (this.state.isLoggedIn) {
             return (
-                <section>
-                    <LogoutForm onSuccess={this.logout}/>
-                    <Github isGithubAuthorized={this.state.isGithubAuthorized}/>
-                </section>
+                <Panel>
+                    <Panel.Body>
+                        <Logout onSuccess={this.logout}/>
+                        <Github isAuthorized={this.state.isGithubAuthorized}/>
+                        <Travis isAuthorized={this.state.isTravisAuthorized}/>
+                        <Codacy isAuthorized={this.state.isCodacyAuthorized}/>
+                    </Panel.Body>
+                </Panel>
             )
         } else {
             return (
-                <section>
-                    <AuthenticationForm onSuccess={this.setAccount}/>
-                    <Registration onSuccess={this.login}/>
-                </section>
+                <Panel>
+                    <Panel.Body>
+                        <AuthenticationForm onSuccess={this.setAccount}/>
+                    </Panel.Body>
+                    <Panel.Body>
+                        <Registration onSuccess={this.login}/>
+                    </Panel.Body>
+                </Panel>
             )
         }
     }
@@ -154,7 +164,7 @@ class AuthenticationForm extends React.Component {
     }
 }
 
-class LogoutForm extends React.Component {
+class Logout extends React.Component {
 
     constructor(props) {
         super(props);
