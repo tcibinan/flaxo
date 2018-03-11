@@ -2,8 +2,7 @@ import '../styles/style.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {Alert, Button, ControlLabel, FormControl, FormGroup, HelpBlock, Panel} from 'react-bootstrap';
-import Cookies from 'js-cookie';
-import {Api, credentials} from "../scripts";
+import {Api} from "../scripts";
 import {Registration} from "./Registration";
 import {Github} from './Github';
 import {Travis} from "./Travis";
@@ -15,41 +14,17 @@ class Authentication extends React.Component {
 
     constructor(props) {
         super(props);
-
-        this.login = this.login.bind(this);
-        this.logout = this.logout.bind(this);
-        this.formStateFromAccount = this.formStateFromAccount.bind(this);
-        this.setAccount = this.setAccount.bind(this);
-
-        Api.retrieveAccount(
-            credentials(),
-            account => {
-                console.log(account);
-                this.setState(this.formStateFromAccount(account));
-            },
-            response => {
-                console.log('account retrieving failed');
-                console.log(response);
-            }
-        );
-
-        this.state = {
-            isLoggedIn: false,
-            isGithubAuthorized: false,
-            isTravisAuthorized: false,
-            isCodacyAuthorized: false
-        }
     }
 
     render() {
-        if (this.state.isLoggedIn) {
+        if (this.props.account != null) {
             return (
                 <Panel>
                     <Panel.Body>
-                        <Logout onSuccess={this.logout}/>
-                        <Github isAuthorized={this.state.isGithubAuthorized}/>
-                        <Travis isAuthorized={this.state.isTravisAuthorized}/>
-                        <Codacy isAuthorized={this.state.isCodacyAuthorized}/>
+                        <Logout onSuccess={this.props.onLogout}/>
+                        <Github isAuthorized={this.props.account.isGithubAuthorized}/>
+                        <Travis isAuthorized={this.props.account.isTravisAuthorized}/>
+                        <Codacy isAuthorized={this.props.account.isCodacyAuthorized}/>
                     </Panel.Body>
                 </Panel>
             )
@@ -57,37 +32,13 @@ class Authentication extends React.Component {
             return (
                 <Panel>
                     <Panel.Body>
-                        <AuthenticationForm onSuccess={this.setAccount}/>
+                        <AuthenticationForm onSuccess={this.props.onLogin}/>
                     </Panel.Body>
                     <Panel.Body>
-                        <Registration onSuccess={this.login}/>
+                        <Registration onSuccess={this.props.onLogin}/>
                     </Panel.Body>
                 </Panel>
             )
-        }
-    }
-
-    login() {
-        this.setState({isLoggedIn: true});
-    }
-
-    setAccount(account) {
-        this.setState(this.formStateFromAccount(account))
-    }
-
-    logout() {
-        Cookies.remove('username');
-        Cookies.remove('password');
-
-        this.setState({isLoggedIn: false});
-    }
-
-    formStateFromAccount(account) {
-        return {
-            isLoggedIn: account != null,
-            isGithubAuthorized: account != null ? account.githubAuthorized : false,
-            isTravisAuthorized: account != null ? account.travisAuthorized : false,
-            isCodacyAuthorized: account != null ? account.codacyAuthorized : false
         }
     }
 }
@@ -103,8 +54,7 @@ class AuthenticationForm extends React.Component {
 
         this.state = {
             username: null,
-            password: null,
-            onSuccess: props.onSuccess
+            password: null
         };
     }
 
@@ -149,10 +99,7 @@ class AuthenticationForm extends React.Component {
                 password: this.state.password
             },
             account => {
-                Cookies.set('username', this.state.username);
-                Cookies.set('password', this.state.password);
-
-                this.state.onSuccess(account)
+                this.props.onSuccess(this.state.username, this.state.password, account);
             },
             response => {
                 console.log('account retrieving failed');
@@ -168,13 +115,11 @@ class Logout extends React.Component {
 
     constructor(props) {
         super(props);
-
-        this.state = {onSuccess: props.onSuccess}
     }
 
     render() {
         return (
-            <Button type="button" onClick={this.state.onSuccess}>Logout</Button>
+            <Button type="button" onClick={this.props.onSuccess}>Logout</Button>
         )
     }
 }

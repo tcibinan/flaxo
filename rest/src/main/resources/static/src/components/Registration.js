@@ -1,10 +1,10 @@
 import '../styles/style.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Cookies from 'js-cookie';
 import axios from 'axios'
 import {Alert, Button, ControlLabel, FormControl, FormGroup, HelpBlock, Modal} from 'react-bootstrap';
 import {restUrl} from '../scripts.js';
+import {Api, credentials} from "../scripts";
 
 export {Registration}
 
@@ -94,16 +94,25 @@ class Registration extends React.Component {
                 baseURL: restUrl()
             })
             .then(() => {
-                Cookies.set('username', this.state.username);
-                Cookies.set('password', this.state.password);
+                Api.retrieveAccount(credentials(),
+                    account => {
+                        this.state.onSuccess(this.state.username, this.state.password, account);
 
-                ReactDOM.render(<RegistrationSuccessful/>, document.getElementById('notifications'));
+                        ReactDOM.render(<RegistrationSuccessful/>, document.getElementById('notifications'));
+                    },
+                    response => {
+                        console.log("retrieving user after registration failed");
+                        console.log(response);
 
-                this.state.onSuccess();
+                        ReactDOM.render(<RegistrationFailed/>, document.getElementById('notifications'));
+                    }
+                );
             })
             .catch((response) => {
-                console.log("Registration failed");
+                console.log("registration failed");
                 console.log(response);
+
+                ReactDOM.render(<RegistrationFailed/>, document.getElementById('notifications'));
             });
 
         this.handleClose();
@@ -114,7 +123,17 @@ class RegistrationSuccessful extends React.Component {
     render() {
         return (
             <Alert bsStyle="success">
-                Registration has been finished successful
+                Registration has finished successful
+            </Alert>
+        );
+    }
+}
+
+class RegistrationFailed extends React.Component {
+    render() {
+        return (
+            <Alert bsStyle="danger">
+                Registration has failed
             </Alert>
         );
     }

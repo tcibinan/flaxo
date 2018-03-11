@@ -27,4 +27,19 @@ class Api {
                 .catch(response => onFailure(response));
         }
     }
+
+    static retrieveCourses(credentials, nickname, onSuccess, onFailure) {
+        if (credentials.username !== undefined && credentials.password !== undefined) {
+            axios
+                .get('allCourses', {
+                    baseURL: restUrl(),
+                    auth: credentials,
+                    params: {
+                        nickname: nickname
+                    }
+                })
+                .then(response => onSuccess(response.data.payload))
+                .catch(response => onFailure(response));
+        }
+    }
 }

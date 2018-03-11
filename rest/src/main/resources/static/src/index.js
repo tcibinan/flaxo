@@ -1,9 +1,9 @@
 import './styles/style.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Authentication} from './components/Authentication';
+import {Page} from './components/Page';
 
 ReactDOM.render(
-    <Authentication/>,
+    <Page/>,
     document.getElementById('root')
 );
