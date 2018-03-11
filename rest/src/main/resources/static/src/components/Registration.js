@@ -21,7 +21,7 @@ class Registration extends React.Component {
 
         this.state = {
             show: false,
-            nickname: null,
+            username: null,
             password: null,
             onSuccess: props.onSuccess
         };
@@ -39,8 +39,7 @@ class Registration extends React.Component {
                             <Modal.Title>Register</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
-                            <FormGroup
-                                controlId="registration-form-nickname">
+                            <FormGroup>
                                 <ControlLabel>Username</ControlLabel>
                                 <FormControl
                                     type="text"
@@ -48,8 +47,7 @@ class Registration extends React.Component {
                                     onChange={this.handleUsernameChange}/>
                                 <HelpBlock>Flaxo account username</HelpBlock>
                             </FormGroup>
-                            <FormGroup
-                                controlId="registration-form-password">
+                            <FormGroup>
                                 <ControlLabel>Password</ControlLabel>
                                 <FormControl
                                     type="text"
@@ -77,7 +75,7 @@ class Registration extends React.Component {
     }
 
     handleUsernameChange(event) {
-        this.setState({nickname: event.target.value});
+        this.setState({username: event.target.value});
     }
 
     handlePasswordChange(event) {
@@ -90,14 +88,14 @@ class Registration extends React.Component {
         axios
             .post('register', {}, {
                 params: {
-                    nickname: this.state.nickname,
+                    nickname: this.state.username,
                     password: this.state.password
                 },
                 baseURL: restUrl()
             })
             .then(() => {
-                Cookies.set("nickname", this.state.nickname);
-                Cookies.set("password", this.state.password);
+                Cookies.set('username', this.state.username);
+                Cookies.set('password', this.state.password);
 
                 ReactDOM.render(<RegistrationSuccessful/>, document.getElementById('notifications'));
 
@@ -115,7 +113,7 @@ class Registration extends React.Component {
 class RegistrationSuccessful extends React.Component {
     render() {
         return (
-            <Alert bsStyle="success" closeLabel="Close alert">
+            <Alert bsStyle="success">
                 Registration has been finished successful
             </Alert>
         );

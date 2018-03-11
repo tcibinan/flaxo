@@ -1,9 +1,11 @@
 import '../styles/style.css';
 import React from 'react';
-import {Button, ControlLabel, FormControl, FormGroup, HelpBlock} from 'react-bootstrap';
+import ReactDOM from 'react-dom';
+import {Alert, Button, ControlLabel, FormControl, FormGroup, HelpBlock} from 'react-bootstrap';
 import Cookies from 'js-cookie';
 import {Github} from './Github';
 import {Registration} from "./Registration";
+import {Api, credentials} from "../scripts";
 
 export {Authentication}
 
@@ -12,16 +14,29 @@ class Authentication extends React.Component {
     constructor(props) {
         super(props);
 
-        const nickname = Cookies.get('nickname');
-        const password = Cookies.get('password');
-
         this.login = this.login.bind(this);
         this.logout = this.logout.bind(this);
+        this.formStateFromAccount = this.formStateFromAccount.bind(this);
+        this.setAccount = this.setAccount.bind(this);
+
+        Api.retrieveAccount(
+            credentials(),
+            account => {
+                console.log(account);
+                this.setState(this.formStateFromAccount(account));
+            },
+            response => {
+                console.log('account retrieving failed');
+                console.log(response);
+            }
+        );
 
         this.state = {
-            isLoggedIn: nickname !== undefined & password !== undefined,
-            isGithubAuthorized: false
-        };
+            isLoggedIn: false,
+            isGithubAuthorized: false,
+            isTravisAuthorized: false,
+            isCodacyAuthorized: false
+        }
     }
 
     render() {
@@ -35,7 +50,7 @@ class Authentication extends React.Component {
         } else {
             return (
                 <section>
-                    <AuthenticationForm onSuccess={this.login}/>
+                    <AuthenticationForm onSuccess={this.setAccount}/>
                     <Registration onSuccess={this.login}/>
                 </section>
             )
@@ -46,11 +61,24 @@ class Authentication extends React.Component {
         this.setState({isLoggedIn: true});
     }
 
+    setAccount(account) {
+        this.setState(this.formStateFromAccount(account))
+    }
+
     logout() {
-        Cookies.remove("nickname");
-        Cookies.remove("password");
+        Cookies.remove('username');
+        Cookies.remove('password');
 
         this.setState({isLoggedIn: false});
+    }
+
+    formStateFromAccount(account) {
+        return {
+            isLoggedIn: account != null,
+            isGithubAuthorized: account != null ? account.githubAuthorized : false,
+            isTravisAuthorized: account != null ? account.travisAuthorized : false,
+            isCodacyAuthorized: account != null ? account.codacyAuthorized : false
+        }
     }
 }
 
@@ -64,7 +92,7 @@ class AuthenticationForm extends React.Component {
         this.authorizeUser = this.authorizeUser.bind(this);
 
         this.state = {
-            nickname: null,
+            username: null,
             password: null,
             onSuccess: props.onSuccess
         };
@@ -73,16 +101,15 @@ class AuthenticationForm extends React.Component {
     render() {
         return (
             <form>
-                <FormGroup
-                    controlId="authorization-form-nickname">
+                <FormGroup>
                     <ControlLabel>Username</ControlLabel>
                     <FormControl
                         type="text"
-                        placeholder="Username"/>
+                        placeholder="Username"
+                        onChange={this.handleUsernameChange}/>
                     <HelpBlock>Flaxo account username</HelpBlock>
                 </FormGroup>
-                <FormGroup
-                    controlId="authorization-form-password">
+                <FormGroup>
                     <ControlLabel>Password</ControlLabel>
                     <FormControl
                         type="password"
@@ -96,7 +123,7 @@ class AuthenticationForm extends React.Component {
     }
 
     handleUsernameChange(event) {
-        this.setState({nickname: event.target.value});
+        this.setState({username: event.target.value});
     }
 
     handlePasswordChange(event) {
@@ -106,10 +133,24 @@ class AuthenticationForm extends React.Component {
     authorizeUser(event) {
         event.preventDefault();
 
-        Cookies.set('nickname', this.state.nickname);
-        Cookies.set('password', this.state.password);
+        Api.retrieveAccount(
+            {
+                username: this.state.username,
+                password: this.state.password
+            },
+            account => {
+                Cookies.set('username', this.state.username);
+                Cookies.set('password', this.state.password);
 
-        this.state.onSuccess()
+                this.state.onSuccess(account)
+            },
+            response => {
+                console.log('account retrieving failed');
+                console.log(response);
+
+                ReactDOM.render(<AuthorizationFailed/>, document.getElementById('notifications'));
+            }
+        );
     }
 }
 
@@ -125,5 +166,15 @@ class LogoutForm extends React.Component {
         return (
             <Button type="button" onClick={this.state.onSuccess}>Logout</Button>
         )
+    }
+}
+
+class AuthorizationFailed extends React.Component {
+    render() {
+        return (
+            <Alert bsStyle="danger">
+                User with the given nickname and password was not found
+            </Alert>
+        );
     }
 }

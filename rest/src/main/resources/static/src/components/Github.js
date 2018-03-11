@@ -1,9 +1,9 @@
 import '../styles/style.css';
 import React from 'react';
+import {Label} from "react-bootstrap";
 import Immutable from 'immutable';
-import Cookies from 'js-cookie';
 import axios from 'axios'
-import {restUrl} from "../scripts.js";
+import {credentials, restUrl} from "../scripts.js";
 
 export {Github}
 
@@ -20,9 +20,7 @@ class Github extends React.Component {
 
     render() {
         if (this.state.isGithubAuthorized) {
-            return (
-                <span className="badge badge-success">Github authorized</span>
-            )
+            return <Label bsStyle="primary">Github authorized</Label>;
         } else {
             return (
                 <button type="button" className="btn btn-primary" onClick={this.authWithGithub}>
@@ -36,10 +34,7 @@ class Github extends React.Component {
         axios
             .get('github/auth', {
                 baseURL: restUrl(),
-                auth: {
-                    username: Cookies.get('nickname'),
-                    password: Cookies.get('password')
-                }
+                auth: credentials()
             })
             .then(this.redirectToGithubAuth)
             .catch(response => {
