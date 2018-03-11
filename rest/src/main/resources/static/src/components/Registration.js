@@ -1,10 +1,10 @@
 import '../styles/style.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import axios from 'axios'
+import axios from 'axios';
 import {Alert, Button, ControlLabel, FormControl, FormGroup, HelpBlock, Modal} from 'react-bootstrap';
-import {restUrl} from '../scripts.js';
-import {Api, credentials} from "../scripts";
+import {credentials, restUrl} from "../scripts";
+import {Api} from "../Api";
 
 export {Registration}
 
@@ -34,7 +34,7 @@ class Registration extends React.Component {
                     Register
                 </Button>
                 <Modal show={this.state.show} onHide={this.handleClose}>
-                    <form id="register-form">
+                    <form>
                         <Modal.Header>
                             <Modal.Title>Register</Modal.Title>
                         </Modal.Header>

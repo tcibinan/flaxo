@@ -1,7 +1,9 @@
+import '../styles/style.css';
 import React from 'react';
 import {Authentication} from "./Authentication";
 import {CoursesList} from "./CoursesList";
-import {Api, credentials} from "../scripts";
+import {credentials} from "../scripts";
+import {Api} from "../Api";
 import Cookies from "js-cookie";
 
 export {Page}

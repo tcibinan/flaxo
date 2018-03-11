@@ -2,7 +2,7 @@ import '../styles/style.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {Alert, Button, ControlLabel, FormControl, FormGroup, HelpBlock, Panel} from 'react-bootstrap';
-import {Api} from "../scripts";
+import {Api} from "../Api";
 import {Registration} from "./Registration";
 import {Github} from './Github';
 import {Travis} from "./Travis";
