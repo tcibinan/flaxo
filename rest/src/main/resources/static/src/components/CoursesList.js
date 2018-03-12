@@ -2,7 +2,6 @@ import '../styles/style.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {
-    Alert,
     Badge,
     Button,
     ControlLabel,
@@ -12,7 +11,8 @@ import {
     HelpBlock,
     Label, MenuItem,
     Modal,
-    Panel
+    Panel,
+    Table
 } from "react-bootstrap";
 import Immutable from 'immutable';
 import {credentials} from "../scripts";
@@ -359,6 +359,7 @@ class Course extends React.Component {
                 <Button bsStyle="danger" onClick={this.deleteCourse}>
                     Delete course
                 </Button>
+                <CourseStatsTable course={this.state}/>
             </section>
         );
     }
@@ -377,6 +378,77 @@ class Course extends React.Component {
 
     deleteCourse() {
         //todo: impl
+    }
+}
+
+class CourseStatsTable extends React.Component {
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            perStudentStats: {},
+            perTaskStats: {}
+        };
+
+        Api.retrieveCourseStatistics(credentials(), props.course.user, props.course.name,
+            statistics => this.setState({
+                perStudentStats: statistics.perStudentStats,
+                perTaskStats: statistics.perTaskStats
+            }),
+            response => ReactDOM.render(
+                <Notification message={"Course statistics retrieving failed.<br/>" + response}/>,
+                document.getElementById('notifications')
+            )
+        )
+    }
+
+    render() {
+        const tasksNames =
+            Immutable.List(this.props.course.tasks)
+                .sort();
+
+        const toStudentResultCell = (studentTasks, taskName) => {
+            const studentTask =
+                Immutable.List(studentTasks)
+                    .find(studentTask => studentTask.task === taskName);
+
+            return (
+                <td className={
+                    `${studentTask.built ? "solution-built" : ""} ${studentTask.succeed ? "solution-succeed" : ""}`
+                }/>
+            );
+        };
+
+        const studentsResults =
+            Immutable.Map(this.state.perStudentStats)
+                .map((studentTasks, student) =>
+                    <tr>
+                        <td>{student}</td>
+                        {tasksNames.map(taskName => toStudentResultCell(studentTasks, taskName))}
+                        <td>0</td>
+                    </tr>
+                )
+                .valueSeq();
+
+        return (
+            <Table striped bordered condensed hover>
+                <thead>
+                <tr>
+                    <th>Student</th>
+                    {tasksNames.map(name => <th>{name}</th>)}
+                    <th>Score</th>
+                </tr>
+                </thead>
+                <tbody>
+                {
+                    studentsResults.size > 0
+                        ? studentsResults
+                        : <td colSpan={tasksNames.size + 2}>There are no students on the course yet.</td>
+                }
+                </tbody>
+            </Table>
+        );
     }
 }
 

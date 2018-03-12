@@ -50,4 +50,16 @@ export class Api {
             .then(response => onSuccess(response.data.payload))
             .catch(response => onFailure(response));
     }
+
+    static retrieveCourseStatistics(credentials, username, courseName, onSuccess, onFailure) {
+        if (credentials.username !== undefined && credentials.password !== undefined) {
+            axios
+                .get(`/${username}/${courseName}/statistics`, {
+                    baseURL: restUrl(),
+                    auth: credentials
+                })
+                .then(response => onSuccess(response.data.payload))
+                .catch(response => onFailure(response));
+        }
+    }
 }
