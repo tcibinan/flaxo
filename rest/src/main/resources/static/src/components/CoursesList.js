@@ -6,10 +6,11 @@ import {
     Badge,
     Button,
     ControlLabel,
+    DropdownButton,
     FormControl,
     FormGroup,
     HelpBlock,
-    Label,
+    Label, MenuItem,
     Modal,
     Panel
 } from "react-bootstrap";
@@ -24,25 +25,33 @@ export class CoursesList extends React.Component {
         super(props);
 
         this.updateCoursesList = this.updateCoursesList.bind(this);
+        this.selectCourse = this.selectCourse.bind(this);
 
         this.state = {
             account: props.account,
-            courses: []
+            courses: [],
+            selectedCourse: null
         };
 
         this.updateCoursesList();
     }
 
     render() {
-        const courses = Immutable.List(this.state.courses)
-            .map(value => <CourseItem data={value}/>);
+        if (this.state.selectedCourse == null) {
+            const courses = Immutable.List(this.state.courses)
+                .map(value => <CourseItem data={value} onSelect={this.selectCourse}/>);
 
-        return (
-            <section className="courses-list">
-                <CourseCreation onCourseCreation={this.updateCoursesList}/>
-                {courses.size > 0 ? courses : <p>There are no courses yet.</p>}
-            </section>
-        );
+            return (
+                <article className="courses-list">
+                    <CourseCreation onCourseCreation={this.updateCoursesList}/>
+                    {courses.size > 0 ? courses : <p>There are no courses yet.</p>}
+                </article>
+            );
+        } else {
+            return (
+                <Course data={this.state.selectedCourse}/>
+            )
+        }
     }
 
     updateCoursesList() {
@@ -59,6 +68,10 @@ export class CoursesList extends React.Component {
         );
     }
 
+    selectCourse(selectedCourse) {
+        this.setState({selectedCourse});
+    }
+
 }
 
 class CourseItem extends React.Component {
@@ -70,25 +83,20 @@ class CourseItem extends React.Component {
     }
 
     render() {
-        const statusLabel = <Label bsStyle="primary">{this.state.status}</Label>;
-
-        const techLabels =
-            Immutable.Set([this.state.language, this.state.testingLanguage, this.state.testingFramework])
-                .map(value => <Label bsStyle="info">{value}</Label>);
-
         return (
-            <Panel>
-                <Panel.Heading>
-                    {this.state.name}
-                    <Badge>{this.state.tasks.length} tasks</Badge>
-                    <Badge>{this.state.students.length} students</Badge>
-                </Panel.Heading>
-                <Panel.Body>
-                    <p>Some ambiguous course description.</p>
-                    {statusLabel}
-                    {techLabels}
-                </Panel.Body>
-            </Panel>
+            <section className="course-item" onClick={() => this.props.onSelect(this.state)}>
+                <Panel>
+                    <Panel.Heading>
+                        {this.state.name}
+                        <Badge>{this.state.tasks.length} tasks</Badge>
+                        <Badge>{this.state.students.length} students</Badge>
+                    </Panel.Heading>
+                    <Panel.Body>
+                        <p>Some ambiguous course description.</p>
+                        <CourseLabels course={this.state}/>
+                    </Panel.Body>
+                </Panel>
+            </section>
         );
     }
 }
@@ -314,4 +322,75 @@ class CourseCreation extends React.Component {
 
         this.handleClose();
     }
+}
+
+class Course extends React.Component {
+
+    constructor(props) {
+        super(props);
+
+        this.startCourse = this.startCourse.bind(this);
+        this.analysePlagiarism = this.analysePlagiarism.bind(this);
+        this.downloadStats = this.downloadStats.bind(this);
+        this.deleteCourse = this.deleteCourse.bind(this);
+
+        this.state = props.data;
+    }
+
+    render() {
+        return (
+            <section className="selected-course">
+                <h2>
+                    {this.state.name}
+                    <small>#{this.state.id}</small>
+                    <CourseLabels course={this.state}/>
+                </h2>
+                <Button onClick={this.startCourse} disabled={this.state.status === "running" ? "disabled" : ""}>
+                    Start course
+                </Button>
+                <Button onClick={this.analysePlagiarism} disabled={this.state.status !== "running" ? "disabled" : ""}>
+                    Analyse plagiarism
+                </Button>
+                <DropdownButton title="Download as">
+                    <MenuItem eventKey="json" onSelect={this.downloadStats}>json</MenuItem>
+                    <MenuItem eventKey="2" disabled>excel</MenuItem>
+                    <MenuItem eventKey="3" disabled>csv</MenuItem>
+                </DropdownButton>
+                <Button bsStyle="danger" onClick={this.deleteCourse}>
+                    Delete course
+                </Button>
+            </section>
+        );
+    }
+
+    startCourse() {
+        //todo: impl
+    }
+
+    analysePlagiarism() {
+        //todo: impl
+    }
+
+    downloadStats(eventKey) {
+        //todo: impl
+    }
+
+    deleteCourse() {
+        //todo: impl
+    }
+}
+
+function CourseLabels(props) {
+    const statusLabel = <Label bsStyle="primary">{props.course.status}</Label>;
+
+    const techLabels =
+        Immutable.Set([props.course.language, props.course.testingLanguage, props.course.testingFramework])
+            .map(value => <Label bsStyle="info">{value}</Label>);
+
+    return (
+        <section className="course-labels">
+            {statusLabel}
+            {techLabels}
+        </section>
+    );
 }
