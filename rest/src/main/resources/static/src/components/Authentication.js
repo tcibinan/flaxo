@@ -7,10 +7,9 @@ import {Registration} from "./Registration";
 import {Github} from './Github';
 import {Travis} from "./Travis";
 import {Codacy} from "./Codacy";
+import {Notification} from "./Notification";
 
-export {Authentication}
-
-class Authentication extends React.Component {
+export class Authentication extends React.Component {
 
     constructor(props) {
         super(props);
@@ -22,12 +21,12 @@ class Authentication extends React.Component {
                 <Panel>
                     <Panel.Body>
                         <Logout onSuccess={this.props.onLogout}/>
-                        <Github isAuthorized={this.props.account.isGithubAuthorized}/>
-                        <Travis isAuthorized={this.props.account.isTravisAuthorized}/>
-                        <Codacy isAuthorized={this.props.account.isCodacyAuthorized}/>
+                        <Github isAuthorized={this.props.account.githubAuthorized}/>
+                        <Travis isAuthorized={this.props.account.travisAuthorized}/>
+                        <Codacy isAuthorized={this.props.account.codacyAuthorized}/>
                     </Panel.Body>
                 </Panel>
-            )
+            );
         } else {
             return (
                 <Panel>
@@ -38,7 +37,7 @@ class Authentication extends React.Component {
                         <Registration onSuccess={this.props.onLogin}/>
                     </Panel.Body>
                 </Panel>
-            )
+            );
         }
     }
 }
@@ -101,12 +100,10 @@ class AuthenticationForm extends React.Component {
             account => {
                 this.props.onSuccess(this.state.username, this.state.password, account);
             },
-            response => {
-                console.log('account retrieving failed');
-                console.log(response);
-
-                ReactDOM.render(<AuthorizationFailed/>, document.getElementById('notifications'));
-            }
+            response => ReactDOM.render(
+                <Notification message="User with the given nickname and password was not found."/>,
+                document.getElementById('notifications')
+            )
         );
     }
 }
@@ -120,16 +117,6 @@ class Logout extends React.Component {
     render() {
         return (
             <Button type="button" onClick={this.props.onSuccess}>Logout</Button>
-        )
-    }
-}
-
-class AuthorizationFailed extends React.Component {
-    render() {
-        return (
-            <Alert bsStyle="danger">
-                User with the given nickname and password was not found
-            </Alert>
         );
     }
 }

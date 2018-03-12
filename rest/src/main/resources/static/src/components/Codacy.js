@@ -2,9 +2,7 @@ import '../styles/style.css';
 import React from 'react';
 import {Label} from "react-bootstrap";
 
-export {Codacy}
-
-class Codacy extends React.Component {
+export class Codacy extends React.Component {
 
     constructor(props) {
         super(props);

@@ -16,6 +16,7 @@ import {
 import Immutable from 'immutable';
 import {credentials} from "../scripts";
 import {Api} from "../Api";
+import {Notification} from "./Notification";
 
 export class CoursesList extends React.Component {
 
@@ -41,7 +42,7 @@ export class CoursesList extends React.Component {
                 <CourseCreation onCourseCreation={this.updateCoursesList}/>
                 {courses.size > 0 ? courses : <p>There are no courses yet.</p>}
             </section>
-        )
+        );
     }
 
     updateCoursesList() {
@@ -51,10 +52,10 @@ export class CoursesList extends React.Component {
             courses => {
                 this.setState({courses: courses});
             },
-            response => {
-                console.log('courses retrieving failed');
-                console.log(response);
-            }
+            response => ReactDOM.render(
+                <Notification message={`Courses retrieving failed.<br/>${response}`}/>,
+                document.getElementById('notifications')
+            )
         );
     }
 
@@ -71,8 +72,9 @@ class CourseItem extends React.Component {
     render() {
         const statusLabel = <Label bsStyle="primary">{this.state.status}</Label>;
 
-        const techLabels = Immutable.Set([this.state.language, this.state.testingLanguage, this.state.testingFramework])
-            .map(value => <Label bsStyle="info">{value}</Label>);
+        const techLabels =
+            Immutable.Set([this.state.language, this.state.testingLanguage, this.state.testingFramework])
+                .map(value => <Label bsStyle="info">{value}</Label>);
 
         return (
             <Panel>
@@ -87,7 +89,7 @@ class CourseItem extends React.Component {
                     {techLabels}
                 </Panel.Body>
             </Panel>
-        )
+        );
     }
 }
 
@@ -296,36 +298,20 @@ class CourseCreation extends React.Component {
                 testingFramework: this.state.testingFramework,
                 numberOfTasks: parseInt(this.state.numberOfTasks)
             },
-            course => {
-                console.log('course has been created successfully');
-                console.log(course);
-
+            () => {
                 ReactDOM.render(
-                    <CourseCreationMessage message={`Course ${this.state.courseName} has been created`} succeed/>,
+                    <Notification succeed message={`Course ${this.state.courseName} has been created`}/>,
                     document.getElementById('notifications')
                 );
 
                 this.props.onCourseCreation();
             },
-            response => {
-                console.log('course creation failed');
-                console.log(response);
-
-                ReactDOM.render(
-                    <CourseCreationMessage message={`Course ${this.state.courseName} creation failed`}/>,
-                    document.getElementById('notifications')
-                )
-            }
+            response => ReactDOM.render(
+                <Notification message={`Course ${this.state.courseName} creation failed.<br/>${response}`}/>,
+                document.getElementById('notifications')
+            )
         );
 
         this.handleClose();
     }
-}
-
-function CourseCreationMessage(props) {
-    return (
-        <Alert bsStyle={props.succeed ? "success" : "danger"}>
-            {props.message}
-        </Alert>
-    );
 }

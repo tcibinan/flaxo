@@ -1,9 +1,7 @@
 import {restUrl} from "./scripts";
 import axios from 'axios';
 
-export {Api}
-
-class Api {
+export class Api {
     static retrieveAccount(credentials, onSuccess, onFailure) {
         if (credentials.username !== undefined && credentials.password !== undefined) {
             axios

@@ -1,13 +1,11 @@
 import Cookies from "js-cookie";
 
-export {restUrl, credentials}
-
-function restUrl() {
+export function restUrl() {
     // placeholder will be replaced during webpacking
     return 'REST_URL';
 }
 
-function credentials() {
+export function credentials() {
     return {
         username: Cookies.get('username'),
         password: Cookies.get('password')

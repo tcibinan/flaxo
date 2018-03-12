@@ -2,9 +2,7 @@ import '../styles/style.css';
 import React from 'react';
 import {Label} from "react-bootstrap";
 
-export {Travis}
-
-class Travis extends React.Component {
+export class Travis extends React.Component {
 
     constructor(props) {
         super(props);

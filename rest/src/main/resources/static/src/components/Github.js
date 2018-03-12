@@ -1,13 +1,13 @@
 import '../styles/style.css';
 import React from 'react';
+import ReactDOM from 'react-dom';
 import {Label} from "react-bootstrap";
 import Immutable from 'immutable';
-import axios from 'axios'
+import axios from 'axios';
 import {credentials, restUrl} from "../scripts.js";
+import {Notification} from "./Notification";
 
-export {Github}
-
-class Github extends React.Component {
+export class Github extends React.Component {
 
     constructor(props) {
         super(props);
@@ -26,7 +26,7 @@ class Github extends React.Component {
                 <button type="button" className="btn btn-primary" onClick={this.authWithGithub}>
                     Authorize github
                 </button>
-            )
+            );
         }
     }
 
@@ -37,10 +37,10 @@ class Github extends React.Component {
                 auth: credentials()
             })
             .then(this.redirectToGithubAuth)
-            .catch(response => {
-                console.log('github auth failed');
-                console.log(response);
-            });
+            .catch(response => ReactDOM.render(
+                <Notification message={"Github auth failed." + "<br/>" + response}/>,
+                document.getElementById('notifications')
+            ));
     }
 
     redirectToGithubAuth(response) {

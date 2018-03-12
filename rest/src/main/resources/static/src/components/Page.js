@@ -5,10 +5,10 @@ import {CoursesList} from "./CoursesList";
 import {credentials} from "../scripts";
 import {Api} from "../Api";
 import Cookies from "js-cookie";
+import ReactDOM from "react-dom";
+import {Notification} from "./Notification";
 
-export {Page}
-
-class Page extends React.Component {
+export class Page extends React.Component {
 
     constructor(props) {
         super(props);
@@ -25,10 +25,10 @@ class Page extends React.Component {
             account => {
                 this.setState({account: account});
             },
-            response => {
-                console.log('account retrieving failed');
-                console.log(response);
-            }
+            response => ReactDOM.render(
+                <Notification succeed message={"Account retrieving failed.<br/>" + response}/>,
+                document.getElementById('notifications')
+            )
         );
     }
 
@@ -39,14 +39,14 @@ class Page extends React.Component {
                     <Authentication account={this.state.account} onLogin={this.onLogin} onLogout={this.onLogout}/>
                     <CoursesList account={this.state.account}/>
                 </article>
-            )
+            );
         } else {
             return (
                 <article className="page">
                     <h1>Flaxo educational system</h1>
                     <Authentication account={this.state.account} onLogin={this.onLogin} onLogout={this.onLogout}/>
                 </article>
-            )
+            );
         }
     }
 
