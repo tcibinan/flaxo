@@ -43,4 +43,13 @@ class Api {
                 .catch(response => onFailure(response));
         }
     }
+
+    static retrieveLanguages(onSuccess, onFailure) {
+        axios
+            .get('supportedLanguages', {
+                baseURL: restUrl()
+            })
+            .then(response => onSuccess(response.data.payload))
+            .catch(response => onFailure(response));
+    }
 }

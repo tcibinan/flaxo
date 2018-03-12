@@ -17,9 +17,7 @@ import Immutable from 'immutable';
 import {credentials} from "../scripts";
 import {Api} from "../Api";
 
-export {CoursesList}
-
-class CoursesList extends React.Component {
+export class CoursesList extends React.Component {
 
     constructor(props) {
         super(props);
@@ -36,7 +34,7 @@ class CoursesList extends React.Component {
 
     render() {
         const courses = Immutable.List(this.state.courses)
-            .map(value => <Course data={value}/>);
+            .map(value => <CourseItem data={value}/>);
 
         return (
             <section className="courses-list">
@@ -62,7 +60,7 @@ class CoursesList extends React.Component {
 
 }
 
-class Course extends React.Component {
+class CourseItem extends React.Component {
 
     constructor(props) {
         super(props);
@@ -98,6 +96,9 @@ class CourseCreation extends React.Component {
     constructor(props) {
         super(props);
 
+        this.getLanguages = this.getLanguages.bind(this);
+        this.getTestLanguages = this.getTestLanguages.bind(this);
+        this.getTestingFrameworks = this.getTestingFrameworks.bind(this);
         this.handleShow = this.handleShow.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.handleCourseNameChange = this.handleCourseNameChange.bind(this);
@@ -113,14 +114,25 @@ class CourseCreation extends React.Component {
             language: null,
             testLanguage: null,
             testingFramework: null,
-            numberOfTasks: null
-        }
+            numberOfTasks: null,
+            flaxoLanguages: []
+        };
+
+        Api.retrieveLanguages(
+            languages => {
+                this.setState(
+                    {
+                        flaxoLanguages: languages,
+                        language: languages[0].name,
+                        testLanguage: languages[0].compatibleTestingLanguages[0],
+                        testingFramework: languages[0].compatibleTestingFrameworks[0]
+                    }
+                )
+            }
+        );
     }
 
     render() {
-        const supportedLanguages = [<option value="java">java</option>, <option value="kotlin">kotlin</option>];
-        const supportedTestingFrameworks = [<option value="junit">junit</option>, <option value="spek">spek</option>];
-
         return (
             <div>
                 <Button onClick={this.handleShow}>
@@ -146,7 +158,7 @@ class CourseCreation extends React.Component {
                                     componentClass="select"
                                     placeholder="language"
                                     onChange={this.handleLanguageChange}>
-                                    {supportedLanguages}
+                                    {this.getLanguages()}
                                 </FormControl>
                                 <HelpBlock>Language solutions will be written on</HelpBlock>
                             </FormGroup>
@@ -156,7 +168,7 @@ class CourseCreation extends React.Component {
                                     componentClass="select"
                                     placeholder="testing language"
                                     onChange={this.handleTestingLanguageChange}>
-                                    {supportedLanguages}
+                                    {this.getTestLanguages()}
                                 </FormControl>
                                 <HelpBlock>Language tests will be written on</HelpBlock>
                             </FormGroup>
@@ -166,7 +178,7 @@ class CourseCreation extends React.Component {
                                     componentClass="select"
                                     placeholder="testing framework"
                                     onChange={this.handleTestingFrameworkChange}>
-                                    {supportedTestingFrameworks}
+                                    {this.getTestingFrameworks()}
                                 </FormControl>
                                 <HelpBlock>Test framework to use in course</HelpBlock>
                             </FormGroup>
@@ -189,6 +201,38 @@ class CourseCreation extends React.Component {
         );
     }
 
+    getLanguages() {
+        return (
+            Immutable.List(this.state.flaxoLanguages)
+                .map(language => language.name)
+                .map(name => <option value={name}
+                                     selected={name === this.state.language ? "selected" : ""}>{name}</option>
+                )
+        );
+    }
+
+    getTestLanguages() {
+        return (
+            Immutable.List(this.state.flaxoLanguages)
+                .filter(language => language.name === this.state.language)
+                .flatMap(language => language.compatibleTestingLanguages)
+                .map(name => <option value={name}
+                                     selected={name === this.state.testLanguage ? "selected" : ""}>{name}</option>
+                )
+        );
+    }
+
+    getTestingFrameworks() {
+        return (
+            Immutable.List(this.state.flaxoLanguages)
+                .filter(language => language.name === this.state.testLanguage)
+                .flatMap(language => language.compatibleTestingFrameworks)
+                .map(name => <option value={name}
+                                     selected={name === this.state.testingFramework ? "selected" : ""}>{name}</option>
+                )
+        );
+    }
+
     handleClose() {
         this.setState({show: false});
     }
@@ -202,11 +246,37 @@ class CourseCreation extends React.Component {
     }
 
     handleLanguageChange(event) {
-        this.setState({language: event.target.value});
+        const selectedLanguage = event.target.value;
+
+        const defaultTestLanguage =
+            Immutable.List(this.state.flaxoLanguages)
+                .find(language => language.name === selectedLanguage)
+                .compatibleTestingLanguages[0];
+
+        const defaultTestingFramework =
+            Immutable.List(this.state.flaxoLanguages)
+                .find(language => language.name === defaultTestLanguage)
+                .compatibleTestingFrameworks[0];
+
+        this.setState({
+            language: selectedLanguage,
+            testLanguage: defaultTestLanguage,
+            testingFramework: defaultTestingFramework
+        });
     }
 
     handleTestingLanguageChange(event) {
-        this.setState({testLanguage: event.target.value});
+        const selectedTestLanguage = event.target.value;
+
+        const defaultTestingFramework =
+            Immutable.List(this.state.flaxoLanguages)
+                .find(language => language.name === selectedTestLanguage)
+                .compatibleTestingFrameworks[0];
+
+        this.setState({
+            testLanguage: selectedTestLanguage,
+            testingFramework: defaultTestingFramework
+        });
     }
 
     handleTestingFrameworkChange(event) {
