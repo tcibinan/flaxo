@@ -62,4 +62,34 @@ export class Api {
                 .catch(response => onFailure(response));
         }
     }
+
+    static startCourse(credentials, courseName, onSuccess, onFailure) {
+        if (credentials.username !== undefined && credentials.password !== undefined) {
+            axios
+                .post('composeCourse', {}, {
+                    baseURL: restUrl(),
+                    auth: credentials,
+                    params: {
+                        courseName
+                    }
+                })
+                .then(response => onSuccess(response.data.payload))
+                .catch(response => onFailure(response));
+        }
+    }
+
+    static deleteCourse(credentials, courseName, onSuccess, onFailure) {
+        if (credentials.username !== undefined && credentials.password !== undefined) {
+            axios
+                .post('deleteCourse', {}, {
+                    baseURL: restUrl(),
+                    auth: credentials,
+                    params: {
+                        courseName
+                    }
+                })
+                .then(response => onSuccess(response.data.payload))
+                .catch(response => onFailure(response));
+        }
+    }
 }

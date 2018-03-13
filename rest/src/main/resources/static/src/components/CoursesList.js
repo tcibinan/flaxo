@@ -26,6 +26,7 @@ export class CoursesList extends React.Component {
 
         this.updateCoursesList = this.updateCoursesList.bind(this);
         this.selectCourse = this.selectCourse.bind(this);
+        this.deleteCourse = this.deleteCourse.bind(this);
 
         this.state = {
             account: props.account,
@@ -49,7 +50,9 @@ export class CoursesList extends React.Component {
             );
         } else {
             return (
-                <Course data={this.state.selectedCourse}/>
+                <Course data={this.state.selectedCourse}
+                        onUpdate={this.updateCoursesList}
+                        onDelete={this.deleteCourse}/>
             )
         }
     }
@@ -59,13 +62,24 @@ export class CoursesList extends React.Component {
             credentials(),
             this.props.account.nickname,
             courses => {
-                this.setState({courses: courses});
+                const selectedCourse =
+                    this.state.selectedCourse != null
+                        ? Immutable.List(courses)
+                            .find(course => course.name === this.state.selectedCourse.name)
+                        : null;
+
+                this.setState({courses, selectedCourse});
             },
             response => ReactDOM.render(
                 <Notification message={`Courses retrieving failed.<br/>${response}`}/>,
                 document.getElementById('notifications')
             )
         );
+    }
+
+    deleteCourse(course) {
+        this.setState({selectedCourse: null});
+        this.updateCoursesList();
     }
 
     selectCourse(selectedCourse) {
@@ -365,7 +379,21 @@ class Course extends React.Component {
     }
 
     startCourse() {
-        //todo: impl
+        Api.startCourse(credentials(), this.state.name,
+            () => {
+                this.state.status = "running";
+                this.props.onUpdate();
+
+                ReactDOM.render(
+                    <Notification succeed message={`Course ${this.state.name} has started successful.`}/>,
+                    document.getElementById('notifications')
+                );
+            },
+            response => ReactDOM.render(
+                <Notification message={`Course ${this.state.name} starting went bad.<br/>` + response}/>,
+                document.getElementById('notifications')
+            )
+        );
     }
 
     analysePlagiarism() {
@@ -377,7 +405,20 @@ class Course extends React.Component {
     }
 
     deleteCourse() {
-        //todo: impl
+        Api.deleteCourse(credentials(), this.state.name,
+            () => {
+                this.props.onDelete(this.state.name);
+
+                ReactDOM.render(
+                    <Notification succeed message={`Course ${this.state.name} has been deleted.`}/>,
+                    document.getElementById('notifications')
+                );
+            },
+            response => ReactDOM.render(
+                <Notification message={`Course ${this.state.name} deletion went bad.<br/>` + response}/>,
+                document.getElementById('notifications')
+            )
+        );
     }
 }
 
