@@ -9,10 +9,13 @@ import {
     FormControl,
     FormGroup,
     HelpBlock,
-    Label, MenuItem,
+    Label,
+    MenuItem,
     Modal,
     Panel,
-    Table
+    Tab,
+    Table,
+    Tabs
 } from "react-bootstrap";
 import Immutable from 'immutable';
 import {credentials} from "../scripts";
@@ -472,24 +475,131 @@ class CourseStatsTable extends React.Component {
                 )
                 .valueSeq();
 
+        const tasks =
+            Immutable.Map(this.state.perTaskStats)
+                .map((taskData, taskName) => {
+                    return {
+                        name: taskName,
+                        mossResultUrl: taskData.mossResultUrl,
+                        mossPlagiarismMatches: taskData.mossPlagiarismMatches
+                    }
+                })
+                .valueSeq()
+                .sortBy(task => task.name)
+                .map((task, index) =>
+                    <Tab eventKey={index + 1} title={task.name}>
+                        <CourseTask user={this.props.course.userGithubId}
+                                    courseName={this.props.course.name}
+                                    data={task}/>
+                    </Tab>
+                );
+
         return (
-            <Table striped bordered condensed hover>
-                <thead>
-                <tr>
-                    <th>Student</th>
-                    {tasksNames.map(name => <th>{name}</th>)}
-                    <th>Score</th>
-                </tr>
-                </thead>
-                <tbody>
-                {
-                    studentsResults.size > 0
-                        ? studentsResults
-                        : <td colSpan={tasksNames.size + 2}>There are no students on the course yet.</td>
-                }
-                </tbody>
-            </Table>
+            <section className="course-stats-tabs">
+                <Tabs defaultActiveKey={0}>
+                    <Tab eventKey={0} title="Course stats">
+                        <Table striped bordered condensed hover>
+                            <thead>
+                            <tr>
+                                <th>Student</th>
+                                {tasksNames.map(name => <th>{name}</th>)}
+                                <th>Score</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {
+                                studentsResults.size > 0
+                                    ? studentsResults
+                                    : <td colSpan={tasksNames.size + 2}>There are no students on the course yet.</td>
+                            }
+                            </tbody>
+                        </Table>
+                    </Tab>
+                    {tasks}
+                </Tabs>
+            </section>
         );
+    }
+}
+
+class CourseTask extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        const gitLink =
+            `https://github.com/${this.props.user}/${this.props.courseName}/tree/${this.props.data.name}`;
+
+        const mossLink =
+            this.props.data.mossResultUrl
+                ? this.props.data.mossResultUrl
+                : null;
+
+        return (
+            <section className="course-task">
+                <Button href={gitLink} bsStyle="link" bsSize="small">Git branch</Button>
+                {
+                    mossLink
+                        ? <Button href={mossLink} bsStyle="link" bsSize="small">Moss analysis results</Button>
+                        : <Button bsStyle="link" bsSize="small" disabled>Moss analysis results</Button>
+                }
+                <PlagiarismStats data={this.props.data.mossPlagiarismMatches}/>
+            </section>
+        );
+    }
+}
+
+class PlagiarismStats extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        const matches =
+            Immutable.List(this.props.data)
+                .map(match => <PlagiarismMatch data={match}/>);
+
+        return (
+            <section className="task-plagiarism">
+                {
+                    matches.size > 0
+                        ? matches
+                        : <p>No plagiarism matches were detected.</p>
+                }
+            </section>
+        );
+    }
+}
+
+class PlagiarismMatch extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        return (
+            <section className="plagiarism-match">
+                <p>
+                    <b>students: </b>
+                    {this.props.students.first}
+                    and
+                    {this.props.students.second}
+                </p>
+                <p>
+                    <b>lines: </b>
+                    {this.props.lines}
+                </p>
+                <p>
+                    <b>percentage: </b>
+                    {this.props.percentage}
+                </p>
+                <p>
+                    <b>moss link: </b>
+                    <a href={this.props.link}>{this.props.link}</a>
+                </p>
+            </section>
+        )
     }
 }
 
