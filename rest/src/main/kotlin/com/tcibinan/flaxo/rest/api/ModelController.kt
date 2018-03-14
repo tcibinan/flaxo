@@ -436,9 +436,14 @@ class ModelController @Autowired constructor(private val dataService: DataServic
 
         logger.info("Moss plagiarism analysis has been started for ${principal.name}/$courseName")
 
+        val scheduledTasksNames: List<String> =
+                mossTasks.map { it.taskName }
+                        .map { it.split("/").last() }
+
         return responseService.response(
                 PLAGIARISM_ANALYSIS_SCHEDULED,
-                mossTasks.map { it.taskName }.toString()
+                scheduledTasksNames.toString(),
+                payload = scheduledTasksNames
         )
     }
 }

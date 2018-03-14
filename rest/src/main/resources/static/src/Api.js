@@ -1,4 +1,4 @@
-import {restUrl} from './scripts';
+import {credentials, restUrl} from './scripts';
 import axios from 'axios';
 
 export class Api {
@@ -82,6 +82,21 @@ export class Api {
         if (credentials.username && credentials.password) {
             axios
                 .post('deleteCourse', {}, {
+                    baseURL: restUrl(),
+                    auth: credentials,
+                    params: {
+                        courseName
+                    }
+                })
+                .then(response => onSuccess(response.data.payload))
+                .catch(response => onFailure(response));
+        }
+    }
+
+    static analysePlagiarism(credentials, courseName, onSuccess, onFailure) {
+        if (credentials.username && credentials.password) {
+            axios
+                .post('analysePlagiarism', {}, {
                     baseURL: restUrl(),
                     auth: credentials,
                     params: {

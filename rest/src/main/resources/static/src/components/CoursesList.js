@@ -393,14 +393,42 @@ class Course extends React.Component {
                 );
             },
             response => ReactDOM.render(
-                <Notification message={`Course ${this.state.name} starting went bad.<br/>` + response}/>,
+                <Notification message={`Course ${this.state.name} starting went bad.<br/>${response}`}/>,
                 document.getElementById('notifications')
             )
         );
     }
 
     analysePlagiarism() {
-        //todo: impl
+        Api.analysePlagiarism(credentials(), this.state.name,
+            scheduledTasks => {
+                const tasks = Immutable.List(scheduledTasks).join(", ");
+
+                if (tasks) {
+                    ReactDOM.render(
+                        <Notification succeed
+                                      message={`Plagiarism analysis for course ${this.state.name}
+                                                has been scheduled for ${tasks}.`}/>,
+                        document.getElementById('notifications')
+                    );
+                } else {
+                    ReactDOM.render(
+                        <Notification info
+                                      message={`Plagiarism analysis for course hasn't been scheduled.
+                                                There aren't enough students solutions.`}/>,
+                        document.getElementById('notifications')
+                    );
+                }
+            },
+            response => {
+                ReactDOM.render(
+                    <Notification succeed
+                                  message={`Plagiarism analysis for course ${this.state.name}
+                                            hasn't been scheduled.<br/>${response}`}/>,
+                    document.getElementById('notifications')
+                );
+            }
+        );
     }
 
     downloadStats(eventKey) {
