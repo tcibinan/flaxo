@@ -2,10 +2,18 @@ import '../styles/style.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import axios from 'axios';
-import {Alert, Button, ControlLabel, FormControl, FormGroup, HelpBlock, Modal} from 'react-bootstrap';
-import {credentials, restUrl} from "../scripts";
-import {Api} from "../Api";
-import {Notification} from "./Notification";
+import {
+    Alert,
+    Button,
+    ControlLabel,
+    FormControl,
+    FormGroup,
+    HelpBlock,
+    Modal
+} from 'react-bootstrap';
+import {credentials, restUrl} from '../scripts';
+import {Api} from '../Api';
+import {Notification} from './Notification';
 
 export class Registration extends React.Component {
 

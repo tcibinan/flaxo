@@ -1,4 +1,4 @@
-import Cookies from "js-cookie";
+import Cookies from 'js-cookie';
 
 export function restUrl() {
     // placeholder will be replaced during webpacking

@@ -1,6 +1,6 @@
 import '../styles/style.css';
 import React from 'react';
-import {Label} from "react-bootstrap";
+import {Label} from 'react-bootstrap';
 
 export class Travis extends React.Component {
 

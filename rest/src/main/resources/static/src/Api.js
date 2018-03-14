@@ -1,9 +1,9 @@
-import {restUrl} from "./scripts";
+import {restUrl} from './scripts';
 import axios from 'axios';
 
 export class Api {
     static retrieveAccount(credentials, onSuccess, onFailure) {
-        if (credentials.username !== undefined && credentials.password !== undefined) {
+        if (credentials.username && credentials.password) {
             axios
                 .get('account', {
                     baseURL: restUrl(),
@@ -15,7 +15,7 @@ export class Api {
     }
 
     static retrieveCourses(credentials, nickname, onSuccess, onFailure) {
-        if (credentials.username !== undefined && credentials.password !== undefined) {
+        if (credentials.username && credentials.password) {
             axios
                 .get('allCourses', {
                     baseURL: restUrl(),
@@ -30,7 +30,7 @@ export class Api {
     }
 
     static createCourse(credentials, courseData, onSuccess, onFailure) {
-        if (credentials.username !== undefined && credentials.password !== undefined) {
+        if (credentials.username && credentials.password) {
             axios
                 .post('createCourse', {}, {
                     baseURL: restUrl(),
@@ -52,7 +52,7 @@ export class Api {
     }
 
     static retrieveCourseStatistics(credentials, username, courseName, onSuccess, onFailure) {
-        if (credentials.username !== undefined && credentials.password !== undefined) {
+        if (credentials.username && credentials.password) {
             axios
                 .get(`/${username}/${courseName}/statistics`, {
                     baseURL: restUrl(),
@@ -64,7 +64,7 @@ export class Api {
     }
 
     static startCourse(credentials, courseName, onSuccess, onFailure) {
-        if (credentials.username !== undefined && credentials.password !== undefined) {
+        if (credentials.username && credentials.password) {
             axios
                 .post('composeCourse', {}, {
                     baseURL: restUrl(),
@@ -79,7 +79,7 @@ export class Api {
     }
 
     static deleteCourse(credentials, courseName, onSuccess, onFailure) {
-        if (credentials.username !== undefined && credentials.password !== undefined) {
+        if (credentials.username && credentials.password) {
             axios
                 .post('deleteCourse', {}, {
                     baseURL: restUrl(),

@@ -1,13 +1,21 @@
 import '../styles/style.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Alert, Button, ControlLabel, FormControl, FormGroup, HelpBlock, Panel} from 'react-bootstrap';
+import {
+    Alert,
+    Button,
+    ControlLabel,
+    FormControl,
+    FormGroup,
+    HelpBlock,
+    Panel
+} from 'react-bootstrap';
 import {Api} from "../Api";
-import {Registration} from "./Registration";
+import {Registration} from './Registration';
 import {Github} from './Github';
-import {Travis} from "./Travis";
-import {Codacy} from "./Codacy";
-import {Notification} from "./Notification";
+import {Travis} from './Travis';
+import {Codacy} from './Codacy';
+import {Notification} from './Notification';
 
 export class Authentication extends React.Component {
 

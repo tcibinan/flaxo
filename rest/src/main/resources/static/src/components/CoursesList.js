@@ -16,11 +16,11 @@ import {
     Tab,
     Table,
     Tabs
-} from "react-bootstrap";
+} from 'react-bootstrap';
 import Immutable from 'immutable';
-import {credentials} from "../scripts";
-import {Api} from "../Api";
-import {Notification} from "./Notification";
+import {credentials} from '../scripts';
+import {Api} from '../Api';
+import {Notification} from './Notification';
 
 export class CoursesList extends React.Component {
 

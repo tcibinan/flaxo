@@ -4,8 +4,8 @@ import ReactDOM from 'react-dom';
 import {Label} from "react-bootstrap";
 import Immutable from 'immutable';
 import axios from 'axios';
-import {credentials, restUrl} from "../scripts.js";
-import {Notification} from "./Notification";
+import {credentials, restUrl} from '../scripts.js';
+import {Notification} from './Notification';
 
 export class Github extends React.Component {
 
