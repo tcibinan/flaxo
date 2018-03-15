@@ -6,9 +6,11 @@ import com.tcibinan.flaxo.model.DataService
 import com.tcibinan.flaxo.model.EntityAlreadyExistsException
 import com.tcibinan.flaxo.model.EntityNotFound
 import com.tcibinan.flaxo.model.IntegratedService
+import com.tcibinan.flaxo.model.ModelException
 import com.tcibinan.flaxo.model.data.Task
 import com.tcibinan.flaxo.model.data.User
 import com.tcibinan.flaxo.model.data.toViews
+import com.tcibinan.flaxo.moss.MossException
 import com.tcibinan.flaxo.moss.MossResult
 import com.tcibinan.flaxo.rest.api.ServerAnswer.*
 import com.tcibinan.flaxo.rest.service.environment.RepositoryEnvironmentService
@@ -18,6 +20,9 @@ import com.tcibinan.flaxo.rest.service.moss.MossTask
 import com.tcibinan.flaxo.rest.service.response.Response
 import com.tcibinan.flaxo.rest.service.response.ResponseService
 import com.tcibinan.flaxo.rest.service.travis.TravisService
+import com.tcibinan.flaxo.travis.Travis
+import com.tcibinan.flaxo.travis.TravisException
+import com.tcibinan.flaxo.travis.TravisUser
 import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.access.prepost.PreAuthorize
@@ -205,22 +210,43 @@ class ModelController @Autowired constructor(private val dataService: DataServic
                 ?: return responseService.response(NO_GITHUB_KEY)
 
         val githubUserId = user.githubId
-                ?: throw Exception("Github id for ${principal.name} is not set.")
+                ?: throw ModelException("Github id for ${user.nickname} is not set.")
 
-        logger.info("Activating git repository of the course ${principal.name}/$courseName for travis CI")
+        logger.info("Initialising travis client for ${user.nickname} user")
 
-        travisService.travis(retrieveTravisToken(user, githubUserId, githubToken))
-                .activate(githubUserId, course.name)
+        val travis = travisService.travis(retrieveTravisToken(user, githubUserId, githubToken))
+
+        logger.info("Retrieving travis user for ${user.nickname} user")
+
+        val travisUser: TravisUser = travis.getUser()
                 .getOrElseThrow { errorBody ->
-                    Exception("Travis activation of $githubUserId/${course.name} " +
+                    TravisException("Travis user retrieving for ${user.nickname} went bad due to: ${errorBody.string()}")
+                }
+
+        logger.info("Trigger travis user with id ${travisUser.id} sync for ${user.nickname} user")
+
+        travis.sync(travisUser.id)
+                ?.also { errorBody ->
+                    throw TravisException("Travis user ${travisUser.id} sync hasn't started due to: ${errorBody.string()}")
+                }
+
+        logger.info("Trying to ensure that current user's travis synchronisation has finished")
+
+        travis.waitUntilTravisSynchronisationWillBeFinishedFor(travisUser.id)
+
+        logger.info("Activating git repository of the course ${user.nickname}/$courseName for travis CI")
+
+        travis.activate(githubUserId, course.name)
+                .getOrElseThrow { errorBody ->
+                    TravisException("Travis activation of $githubUserId/${course.name} " +
                             "repository went bad due to: ${errorBody.string()}")
                 }
 
-        logger.info("Changing course ${principal.name}/$courseName status to running")
+        logger.info("Changing course ${user.nickname}/$courseName status to running")
 
         dataService.updateCourse(course.with(status = CourseStatus.RUNNING))
 
-        logger.info("Course ${principal.name}/$courseName has been successfully composed")
+        logger.info("Course ${user.nickname}/$courseName has been successfully composed")
 
         return responseService.response(COURSE_COMPOSED, courseName)
     }
@@ -231,7 +257,7 @@ class ModelController @Autowired constructor(private val dataService: DataServic
     ): String = retrieveUserWithTravisToken(user, githubUserId, githubToken)
             .credentials
             .travisToken
-            ?: throw Exception("Travis token wasn't found for ${user.nickname}.")
+            ?: throw TravisException("Travis token wasn't found for ${user.nickname}.")
 
     private fun retrieveUserWithTravisToken(user: User,
                                             githubUserId: String,
@@ -398,10 +424,10 @@ class ModelController @Autowired constructor(private val dataService: DataServic
         logger.info("Trying to start plagiarism analysis for ${principal.name}/$courseName")
 
         val user = dataService.getUser(principal.name)
-                ?: throw Exception("User with the required nickname ${principal.name} wasn't found.")
+                ?: throw ModelException("User with the required nickname ${principal.name} wasn't found.")
 
         val course = dataService.getCourse(courseName, user)
-                ?: throw Exception("Course $courseName wasn't found for user ${principal.name}.")
+                ?: throw ModelException("Course $courseName wasn't found for user ${principal.name}.")
 
         logger.info("Extracting moss tasks for ${user.nickname}/$courseName")
 
@@ -417,7 +443,7 @@ class ModelController @Autowired constructor(private val dataService: DataServic
                     val task: Task =
                             course.tasks
                                     .find { it.name == taskShortName }
-                                    ?: throw Exception("Moss task ${mossTask.taskName} aim course task $taskShortName " +
+                                    ?: throw MossException("Moss task ${mossTask.taskName} aim course task $taskShortName " +
                                             "wasn't found for course ${course.name}")
 
                     logger.info("Analysing ${mossTask.taskName} moss task")
@@ -445,6 +471,29 @@ class ModelController @Autowired constructor(private val dataService: DataServic
                 scheduledTasksNames.toString(),
                 payload = scheduledTasksNames
         )
+    }
+
+    private fun Travis.waitUntilTravisSynchronisationWillBeFinishedFor(travisUserId: String,
+                                                                       attemptsLimit: Int = 20,
+                                                                       retrievingDelay: Long = 3000
+    ) {
+        val observationDuration: (Int) -> Long = { attempt -> (attempt + 1) * retrievingDelay / 1000 }
+
+        repeat(attemptsLimit) { attempt ->
+            Thread.sleep(retrievingDelay)
+
+            val travisUser1 = getUser()
+                    .getOrElseThrow { errorBody ->
+                        TravisException("Travis user $travisUserId retrieving went bad due to: ${errorBody.string()}")
+                    }
+
+            if (travisUser1.isSyncing) logger.info("Travis user $travisUserId synchronisation hasn't finished " +
+                    "after ${observationDuration(attempt)} seconds.")
+            else return
+        }
+
+        throw TravisException("Travis synchronisation hasn't finished " +
+                "after ${observationDuration(attemptsLimit)} seconds.")
     }
 }
 

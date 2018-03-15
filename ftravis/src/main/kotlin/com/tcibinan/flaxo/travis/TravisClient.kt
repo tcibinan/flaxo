@@ -1,5 +1,6 @@
 package com.tcibinan.flaxo.travis
 
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -35,7 +36,7 @@ interface TravisClient {
 
     /**
      * Deactivates the [repositorySlug].
-     * s
+     *
      * Also requires travis authorization token.
      */
     @Headers("Travis-API-Version: 3")
@@ -43,6 +44,17 @@ interface TravisClient {
     fun deactivate(@Header("Authorization") authorization: String,
                    @Path("repository_slug") repositorySlug: String
     ): Call<TravisRepository>
+
+    /**
+     * Triggers sync for travis user by id [travisUserId].
+     *
+     * Also requires travis authorization token.
+     */
+    @Headers("Travis-API-Version: 3")
+    @POST("/user/{travis_user_id}/sync")
+    fun sync(@Header("Authorization") authorization: String,
+             @Path("travis_user_id") travisUserId: String
+    ): Call<ResponseBody>
 
 }
 

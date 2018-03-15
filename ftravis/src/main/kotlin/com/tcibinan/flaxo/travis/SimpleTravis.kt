@@ -31,6 +31,13 @@ class SimpleTravis(private val travisClient: TravisClient,
                         else Either.left(errorBody())
                     }
 
+    override fun sync(travisUserId: String): ResponseBody? =
+            travisClient.sync(authorization(), travisUserId).execute()
+                    .run {
+                        if (isSuccessful) null
+                        else errorBody()
+                    }
+
     private fun authorization() = "token $travisToken"
 
     private fun repositorySlug(userName: String, repositoryName: String) =

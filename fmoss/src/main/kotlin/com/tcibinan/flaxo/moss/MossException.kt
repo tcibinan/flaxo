@@ -3,5 +3,7 @@ package com.tcibinan.flaxo.moss
 /**
  * Base moss analysis exception.
  */
-class MossException(message: String, cause: Throwable)
-    : Throwable(message, cause)
+class MossException: Throwable {
+    constructor(message: String) : super(message)
+    constructor(message: String, cause: Throwable) : super(message, cause)
+}
