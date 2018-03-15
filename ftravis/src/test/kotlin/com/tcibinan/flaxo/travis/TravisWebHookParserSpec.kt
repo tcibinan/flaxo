@@ -50,7 +50,7 @@ object TravisWebHookParserSpec : Spek({
 
         on("parsing web hook") {
             val build = parseTravisWebHook(webHookBody.reader())
-                    ?: throw Exception("Travis web hook wasn't parsed properly.")
+                    ?: throw TravisException("Travis web hook wasn't parsed properly.")
 
             it("should get web hook type") {
                 assertTrue { build is TravisPullRequestBuild }
@@ -72,7 +72,7 @@ object TravisWebHookParserSpec : Spek({
         on("parsing pull request web hook") {
             val build = parseTravisWebHook(webHookBody.reader())
                     as TravisPullRequestBuild?
-                    ?: throw Exception("Travis pull request web hook wasn't parsed properly.")
+                    ?: throw TravisException("Travis pull request web hook wasn't parsed properly.")
 
             it("should get pull request github number") {
                 assertTrue { build.number == pullRequestNumber }

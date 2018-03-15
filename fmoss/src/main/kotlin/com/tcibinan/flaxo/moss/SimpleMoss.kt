@@ -1,6 +1,7 @@
 package com.tcibinan.flaxo.moss
 
 import com.tcibinan.flaxo.core.env.EnvironmentFile
+import io.vavr.kotlin.Try
 import it.zielke.moji.SocketClient
 import org.jsoup.Jsoup
 
@@ -26,14 +27,14 @@ class SimpleMoss(override val userId: String,
             SimpleMoss(userId, language, client, bases, solutions)
 
     override fun analyse(): MossResult {
-        try {
+        Try {
             client.run()
 
             bases.forEach { loadBaseFile(it) }
             solutions.forEach { loadFile(it) }
 
             client.sendQuery()
-        } finally {
+        }.andFinally {
             // Moji's socket client does not implement AutoCloseable
             client.close()
         }
@@ -44,14 +45,14 @@ class SimpleMoss(override val userId: String,
     private fun loadBaseFile(file: EnvironmentFile) = loadFile(file, isBase = true)
 
     private fun loadFile(environmentFile: EnvironmentFile, isBase: Boolean = false) =
-        environmentFile.use {
-            try {
-                client.uploadFile(it.file(), isBase)
-            } catch (e: Throwable) {
-                throw MossException("Can't load ${if (isBase) "base" else "solutions"} " +
-                        "file ${environmentFile.name()} to moss server", e)
+            environmentFile.use {
+                Try {
+                    client.uploadFile(it.file(), isBase)
+                }.onFailure { e ->
+                    throw MossException("Can't load ${if (isBase) "base" else "solutions"} " +
+                            "file ${environmentFile.name()} to moss server", e)
+                }
             }
-        }
 
 }
 

@@ -1,6 +1,5 @@
 package com.tcibinan.flaxo.model.data
 
-import com.tcibinan.flaxo.model.EntityFieldIsAbsent
 import com.tcibinan.flaxo.model.entity.StudentTaskEntity
 
 /**
@@ -9,9 +8,9 @@ import com.tcibinan.flaxo.model.entity.StudentTaskEntity
 data class StudentTask(private val entity: StudentTaskEntity)
     : DataObject<StudentTaskEntity> {
 
-    val id: Long by lazy { entity.studentTaskId ?: throw EntityFieldIsAbsent("student task", "id") }
-    val task: Task by lazy { Task(entity.task ?: throw EntityFieldIsAbsent("student task", "task")) }
-    val student: Student by lazy { Student(entity.student ?: throw EntityFieldIsAbsent("student task", "student")) }
+    val id: Long by lazy { entity.studentTaskId ?: missing("id") }
+    val task: Task by lazy { Task(entity.task ?: missing("task")) }
+    val student: Student by lazy { Student(entity.student ?: missing("student")) }
     val anyBuilds: Boolean by lazy { entity.anyBuilds }
     val buildSucceed: Boolean by lazy { entity.buildSucceed }
 

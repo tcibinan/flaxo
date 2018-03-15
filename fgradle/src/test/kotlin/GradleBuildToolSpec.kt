@@ -8,6 +8,7 @@ import com.tcibinan.flaxo.core.language.JavaLang
 import com.tcibinan.flaxo.gradle.GradleBuildTool
 import com.tcibinan.flaxo.gradle.GradleDependency
 import com.tcibinan.flaxo.gradle.GradleDependencyType
+import com.tcibinan.flaxo.gradle.GradleException
 import com.tcibinan.flaxo.gradle.GradlePlugin
 import com.tcibinan.flaxo.gradle.javaPlugin
 import io.kotlintest.matchers.shouldBe
@@ -41,7 +42,7 @@ object GradleBuildToolSpec : SubjectSpek<BuildTool>({
             val environment = buildTool.getEnvironment()
             val buildGradle = environment.getFiles()
                     .find { it.name() == "build.gradle" }
-                    ?: throw Exception("build.gradle wasn't found")
+                    ?: throw GradleException("build.gradle wasn't found")
 
             it("should have build.gradle with all passed plugins") {
                 buildGradle.content() shouldHave substring("plugins {")
@@ -62,7 +63,7 @@ object GradleBuildToolSpec : SubjectSpek<BuildTool>({
             val environment = buildTool.getEnvironment()
             val buildGradle = environment.getFiles()
                     .find { it.name() == "build.gradle" }
-                    ?: throw Exception("build.gradle wasn't found")
+                    ?: throw GradleException("build.gradle wasn't found")
 
             it("should have build.gradle with build.gradle containing single dependency") {
                 buildGradle.shouldHaveName(firstDependency, secondDependency)
@@ -81,7 +82,7 @@ object GradleBuildToolSpec : SubjectSpek<BuildTool>({
             val environment = buildTool.getEnvironment()
             val buildGradle = environment.getFiles()
                     .find { it.name() == "build.gradle" }
-                    ?: throw Exception("build.gradle wasn't found")
+                    ?: throw GradleException("build.gradle wasn't found")
 
             it("should contain all dependencies") {
                 buildGradle.shouldHaveDependency(testingDependency, compilingDependency)

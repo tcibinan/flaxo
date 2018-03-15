@@ -62,18 +62,15 @@ class Github(private val credentials: String,
         repository.loadFile(bytes, "feat: Add $path", path, branch.name)
     }
 
-    override fun branches(nickname: String, repositoryName: String): List<Branch> =
-            github.getUser(nickname)
-                    .getRepository(repositoryName)
-                    .branches
-                    .values
-                    .map { branch ->
-                        GithubBranch(
-                                branch.name,
-                                GithubRepository(branch.owner.name, branch.owner.ownerName, this@Github),
-                                this@Github
-                        )
-                    }
+    override fun branches(nickname: String, repositoryName: String): List<Branch> = let { git ->
+        github.getUser(nickname)
+                .getRepository(repositoryName)
+                .branches
+                .values
+                .map { branch ->
+                    GithubBranch(branch.name, GithubRepository(branch.owner.name, branch.owner.ownerName, git), git)
+                }
+    }
 
     override fun files(nickname: String, repositoryName: String, branchName: String): List<EnvironmentFile> =
             github.getUser(nickname)
@@ -90,7 +87,7 @@ class Github(private val credentials: String,
 
     override fun nickname(): String =
             github.myself.login
-                    ?: throw NullPointerException("Associated user nickname not found for the current github client")
+                    ?: throw GithubException("Associated user nickname not found for the current github client")
 
     private fun repositoryRef(repositoryName: String) = "${nickname()}/$repositoryName"
 
@@ -107,5 +104,6 @@ class Github(private val credentials: String,
     override fun getPullRequest(repositoryName: String, pullRequestNumber: Int): PullRequest =
             ghRepository(repositoryName).getPullRequest(pullRequestNumber)
                     ?.let { GithubPullRequest(it) }
-                    ?: throw Exception("Pull request $pullRequestNumber wasn't found for repositoryName ${nickname()}/$repositoryName.")
+                    ?: throw GithubException("Pull request $pullRequestNumber wasn't found " +
+                            "for repositoryName ${nickname()}/$repositoryName.")
 }

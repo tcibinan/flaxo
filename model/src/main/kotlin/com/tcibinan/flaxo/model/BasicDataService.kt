@@ -102,7 +102,7 @@ class BasicDataService(private val userRepository: UserRepository,
 
     override fun getCourses(userNickname: String): Set<Course> {
         val user = getUser(userNickname)
-                ?: throw ModelException("Could not find user with $userNickname nickname")
+                ?: userNotFound(userNickname)
 
         return courseRepository.findByUser(user.toEntity()).toDtos()
     }
@@ -145,23 +145,24 @@ class BasicDataService(private val userRepository: UserRepository,
     override fun addToken(userNickname: String,
                           service: IntegratedService,
                           accessToken: String
-    ): User {
-        val user: User? = getUser(userNickname)
-
-        user?.credentials
-                ?.toEntity()
-                ?.withServiceToken(service, accessToken)
-                ?.also { credentialsRepository.save(it) }
-                ?: throw ModelException("Could not find user with $userNickname nickname")
-
-        return user
-    }
+    ): User =
+            getUser(userNickname)
+                    ?.apply {
+                        credentials.toEntity()
+                                .withServiceToken(service, accessToken)
+                                .also { credentialsRepository.save(it) }
+                    }
+                    ?: userNotFound(userNickname)
 
     override fun addGithubId(userNickname: String, githubId: String): User {
-        val user = getUser(userNickname)
-                ?: throw ModelException("Could not find user with $userNickname nickname")
+        val user: User = getUser(userNickname)
+                ?: userNotFound(userNickname)
 
         return userRepository.save(user.with(githubId = githubId).toEntity()).toDto()
+    }
+
+    private fun userNotFound(userNickname: String): Nothing {
+        throw ModelException("Could not find user with $userNickname nickname")
     }
 
     override fun updateStudentTask(updatedStudentTask: StudentTask): StudentTask =

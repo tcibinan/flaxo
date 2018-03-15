@@ -1,6 +1,5 @@
 package com.tcibinan.flaxo.model.data
 
-import com.tcibinan.flaxo.model.EntityFieldIsAbsent
 import com.tcibinan.flaxo.model.entity.CredentialsEntity
 
 /**
@@ -10,9 +9,9 @@ data class Credentials(private val entity: CredentialsEntity)
     : DataObject<CredentialsEntity> {
 
     val id: Long
-            by lazy { entity.credentialsId ?: throw EntityFieldIsAbsent("credentials", "id") }
+            by lazy { entity.credentialsId ?: missing("id") }
     val password: String
-            by lazy { entity.password ?: throw EntityFieldIsAbsent("credentials", "password") }
+            by lazy { entity.password ?: missing("password") }
     val githubToken: String?
             by lazy { entity.githubToken }
     val travisToken: String?

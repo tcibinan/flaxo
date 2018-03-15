@@ -4,6 +4,7 @@ import com.tcibinan.flaxo.model.DataService
 import com.tcibinan.flaxo.model.data.StudentTask
 import com.tcibinan.flaxo.rest.service.git.GitService
 import com.tcibinan.flaxo.rest.service.travis.TravisService
+import com.tcibinan.flaxo.travis.TravisException
 import com.tcibinan.flaxo.travis.build.BuildStatus
 import com.tcibinan.flaxo.travis.build.TravisBuild
 import com.tcibinan.flaxo.travis.build.TravisPullRequestBuild
@@ -75,14 +76,14 @@ class TravisController @Autowired constructor(private val travisService: TravisS
 
     private fun getStudentTaskBy(hook: TravisPullRequestBuild): StudentTask {
         val user = dataService.getUserByGithubId(hook.repositoryOwner)
-                ?: throw Exception("User with the required nickname ${hook.repositoryOwner} wasn't found.")
+                ?: throw TravisException("User with the required nickname ${hook.repositoryOwner} wasn't found.")
 
         val githubCredentials = user.credentials.githubToken
-                ?: throw Exception("User ${user.nickname} doesn't have github credentials " +
+                ?: throw TravisException("User ${user.nickname} doesn't have github credentials " +
                         "to get pull request information.")
 
         val course = dataService.getCourse(hook.repositoryName, user)
-                ?: throw Exception("Course with name ${hook.repositoryName} wasn't found " +
+                ?: throw TravisException("Course with name ${hook.repositoryName} wasn't found " +
                         "for user ${user.nickname}.")
 
         val pullRequest = gitService.with(githubCredentials)
@@ -90,12 +91,12 @@ class TravisController @Autowired constructor(private val travisService: TravisS
 
         val student = course.students
                 .find { it.nickname == pullRequest.authorId }
-                ?: throw Exception("Student ${pullRequest.authorId} wasn't found " +
+                ?: throw TravisException("Student ${pullRequest.authorId} wasn't found " +
                         "in course ${hook.repositoryOwner}/${hook.repositoryName}.")
 
         return student.studentTasks
                 .find { it.task.name == hook.branch }
-                ?: throw Exception("Student task ${hook.branch} wasn't found for student ${student.nickname} " +
+                ?: throw TravisException("Student task ${hook.branch} wasn't found for student ${student.nickname} " +
                         "in course ${hook.repositoryOwner}/${hook.repositoryName}.")
     }
 }

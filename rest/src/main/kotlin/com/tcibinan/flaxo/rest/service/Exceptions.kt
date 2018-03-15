@@ -32,3 +32,9 @@ class IncompatibleTestingFramework(testingFramework: TestingFramework, testingLa
  */
 class IncompatibleLanguage(language: Language, testingLanguage: Language)
     : Throwable("$language doesn't support $testingLanguage as language for tests")
+
+/**
+ * Absent environment property exception.
+ */
+class AbsentEnvironmentPropertyException(property: String)
+    : Throwable("$property is not set in the current environment.")

@@ -2,11 +2,13 @@ package com.tcibinan.flaxo.rest.service.moss
 
 import com.tcibinan.flaxo.core.env.EnvironmentFile
 import com.tcibinan.flaxo.core.language.Language
+import com.tcibinan.flaxo.model.ModelException
 import com.tcibinan.flaxo.model.data.Course
 import com.tcibinan.flaxo.moss.Moss
 import com.tcibinan.flaxo.moss.MossResult
 import com.tcibinan.flaxo.moss.SimpleMoss
 import com.tcibinan.flaxo.moss.SimpleMossResult
+import com.tcibinan.flaxo.rest.service.UnsupportedLanguage
 import com.tcibinan.flaxo.rest.service.git.GitService
 import it.zielke.moji.SocketClient
 import org.jsoup.Jsoup
@@ -25,15 +27,15 @@ class SimpleMossService(private val userId: String,
         val user = course.user
 
         val githubToken = user.credentials.githubToken
-                ?: throw Exception("Github credentials wasn't found for user ${user.nickname}.")
+                ?: throw ModelException("Github credentials wasn't found for user ${user.nickname}.")
 
         val userGithubId = user.githubId
-                ?: throw Exception("Github id for user ${user.nickname} wasn't found.")
+                ?: throw ModelException("Github id for user ${user.nickname} wasn't found.")
 
         val git = gitService.with(githubToken)
 
         val language = supportedLanguages[course.language]
-                ?: throw Exception("Language ${course.language} is not supported for analysis yet.")
+                ?: throw UnsupportedLanguage("Language ${course.language} is not supported for analysis yet.")
 
 
         val tasksSolutions = course.students

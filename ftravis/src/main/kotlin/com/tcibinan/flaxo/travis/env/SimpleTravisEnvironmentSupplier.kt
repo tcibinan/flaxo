@@ -8,6 +8,8 @@ import com.tcibinan.flaxo.core.framework.TestingFramework
 import com.tcibinan.flaxo.core.language.JavaLang
 import com.tcibinan.flaxo.core.language.KotlinLang
 import com.tcibinan.flaxo.core.language.Language
+import com.tcibinan.flaxo.travis.TravisException
+import com.tcibinan.flaxo.travis.UnsupportedLanguageException
 
 /**
  * Travis environment supplier implementation class.
@@ -47,12 +49,12 @@ class SimpleTravisEnvironmentSupplier(private val language: Language,
             ))
         } else {
             if (language !in jvmLanguages) {
-                throw TravisEnvironmentSupplier.UnsupportedLanguage(language)
+                throw UnsupportedLanguageException(language)
             }
             if (testingLanguage !in jvmLanguages) {
-                throw TravisEnvironmentSupplier.UnsupportedLanguage(testingLanguage)
+                throw UnsupportedLanguageException(testingLanguage)
             }
-            throw RuntimeException("Travis environment can't be created with " +
+            throw TravisException("Travis environment can't be created with " +
                     "such an environment: $language:$testingLanguage:$framework")
         }
     }

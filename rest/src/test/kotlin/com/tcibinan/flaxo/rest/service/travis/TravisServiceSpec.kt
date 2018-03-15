@@ -2,6 +2,8 @@ package com.tcibinan.flaxo.rest.service.travis
 
 import com.tcibinan.flaxo.rest.TestApplication
 import com.tcibinan.flaxo.rest.TravisConfiguration
+import com.tcibinan.flaxo.rest.service.AbsentEnvironmentPropertyException
+import com.tcibinan.flaxo.travis.TravisException
 import io.kotlintest.matchers.shouldBe
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
@@ -16,13 +18,13 @@ object TravisServiceSpec : SubjectSpek<TravisService>({
             TravisConfiguration::class.java
     )
     val githubUsername = context.environment.getProperty("GITHUB_TEST_NAME")
-            ?: throw RuntimeException("GITHUB_TEST_NAME is not set in the current environment.")
+            ?: throw AbsentEnvironmentPropertyException("GITHUB_TEST_NAME")
     val githubToken = context.environment.getProperty("GITHUB_TEST_TOKEN")
-            ?: throw RuntimeException("GITHUB_TEST_TOKEN is not set in the current environment.")
+            ?: throw AbsentEnvironmentPropertyException("GITHUB_TEST_TOKEN")
     val githubRepositoryName = context.environment.getProperty("GITHUB_REPOSITORY_ID")
-            ?: throw RuntimeException("GITHUB_REPOSITORY_ID is not set in the current environment.")
+            ?: throw AbsentEnvironmentPropertyException("GITHUB_REPOSITORY_ID")
     val travisToken = context.environment.getProperty("TRAVIS_TEST_TOKEN")
-            ?: throw RuntimeException("TRAVIS_TEST_TOKEN is not set in the current environment.")
+            ?: throw AbsentEnvironmentPropertyException("TRAVIS_TEST_TOKEN")
 
     subject { context.getBean("travisService", TravisService::class.java) }
 
@@ -36,7 +38,7 @@ object TravisServiceSpec : SubjectSpek<TravisService>({
             it("should return valid token") {
                 val user = travis.getUser()
                         .getOrElseThrow { errorBody ->
-                            Exception("Travis user wasn't received due to: ${errorBody.string()}")
+                            TravisException("Travis user wasn't received due to: ${errorBody.string()}")
                         }
 
                 user.login shouldBe githubUsername
@@ -50,7 +52,7 @@ object TravisServiceSpec : SubjectSpek<TravisService>({
         on("deactivating a repository") {
             val repository = travis.deactivate(githubUsername, githubRepositoryName)
                     .getOrElseThrow { errorBody ->
-                        Exception("Travis repository wasn't received due to: ${errorBody.string()}")
+                        TravisException("Travis repository wasn't received due to: ${errorBody.string()}")
                     }
 
             it("should set repository to inactive status") {
@@ -61,7 +63,7 @@ object TravisServiceSpec : SubjectSpek<TravisService>({
         on("activating a repository") {
             val repository = travis.activate(githubUsername, githubRepositoryName)
                     .getOrElseThrow { errorBody ->
-                        Exception("Travis user wasn't received due to: ${errorBody.string()}")
+                        TravisException("Travis user wasn't received due to: ${errorBody.string()}")
                     }
 
             it("should set repository to active status") {
@@ -70,4 +72,3 @@ object TravisServiceSpec : SubjectSpek<TravisService>({
         }
     }
 })
-

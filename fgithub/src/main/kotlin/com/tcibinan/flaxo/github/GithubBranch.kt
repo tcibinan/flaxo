@@ -14,11 +14,11 @@ data class GithubBranch(override val name: String,
                         private val git: Git
 ) : Branch {
 
-    override fun load(file: EnvironmentFile): Branch = also {
+    override fun load(file: EnvironmentFile): Branch = also { branch ->
         when (file) {
             is BinaryEnvironmentFile
-            -> git.load(repository, this@GithubBranch, file.name(), file.binaryContent())
-            else -> git.load(repository, this@GithubBranch, file.name(), file.content())
+            -> git.load(repository, branch, file.name(), file.binaryContent())
+            else -> git.load(repository, branch, file.name(), file.content())
         }
     }
 

@@ -1,7 +1,6 @@
 package com.tcibinan.flaxo.model.data
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.tcibinan.flaxo.model.EntityFieldIsAbsent
 import com.tcibinan.flaxo.model.entity.UserEntity
 
 /**
@@ -12,13 +11,13 @@ data class User(private val entity: UserEntity)
     : DataObject<UserEntity> {
 
     val id: Long
-            by lazy { entity.userId ?: throw EntityFieldIsAbsent("user", "id") }
+            by lazy { entity.userId ?: missing("id") }
     val githubId: String?
             by lazy { entity.githubId }
     val nickname: String
-            by lazy { entity.nickname ?: throw EntityFieldIsAbsent("user", "nickname") }
+            by lazy { entity.nickname ?: missing("nickname") }
     val credentials: Credentials
-            by lazy { Credentials(entity.credentials ?: throw EntityFieldIsAbsent("user", "credentials")) }
+            by lazy { Credentials(entity.credentials ?: missing("credentials")) }
 
     override fun toEntity() = entity
 

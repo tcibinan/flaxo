@@ -13,7 +13,7 @@ import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.subject.SubjectSpek
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
-class DataServiceTest : SubjectSpek<DataService>({
+class DataServiceSpec : SubjectSpek<DataService>({
     val nickname = "nickname"
     val anotherNickname = "anotherNickname"
     val password = "password"

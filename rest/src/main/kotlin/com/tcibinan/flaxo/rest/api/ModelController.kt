@@ -58,21 +58,21 @@ class ModelController @Autowired constructor(private val dataService: DataServic
      * @param password Of the creating user.
      */
     @PostMapping("/register")
-    fun register(@RequestParam("nickname") nickname: String,
-                 @RequestParam("password") password: String
+    fun register(@RequestParam nickname: String,
+                 @RequestParam password: String
     ): Response {
         logger.info("Trying to register user $nickname")
+
         return try {
             dataService.addUser(nickname, password)
+
             logger.info("User $nickname was registered successfully")
+
             responseService.response(USER_CREATED, nickname)
         } catch (e: EntityAlreadyExistsException) {
             logger.info("Trying to create user with $nickname nickname that is already registered")
+
             responseService.response(USER_ALREADY_EXISTS, "User $nickname")
-        } catch (e: Throwable) {
-            logger.error("Unexpected server error while registering user " +
-                    "with $nickname nickname. Cause: " + e.message)
-            responseService.response(SERVER_ERROR, e.message)
         }
     }
 
@@ -277,7 +277,7 @@ class ModelController @Autowired constructor(private val dataService: DataServic
      */
     @GetMapping("course")
     @PreAuthorize("hasAuthority('USER')")
-    fun course(@RequestParam("courseName") courseName: String,
+    fun course(@RequestParam courseName: String,
                principal: Principal
     ): Response {
         val user = dataService.getUser(principal.name)
@@ -296,7 +296,7 @@ class ModelController @Autowired constructor(private val dataService: DataServic
      */
     @GetMapping("allCourses")
     @PreAuthorize("hasAuthority('USER')")
-    fun allCourses(@RequestParam("nickname") nickname: String,
+    fun allCourses(@RequestParam nickname: String,
                    principal: Principal
     ): Response =
             if (principal.name == nickname) {

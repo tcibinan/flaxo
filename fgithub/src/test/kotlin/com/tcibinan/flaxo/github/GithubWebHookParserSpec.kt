@@ -34,7 +34,7 @@ object GithubWebHookParserSpec : Spek({
 
         on("parsing web hook") {
             val payload = parseGithubEvent(webHookBody.reader(), "pull_request")
-                    ?: throw Exception("Github web hook wasn't parsed properly.")
+                    ?: throw GithubException("Github web hook wasn't parsed properly.")
 
             it("should get web hook type") {
                 assertTrue { payload is PullRequest }
@@ -44,7 +44,7 @@ object GithubWebHookParserSpec : Spek({
         on("parsing pull request web hook") {
             val payload = parseGithubEvent(webHookBody.reader(), "pull_request")
                     as GithubPullRequest?
-                    ?: throw Exception("Github web hook wasn't parsed properly.")
+                    ?: throw GithubException("Github web hook wasn't parsed properly.")
 
             it("should get pull request state") {
                 assertTrue { payload.isOpened }

@@ -1,5 +1,7 @@
 package com.tcibinan.flaxo.model.data
 
+import com.tcibinan.flaxo.model.EntityFieldIsAbsent
+
 /**
  * Data object interface.
  */
@@ -16,6 +18,10 @@ interface DataObject<out ENTITY> {
     fun view(): Any = object {
         val info: String = "View is not specified for ${this::class.simpleName} data object"
     }
+}
+
+fun DataObject<*>.missing(field: String): Nothing {
+    throw EntityFieldIsAbsent(this::class, field)
 }
 
 fun Set<DataObject<*>>.toViews(): List<Any> = map { it.view() }

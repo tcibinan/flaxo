@@ -25,7 +25,7 @@ class CmdExecutor private constructor(private val dir: File?) {
     private fun completed(process: Process): List<String> {
         return when (process.waitFor()) {
             0 -> process.inputStream.toList()
-            else -> throw Exception(
+            else -> throw CommandLineException(
                     process.errorStream.toList()
                             .joinToString("\n", "\n\n")
             )

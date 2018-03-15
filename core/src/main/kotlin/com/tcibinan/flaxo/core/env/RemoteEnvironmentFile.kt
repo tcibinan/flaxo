@@ -1,7 +1,7 @@
 package com.tcibinan.flaxo.core.env
 
+import io.vavr.kotlin.Try
 import java.io.File
-import java.io.FileNotFoundException
 import java.io.InputStream
 import java.nio.file.Files
 import java.nio.file.Path
@@ -37,23 +37,22 @@ class RemoteEnvironmentFile(private val path: String,
         val rootDirectory: Path = Files.createTempDirectory("moss-analysis")
                 .apply { toFile().deleteOnExit() }
 
-        try {
+        return Try {
             val fileName = name().split("/").last()
 
-            this.file =
-                    Paths.get(name().replace(fileName, ""))
-                            .let { rootDirectory.resolve(it) }
-                            .let { Files.createDirectories(it) }
-                            .resolve(fileName)
-                            .also { Files.copy(inputStream, it) }
-                            .toFile()
-
-            return this.file
-                    ?: throw FileNotFoundException("File ${name()} was not loaded properly")
-        } catch (e: Throwable) {
+            Paths.get(name().replace(fileName, ""))
+                    .let { rootDirectory.resolve(it) }
+                    .let { Files.createDirectories(it) }
+                    .resolve(fileName)
+                    .also { Files.copy(inputStream, it) }
+                    .toFile()
+                    .also {
+                        this.file = it
+                    }
+        }.onFailure { e ->
             rootDirectory.toFile().deleteRecursively()
             throw RemoteFileRetrievingException(path, e)
-        }
+        }.get()
     }
 
     override fun close() {

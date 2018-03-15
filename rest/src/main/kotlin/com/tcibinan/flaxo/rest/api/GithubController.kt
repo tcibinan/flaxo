@@ -2,6 +2,7 @@ package com.tcibinan.flaxo.rest.api
 
 import com.tcibinan.flaxo.git.GitPayload
 import com.tcibinan.flaxo.git.PullRequest
+import com.tcibinan.flaxo.github.GithubException
 import com.tcibinan.flaxo.model.DataService
 import com.tcibinan.flaxo.model.IntegratedService
 import com.tcibinan.flaxo.rest.api.ServerAnswer.MANUAL_REDIRECT
@@ -81,13 +82,13 @@ class GithubController(
                 .find { it.startsWith("access_token") }
                 ?.split("=")
                 ?.last()
-                ?: throw Exception("Access token was not received from github.")
+                ?: throw GithubException("Access token was not received from github.")
 
         val nickname = synchronized(states) {
             val key = states.filterValues { it == state }
                     .apply {
                         if (size > 1)
-                            throw Exception("Two users have the same random state for github auth.")
+                            throw GithubException("Two users have the same random state for github auth.")
                     }
                     .keys.first()
 
@@ -120,10 +121,10 @@ class GithubController(
                             "to ${hook.receiverId}/${hook.receiverRepositoryName}")
 
                     val user = dataService.getUserByGithubId(hook.receiverId)
-                            ?: throw Exception("User with githubId ${hook.receiverId} wasn't found in database.")
+                            ?: throw GithubException("User with githubId ${hook.receiverId} wasn't found in database.")
 
                     val course = dataService.getCourse(hook.receiverRepositoryName, user)
-                            ?: throw Exception("Course ${hook.receiverRepositoryName} wasn't found for user ${user.nickname}.")
+                            ?: throw GithubException("Course ${hook.receiverRepositoryName} wasn't found for user ${user.nickname}.")
 
                     val student = course.students.find { it.nickname == hook.authorId }
                             ?: dataService.addStudent(hook.authorId, course)

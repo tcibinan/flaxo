@@ -1,6 +1,5 @@
 package com.tcibinan.flaxo.model.data
 
-import com.tcibinan.flaxo.model.EntityFieldIsAbsent
 import com.tcibinan.flaxo.model.entity.CourseEntity
 import com.tcibinan.flaxo.model.entity.toDtos
 
@@ -11,19 +10,19 @@ data class Course(private val entity: CourseEntity)
     : DataObject<CourseEntity> {
 
     val id: Long
-            by lazy { entity.courseId ?: throw EntityFieldIsAbsent("course", "id") }
+            by lazy { entity.courseId ?: missing("id") }
     val name: String
-            by lazy { entity.name ?: throw EntityFieldIsAbsent("course", "name") }
+            by lazy { entity.name ?: missing("name") }
     val language: String
-            by lazy { entity.language ?: throw EntityFieldIsAbsent("course", "language") }
+            by lazy { entity.language ?: missing("language") }
     val testingLanguage: String
-            by lazy { entity.testingLanguage ?: throw EntityFieldIsAbsent("course", "testingLanguage") }
+            by lazy { entity.testingLanguage ?: missing("testingLanguage") }
     val testingFramework: String
-            by lazy { entity.testingFramework ?: throw EntityFieldIsAbsent("course", "testingFramework") }
+            by lazy { entity.testingFramework ?: missing("testingFramework") }
     val status: String
-            by lazy { entity.status ?: throw EntityFieldIsAbsent("course", "status") }
+            by lazy { entity.status ?: missing("status") }
     val user: User
-            by lazy { User(entity.user ?: throw EntityFieldIsAbsent("course", "user")) }
+            by lazy { User(entity.user ?: missing("user")) }
     val students: Set<Student>
             by lazy { entity.students.toDtos() }
     val tasks: Set<Task>
