@@ -1,8 +1,8 @@
-import '../styles/style.css';
+import '../../styles/style.css';
 import React from 'react';
 import {Label} from 'react-bootstrap';
 
-export class Travis extends React.Component {
+export class Codacy extends React.Component {
 
     constructor(props) {
         super(props);
@@ -12,7 +12,7 @@ export class Travis extends React.Component {
 
     render() {
         return this.state.isAuthorized
-            ? <Label bsStyle="primary">Travis</Label>
-            : <Label>Travis</Label>;
+            ? <Label bsStyle="primary">Codacy</Label>
+            : <Label>Codacy</Label>;
     }
 }

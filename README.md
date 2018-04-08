@@ -80,13 +80,15 @@ To run the application you should set several system variables.
 | Variable | Description |
 |---|---|
 | HOME_PAGE | Home page address of your application. |
+| REST_URL | Basic rest query url. *Most likely:* `$HOME_PAGE/rest`. |
 | GITHUB_ID | Github OAuth App id. |
 | GITHUB_SECRET | Github OAuth App secret. |
 | GITHUB_WEB_HOOK_URL | Github web hook redirect absolute url. |
 | TRAVIS_WEB_HOOK_URL | Travis web hook redirect absolute url. |
 | MOSS_USER_ID | Moss system userid. It can be received from the email or you can find someone else's one on the web and use for you own risk. |
 
-Integration tests also requires a few system variables.
+Integration tests also requires a few system variables. **todo:** Replace integration tests
+with components tests where outer services clients are just mocks.
 
 | Variable | Description |
 |---|---|
@@ -94,6 +96,13 @@ Integration tests also requires a few system variables.
 | GITHUB_TEST_TOKEN | Generated account access token with `repo`, `delete_repo` scopes. The access token can be generated in github account developer settings. |
 | GITHUB_REPOSITORY_ID | Repository name to perform travis tests with. |
 | TRAVIS_TEST_TOKEN | Generated using travis cli client access token. |
+
+## Webpack
+
+Client-side of the system uses webpack for creating bundle of the user interface.
+It is necessary to have webpack installed locally. *Notice:* It is hardcoded that `node_modules` folder lies
+right in the root folder of the `client` module. **todo:** Extract `node_modules` folder
+location into application settings.
 
 ## Travis integration
 
@@ -140,7 +149,8 @@ and a list of possible travis cli commands should be listed.
 
 ## TODO-list
 
-- **todo:** Simple user interface where a teacher could register, authorize, authorize using github, create a course, start course plagiarism analysis, get course stats.
+- **\[done\]** Simple user interface where a teacher could register, authorize, authorize
+ using github, create a course, start course plagiarism analysis, get course stats.
 - **todo:** The ability to init a flaxo course from the existing repository.
 - **todo:** Transparent api to get course statistics in json, xls formats.
 

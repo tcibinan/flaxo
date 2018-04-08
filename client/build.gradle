@@ -1,0 +1,30 @@
+task copyHtml(type: Copy) {
+    from "src/main/html"
+    into "$buildDir/dist"
+}
+
+task copyStyles(type: Copy) {
+    from "src/main/styles"
+    into "$buildDir/dist/styles"
+}
+
+task copyOtherResources(type: Copy) {
+    from "src/main/resources"
+    into "$buildDir/dist"
+}
+
+task webpack(type: Exec) {
+    dependsOn "copyHtml"
+    dependsOn "copyStyles"
+    dependsOn "copyOtherResources"
+
+    inputs.dir("src/main/html")
+    inputs.dir("src/main/styles")
+    inputs.dir("src/main/resources")
+    outputs.dir("$buildDir/dist")
+
+    commandLine "$projectDir/node_modules/.bin/webpack",
+            "--env.REST_URL=${System.env.REST_URL}",
+            "$projectDir/src/main/js/index.js",
+            "-o", "$buildDir/dist/flaxo.bundle.js"
+}

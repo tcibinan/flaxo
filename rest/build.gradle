@@ -30,3 +30,22 @@ dependencies {
     // apache collections
     compile "org.apache.commons:commons-collections4:4.1"
 }
+
+def anotherSubModuleDir = { moduleName ->
+    project.parent.getChildProjects().find {it.key == moduleName}.value.projectDir
+}
+
+task assembleClient(type: Copy) {
+    dependsOn ":client:webpack"
+
+    def clientBundleDir = "${anotherSubModuleDir("client")}/build/dist"
+    def webStaticFilesDir = "$projectDir/src/main/resources/static"
+
+    inputs.dir(clientBundleDir)
+    outputs.dir(webStaticFilesDir)
+
+    from clientBundleDir
+    into webStaticFilesDir
+}
+
+bootRun.dependsOn assembleClient

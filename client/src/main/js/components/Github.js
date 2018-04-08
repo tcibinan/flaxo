@@ -1,4 +1,4 @@
-import '../styles/style.css';
+import '../../styles/style.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {Label} from "react-bootstrap";
