@@ -1,0 +1,12 @@
+task demoServer() {
+    dependsOn "moveEndpointToFakeBackend"
+
+    workingDir "http-fake-backend"
+
+    commandLine "/usr/bin/npm", "run", "start:dev"
+}
+
+task moveEndpointToFakeBackend(type: Copy) {
+    from "fakeEndpoints"
+    into "http-fake-backend/server/api"
+}
