@@ -6,6 +6,7 @@ import {
     Button,
     ControlLabel,
     DropdownButton,
+    Form,
     FormControl,
     FormGroup,
     HelpBlock,
@@ -21,6 +22,18 @@ import Immutable from 'immutable';
 import {credentials} from '../scripts';
 import {Api} from '../Api';
 import {Notification} from './Notification';
+
+function gradeToNum(grade) {
+    switch (grade) {
+        case 'A': return 6;
+        case 'B': return 5;
+        case 'C': return 4;
+        case 'D': return 3;
+        case 'E': return 2;
+        case 'F': return 1;
+        default: return 0;
+    }
+}
 
 export class CoursesList extends React.Component {
 
@@ -48,7 +61,9 @@ export class CoursesList extends React.Component {
             return (
                 <article className="courses-list">
                     <CourseCreation onCourseCreation={this.updateCoursesList}/>
+                    <div className="courses-list-container">
                     {courses.size > 0 ? courses : <p>There are no courses yet.</p>}
+                    </div>
                 </article>
             );
         } else {
@@ -104,9 +119,9 @@ class CourseItem extends React.Component {
             <section className="course-item" onClick={() => this.props.onSelect(this.state)}>
                 <Panel>
                     <Panel.Heading>
-                        {this.state.name}
-                        <Badge>{this.state.tasks.length} tasks</Badge>
-                        <Badge>{this.state.students.length} students</Badge>
+                        {this.state.name}{' '}
+                        <Badge>{this.state.tasks.length} tasks</Badge>{' '}
+                        <Badge>{this.state.students.length} students</Badge>{' '}
                     </Panel.Heading>
                     <Panel.Body>
                         <p>Some ambiguous course description.</p>
@@ -162,9 +177,8 @@ class CourseCreation extends React.Component {
     render() {
         return (
             <div>
-                <Button onClick={this.handleShow}>
-                    Create course
-                </Button>
+                <Button onClick={this.handleShow}>Create course</Button>
+                <br/><br/>
                 <Modal show={this.state.show} onHide={this.handleClose}>
                     <form>
                         <Modal.Header>
@@ -362,20 +376,23 @@ class Course extends React.Component {
                     <small>#{this.state.id}</small>
                     <CourseLabels course={this.state}/>
                 </h2>
-                <Button onClick={this.startCourse} disabled={this.state.status === "running" ? "disabled" : ""}>
-                    Start course
-                </Button>
-                <Button onClick={this.analysePlagiarism} disabled={this.state.status !== "running" ? "disabled" : ""}>
-                    Analyse plagiarism
-                </Button>
-                <DropdownButton title="Download as">
-                    <MenuItem eventKey="json" onSelect={this.downloadStats}>json</MenuItem>
-                    <MenuItem eventKey="2" disabled>excel</MenuItem>
-                    <MenuItem eventKey="3" disabled>csv</MenuItem>
-                </DropdownButton>
-                <Button bsStyle="danger" onClick={this.deleteCourse}>
-                    Delete course
-                </Button>
+                <section className="course-controls">
+                    <Button onClick={this.startCourse} disabled={this.state.status === "running" ? "disabled" : ""}>
+                        Start course
+                    </Button>{' '}
+                    <Button onClick={this.analysePlagiarism}
+                            disabled={this.state.status !== "running" ? "disabled" : ""}>
+                        Analyse plagiarism
+                    </Button>{' '}
+                    <DropdownButton title="Download as">
+                        <MenuItem eventKey="json" onSelect={this.downloadStats}>json</MenuItem>
+                        <MenuItem eventKey="2" disabled>excel</MenuItem>
+                        <MenuItem eventKey="3" disabled>csv</MenuItem>
+                    </DropdownButton>{' '}
+                    <Button bsStyle="danger" onClick={this.deleteCourse}>
+                        Delete course
+                    </Button>
+                </section>
                 <CourseStatsTable course={this.state}/>
             </section>
         );
@@ -514,34 +531,50 @@ class CourseStatsTable extends React.Component {
                 })
                 .valueSeq()
                 .sortBy(task => task.name)
-                .map((task, index) =>
-                    <Tab eventKey={index + 1} title={task.name}>
-                        <CourseTask user={this.props.course.userGithubId}
-                                    courseName={this.props.course.name}
-                                    data={task}/>
-                    </Tab>
-                );
+                .map((task, index) => {
+                    const studentTasks =
+                        Immutable.Map(this.state.perStudentStats)
+                            .map(studentTasks =>
+                                Immutable.List(studentTasks)
+                                    .find(studentTask => studentTask.task === task.name)
+                            )
+                            .toList();
+
+                    return (
+                        <Tab eventKey={index + 1} title={task.name}>
+                            <CourseTask name={task.name}
+                                        user={this.props.course.userGithubId}
+                                        courseName={this.props.course.name}
+                                        mossResultUrl={task.mossResultUrl}
+                                        mossPlagiarismMatches={task.mossPlagiarismMatches}
+                                        studentTasks={studentTasks}/>
+                        </Tab>
+                    )
+                });
 
         return (
-            <section className="course-stats-tabs">
+            <section className="course-tabs">
                 <Tabs defaultActiveKey={0}>
                     <Tab eventKey={0} title="Course stats">
-                        <Table striped bordered condensed hover>
-                            <thead>
-                            <tr>
-                                <th>Student</th>
-                                {tasksNames.map(name => <th>{name}</th>)}
-                                <th>Score</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {
-                                studentsResults.size > 0
-                                    ? studentsResults
-                                    : <td colSpan={tasksNames.size + 2}>There are no students on the course yet.</td>
-                            }
-                            </tbody>
-                        </Table>
+                        <section className="course-stats">
+                            <Table striped hover>
+                                <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    {tasksNames.map(name => <th>{name}</th>)}
+                                    <th>Score</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {
+                                    studentsResults.size > 0
+                                        ? studentsResults
+                                        :
+                                        <td colSpan={tasksNames.size + 2}>There are no students on the course yet.</td>
+                                }
+                                </tbody>
+                            </Table>
+                        </section>
                     </Tab>
                     {tasks}
                 </Tabs>
@@ -551,17 +584,13 @@ class CourseStatsTable extends React.Component {
 }
 
 class CourseTask extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         const gitLink =
-            `https://github.com/${this.props.user}/${this.props.courseName}/tree/${this.props.data.name}`;
+            `https://github.com/${this.props.user}/${this.props.courseName}/tree/${this.props.name}`;
 
         const mossLink =
-            this.props.data.mossResultUrl
-                ? this.props.data.mossResultUrl
+            this.props.mossResultUrl
+                ? this.props.mossResultUrl
                 : null;
 
         return (
@@ -572,63 +601,155 @@ class CourseTask extends React.Component {
                         ? <Button href={mossLink} bsStyle="link" bsSize="small">Moss analysis results</Button>
                         : <Button bsStyle="link" bsSize="small" disabled>Moss analysis results</Button>
                 }
-                <PlagiarismStats data={this.props.data.mossPlagiarismMatches}/>
+                <TaskStatsTable mossPlagiarismMatches={this.props.mossPlagiarismMatches}
+                                studentTasks={this.props.studentTasks}/>
             </section>
         );
     }
 }
 
-class PlagiarismStats extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
+class TaskStatsTable extends React.Component {
     render() {
-        const matches =
-            Immutable.List(this.props.data)
-                .map(match => <PlagiarismMatch data={match}/>);
+        const results =
+            Immutable.List(this.props.studentTasks)
+                .map(studentTask => {
+                    const matches =
+                        Immutable.List(this.props.mossPlagiarismMatches)
+                            .filter(match => studentTask.student === match.students.first
+                                || studentTask.student === match.students.second)
+                            .map(match => {
+                                return {
+                                    thisStudent:
+                                        match.students.first === studentTask.student
+                                            ? match.students.first
+                                            : match.students.second,
+                                    otherStudent:
+                                        match.students.first !== studentTask.student
+                                            ? match.students.first
+                                            : match.students.second,
+                                    lines: match.lines,
+                                    link: match.link,
+                                    percentage: match.percentage
+                                }
+                            });
+
+                    const resultSuggestion =
+                        60 * studentTask.succeed + 5 * gradeToNum(studentTask.grade) + 10 * studentTask.deadline;
+
+                    return (
+                        <tr>
+                            <td>{studentTask.student}</td>
+                            <td>
+                                <BuildReport built={studentTask.built} succeed={studentTask.succeed}/>
+                            </td>
+                            <td>
+                                <CodeStyleReport grade={studentTask.grade}/>
+                            </td>
+                            <td>
+                                <PlagiarismReport matches={matches}/>
+                            </td>
+                            <td>
+                                <DeadlineReport deadline={studentTask.deadline}/>
+                            </td>
+                            <td>
+                                <ResultSuggestion suggestion={resultSuggestion}/>
+                            </td>
+                        </tr>
+                    )
+                });
 
         return (
-            <section className="task-plagiarism">
-                {
-                    matches.size > 0
-                        ? matches
-                        : <p>No plagiarism matches were detected.</p>
-                }
+            <section className="task-results">
+                <Table striped condensed hover>
+                    <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Build</th>
+                        <th>Code style</th>
+                        <th>Plagiarism detection</th>
+                        <th>Deadline</th>
+                        <th>Result</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {
+                        results.size > 0
+                            ? results
+                            : <td colSpan="6">There are no students on the course yet.</td>
+                    }
+                    </tbody>
+                </Table>
             </section>
         );
     }
 }
 
-class PlagiarismMatch extends React.Component {
-    constructor(props) {
-        super(props);
-    }
+function BuildReport(props) {
+    return (
+        <section className={"report " + (props.succeed ? "successful-build-report" : "failed-build-report")}>
+            {
+                props.succeed
+                    ? <i className="material-icons">done</i>
+                    : <i className="material-icons">clear</i>
+            }
+        </section>
+    )
+}
 
-    render() {
-        return (
-            <section className="plagiarism-match">
-                <p>
-                    <b>students: </b>
-                    {this.props.students.first}
-                    and
-                    {this.props.students.second}
-                </p>
-                <p>
-                    <b>lines: </b>
-                    {this.props.lines}
-                </p>
-                <p>
-                    <b>percentage: </b>
-                    {this.props.percentage}
-                </p>
-                <p>
-                    <b>moss link: </b>
-                    <a href={this.props.link}>{this.props.link}</a>
-                </p>
-            </section>
-        )
-    }
+function CodeStyleReport(props) {
+    return <section className="report">
+        {
+            props.grade
+                ? <section className={"code-style-grade code-style-grade-" + props.grade}/>
+                : <section><i className="material-icons">clear</i></section>
+        }
+    </section>
+}
+
+function PlagiarismReport(props) {
+    const valid = props.matches
+        .every(match => match.percentage < 80);
+
+    const percentages = props.matches
+        .map(match => match.percentage + "%")
+        .join(", ");
+
+    return (
+        <section
+            className={"report plagiarism-report " + (valid ? "valid-plagiarism-report" : "invalid-plagiarism-report")}>
+            {
+                props.matches.size > 0
+                    ? <div>{props.matches.size} <i className="material-icons plagiarism-marker">remove_red_eye</i>{' '}{percentages}</div>
+                    : <i className="material-icons plagiarism-marker">visibility_off</i>
+            }
+        </section>
+    );
+}
+
+function DeadlineReport(props) {
+    return (
+        <section className={"report " + (props.deadline ? "valid-deadline-report" : "invalid-deadline-report")}>
+            {
+                props.deadline
+                    ? <i className="material-icons">alarm_on</i>
+                    : <i className="material-icons">alarm_off</i>
+            }
+        </section>
+    )
+}
+
+function ResultSuggestion(props) {
+    return (
+        <section className="suggesting-result">
+            <Form inline>
+                <FormGroup controlId="student-result-non-unique-id">
+                    <FormControl type="text" placeholder={props.suggestion}/>{' '}
+                    {/*<ControlLabel>suggesting </ControlLabel>{' '}*/}
+                    <Button bsStyle="link">suggesting {props.suggestion}</Button>
+                </FormGroup>
+            </Form>
+        </section>
+    )
 }
 
 function CourseLabels(props) {
@@ -636,12 +757,11 @@ function CourseLabels(props) {
 
     const techLabels =
         Immutable.Set([props.course.language, props.course.testingLanguage, props.course.testingFramework])
-            .map(value => <Label bsStyle="info">{value}</Label>);
+            .map(value => <span><Label bsStyle="info">{value}</Label>{' '}</span>);
 
     return (
         <section className="course-labels">
-            {statusLabel}
-            {techLabels}
+            {statusLabel}{' '}{techLabels}
         </section>
     );
 }

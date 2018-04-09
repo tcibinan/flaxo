@@ -59,14 +59,6 @@ To build the app and run all tests. Notice that the system should have right env
 ./gradlew build
 ```
 
-To produce a front-end bundle. Notice that `$REST_URL` should be replaced by the actual 
-application page url. Most likely it should be home page url with `/rest` at the end.
-
-```bash
-cd rest/src/main/resources/static
-npx webpack --env.REST_URL=$REST_URL
-```
-
 To run the app. The application can be found at [http://localhost:8080/](http://localhost:8080/).
 
 ```bash
@@ -80,7 +72,7 @@ To run the application you should set several system variables.
 | Variable | Description |
 |---|---|
 | HOME_PAGE | Home page address of your application. |
-| REST_URL | Basic rest query url. *Most likely:* `$HOME_PAGE/rest`. |
+| REST_URL | Basic rest query url. Most likely it should be home page url with `/rest` at the end. |
 | GITHUB_ID | Github OAuth App id. |
 | GITHUB_SECRET | Github OAuth App secret. |
 | GITHUB_WEB_HOOK_URL | Github web hook redirect absolute url. |
@@ -99,10 +91,9 @@ with components tests where outer services clients are just mocks.
 
 ## Webpack
 
-Client-side of the system uses webpack for creating bundle of the user interface.
-It is necessary to have webpack installed locally. *Notice:* It is hardcoded that `node_modules` folder lies
-right in the root folder of the `client` module. **todo:** Extract `node_modules` folder
-location into application settings.
+Client-side uses webpack for building js-css bundles. It is necessary to have webpack installed locally.
+*Notice:* `node_modules` folder should lies right in the root folder of the `client` module. 
+**todo:** Extract `node_modules` folder location into application settings.
 
 ## Travis integration
 

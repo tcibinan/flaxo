@@ -18,9 +18,7 @@ task webpack(type: Exec) {
     dependsOn "copyStyles"
     dependsOn "copyOtherResources"
 
-    inputs.dir("src/main/html")
-    inputs.dir("src/main/styles")
-    inputs.dir("src/main/resources")
+    inputs.dir("src/main")
     outputs.dir("$buildDir/dist")
 
     commandLine "$projectDir/node_modules/.bin/webpack",

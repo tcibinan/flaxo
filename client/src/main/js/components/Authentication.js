@@ -2,12 +2,12 @@ import '../../styles/style.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {
-    Alert,
     Button,
     ControlLabel,
     FormControl,
     FormGroup,
     HelpBlock,
+    Navbar,
     Panel
 } from 'react-bootstrap';
 import {Api} from "../Api";
@@ -26,14 +26,22 @@ export class Authentication extends React.Component {
     render() {
         if (this.props.account != null) {
             return (
-                <Panel>
-                    <Panel.Body>
-                        <Logout onSuccess={this.props.onLogout}/>
-                        <Github isAuthorized={this.props.account.githubAuthorized}/>
-                        <Travis isAuthorized={this.props.account.travisAuthorized}/>
-                        <Codacy isAuthorized={this.props.account.codacyAuthorized}/>
-                    </Panel.Body>
-                </Panel>
+                <Navbar>
+                    <Navbar.Header>
+                        <Navbar.Brand>Flaxo</Navbar.Brand>
+                    </Navbar.Header>
+                    <Navbar.Collapse>
+                        <Navbar.Text>
+                            Signed in as {this.props.account.nickname}
+                        </Navbar.Text>
+                        <Navbar.Form pullRight>
+                            <Github isAuthorized={this.props.account.githubAuthorized}/>{' '}
+                            <Travis isAuthorized={this.props.account.travisAuthorized}/>{' '}
+                            <Codacy isAuthorized={this.props.account.codacyAuthorized}/>{' '}
+                            <Button type="button" onClick={this.props.onLogout}>Logout</Button>
+                        </Navbar.Form>
+                    </Navbar.Collapse>
+                </Navbar>
             );
         } else {
             return (
@@ -112,19 +120,6 @@ class AuthenticationForm extends React.Component {
                 <Notification message="User with the given nickname and password was not found."/>,
                 document.getElementById('notifications')
             )
-        );
-    }
-}
-
-class Logout extends React.Component {
-
-    constructor(props) {
-        super(props);
-    }
-
-    render() {
-        return (
-            <Button type="button" onClick={this.props.onSuccess}>Logout</Button>
         );
     }
 }
