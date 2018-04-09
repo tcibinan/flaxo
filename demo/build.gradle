@@ -1,4 +1,4 @@
-task demoServer() {
+task demoServer(type: Exec) {
     dependsOn "moveEndpointToFakeBackend"
 
     workingDir "http-fake-backend"
