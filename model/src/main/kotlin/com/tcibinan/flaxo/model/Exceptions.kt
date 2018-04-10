@@ -1,7 +1,5 @@
 package com.tcibinan.flaxo.model
 
-import kotlin.reflect.KClass
-
 /**
  * Base model exception class.
  */

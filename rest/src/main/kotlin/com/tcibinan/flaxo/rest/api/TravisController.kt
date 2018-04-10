@@ -39,8 +39,8 @@ class TravisController @Autowired constructor(private val travisService: TravisS
                                 "for ${build.repositoryOwner}/${build.repositoryName}.")
 
                         dataService.updateStudentTask(getStudentTaskBy(build).copy(
-                                anyBuilds = true,
-                                buildSucceed = true
+                                built = true,
+                                succeed = true
                         ))
                     }
                     BuildStatus.FAILED -> {
@@ -48,8 +48,8 @@ class TravisController @Autowired constructor(private val travisService: TravisS
                                 "for ${build.repositoryOwner}/${build.repositoryName}.")
 
                         dataService.updateStudentTask(getStudentTaskBy(build).copy(
-                                anyBuilds = true,
-                                buildSucceed = false
+                                built = true,
+                                succeed = false
                         ))
                     }
                     BuildStatus.IN_PROGRESS -> {

@@ -146,7 +146,7 @@ class DataServiceSpec : SubjectSpek<DataService>({
 
             it("should create new entity for each student-task combination") {
                 subject.getStudents(course)
-                        .map { it.solutions }
+                        .map { subject.getSolutions(it) }
                         .filter { it.count() == numberOfTasks }
                         .count() shouldBe 2
             }

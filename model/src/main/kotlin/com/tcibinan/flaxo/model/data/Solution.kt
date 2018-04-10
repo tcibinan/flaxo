@@ -2,6 +2,7 @@ package com.tcibinan.flaxo.model.data
 
 import java.util.*
 import javax.persistence.Entity
+import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
 import javax.persistence.Id
 import javax.persistence.ManyToOne
@@ -15,34 +16,36 @@ import javax.persistence.Table
 data class Solution(
         @Id
         @GeneratedValue
-        val solutionId: Long? = null,
+        override val id: Long? = null,
 
-        @ManyToOne
+        @ManyToOne(optional = false, fetch = FetchType.LAZY)
         val task: Task = Task(),
 
-        @ManyToOne
+        @ManyToOne(optional = false, fetch = FetchType.LAZY)
         val student: Student = Student(),
 
-        val anyBuilds: Boolean = false,
+        val built: Boolean = false,
 
-        val buildSucceed: Boolean = false,
+        val succeed: Boolean = false,
 
-        val grade: String = "B",
+        val grade: String? = null,
 
         val deadline: Boolean = true
-) : Viewable {
+) : Viewable, Identifiable {
 
-    override fun view(): Any = let { studentTask ->
+    override fun view(): Any = let { solution ->
         object {
-            val id = studentTask.solutionId
-            val task = studentTask.task.taskName
-            val student = studentTask.student.nickname
-            val built = studentTask.anyBuilds
-            val succeed = studentTask.buildSucceed
+            val id = solution.id
+            val task = solution.task.taskName
+            val student = solution.student.nickname
+            val built = solution.built
+            val succeed = solution.succeed
+            val grade = solution.grade
+            val deadline = solution.deadline
         }
     }
 
-    override fun hashCode() = Objects.hash(solutionId)
+    override fun hashCode() = Objects.hash(id)
 
-    override fun equals(other: Any?) = other is Solution && other.solutionId == solutionId
+    override fun equals(other: Any?) = other is Solution && other.id == id
 }

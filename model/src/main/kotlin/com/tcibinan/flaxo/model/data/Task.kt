@@ -17,18 +17,18 @@ import javax.persistence.Table
 data class Task(
         @Id
         @GeneratedValue
-        val taskId: Long? = null,
+        override val id: Long? = null,
 
         val taskName: String = "",
 
         val mossUrl: String? = null,
 
-        @ManyToOne
+        @ManyToOne(optional = false, fetch = FetchType.LAZY)
         val course: Course = Course(),
 
-        @OneToMany(mappedBy = "task", orphanRemoval = true, fetch = FetchType.EAGER)
+        @OneToMany(mappedBy = "task", orphanRemoval = true)
         val solutions: Set<Solution> = emptySet()
-) : Viewable {
+) : Viewable, Identifiable {
 
     override fun view(): Any = let { task ->
         object {
@@ -36,15 +36,7 @@ data class Task(
         }
     }
 
-    override fun hashCode() = Objects.hash(taskId)
+    override fun hashCode() = Objects.hash(id)
 
-    override fun equals(other: Any?) = other is Task && other.taskId == taskId
-//
-//    override fun toString() =
-//            "Task(" +
-//                    "taskId=$taskId, " +
-//                    "taskName='$taskName', " +
-//                    "mossUrl=$mossUrl, " +
-//                    "solutions=${solutions.size}" +
-//                    ")"
+    override fun equals(other: Any?) = other is Task && other.id == id
 }

@@ -109,7 +109,7 @@ class BasicDataService(private val userRepository: UserRepository,
                 }
 
         return studentRepository
-                .findById(student.studentId)
+                .findById(student.id)
                 .orElseThrow {
                     ModelException("Could not create the student $nickname " +
                             "for course ${course.user.nickname}/${course.name}")
@@ -118,6 +118,9 @@ class BasicDataService(private val userRepository: UserRepository,
 
     override fun getStudents(course: Course): Set<Student> =
             studentRepository.findByCourse(course)
+
+    override fun getSolutions(student: Student): Set<Solution> =
+            solutionRepository.findByStudent(student)
 
     override fun getTasks(course: Course): Set<Task> =
             taskRepository.findAllByCourse(course)

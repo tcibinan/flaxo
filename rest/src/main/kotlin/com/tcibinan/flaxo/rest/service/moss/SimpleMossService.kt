@@ -42,8 +42,8 @@ class SimpleMossService(private val userId: String,
                 .map { student ->
                     student.nickname to
                             student.solutions
-                                    .filter { it.anyBuilds }
-                                    .filter { it.buildSucceed }
+                                    .filter { it.built }
+                                    .filter { it.succeed }
                                     .map { it.task.taskName }
                 }
                 .map { (student, solvedTasks) ->

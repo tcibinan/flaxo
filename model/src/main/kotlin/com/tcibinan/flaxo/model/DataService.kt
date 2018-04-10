@@ -92,6 +92,11 @@ interface DataService {
     fun getStudents(course: Course): Set<Student>
 
     /**
+     * Returns a list of student's solution.
+     */
+    fun getSolutions(student: Student): Set<Solution>
+
+    /**
      * Retrieves all tasks of the course.
      */
     fun getTasks(course: Course): Set<Task>

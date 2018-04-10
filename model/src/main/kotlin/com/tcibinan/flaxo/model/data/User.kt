@@ -9,6 +9,7 @@ import javax.persistence.OneToOne
 import javax.persistence.Table
 import javax.persistence.UniqueConstraint
 import javax.persistence.CascadeType
+import javax.persistence.FetchType
 
 /**
  * User data object.
@@ -19,19 +20,19 @@ import javax.persistence.CascadeType
 data class User(
         @Id
         @GeneratedValue
-        val userId: Long? = null,
+        override val id: Long? = null,
 
         val nickname: String = "",
 
         val githubId: String? = null,
 
-        @OneToOne(cascade = [CascadeType.ALL])
+        @OneToOne(cascade = [CascadeType.ALL], optional = false, fetch = FetchType.LAZY)
         val credentials: Credentials = Credentials()
-) : Viewable {
+) : Viewable, Identifiable {
 
     override fun view(): Any = let { user ->
         object {
-            val id = user.userId
+            val id = user.id
             val githubId = user.githubId
             val nickname = user.nickname
             val isGithubAuthorized = user.credentials.githubToken != null
@@ -40,8 +41,8 @@ data class User(
         }
     }
 
-    override fun hashCode() = Objects.hash(userId)
+    override fun hashCode() = Objects.hash(id)
 
-    override fun equals(other: Any?) = other is User && other.userId == userId
+    override fun equals(other: Any?) = other is User && other.id == id
 
 }

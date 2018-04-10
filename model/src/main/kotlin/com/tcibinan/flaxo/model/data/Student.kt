@@ -17,16 +17,16 @@ import javax.persistence.Table
 data class Student(
         @Id
         @GeneratedValue
-        val studentId: Long? = null,
+        override val id: Long? = null,
 
         val nickname: String = "",
 
-        @ManyToOne
+        @ManyToOne(optional = false, fetch = FetchType.LAZY)
         val course: Course = Course(),
 
-        @OneToMany(mappedBy = "student", orphanRemoval = true, fetch = FetchType.EAGER)
+        @OneToMany(mappedBy = "student", orphanRemoval = true)
         val solutions: Set<Solution> = emptySet()
-) : Viewable {
+) : Viewable, Identifiable {
 
     override fun view(): Any = let { student ->
         object {
@@ -34,7 +34,7 @@ data class Student(
         }
     }
 
-    override fun hashCode() = Objects.hash(studentId)
+    override fun hashCode() = Objects.hash(id)
 
-    override fun equals(other: Any?) = other is Student && other.studentId == studentId
+    override fun equals(other: Any?) = other is Student && other.id == id
 }
