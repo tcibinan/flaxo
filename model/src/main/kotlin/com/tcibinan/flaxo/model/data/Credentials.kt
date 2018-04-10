@@ -1,24 +1,30 @@
 package com.tcibinan.flaxo.model.data
 
-import com.tcibinan.flaxo.model.entity.CredentialsEntity
+import java.util.*
+import javax.persistence.Entity
+import javax.persistence.GeneratedValue
+import javax.persistence.Id
+import javax.persistence.Table
 
 /**
  * Credentials data object.
  */
-data class Credentials(private val entity: CredentialsEntity)
-    : DataObject<CredentialsEntity> {
+@Entity(name = "credentials")
+@Table(name = "credentials")
+data class Credentials(
+        @Id @GeneratedValue
+        val credentialsId: Long? = null,
 
-    val id: Long
-            by lazy { entity.credentialsId ?: missing("id") }
-    val password: String
-            by lazy { entity.password ?: missing("password") }
-    val githubToken: String?
-            by lazy { entity.githubToken }
-    val travisToken: String?
-            by lazy { entity.travisToken }
-    val codacyToken: String?
-            by lazy { entity.codacyToken }
+        val password: String = "",
 
-    override fun toEntity() = entity
+        val githubToken: String? = null,
 
+        val travisToken: String? = null,
+
+        val codacyToken: String? = null
+) {
+
+    override fun hashCode() = Objects.hash(credentialsId)
+
+    override fun equals(other: Any?) = other is Credentials && other.credentialsId == credentialsId
 }

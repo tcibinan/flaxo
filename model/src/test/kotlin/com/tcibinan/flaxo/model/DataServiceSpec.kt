@@ -77,7 +77,7 @@ class DataServiceSpec : SubjectSpek<DataService>({
             }
 
             it("should also create tasks with ordered numbers in the titles") {
-                tasks.map { it.name }
+                tasks.map { it.taskName }
                         .sorted()
                         .mapIndexed { index, name -> Pair((index + 1).toString(), name) }
                         .forEach { (taskIndex, taskName) ->
@@ -86,7 +86,7 @@ class DataServiceSpec : SubjectSpek<DataService>({
             }
 
             it("should also create tasks with the given tasks prefix in the titles") {
-                tasks.map { it.name }
+                tasks.map { it.taskName }
                         .forEach { it should startWith(tasksPrefix) }
             }
 
@@ -146,7 +146,7 @@ class DataServiceSpec : SubjectSpek<DataService>({
 
             it("should create new entity for each student-task combination") {
                 subject.getStudents(course)
-                        .map { it.studentTasks }
+                        .map { it.solutions }
                         .filter { it.count() == numberOfTasks }
                         .count() shouldBe 2
             }
@@ -157,7 +157,7 @@ class DataServiceSpec : SubjectSpek<DataService>({
                     ?: throw EntityNotFound("User $nickname")
             val course = subject.getCourse(courseName, owner)
                     ?: throw EntityNotFound("Course $courseName")
-            val updatedCourse = course.with(status = CourseStatus.RUNNING)
+            val updatedCourse = course.copy(status = CourseStatus.RUNNING)
                     .also { subject.updateCourse(it) }
 
             it("should change it") {

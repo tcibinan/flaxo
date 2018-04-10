@@ -18,9 +18,3 @@ class EntityAlreadyExistsException(entity: String)
  */
 class EntityNotFound(entity: String)
     : ModelException("$entity hasn't been found")
-
-/**
- * Entity field not initialised exception.
- */
-open class EntityFieldIsAbsent (entity: KClass<*>, field: String)
-    : ModelException("Entity ${entity.simpleName} doesn't have $field initialized")

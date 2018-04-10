@@ -2,7 +2,7 @@ package com.tcibinan.flaxo.model
 
 import com.tcibinan.flaxo.model.data.Course
 import com.tcibinan.flaxo.model.data.Student
-import com.tcibinan.flaxo.model.data.StudentTask
+import com.tcibinan.flaxo.model.data.Solution
 import com.tcibinan.flaxo.model.data.Task
 import com.tcibinan.flaxo.model.data.User
 
@@ -122,7 +122,7 @@ interface DataService {
      *
      * @return changed tasks.
      */
-    fun updateStudentTask(updatedStudentTask: StudentTask): StudentTask
+    fun updateStudentTask(updatedSolution: Solution): Solution
 
     /**
      * Changes task.

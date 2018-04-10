@@ -1,12 +1,12 @@
 package com.tcibinan.flaxo.model.dao
 
-import com.tcibinan.flaxo.model.entity.CourseEntity
-import com.tcibinan.flaxo.model.entity.StudentEntity
+import com.tcibinan.flaxo.model.data.Course
+import com.tcibinan.flaxo.model.data.Student
 import org.springframework.data.repository.CrudRepository
 
 /**
  * Crud repository for student entity.
  */
-interface StudentRepository : CrudRepository<StudentEntity, Long> {
-    fun findByCourse(course: CourseEntity): Set<StudentEntity>
+interface StudentRepository : CrudRepository<Student, Long> {
+    fun findByCourse(course: Course): Set<Student>
 }

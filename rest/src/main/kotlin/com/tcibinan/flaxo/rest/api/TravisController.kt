@@ -1,7 +1,7 @@
 package com.tcibinan.flaxo.rest.api
 
 import com.tcibinan.flaxo.model.DataService
-import com.tcibinan.flaxo.model.data.StudentTask
+import com.tcibinan.flaxo.model.data.Solution
 import com.tcibinan.flaxo.rest.service.git.GitService
 import com.tcibinan.flaxo.rest.service.travis.TravisService
 import com.tcibinan.flaxo.travis.TravisException
@@ -38,7 +38,7 @@ class TravisController @Autowired constructor(private val travisService: TravisS
                         logger.info("Travis pull request successful build web hook received " +
                                 "for ${build.repositoryOwner}/${build.repositoryName}.")
 
-                        dataService.updateStudentTask(getStudentTaskBy(build).with(
+                        dataService.updateStudentTask(getStudentTaskBy(build).copy(
                                 anyBuilds = true,
                                 buildSucceed = true
                         ))
@@ -47,7 +47,7 @@ class TravisController @Autowired constructor(private val travisService: TravisS
                         logger.info("Travis pull request failed build web hook received " +
                                 "for ${build.repositoryOwner}/${build.repositoryName}.")
 
-                        dataService.updateStudentTask(getStudentTaskBy(build).with(
+                        dataService.updateStudentTask(getStudentTaskBy(build).copy(
                                 anyBuilds = true,
                                 buildSucceed = false
                         ))
@@ -74,7 +74,7 @@ class TravisController @Autowired constructor(private val travisService: TravisS
 
     }
 
-    private fun getStudentTaskBy(hook: TravisPullRequestBuild): StudentTask {
+    private fun getStudentTaskBy(hook: TravisPullRequestBuild): Solution {
         val user = dataService.getUserByGithubId(hook.repositoryOwner)
                 ?: throw TravisException("User with the required nickname ${hook.repositoryOwner} wasn't found.")
 
@@ -94,8 +94,8 @@ class TravisController @Autowired constructor(private val travisService: TravisS
                 ?: throw TravisException("Student ${pullRequest.authorId} wasn't found " +
                         "in course ${hook.repositoryOwner}/${hook.repositoryName}.")
 
-        return student.studentTasks
-                .find { it.task.name == hook.branch }
+        return student.solutions
+                .find { it.task.taskName == hook.branch }
                 ?: throw TravisException("Student task ${hook.branch} wasn't found for student ${student.nickname} " +
                         "in course ${hook.repositoryOwner}/${hook.repositoryName}.")
     }

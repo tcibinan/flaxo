@@ -12,12 +12,10 @@ import org.springframework.context.annotation.PropertySource
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 
-@SpringBootApplication(
-        scanBasePackages = ["com.tcibinan.flaxo"]
-)
+@SpringBootApplication(scanBasePackages = ["com.tcibinan.flaxo"])
 @EnableJpaRepositories("com.tcibinan.flaxo.model.dao")
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-@EntityScan("com.tcibinan.flaxo.model.entity")
+@EntityScan("com.tcibinan.flaxo.model.data")
 @PropertySource("classpath:secured.properties", ignoreResourceNotFound = true)
 class Application {
 

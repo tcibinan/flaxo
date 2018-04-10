@@ -1,12 +1,12 @@
 package com.tcibinan.flaxo.model.dao
 
-import com.tcibinan.flaxo.model.entity.CourseEntity
-import com.tcibinan.flaxo.model.entity.TaskEntity
+import com.tcibinan.flaxo.model.data.Course
+import com.tcibinan.flaxo.model.data.Task
 import org.springframework.data.repository.CrudRepository
 
 /**
  * Crud repository for task entity.
  */
-interface TaskRepository : CrudRepository<TaskEntity, Long> {
-    fun findAllByCourse(course: CourseEntity): Set<TaskEntity>
+interface TaskRepository : CrudRepository<Task, Long> {
+    fun findAllByCourse(course: Course): Set<Task>
 }

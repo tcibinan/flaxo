@@ -244,7 +244,7 @@ class ModelController @Autowired constructor(private val dataService: DataServic
 
         logger.info("Changing course ${user.nickname}/$courseName status to running")
 
-        dataService.updateCourse(course.with(status = CourseStatus.RUNNING))
+        dataService.updateCourse(course.copy(status = CourseStatus.RUNNING))
 
         logger.info("Course ${user.nickname}/$courseName has been successfully composed")
 
@@ -329,14 +329,14 @@ class ModelController @Autowired constructor(private val dataService: DataServic
         logger.info("Aggregating course $ownerNickname/$courseName students statistics")
 
         val studentsStatistics: Map<String, List<Any>> = course.students
-                .map { it.nickname to it.studentTasks.toViews() }
+                .map { it.nickname to it.solutions.toViews() }
                 .toMap()
 
         logger.info("Aggregating course $ownerNickname/$courseName tasks statistics")
 
         val tasksStatistics: Map<String, Any> = course.tasks
                 .map { task ->
-                    task.name to object {
+                    task.taskName to object {
                         val mossResultUrl = task.mossUrl
                         val mossPlagiarismMatches =
                                 task.mossUrl
@@ -377,7 +377,7 @@ class ModelController @Autowired constructor(private val dataService: DataServic
 
         return responseService.response(
                 COURSE_TASKS,
-                payload = course.tasks.map { it.name }
+                payload = course.tasks.map { it.taskName }
         )
     }
 
@@ -442,7 +442,7 @@ class ModelController @Autowired constructor(private val dataService: DataServic
 
                     val task: Task =
                             course.tasks
-                                    .find { it.name == taskShortName }
+                                    .find { it.taskName == taskShortName }
                                     ?: throw MossException("Moss task ${mossTask.taskName} aim course task $taskShortName " +
                                             "wasn't found for course ${course.name}")
 
@@ -455,7 +455,7 @@ class ModelController @Autowired constructor(private val dataService: DataServic
 
                     logger.info("Moss task analysis ${mossTask.taskName} has finished successfully")
 
-                    dataService.updateTask(task.with(mossUrl = result.url.toString()))
+                    dataService.updateTask(task.copy(mossUrl = result.url.toString()))
                 }
             }
         }

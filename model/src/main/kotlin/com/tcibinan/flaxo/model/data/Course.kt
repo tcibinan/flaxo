@@ -1,38 +1,47 @@
 package com.tcibinan.flaxo.model.data
 
-import com.tcibinan.flaxo.model.entity.CourseEntity
-import com.tcibinan.flaxo.model.entity.toDtos
+import java.util.*
+import javax.persistence.Entity
+import javax.persistence.FetchType
+import javax.persistence.GeneratedValue
+import javax.persistence.Id
+import javax.persistence.OneToMany
+import javax.persistence.ManyToOne
+import javax.persistence.Table
 
 /**
  * Course data object.
  */
-data class Course(private val entity: CourseEntity)
-    : DataObject<CourseEntity> {
+@Entity(name = "course")
+@Table(name = "course")
+data class Course(
+        @Id
+        @GeneratedValue
+        val courseId: Long? = null,
 
-    val id: Long
-            by lazy { entity.courseId ?: missing("id") }
-    val name: String
-            by lazy { entity.name ?: missing("name") }
-    val language: String
-            by lazy { entity.language ?: missing("language") }
-    val testingLanguage: String
-            by lazy { entity.testingLanguage ?: missing("testingLanguage") }
-    val testingFramework: String
-            by lazy { entity.testingFramework ?: missing("testingFramework") }
-    val status: String
-            by lazy { entity.status ?: missing("status") }
-    val user: User
-            by lazy { User(entity.user ?: missing("user")) }
-    val students: Set<Student>
-            by lazy { entity.students.toDtos() }
-    val tasks: Set<Task>
-            by lazy { entity.tasks.toDtos() }
+        val name: String = "",
 
-    override fun toEntity() = entity
+        val language: String = "",
+
+        val testingLanguage: String = "",
+
+        val testingFramework: String = "",
+
+        val status: String = "",
+
+        @ManyToOne
+        val user: User = User(),
+
+        @OneToMany(mappedBy = "course", orphanRemoval = true, fetch = FetchType.EAGER)
+        val students: Set<Student> = emptySet(),
+
+        @OneToMany(mappedBy = "course", orphanRemoval = true, fetch = FetchType.EAGER)
+        val tasks: Set<Task> = emptySet()
+) : Viewable {
 
     override fun view(): Any = let { course ->
         object {
-            val id = course.id
+            val id = course.courseId
             val name = course.name
             val language = course.language
             val testingLanguage = course.testingLanguage
@@ -41,30 +50,11 @@ data class Course(private val entity: CourseEntity)
             val user = course.user.nickname
             val userGithubId = course.user.githubId
             val students = course.students.map { it.nickname }
-            val tasks = course.tasks.map { it.name }
+            val tasks = course.tasks.map { it.taskName }
         }
     }
 
-    fun with(id: Long? = null,
-             name: String? = null,
-             language: String? = null,
-             testingLanguage: String? = null,
-             testingFramework: String? = null,
-             status: String? = null,
-             user: User? = null,
-             students: Set<Student> = emptySet(),
-             tasks: Set<Task> = emptySet()
-    ) = CourseEntity()
-            .also {
-                it.courseId = id ?: entity.courseId
-                it.name = name ?: entity.name
-                it.language = language ?: entity.language
-                it.testingLanguage = testingLanguage ?: entity.testingLanguage
-                it.testingFramework = testingFramework ?: entity.testingFramework
-                it.status = status ?: entity.status
-                it.user = user?.toEntity() ?: entity.user
-                it.students = students.takeIf { it.isNotEmpty() }?.toEntities() ?: entity.students
-                it.tasks = tasks.takeIf { it.isNotEmpty() }?.toEntities() ?: entity.tasks
-            }
-            .toDto()
+    override fun hashCode() = Objects.hash(courseId)
+
+    override fun equals(other: Any?) = other is Course && other.courseId == courseId
 }

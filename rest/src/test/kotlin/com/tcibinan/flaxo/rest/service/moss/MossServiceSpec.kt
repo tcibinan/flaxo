@@ -9,12 +9,11 @@ import com.tcibinan.flaxo.core.language.Language
 import com.tcibinan.flaxo.git.Branch
 import com.tcibinan.flaxo.git.Git
 import com.tcibinan.flaxo.model.data.Course
-import com.tcibinan.flaxo.model.entity.CourseEntity
-import com.tcibinan.flaxo.model.entity.CredentialsEntity
-import com.tcibinan.flaxo.model.entity.StudentEntity
-import com.tcibinan.flaxo.model.entity.StudentTaskEntity
-import com.tcibinan.flaxo.model.entity.TaskEntity
-import com.tcibinan.flaxo.model.entity.UserEntity
+import com.tcibinan.flaxo.model.data.Credentials
+import com.tcibinan.flaxo.model.data.Student
+import com.tcibinan.flaxo.model.data.Solution
+import com.tcibinan.flaxo.model.data.Task
+import com.tcibinan.flaxo.model.data.User
 import com.tcibinan.flaxo.moss.Moss
 import com.tcibinan.flaxo.rest.service.git.GitService
 import org.jetbrains.spek.api.dsl.describe
@@ -40,46 +39,24 @@ object MossServiceSpec : SubjectSpek<MossService>({
     val task1 = "task1"
 
     val supportedLanguages: Map<String, Language> = mapOf("java" to JavaLang)
-    val studentTaskEntities1: Set<StudentTaskEntity> = setOf(
-            StudentTaskEntity().also {
-                it.anyBuilds = true
-                it.buildSucceed = true
-                it.task = TaskEntity().also {
-                    it.taskName = task1
-                }
-            }
+    val solutionEntities1: Set<Solution> = setOf(
+            Solution(anyBuilds = true, buildSucceed = true,
+                    task = Task(taskName = task1)
+            )
     )
-    val student1 = StudentEntity().also {
-        it.nickname = student1Name
-        it.studentTasks = studentTaskEntities1
-    }
-    val studentTaskEntities2: Set<StudentTaskEntity> = setOf(
-            StudentTaskEntity().also {
-                it.anyBuilds = true
-                it.buildSucceed = false
-                it.task = TaskEntity().also {
-                    it.taskName = task1
-                }
-            }
+    val student1 = Student(nickname = student1Name, solutions = solutionEntities1)
+    val solutionEntities2: Set<Solution> = setOf(
+            Solution(anyBuilds = true, buildSucceed = false,
+                    task = Task(taskName = task1)
+            )
     )
-    val student2 = StudentEntity().also {
-        it.nickname = student2Name
-        it.studentTasks = studentTaskEntities2
-    }
-    val user = UserEntity().also {
-        val credentials = CredentialsEntity().also {
-            it.githubToken = "userGithubToken"
-        }
-        it.nickname = userName
-        it.githubId = userGithubId
-        it.credentials = credentials
-    }
-    val course = Course(CourseEntity().also {
-        it.name = courseName
-        it.user = user
-        it.language = language
-        it.students = setOf(student1, student2)
-    })
+    val student2 = Student(nickname = student2Name, solutions = solutionEntities2)
+    val user = User(nickname = userName, githubId = userGithubId,
+            credentials = Credentials(githubToken = "userGithubToken")
+    )
+    val course = Course(name = courseName, user = user, language = language,
+            students = setOf(student1, student2)
+    )
     val git: Git = mock {
         val student1Branches = listOf(
                 branch(task1, emptyFile(student1SolutionFile), emptyFile(student1ExtraFile))

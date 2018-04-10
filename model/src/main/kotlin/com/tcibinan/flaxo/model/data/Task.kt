@@ -1,35 +1,50 @@
 package com.tcibinan.flaxo.model.data
 
-import com.tcibinan.flaxo.model.entity.TaskEntity
-import com.tcibinan.flaxo.model.entity.toDtos
+import java.util.*
+import javax.persistence.Entity
+import javax.persistence.FetchType
+import javax.persistence.GeneratedValue
+import javax.persistence.Id
+import javax.persistence.OneToMany
+import javax.persistence.ManyToOne
+import javax.persistence.Table
 
 /**
  * Task data object.
  */
-data class Task(private val entity: TaskEntity)
-    : DataObject<TaskEntity> {
+@Entity(name = "task")
+@Table(name = "task")
+data class Task(
+        @Id
+        @GeneratedValue
+        val taskId: Long? = null,
 
-    val id: Long by lazy { entity.taskId ?: missing("id") }
-    val name: String by lazy { entity.taskName ?: missing("name") }
-    val course: Course by lazy { Course(entity.course ?: missing("course")) }
-    val mossUrl: String? by lazy { entity.mossUrl }
-    val studentTasks: Set<StudentTask> by lazy { entity.studentTasks.toDtos() }
+        val taskName: String = "",
 
-    override fun toEntity() = entity
+        val mossUrl: String? = null,
 
-    fun with(id: Long? = null,
-             name: String? = null,
-             course: Course? = null,
-             mossUrl: String? = null,
-             studentTasks: Set<StudentTask> = emptySet()
-    ): Task = TaskEntity()
-            .apply {
-                this.taskId = id ?: entity.taskId
-                this.taskName = name ?: entity.taskName
-                this.course = course?.toEntity() ?: entity.course
-                this.mossUrl = mossUrl ?: entity.mossUrl
-                this.studentTasks = studentTasks.takeIf { it.isNotEmpty() }?.toEntities() ?: entity.studentTasks
-            }
-            .toDto()
+        @ManyToOne
+        val course: Course = Course(),
 
+        @OneToMany(mappedBy = "task", orphanRemoval = true, fetch = FetchType.EAGER)
+        val solutions: Set<Solution> = emptySet()
+) : Viewable {
+
+    override fun view(): Any = let { task ->
+        object {
+            val name = task.taskName
+        }
+    }
+
+    override fun hashCode() = Objects.hash(taskId)
+
+    override fun equals(other: Any?) = other is Task && other.taskId == taskId
+//
+//    override fun toString() =
+//            "Task(" +
+//                    "taskId=$taskId, " +
+//                    "taskName='$taskName', " +
+//                    "mossUrl=$mossUrl, " +
+//                    "solutions=${solutions.size}" +
+//                    ")"
 }
