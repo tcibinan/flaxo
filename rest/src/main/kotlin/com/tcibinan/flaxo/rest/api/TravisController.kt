@@ -95,7 +95,7 @@ class TravisController @Autowired constructor(private val travisService: TravisS
                         "in course ${hook.repositoryOwner}/${hook.repositoryName}.")
 
         return student.solutions
-                .find { it.task.taskName == hook.branch }
+                .find { it.task.name == hook.branch }
                 ?: throw TravisException("Student task ${hook.branch} wasn't found for student ${student.nickname} " +
                         "in course ${hook.repositoryOwner}/${hook.repositoryName}.")
     }

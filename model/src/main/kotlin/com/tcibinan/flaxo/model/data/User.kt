@@ -15,18 +15,18 @@ import javax.persistence.FetchType
  * User data object.
  */
 @Entity(name = "user")
-@Table(name = "user", uniqueConstraints = [UniqueConstraint(columnNames = ["nickname"])])
-@JsonIgnoreProperties("credentials")
+@Table(name = "user", uniqueConstraints = [UniqueConstraint(columnNames = ["nickname", "githubId"])])
 data class User(
         @Id
         @GeneratedValue
-        override val id: Long? = null,
+        override val id: Long = -1,
 
         val nickname: String = "",
 
         val githubId: String? = null,
 
         @OneToOne(cascade = [CascadeType.ALL], optional = false, fetch = FetchType.LAZY)
+        @JsonIgnoreProperties
         val credentials: Credentials = Credentials()
 ) : Viewable, Identifiable {
 

@@ -17,7 +17,7 @@ import javax.persistence.Table
 data class Student(
         @Id
         @GeneratedValue
-        override val id: Long? = null,
+        override val id: Long = -1,
 
         val nickname: String = "",
 

@@ -17,7 +17,7 @@ import javax.persistence.Table
 data class Course(
         @Id
         @GeneratedValue
-        override val id: Long? = null,
+        override val id: Long = -1,
 
         val name: String = "",
 
@@ -50,7 +50,7 @@ data class Course(
             val user = course.user.nickname
             val userGithubId = course.user.githubId
             val students = course.students.map { it.nickname }
-            val tasks = course.tasks.map { it.taskName }
+            val tasks = course.tasks.map { it.name }
         }
     }
 

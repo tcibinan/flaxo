@@ -5,7 +5,6 @@ import com.tcibinan.flaxo.git.PullRequest
 import com.tcibinan.flaxo.github.GithubException
 import com.tcibinan.flaxo.model.DataService
 import com.tcibinan.flaxo.model.IntegratedService
-import com.tcibinan.flaxo.rest.api.ServerAnswer.MANUAL_REDIRECT
 import com.tcibinan.flaxo.rest.service.git.GitService
 import com.tcibinan.flaxo.rest.service.response.ResponseService
 import org.apache.commons.collections4.map.PassiveExpiringMap
@@ -14,6 +13,7 @@ import org.apache.http.client.fluent.Request
 import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -51,7 +51,7 @@ class GithubController(
             states[principal.name] = state
         }
 
-        return responseService.response(MANUAL_REDIRECT, payload = object {
+        return responseService.ok(object {
             val redirect = "$githubAuthUrl/authorize"
             val params = mapOf(
                     "client_id" to clientId,
@@ -62,6 +62,7 @@ class GithubController(
     }
 
     @GetMapping("/auth/code")
+    @Transactional
     fun githubAuthToken(@RequestParam("code") code: String,
                         @RequestParam("state") state: String,
                         response: HttpServletResponse
@@ -105,6 +106,7 @@ class GithubController(
     }
 
     @PostMapping("/hook")
+    @Transactional
     fun webHook(request: HttpServletRequest) {
         val payloadReader: Reader = request.getParameter("payload").reader()
         val headers: Map<String, List<String>> =

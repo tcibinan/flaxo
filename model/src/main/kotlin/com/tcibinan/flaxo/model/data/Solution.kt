@@ -11,12 +11,12 @@ import javax.persistence.Table
 /**
  * Student task data object.
  */
-@Entity(name = "student_task")
-@Table(name = "student_task")
+@Entity(name = "solution")
+@Table(name = "solution")
 data class Solution(
         @Id
         @GeneratedValue
-        override val id: Long? = null,
+        override val id: Long = -1,
 
         @ManyToOne(optional = false, fetch = FetchType.LAZY)
         val task: Task = Task(),
@@ -36,7 +36,7 @@ data class Solution(
     override fun view(): Any = let { solution ->
         object {
             val id = solution.id
-            val task = solution.task.taskName
+            val task = solution.task.name
             val student = solution.student.nickname
             val built = solution.built
             val succeed = solution.succeed

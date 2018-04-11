@@ -41,13 +41,13 @@ object MossServiceSpec : SubjectSpek<MossService>({
     val supportedLanguages: Map<String, Language> = mapOf("java" to JavaLang)
     val solutionEntities1: Set<Solution> = setOf(
             Solution(built = true, succeed = true,
-                    task = Task(taskName = task1)
+                    task = Task(name = task1)
             )
     )
     val student1 = Student(nickname = student1Name, solutions = solutionEntities1)
     val solutionEntities2: Set<Solution> = setOf(
             Solution(built = true, succeed = false,
-                    task = Task(taskName = task1)
+                    task = Task(name = task1)
             )
     )
     val student2 = Student(nickname = student2Name, solutions = solutionEntities2)

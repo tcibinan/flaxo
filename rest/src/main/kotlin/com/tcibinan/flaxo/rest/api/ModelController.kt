@@ -6,26 +6,26 @@ import com.tcibinan.flaxo.model.DataService
 import com.tcibinan.flaxo.model.EntityAlreadyExistsException
 import com.tcibinan.flaxo.model.EntityNotFound
 import com.tcibinan.flaxo.model.IntegratedService
-import com.tcibinan.flaxo.model.ModelException
 import com.tcibinan.flaxo.model.data.Task
 import com.tcibinan.flaxo.model.data.User
 import com.tcibinan.flaxo.model.data.toViews
 import com.tcibinan.flaxo.moss.MossException
 import com.tcibinan.flaxo.moss.MossResult
-import com.tcibinan.flaxo.rest.api.ServerAnswer.*
 import com.tcibinan.flaxo.rest.service.environment.RepositoryEnvironmentService
 import com.tcibinan.flaxo.rest.service.git.GitService
 import com.tcibinan.flaxo.rest.service.moss.MossService
 import com.tcibinan.flaxo.rest.service.moss.MossTask
-import com.tcibinan.flaxo.rest.service.response.Response
 import com.tcibinan.flaxo.rest.service.response.ResponseService
 import com.tcibinan.flaxo.rest.service.travis.TravisService
 import com.tcibinan.flaxo.travis.Travis
 import com.tcibinan.flaxo.travis.TravisException
 import com.tcibinan.flaxo.travis.TravisUser
+import io.vavr.control.Either
 import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -58,9 +58,10 @@ class ModelController @Autowired constructor(private val dataService: DataServic
      * @param password Of the creating user.
      */
     @PostMapping("/register")
+    @Transactional
     fun register(@RequestParam nickname: String,
                  @RequestParam password: String
-    ): Response {
+    ): ResponseEntity<Any> {
         logger.info("Trying to register user $nickname")
 
         return try {
@@ -68,11 +69,11 @@ class ModelController @Autowired constructor(private val dataService: DataServic
 
             logger.info("User $nickname was registered successfully")
 
-            responseService.response(USER_CREATED, nickname)
+            responseService.ok()
         } catch (e: EntityAlreadyExistsException) {
             logger.info("Trying to create user with $nickname nickname that is already registered")
 
-            responseService.response(USER_ALREADY_EXISTS, "User $nickname")
+            responseService.bad("User $nickname already exists")
         }
     }
 
@@ -81,13 +82,14 @@ class ModelController @Autowired constructor(private val dataService: DataServic
      */
     @GetMapping("/account")
     @PreAuthorize("hasAuthority('USER')")
-    fun user(principal: Principal): Response {
-        logger.info("Trying to retrieve user")
+    @Transactional(readOnly = true)
+    fun user(principal: Principal): Any {
+        logger.info("Trying to retrieve user ${principal.name}")
 
         val user = dataService.getUser(principal.name)
-                ?: return responseService.response(USER_NOT_FOUND, principal.name)
+                ?: return responseService.userNotFound(principal.name)
 
-        return responseService.response(ACCOUNT, payload = user.view())
+        return responseService.ok(user.view())
     }
 
     /**
@@ -102,20 +104,21 @@ class ModelController @Autowired constructor(private val dataService: DataServic
      */
     @PostMapping("/createCourse")
     @PreAuthorize("hasAuthority('USER')")
+    @Transactional
     fun createCourse(@RequestParam courseName: String,
                      @RequestParam language: String,
                      @RequestParam testLanguage: String,
                      @RequestParam testingFramework: String,
                      @RequestParam numberOfTasks: Int,
                      principal: Principal
-    ): Response {
+    ): ResponseEntity<Any> {
         logger.info("Trying to create course ${principal.name}/$courseName")
 
         val user = dataService.getUser(principal.name)
-                ?: return responseService.response(USER_NOT_FOUND, principal.name)
+                ?: return responseService.userNotFound(principal.name)
 
         val githubToken = user.credentials.githubToken
-                ?: return responseService.response(NO_GITHUB_KEY)
+                ?: return responseService.githubTokenNotFound(principal.name)
 
         logger.info("Producing course ${principal.name}/$courseName " +
                 "environment: $language, $testLanguage, $testingFramework")
@@ -150,9 +153,9 @@ class ModelController @Autowired constructor(private val dataService: DataServic
                 user
         )
 
-        logger.info("Course ${principal.name}/$courseName has been successfully created")
+        logger.info("Course ${principal.name}/${course.name} has been successfully created")
 
-        return responseService.response(COURSE_CREATED, courseName, payload = course)
+        return responseService.ok(course.view())
     }
 
     /**
@@ -162,16 +165,17 @@ class ModelController @Autowired constructor(private val dataService: DataServic
      */
     @PostMapping("/deleteCourse")
     @PreAuthorize("hasAuthority('USER')")
+    @Transactional
     fun deleteCourse(@RequestParam courseName: String,
                      principal: Principal
-    ): Response {
+    ): ResponseEntity<Any> {
         logger.info("Trying to delete course ${principal.name}/$courseName")
 
         val user = dataService.getUser(principal.name)
-                ?: return responseService.response(USER_NOT_FOUND, principal.name)
+                ?: return responseService.userNotFound(principal.name)
 
         val githubToken = user.credentials.githubToken
-                ?: return responseService.response(NO_GITHUB_KEY)
+                ?: return responseService.githubTokenNotFound(principal.name)
 
         logger.info("Deleting course ${principal.name}/$courseName from the database")
 
@@ -183,7 +187,7 @@ class ModelController @Autowired constructor(private val dataService: DataServic
 
         logger.info("Course ${principal.name}/$courseName has been successfully deleted")
 
-        return responseService.response(COURSE_DELETED, courseName)
+        return responseService.ok()
     }
 
     /**
@@ -195,22 +199,23 @@ class ModelController @Autowired constructor(private val dataService: DataServic
      */
     @PostMapping("/composeCourse")
     @PreAuthorize("hasAuthority('USER')")
+    @Transactional
     fun composeCourse(@RequestParam courseName: String,
                       principal: Principal
-    ): Response {
+    ): ResponseEntity<Any> {
         logger.info("Trying to compose course ${principal.name}/$courseName")
 
         val user = dataService.getUser(principal.name)
-                ?: return responseService.response(USER_NOT_FOUND, principal.name)
+                ?: return responseService.userNotFound(principal.name)
 
         val course = dataService.getCourse(courseName, user)
-                ?: return responseService.response(COURSE_NOT_FOUND, principal.name, courseName)
+                ?: return responseService.courseNotFound(principal.name, courseName)
 
         val githubToken = user.credentials.githubToken
-                ?: return responseService.response(NO_GITHUB_KEY)
+                ?: return responseService.githubTokenNotFound(principal.name)
 
         val githubUserId = user.githubId
-                ?: throw ModelException("Github id for ${user.nickname} is not set.")
+                ?: return responseService.githubIdNotFound(user.nickname)
 
         logger.info("Initialising travis client for ${user.nickname} user")
 
@@ -219,8 +224,10 @@ class ModelController @Autowired constructor(private val dataService: DataServic
         logger.info("Retrieving travis user for ${user.nickname} user")
 
         val travisUser: TravisUser = travis.getUser()
-                .getOrElseThrow { errorBody ->
-                    TravisException("Travis user retrieving for ${user.nickname} went bad due to: ${errorBody.string()}")
+                .getOrElseExecute { errorBody ->
+                    return responseService.serverError(
+                            "Travis user retrieving for ${user.nickname} went bad due to: $errorBody"
+                    )
                 }
 
         logger.info("Trigger travis user with id ${travisUser.id} sync for ${user.nickname} user")
@@ -248,7 +255,7 @@ class ModelController @Autowired constructor(private val dataService: DataServic
 
         logger.info("Course ${user.nickname}/$courseName has been successfully composed")
 
-        return responseService.response(COURSE_COMPOSED, courseName)
+        return responseService.ok()
     }
 
     private fun retrieveTravisToken(user: User,
@@ -277,16 +284,17 @@ class ModelController @Autowired constructor(private val dataService: DataServic
      */
     @GetMapping("course")
     @PreAuthorize("hasAuthority('USER')")
+    @Transactional(readOnly = true)
     fun course(@RequestParam courseName: String,
                principal: Principal
-    ): Response {
+    ): ResponseEntity<Any> {
         val user = dataService.getUser(principal.name)
                 ?: throw EntityNotFound("User ${principal.name}")
 
         val course = dataService.getCourse(courseName, user)
                 ?: throw EntityNotFound("Course ${user.nickname}/$courseName")
 
-        return responseService.response(COURSES_LIST, payload = course.view())
+        return responseService.ok(course.view())
     }
 
     /**
@@ -296,15 +304,14 @@ class ModelController @Autowired constructor(private val dataService: DataServic
      */
     @GetMapping("allCourses")
     @PreAuthorize("hasAuthority('USER')")
+    @Transactional(readOnly = true)
     fun allCourses(@RequestParam nickname: String,
                    principal: Principal
-    ): Response =
+    ): ResponseEntity<Any> =
             if (principal.name == nickname) {
-                responseService.response(COURSES_LIST,
-                        payload = dataService.getCourses(nickname).toViews()
-                )
+                responseService.ok(dataService.getCourses(nickname).toViews())
             } else {
-                responseService.response(ANOTHER_USER_DATA, principal.name, nickname)
+                responseService.forbidden()
             }
 
     /**
@@ -315,16 +322,17 @@ class ModelController @Autowired constructor(private val dataService: DataServic
      */
     @GetMapping("/{owner}/{course}/statistics")
     @PreAuthorize("hasAuthority('USER')")
+    @Transactional(readOnly = true)
     fun getCourseStatistics(@PathVariable("owner") ownerNickname: String,
                             @PathVariable("course") courseName: String
-    ): Response {
+    ): ResponseEntity<Any> {
         logger.info("Trying to aggregate course $ownerNickname/$courseName statistics")
 
         val user = dataService.getUser(ownerNickname)
-                ?: return responseService.response(USER_NOT_FOUND, ownerNickname)
+                ?: return responseService.userNotFound(ownerNickname)
 
         val course = dataService.getCourse(courseName, user)
-                ?: return responseService.response(COURSE_NOT_FOUND, ownerNickname, courseName)
+                ?: return responseService.courseNotFound(ownerNickname, courseName)
 
         logger.info("Aggregating course $ownerNickname/$courseName students statistics")
 
@@ -336,7 +344,7 @@ class ModelController @Autowired constructor(private val dataService: DataServic
 
         val tasksStatistics: Map<String, Any> = course.tasks
                 .map { task ->
-                    task.taskName to object {
+                    task.name to object {
                         val mossResultUrl = task.mossUrl
                         val mossPlagiarismMatches =
                                 task.mossUrl
@@ -349,13 +357,10 @@ class ModelController @Autowired constructor(private val dataService: DataServic
 
         logger.info("Course $ownerNickname/$courseName statistics has been successfully aggregated")
 
-        return responseService.response(
-                COURSE_STATISTICS,
-                payload = object {
-                    val perStudentStats = studentsStatistics
-                    val perTaskStats = tasksStatistics
-                }
-        )
+        return responseService.ok(object {
+            val perStudentStats = studentsStatistics
+            val perTaskStats = tasksStatistics
+        })
     }
 
     /**
@@ -366,19 +371,17 @@ class ModelController @Autowired constructor(private val dataService: DataServic
      */
     @GetMapping("/{owner}/{course}/tasks")
     @PreAuthorize("hasAuthority('USER')")
+    @Transactional(readOnly = true)
     fun getCourseTasks(@PathVariable("owner") ownerNickname: String,
                        @PathVariable("course") courseName: String
-    ): Response {
+    ): ResponseEntity<Any> {
         val user = dataService.getUser(ownerNickname)
-                ?: return responseService.response(USER_NOT_FOUND, ownerNickname)
+                ?: return responseService.userNotFound(ownerNickname)
 
         val course = dataService.getCourse(courseName, user)
-                ?: return responseService.response(COURSE_NOT_FOUND, ownerNickname, courseName)
+                ?: return responseService.courseNotFound(ownerNickname, courseName)
 
-        return responseService.response(
-                COURSE_TASKS,
-                payload = course.tasks.map { it.taskName }
-        )
+        return responseService.ok(course.tasks.map { it.name })
     }
 
     /**
@@ -389,27 +392,25 @@ class ModelController @Autowired constructor(private val dataService: DataServic
      */
     @GetMapping("/{owner}/{course}/students")
     @PreAuthorize("hasAuthority('USER')")
+    @Transactional(readOnly = true)
     fun getCourseStudents(@PathVariable("owner") ownerNickname: String,
                           @PathVariable("course") courseName: String
-    ): Response {
+    ): ResponseEntity<Any> {
         val user = dataService.getUser(ownerNickname)
-                ?: return responseService.response(USER_NOT_FOUND, ownerNickname)
+                ?: return responseService.userNotFound(ownerNickname)
 
         val course = dataService.getCourse(courseName, user)
-                ?: return responseService.response(COURSE_NOT_FOUND, ownerNickname, courseName)
+                ?: return responseService.courseNotFound(ownerNickname, courseName)
 
-        return responseService.response(
-                COURSE_STUDENTS,
-                payload = course.students.map { it.nickname }
-        )
+        return responseService.ok(course.students.map { it.nickname })
     }
 
     /**
      * Returns a list of supported languages by flaxo.
      */
     @GetMapping("/supportedLanguages")
-    fun supportedLanguages(): Response =
-            responseService.response(SUPPORTED_LANGUAGES, payload = supportedLanguages.flatten())
+    fun supportedLanguages(): ResponseEntity<Any> =
+            responseService.ok(supportedLanguages.flatten())
 
     /**
      * Starts current user's course plagiarism analysis.
@@ -418,16 +419,17 @@ class ModelController @Autowired constructor(private val dataService: DataServic
      */
     @PostMapping("/analysePlagiarism")
     @PreAuthorize("hasAuthority('USER')")
+    @Transactional
     fun analysePlagiarism(@RequestParam courseName: String,
                           principal: Principal
-    ): Response {
+    ): ResponseEntity<Any> {
         logger.info("Trying to start plagiarism analysis for ${principal.name}/$courseName")
 
         val user = dataService.getUser(principal.name)
-                ?: throw ModelException("User with the required nickname ${principal.name} wasn't found.")
+                ?: return responseService.userNotFound(principal.name)
 
         val course = dataService.getCourse(courseName, user)
-                ?: throw ModelException("Course $courseName wasn't found for user ${principal.name}.")
+                ?: return responseService.courseNotFound(principal.name, courseName)
 
         logger.info("Extracting moss tasks for ${user.nickname}/$courseName")
 
@@ -442,7 +444,7 @@ class ModelController @Autowired constructor(private val dataService: DataServic
 
                     val task: Task =
                             course.tasks
-                                    .find { it.taskName == taskShortName }
+                                    .find { it.name == taskShortName }
                                     ?: throw MossException("Moss task ${mossTask.taskName} aim course task $taskShortName " +
                                             "wasn't found for course ${course.name}")
 
@@ -466,11 +468,7 @@ class ModelController @Autowired constructor(private val dataService: DataServic
                 mossTasks.map { it.taskName }
                         .map { it.split("/").last() }
 
-        return responseService.response(
-                PLAGIARISM_ANALYSIS_SCHEDULED,
-                scheduledTasksNames.toString(),
-                payload = scheduledTasksNames
-        )
+        return responseService.ok("Plagiarism analysis scheduled for tasks: $scheduledTasksNames")
     }
 
     private fun Travis.waitUntilTravisSynchronisationWillBeFinishedFor(travisUserId: String,
@@ -495,15 +493,19 @@ class ModelController @Autowired constructor(private val dataService: DataServic
         throw TravisException("Travis synchronisation hasn't finished " +
                 "after ${observationDuration(attemptsLimit)} seconds.")
     }
-}
 
-private fun Map<String, Language>.flatten(): List<Any> =
-        map { (name, language) ->
-            mapOf(
-                    "name" to name,
-                    "compatibleTestingLanguages"
-                            to language.compatibleTestingLanguages().map { it.name() },
-                    "compatibleTestingFrameworks"
-                            to language.compatibleTestingFrameworks().map { it.name() }
-            )
-        }
+    private inline fun <L, R> Either<L, R>.getOrElseExecute(block: (L) -> Unit): R =
+            apply { if (isLeft) block(left) }.get()
+
+    private fun Map<String, Language>.flatten(): List<Any> =
+            map { (name, language) ->
+                mapOf(
+                        "name" to name,
+                        "compatibleTestingLanguages"
+                                to language.compatibleTestingLanguages().map { it.name() },
+                        "compatibleTestingFrameworks"
+                                to language.compatibleTestingFrameworks().map { it.name() }
+                )
+            }
+
+}

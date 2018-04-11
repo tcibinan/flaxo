@@ -14,7 +14,7 @@ import javax.persistence.Table
 data class Credentials(
         @Id
         @GeneratedValue
-        override val id: Long? = null,
+        override val id: Long = -1,
 
         val password: String = "",
 

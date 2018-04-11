@@ -17,9 +17,9 @@ import javax.persistence.Table
 data class Task(
         @Id
         @GeneratedValue
-        override val id: Long? = null,
+        override val id: Long = -1,
 
-        val taskName: String = "",
+        val name: String = "",
 
         val mossUrl: String? = null,
 
@@ -32,7 +32,7 @@ data class Task(
 
     override fun view(): Any = let { task ->
         object {
-            val name = task.taskName
+            val name = task.name
         }
     }
 

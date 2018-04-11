@@ -1,6 +1,5 @@
 package com.tcibinan.flaxo.rest.api
 
-import com.tcibinan.flaxo.rest.api.ServerAnswer.*
 import com.tcibinan.flaxo.rest.service.response.ResponseService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.access.prepost.PreAuthorize
@@ -16,11 +15,11 @@ class FlaxoController @Autowired constructor(
 ) {
 
     @GetMapping("/")
-    fun index() = responseService.response(HELLO_WORLD)
+    fun index() = responseService.ok("Welcome to flaxo")
 
     @GetMapping("/echo")
     @PreAuthorize("hasAuthority('USER')")
     fun echo(@RequestParam("message") message: String) =
-            responseService.response(ECHO, payload = message)
+            responseService.ok(message)
 
 }

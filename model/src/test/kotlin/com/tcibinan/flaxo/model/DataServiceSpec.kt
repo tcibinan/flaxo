@@ -77,7 +77,7 @@ class DataServiceSpec : SubjectSpek<DataService>({
             }
 
             it("should also create tasks with ordered numbers in the titles") {
-                tasks.map { it.taskName }
+                tasks.map { it.name }
                         .sorted()
                         .mapIndexed { index, name -> Pair((index + 1).toString(), name) }
                         .forEach { (taskIndex, taskName) ->
@@ -86,7 +86,7 @@ class DataServiceSpec : SubjectSpek<DataService>({
             }
 
             it("should also create tasks with the given tasks prefix in the titles") {
-                tasks.map { it.taskName }
+                tasks.map { it.name }
                         .forEach { it should startWith(tasksPrefix) }
             }
 

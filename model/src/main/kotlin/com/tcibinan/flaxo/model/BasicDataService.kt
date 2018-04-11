@@ -63,7 +63,7 @@ class BasicDataService(private val userRepository: UserRepository,
 
         for (i in 1..numberOfTasks) {
             taskRepository
-                    .save(Task(taskName = "$tasksPrefix$i", course = courseEntity))
+                    .save(Task(name = "$tasksPrefix$i", course = courseEntity))
         }
 
         return getCourse(courseName, owner)
@@ -100,13 +100,7 @@ class BasicDataService(private val userRepository: UserRepository,
 
         taskRepository
                 .findAllByCourse(course)
-                .forEach { task ->
-                    solutionRepository
-                            .save(Solution(
-                                    task = task,
-                                    student = student
-                            ))
-                }
+                .forEach { task -> solutionRepository.save(Solution(task = task, student = student)) }
 
         return studentRepository
                 .findById(student.id)

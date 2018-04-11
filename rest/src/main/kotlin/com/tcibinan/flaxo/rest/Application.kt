@@ -23,6 +23,6 @@ class Application {
     fun messageService(messageSource: MessageSource): MessageService = NaiveMessageService(messageSource)
 
     @Bean
-    fun responseService(messageService: MessageService): ResponseService = SimpleResponseService(messageService)
+    fun responseService(): ResponseService = SimpleResponseService()
 
 }
