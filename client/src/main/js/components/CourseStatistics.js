@@ -10,7 +10,7 @@ import {
     NavLink,
     TabContent,
     TabPane
-} from "reactstrap";
+} from 'reactstrap';
 import {TasksStatistics} from './TasksStatistics';
 import {Task} from './Task';
 
