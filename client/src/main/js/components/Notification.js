@@ -1,20 +1,19 @@
-import '../../styles/style.css';
 import React from 'react';
-import {Alert} from 'react-bootstrap';
+import {Alert} from 'reactstrap';
 
-export function Notification(props) {
+export class Notification extends React.Component {
 
-    let status = "danger";
-    if (props.succeed) {
-        status = "success";
-    }
-    if (props.info) {
-        status = "info";
+    constructor(props) {
+        super(props);
     }
 
-    return (
-        <Alert bsStyle={status}>
-            {props.message}
-        </Alert>
-    );
+    render() {
+        let status = "danger";
+        if (this.props.succeed) status = "success";
+        if (this.props.info) status = "info";
+
+        return (
+            <Alert color={status}>{this.props.message}</Alert>
+        );
+    }
 }

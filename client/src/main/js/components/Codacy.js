@@ -1,6 +1,5 @@
-import '../../styles/style.css';
 import React from 'react';
-import {Label} from 'react-bootstrap';
+import {Badge} from 'reactstrap';
 
 export class Codacy extends React.Component {
 
@@ -12,7 +11,7 @@ export class Codacy extends React.Component {
 
     render() {
         return this.state.isAuthorized
-            ? <Label bsStyle="primary">Codacy</Label>
-            : <Label>Codacy</Label>;
+            ? <Badge color="primary">Codacy</Badge>
+            : <Badge color="secondary">Codacy</Badge>
     }
 }

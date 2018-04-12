@@ -1,6 +1,5 @@
-import '../../styles/style.css';
 import React from 'react';
-import {Label} from 'react-bootstrap';
+import {Badge} from 'reactstrap';
 
 export class Travis extends React.Component {
 
@@ -12,7 +11,7 @@ export class Travis extends React.Component {
 
     render() {
         return this.state.isAuthorized
-            ? <Label bsStyle="primary">Travis</Label>
-            : <Label>Travis</Label>;
+            ? <Badge color="primary">Travis</Badge>
+            : <Badge color="secondary">Travis</Badge>
     }
 }

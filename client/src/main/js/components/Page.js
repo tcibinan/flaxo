@@ -1,12 +1,14 @@
-import '../../styles/style.css';
 import React from 'react';
-import {Authentication} from './Authentication';
-import {CoursesList} from './CoursesList';
+import ReactDOM from 'react-dom';
+import Cookies from 'js-cookie';
 import {credentials} from '../scripts';
 import {Api} from '../Api';
-import Cookies from 'js-cookie';
-import ReactDOM from 'react-dom';
 import {Notification} from './Notification';
+import {NavigationBar} from './NavigationBar';
+import {Courses} from './Courses';
+import {Container, Jumbotron} from 'reactstrap';
+import {RegistrationModal} from './RegistrationModal';
+import {AuthenticationModal} from './AuthenticationModal';
 
 export class Page extends React.Component {
 
@@ -26,7 +28,7 @@ export class Page extends React.Component {
                 this.setState({account: account});
             },
             response => ReactDOM.render(
-                <Notification succeed message={"Account retrieving failed.<br/>" + response}/>,
+                <Notification succeed message={'Account retrieving failed due to: ' + response}/>,
                 document.getElementById('notifications')
             )
         );
@@ -36,15 +38,28 @@ export class Page extends React.Component {
         if (this.state.account != null) {
             return (
                 <article className="page">
-                    <Authentication account={this.state.account} onLogin={this.onLogin} onLogout={this.onLogout}/>
-                    <CoursesList account={this.state.account}/>
+                    <NavigationBar account={this.state.account} onLogout={this.onLogout}/>
+                    <Courses account={this.state.account}/>
                 </article>
             );
         } else {
             return (
                 <article className="page">
-                    <h1>Flaxo educational system</h1>
-                    <Authentication account={this.state.account} onLogin={this.onLogin} onLogout={this.onLogout}/>
+                    <Jumbotron>
+                        <h1 className="display-3">Flaxo</h1>
+                        <p className="lead">
+                            An open git-based educational platform for everyone
+                        </p>
+                        <hr className="my-2"/>
+                        <p>
+                            Flaxo tests and assess students solutions for you. It can even search for plagiarism.
+                            And it is completely free.
+                        </p>
+                        <p className="lead">
+                            <RegistrationModal onLogin={this.onLogin}/>{' '}
+                            <AuthenticationModal onLogin={this.onLogin}/>
+                        </p>
+                    </Jumbotron>
                 </article>
             );
         }

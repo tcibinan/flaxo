@@ -1,11 +1,10 @@
-import '../../styles/style.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Label} from "react-bootstrap";
 import Immutable from 'immutable';
 import axios from 'axios';
 import {credentials, restUrl} from '../scripts.js';
 import {Notification} from './Notification';
+import {Badge, Button} from 'reactstrap';
 
 export class Github extends React.Component {
 
@@ -20,12 +19,12 @@ export class Github extends React.Component {
 
     render() {
         if (this.state.isAuthorized) {
-            return <Label bsStyle="primary">Github</Label>;
+            return <Badge color="primary">Github</Badge>;
         } else {
             return (
-                <button type="button" className="btn btn-primary" onClick={this.authWithGithub}>
-                    Authorize github
-                </button>
+                <Button color="primary" onClick={this.authWithGithub}>
+                    Authorize with github
+                </Button>
             );
         }
     }
@@ -38,7 +37,7 @@ export class Github extends React.Component {
             })
             .then(this.redirectToGithubAuth)
             .catch(response => ReactDOM.render(
-                <Notification message={"Github auth failed." + "<br/>" + response}/>,
+                <Notification message={`Github auth failed due to: ${response}`}/>,
                 document.getElementById('notifications')
             ));
     }

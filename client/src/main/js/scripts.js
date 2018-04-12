@@ -11,3 +11,22 @@ export function credentials() {
         password: Cookies.get('password')
     }
 }
+
+export function gradeToNum(grade) {
+    switch (grade) {
+        case 'A':
+            return 6;
+        case 'B':
+            return 5;
+        case 'C':
+            return 4;
+        case 'D':
+            return 3;
+        case 'E':
+            return 2;
+        case 'F':
+            return 1;
+        default:
+            return 0;
+    }
+}

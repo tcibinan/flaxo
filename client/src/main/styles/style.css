@@ -1,5 +1,5 @@
 .root {
-    display: flex;
+
 }
 
 .notifications {
@@ -8,8 +8,13 @@
     top: 0;
 }
 
+.course-labels {
+    margin-left: 15px;
+}
+
 .courses-list,
 .selected-course {
+    padding-top: 20px;
     padding-left: 50px;
     padding-right: 50px;
 }
@@ -25,8 +30,17 @@
 }
 
 .course-controls {
+    display: flex;
     margin-top: 5px;
     margin-bottom: 10px;
+}
+
+.course-controls .course-control:not(:nth-child(1)) {
+    margin-left: 10px;
+}
+
+.course-controls .course-control:nth-last-child {
+    margin-left: auto;
 }
 
 .task-results,
