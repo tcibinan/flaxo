@@ -13,9 +13,9 @@ import java.io.File
 interface EnvironmentFile: AutoCloseable {
 
     /**
-     * @return Full path of the environment file.
+     * Full path of the environment file.
      */
-    fun name(): String
+    val name: String
 
     /**
      * @return String representation of the environment file.

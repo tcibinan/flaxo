@@ -56,7 +56,7 @@ object GithubSpec : SubjectSpek<Git>({
             it("should exist only in that branch") {
                 subject.branches(userName, repository.name)
                         .flatMap { it.files() }
-                        .filter { it.name() == fileName }
+                        .filter { it.name == fileName }
                         .count() shouldBe 1
             }
         }
@@ -67,7 +67,7 @@ object GithubSpec : SubjectSpek<Git>({
             it("should copy commits") {
                 subject.branches(userName, repository.name)
                         .flatMap { it.files() }
-                        .filter { it.name() == fileName }
+                        .filter { it.name == fileName }
                         .count() shouldBe 2
             }
         }

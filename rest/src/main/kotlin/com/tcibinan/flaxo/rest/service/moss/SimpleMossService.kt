@@ -93,10 +93,10 @@ class SimpleMossService(private val userId: String,
             SimpleMossResult(URL(mossResultUrl), { url -> Jsoup.connect(url) })
 
     private fun toFileInFolder(student: String): (EnvironmentFile) -> EnvironmentFile =
-            { it.with("$student/${Paths.get(it.name()).fileName}") }
+            { it.with("$student/${Paths.get(it.name).fileName}") }
 
 }
 
 private fun List<EnvironmentFile>.filterBy(language: Language): List<EnvironmentFile> =
-        filter { it.name().endsWith(language.extension) }
+        filter { file -> language.extensions.any { file.name.endsWith(it) } }
 

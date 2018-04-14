@@ -15,132 +15,89 @@ import com.tcibinan.flaxo.core.language.JavaLang
 import com.tcibinan.flaxo.core.language.KotlinLang
 import com.tcibinan.flaxo.core.language.Language
 
-class GradleBuildTool(private val language: Language,
-                      private val testingLanguage: Language,
-                      private val framework: TestingFramework,
-                      private val travis: EnvironmentSupplier,
-                      private val dependencies: Set<GradleDependency> = emptySet(),
-                      private val plugins: Set<GradlePlugin> = emptySet(),
-                      private val pluginsDependencies: Set<GradleDependency> = emptySet(),
-                      private val pluginsRepositories: Set<GradleRepository> = setOf(mavenCentral(), jcenter()),
-                      private val repositories: Set<GradleRepository> = setOf(mavenCentral(), jcenter())
+data class GradleBuildTool(private val travis: EnvironmentSupplier,
+                           private val dependencies: Set<GradleDependency> = emptySet(),
+                           private val plugins: Set<GradlePlugin> = emptySet(),
+                           private val repositories: Set<GradleRepository> = setOf(mavenCentral(), jcenter())
 ) : BuildTool {
 
-    override fun name() = "gradle"
+    override val name = "gradle"
 
-    constructor(gradleBuildTool: GradleBuildTool,
-                language: Language? = null,
-                testingLanguage: Language? = null,
-                framework: TestingFramework? = null,
-                travis: EnvironmentSupplier? = null,
-                dependencies: Set<GradleDependency> = emptySet(),
-                plugins: Set<GradlePlugin> = emptySet(),
-                pluginsDependencies: Set<GradleDependency> = emptySet(),
-                pluginsRepositories: Set<GradleRepository> = setOf(mavenCentral(), jcenter()),
-                repositories: Set<GradleRepository> = setOf(mavenCentral(), jcenter())
-    )
-            : this(
-            language ?: gradleBuildTool.language,
-            testingLanguage ?: gradleBuildTool.testingLanguage,
-            framework ?: gradleBuildTool.framework,
-            travis ?: gradleBuildTool.travis,
-            gradleBuildTool.dependencies + dependencies,
-            gradleBuildTool.plugins + plugins,
-            gradleBuildTool.pluginsDependencies + pluginsDependencies,
-            gradleBuildTool.pluginsRepositories + pluginsRepositories,
-            gradleBuildTool.repositories + repositories
-    )
+    override fun withLanguage(language: Language): GradleBuildTool =
+            when (language) {
+                JavaLang ->
+                    addPlugin(javaPlugin())
 
-    override fun with(language: Language,
-                      testingLanguage: Language,
-                      testingFramework: TestingFramework
-    ): EnvironmentSupplier =
-            GradleBuildTool(language, testingLanguage, testingFramework, travis)
+                KotlinLang ->
+                    addPlugin(kotlinGradleJvmPlugin())
+                            .addDependency(kotlinJreDependency())
 
-    override fun withLanguage(language: Language): BuildTool {
-        return when (language) {
-            JavaLang -> addPlugin(javaPlugin())
+                else -> throw UnsupportedLanguageException(language)
+            }.copy(travis = travis.withLanguage(language))
 
-            KotlinLang -> addPlugin(junitPlatformPlugin())
-                    .addDependency(kotlinTestDependency())
+    override fun withTestingLanguage(testingLanguage: Language): GradleBuildTool =
+            when (testingLanguage) {
+                JavaLang ->
+                    addPlugin(junitPlatformPlugin())
 
-            else -> throw UnsupportedLanguage(language)
-        }
-    }
+                KotlinLang ->
+                    addPlugin(kotlinGradleJvmPlugin())
+                            .addPlugin(junitPlatformPlugin())
+                            .addDependency(kotlinJreDependency())
+                            .addDependency(kotlinTestDependency())
 
-    override fun withTestingsLanguage(language: Language): BuildTool {
-        return when (language) {
-            JavaLang -> addPlugin(junitPlatformPlugin())
+                else -> throw UnsupportedLanguageException(testingLanguage)
+            }.copy(travis = travis.withTestingLanguage(testingLanguage))
 
-            KotlinLang ->
-                addPlugin(kotlinGradlePlugin())
-                        .addDependency(kotlinJreDependency())
+    override fun withTestingFramework(testingFramework: TestingFramework): GradleBuildTool =
+            when (testingFramework) {
+                SpekTestingFramework ->
+                    addPlugin(junitPlatformPlugin())
+                            .addDependency(spekApiDependency())
+                            .addDependency(spekDataDrivenDependency())
+                            .addDependency(spekSubjectDependency())
+                            .addDependency(spekJunitRunnerDependency())
 
-            else -> throw UnsupportedLanguage(language)
-        }
-    }
+                JUnitTestingFramework ->
+                    addPlugin(junitPlatformPlugin())
+                            .addDependency(jupiterApiDependency())
+                            .addDependency(jupiterEngineDependency())
 
-    override fun withTestingFramework(framework: TestingFramework): BuildTool {
-        return when (framework) {
-            SpekTestingFramework ->
-                addPlugin(junitPlatformPlugin())
-                        .addDependency(spekApiDependency())
-                        .addDependency(spekDataDrivenDependency())
-                        .addDependency(spekSubjectDependency())
-                        .addDependency(spekJunitRunnerDependency())
+                else -> throw UnsupportedFrameworkException(testingFramework)
+            }.copy(travis = travis.withTestingFramework(testingFramework))
 
-            JUnitTestingFramework ->
-                addPlugin(junitPlatformPlugin())
-                        .addDependency(jupiterApiDependency())
-                        .addDependency(jupiterEngineDependency())
+    override fun addDependency(dependency: Dependency): GradleBuildTool =
+            when (dependency) {
+                is GradleDependency -> copy(
+                        dependencies = dependencies + dependency,
+                        repositories = repositories + dependency.repositories
+                )
+                else -> throw UnsupportedDependencyException(dependency, this)
+            }
 
-            else -> throw UnsupportedFramework(framework)
-        }
-    }
-
-    override fun addDependency(dependency: Dependency): BuildTool {
-        return when (dependency) {
-            is GradleDependency -> GradleBuildTool(this,
-                    dependencies = dependencies + dependency,
-                    repositories = repositories + dependency.repositories
-            )
-            else -> throw UnsupportedDependencyException(dependency, this)
-        }
-    }
-
-    override fun addPlugin(plugin: Plugin): BuildTool {
-        return when (plugin) {
-            is GradlePlugin -> GradleBuildTool(this,
-                    plugins = plugins + plugin,
-                    pluginsDependencies = pluginsDependencies + plugin.dependencies,
-                    pluginsRepositories = pluginsRepositories + plugin.dependencies.flatMap { it.repositories }.toSet()
-            )
-            else -> throw UnsupportedPluginException(plugin, this)
-        }
-    }
+    override fun addPlugin(plugin: Plugin): GradleBuildTool =
+            when (plugin) {
+                is GradlePlugin -> copy(plugins = plugins + plugin)
+                else -> throw UnsupportedPluginException(plugin, this)
+            }
 
     override fun getEnvironment(): Environment =
-            withLanguage(language)
-                    .withTestingsLanguage(testingLanguage)
-                    .withTestingFramework(framework)
-                    .run { gradleEnvironment() + travis.getEnvironment() }
+            gradleEnvironment() + travis.getEnvironment()
 
     private fun gradleEnvironment(): Environment {
         val gradleBuild = produceGradleBuild()
-        return GradleWrappers.with(gradleBuild) + gradleBuild
+        val gradleSettings = produceGradleSettings()
+        return GradleWrappers.with(gradleBuild, gradleSettings)
+                .plus(gradleBuild)
+                .plus(gradleSettings)
     }
 
+    private fun produceGradleSettings(): EnvironmentFile =
+            GradleSettingsFile
+                    .with(plugins)
+
     private fun produceGradleBuild(): EnvironmentFile =
-            GradleBuildEnvironmentFile.builder()
-                    .addPlugins(pluginsRepositories, pluginsDependencies, plugins)
-                    .addRepositories(repositories)
-                    .addDependencies(dependencies)
-                    .build()
-
-    inner class UnsupportedLanguage(language: Language)
-        : Throwable("Unsupported language ${language.name()} for ${name()} build tool")
-
-    inner class UnsupportedFramework(framework: TestingFramework)
-        : Throwable("Unsupported framework ${framework.name()} for ${name()} build tool")
+            GradleBuildFile
+                    .with(plugins, repositories, dependencies)
 
 }

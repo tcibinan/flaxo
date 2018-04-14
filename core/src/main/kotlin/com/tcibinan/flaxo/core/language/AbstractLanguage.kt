@@ -5,18 +5,14 @@ import com.tcibinan.flaxo.core.framework.TestingFramework
 /**
  * Abstract language class.
  */
-abstract class AbstractLanguage(
-        private val name: String,
-        override val extension: String,
-        private val suitableTestLanguages: Set<Language>,
-        private val suitableTestingFrameworks: Set<TestingFramework>
+abstract class AbstractLanguage(override val name: String,
+                                override val extensions: Set<String>,
+                                compatibleTestingLanguages: Set<Language>,
+                                override val compatibleTestingFrameworks: Set<TestingFramework>
 ) : Language {
 
-    override fun name() = name
+    override val compatibleTestingLanguages: Set<Language> = compatibleTestingLanguages
+        get() = field + this
 
-    override fun toString() = name()
-
-    override fun compatibleTestingLanguages(): Set<Language> = suitableTestLanguages + this
-
-    override fun compatibleTestingFrameworks(): Set<TestingFramework> = suitableTestingFrameworks
+    override fun toString() = name
 }

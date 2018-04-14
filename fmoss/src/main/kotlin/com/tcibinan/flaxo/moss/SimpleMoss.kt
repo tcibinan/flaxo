@@ -50,7 +50,7 @@ class SimpleMoss(override val userId: String,
                     client.uploadFile(it.file(), isBase)
                 }.onFailure { e ->
                     throw MossException("Can't load ${if (isBase) "base" else "solutions"} " +
-                            "file ${environmentFile.name()} to moss server", e)
+                            "file ${environmentFile.name} to moss server", e)
                 }
             }
 

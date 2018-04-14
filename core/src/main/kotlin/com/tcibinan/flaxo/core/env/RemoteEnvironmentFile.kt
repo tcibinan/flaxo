@@ -22,7 +22,7 @@ class RemoteEnvironmentFile(private val path: String,
 
     private var file: File? = null
 
-    override fun name() = path
+    override val name = path
 
     override fun content(): String =
             (file ?: run { file() })
@@ -38,9 +38,9 @@ class RemoteEnvironmentFile(private val path: String,
                 .apply { toFile().deleteOnExit() }
 
         return Try {
-            val fileName = name().split("/").last()
+            val fileName = name.split("/").last()
 
-            Paths.get(name().replace(fileName, ""))
+            Paths.get(name.replace(fileName, ""))
                     .let { rootDirectory.resolve(it) }
                     .let { Files.createDirectories(it) }
                     .resolve(fileName)

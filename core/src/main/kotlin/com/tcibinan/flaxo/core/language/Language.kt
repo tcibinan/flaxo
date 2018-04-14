@@ -9,35 +9,31 @@ import com.tcibinan.flaxo.core.framework.TestingFramework
 interface Language : NamedEntity {
 
     /**
-     * Extension of the files written on the language.
+     * Extensions of the files written on the language.
      */
-    val extension: String
+    val extensions: Set<String>
 
     /**
-     * Returns languages that can be used for writing tests for the language.
-     *
-     * @return set of compatible testing languages.
+     * Languages that can be used for writing tests for the language.
      */
-    fun compatibleTestingLanguages(): Set<Language>
+    val compatibleTestingLanguages: Set<Language>
 
     /**
-     * Returns language testing frameworks.
-     *
-     * @return set if compatible testing frameworks.
+     * Frameworks that can be used for testing with the language.
      */
-    fun compatibleTestingFrameworks(): Set<TestingFramework>
+    val compatibleTestingFrameworks: Set<TestingFramework>
 
     /**
      * Checks if the given [testingLanguage] can be used as testing language
      * for the current language.
      */
     fun canBeTestedBy(testingLanguage: Language): Boolean =
-            testingLanguage == this || testingLanguage in compatibleTestingLanguages()
+            testingLanguage == this || testingLanguage in compatibleTestingLanguages
 
     /**
      * Checks if the given [testingFramework] can be used as testing framework
      * by the current language.
      */
     fun worksWith(testingFramework: TestingFramework): Boolean =
-            testingFramework in compatibleTestingFrameworks()
+            testingFramework in compatibleTestingFrameworks
 }

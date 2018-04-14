@@ -14,11 +14,13 @@ class GradleWrappers private constructor(files: Set<EnvironmentFile>)
 
     companion object {
 
-        fun with(gradleBuild: EnvironmentFile): GradleWrappers {
+        fun with(gradleBuild: EnvironmentFile,
+                 gradleSettings: EnvironmentFile
+        ): GradleWrappers {
             val dir = createTempDir("wrappers-generating-${Random().nextInt()}")
             dir.deleteOnExit()
 
-            return Try(generateWrappers(dir, gradleBuild))
+            return Try(generateWrappers(dir, gradleBuild, gradleSettings))
                     .onFailure {
                         dir.deleteRecursively()
                         throw GradleWrappersException(it)
@@ -26,8 +28,12 @@ class GradleWrappers private constructor(files: Set<EnvironmentFile>)
                     .get()
         }
 
-        private fun generateWrappers(dir: File, gradleBuild: EnvironmentFile): () -> GradleWrappers = {
-            File(dir, gradleBuild.name()).fillWith(gradleBuild.content())
+        private fun generateWrappers(dir: File,
+                                     gradleBuild: EnvironmentFile,
+                                     gradleSettings: EnvironmentFile
+        ): () -> GradleWrappers = {
+            File(dir, gradleBuild.name).fillWith(gradleBuild.content())
+            File(dir, gradleSettings.name).fillWith(gradleSettings.content())
 
             GradleCmdExecutor.within(dir).wrapper()
 

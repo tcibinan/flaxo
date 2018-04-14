@@ -1,5 +1,5 @@
+import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
-import com.tcibinan.flaxo.cmd.CmdExecutor
 import com.tcibinan.flaxo.core.build.BuildTool
 import com.tcibinan.flaxo.core.env.Environment
 import com.tcibinan.flaxo.core.env.EnvironmentSupplier
@@ -8,14 +8,11 @@ import com.tcibinan.flaxo.core.env.SimpleEnvironmentFile
 import com.tcibinan.flaxo.core.framework.JUnitTestingFramework
 import com.tcibinan.flaxo.core.language.JavaLang
 import com.tcibinan.flaxo.gradle.GradleBuildTool
-import com.tcibinan.flaxo.gradle.GradleCmdExecutor
-import com.tcibinan.flaxo.gradle.fillWith
 import io.kotlintest.matchers.shouldNotBe
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.subject.SubjectSpek
-import java.io.File
 import kotlin.test.assertTrue
 
 object GradleEnvironmentSpec : SubjectSpek<BuildTool>({
@@ -28,18 +25,22 @@ object GradleEnvironmentSpec : SubjectSpek<BuildTool>({
             SimpleEnvironmentFile("travisfile2", "travisfile1content")
     )
     val travis: EnvironmentSupplier = mock {
+        on { withLanguage(any()) }.thenReturn(it)
+        on { withTestingLanguage(any()) }.thenReturn(it)
+        on { withTestingFramework(any()) }.thenReturn(it)
         on { getEnvironment() }.thenReturn(SimpleEnvironment(travisFiles))
     }
-
-    subject { GradleBuildTool(JavaLang, JavaLang, JUnitTestingFramework, travis) }
+    subject {
+        GradleBuildTool(travis)
+                .with(JavaLang, JavaLang, JUnitTestingFramework)
+                as BuildTool
+    }
 
     describe("gradle environment") {
 
         on("creating environment") {
             val environment =
-                    subject.withLanguage(language)
-                            .withTestingsLanguage(language)
-                            .withTestingFramework(framework)
+                    subject.with(language, language, framework)
                             .getEnvironment()
 
             it("should contain non blank $gradleFileName") {
@@ -74,28 +75,8 @@ object GradleEnvironmentSpec : SubjectSpek<BuildTool>({
 
             it("should contain all files from travis environment supplier") {
                 travisFiles.forEach {
-                    environment.getFile(it.name()) shouldNotBe null
+                    environment.getFile(it.name) shouldNotBe null
                 }
-            }
-        }
-
-        on("performing `gradle build` with the environment of ($language + $language + $framework)") {
-            val environment =
-                    subject.withLanguage(language)
-                            .withTestingsLanguage(language)
-                            .withTestingFramework(framework)
-                            .getEnvironment()
-
-            val buildFile = environment.getFile(gradleFileName)
-                    ?: throw EnvironmentFileNotFound("$gradleFileName wasn't found in the environment")
-
-            it("should create buildable project") {
-                val tempDir = createTempDir("$language.$language.$framework")
-                tempDir.deleteOnExit()
-
-                CmdExecutor.within(tempDir).execute("touch", gradleFileName)
-                File(tempDir, gradleFileName).fillWith(buildFile.content())
-                GradleCmdExecutor.within(tempDir).build()
             }
         }
     }

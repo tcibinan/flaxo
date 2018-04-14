@@ -4,13 +4,15 @@ import com.tcibinan.flaxo.gradle.GradleDependencyType.*
 
 private const val spekVersion = "1.1.5"
 private const val junitVersion = "1.0.3"
-private const val kotlinVersion = "1.2.0"
+private const val kotlinVersion = "1.2.31"
 private const val jupiterVersion = "5.0.3"
 
 //repositories
 
 fun mavenCentral() = GradleRepository("mavenCentral()")
 fun jcenter() = GradleRepository("jcenter()")
+fun gradlePluginPortal() = GradleRepository("gradlePluginPortal()")
+fun jcenterBinTray() = GradleRepository("maven { url \"https://jcenter.bintray.com/\" }")
 
 //plugins
 
@@ -20,14 +22,27 @@ fun junitPlatformPlugin() =
         GradlePlugin(
                 "org.junit.platform.gradle.plugin",
                 junitVersion,
-                setOf(junitPlatformPluginDependency())
+                setOf(junitPlatformPluginDependency()),
+                junitPlatformPluginManagement()
         )
 
-fun kotlinGradlePlugin() =
+fun kotlinGradleJvmPlugin() =
         GradlePlugin(
-                "kotlin",
-                kotlinVersion,
-                setOf(kotlinGradlePluginDependency())
+                "org.jetbrains.kotlin.jvm",
+                kotlinVersion
+        )
+
+//plugin management
+
+fun junitPlatformPluginManagement() =
+        GradlePluginManagement(
+                "org.junit.platform.gradle.plugin",
+                GradleDependency(
+                        "org.junit.platform",
+                        "junit-platform-gradle-plugin",
+                        junitVersion
+                ),
+                setOf(gradlePluginPortal(), jcenterBinTray())
         )
 
 //dependencies
@@ -86,12 +101,6 @@ fun junitPlatformPluginDependency() =
                 "junit-platform-gradle-plugin",
                 junitVersion,
                 type = CLASSPATH
-        )
-fun kotlinGradlePluginDependency() =
-        GradleDependency(
-                "org.jetbrains.kotlin",
-                "kotlin-gradle-plugin",
-                kotlinVersion
         )
 
 fun jupiterApiDependency() =

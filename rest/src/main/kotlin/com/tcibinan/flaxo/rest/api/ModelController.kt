@@ -502,9 +502,9 @@ class ModelController @Autowired constructor(private val dataService: DataServic
                 mapOf(
                         "name" to name,
                         "compatibleTestingLanguages"
-                                to language.compatibleTestingLanguages().map { it.name() },
+                                to language.compatibleTestingLanguages.map { it.name },
                         "compatibleTestingFrameworks"
-                                to language.compatibleTestingFrameworks().map { it.name() }
+                                to language.compatibleTestingFrameworks.map { it.name }
                 )
             }
 

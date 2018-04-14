@@ -35,13 +35,13 @@ class CoreConfiguration {
     @Bean
     fun travisEnvironmentSupplier(@Value("\${TRAVIS_WEB_HOOK_URL}") travisWebHookUrl: String
     ): TravisEnvironmentSupplier =
-            SimpleTravisEnvironmentSupplier(JavaLang, JavaLang, JUnitTestingFramework, travisWebHookUrl)
+            SimpleTravisEnvironmentSupplier(travisWebHookUrl = travisWebHookUrl)
 
     @Bean
     fun defaultBuildTools(travisEnvironmentSupplier: TravisEnvironmentSupplier): Map<Language, BuildTool> =
             mapOf<Language, BuildTool>(
-                    JavaLang to GradleBuildTool(JavaLang, JavaLang, JUnitTestingFramework, travisEnvironmentSupplier),
-                    KotlinLang to GradleBuildTool(JavaLang, JavaLang, JUnitTestingFramework, travisEnvironmentSupplier)
+                    JavaLang to GradleBuildTool(travisEnvironmentSupplier),
+                    KotlinLang to GradleBuildTool(travisEnvironmentSupplier)
             )
 
 
@@ -57,7 +57,7 @@ class CoreConfiguration {
             )
 
     private fun <TYPE : NamedEntity> namedMap(vararg namedEntity: TYPE): Map<String, TYPE> =
-            namedEntity.groupBy { it.name() }
+            namedEntity.groupBy { it.name }
                     .map { (name, entities) -> name to entities.first() }
                     .toMap()
 }

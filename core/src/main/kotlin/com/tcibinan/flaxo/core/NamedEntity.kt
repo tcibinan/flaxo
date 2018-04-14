@@ -4,5 +4,9 @@ package com.tcibinan.flaxo.core
  * Named entity interface.
  */
 interface NamedEntity {
-    fun name(): String
+
+    /**
+     * Name of the entity.
+     */
+    val name: String
 }

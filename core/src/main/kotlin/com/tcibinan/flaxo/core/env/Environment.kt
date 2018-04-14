@@ -16,5 +16,5 @@ interface Environment {
      * Returns file from the current environment by the given name.
      */
     fun getFile(fileName: String): EnvironmentFile? =
-            getFiles().firstOrNull { it.name() == fileName }
+            getFiles().firstOrNull { it.name == fileName }
 }

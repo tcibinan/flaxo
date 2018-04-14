@@ -34,9 +34,7 @@ class SimpleRepositoryEnvironmentService(
                 ?: throw NoDefaultBuildTool(language)
 
         return buildTool
-                .withLanguage(language)
-                .withTestingsLanguage(testingLanguage)
-                .withTestingFramework(testingFramework)
+                .with(language, testingLanguage, testingFramework)
                 .getEnvironment()
     }
 

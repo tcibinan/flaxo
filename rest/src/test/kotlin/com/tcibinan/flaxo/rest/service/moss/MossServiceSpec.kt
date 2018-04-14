@@ -114,7 +114,7 @@ object MossServiceSpec : SubjectSpek<MossService>({
             it("should only contain tasks with solutions on the proper language") {
                 mossTasks.flatMap { it.solutions }
                         .also {
-                            assertTrue { it.all { it.name().endsWith("java") } }
+                            assertTrue { it.all { it.name.endsWith("java") } }
                         }
             }
 
@@ -123,7 +123,7 @@ object MossServiceSpec : SubjectSpek<MossService>({
                 val solutions: List<EnvironmentFile> = task.solutions
 
                 assertTrue { solutions.size == 1 }
-                assertTrue { solutions.any { it.name().split("/").first() == student1Name } }
+                assertTrue { solutions.any { it.name.split("/").first() == student1Name } }
             }
 
             it("should contains tasks where each base file have 'base' as a root folder") {
@@ -131,7 +131,7 @@ object MossServiceSpec : SubjectSpek<MossService>({
                 val base: List<EnvironmentFile> = task.base
 
                 assertTrue { base.isNotEmpty() }
-                assertTrue { base.all { it.name().split("/").first() == "base" } }
+                assertTrue { base.all { it.name.split("/").first() == "base" } }
             }
 
             it("should contains tasks where each environment file could be retrieved as a valid java.io.File") {
@@ -162,5 +162,5 @@ private fun emptyFile(filePath: String) =
         RemoteEnvironmentFile(filePath, "files content".byteInputStream())
 
 private fun filesWithFileNameOf(filePath: String): (EnvironmentFile) -> Boolean =
-        { it.name().endsWith(Paths.get(filePath).fileName.toString()) }
+        { it.name.endsWith(Paths.get(filePath).fileName.toString()) }
 

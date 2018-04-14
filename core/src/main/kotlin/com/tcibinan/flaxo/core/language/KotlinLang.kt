@@ -6,7 +6,8 @@ import com.tcibinan.flaxo.core.framework.SpekTestingFramework
 /**
  * Kotlin language object.
  */
-object KotlinLang : AbstractLanguage("kotlin", "kt",
-        suitableTestLanguages = setOf(),
-        suitableTestingFrameworks = setOf(JUnitTestingFramework, SpekTestingFramework)
+object KotlinLang : AbstractLanguage("kotlin",
+        extensions = setOf("kt"),
+        compatibleTestingLanguages = setOf(),
+        compatibleTestingFrameworks = setOf(JUnitTestingFramework, SpekTestingFramework)
 )

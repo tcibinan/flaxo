@@ -5,7 +5,8 @@ import com.tcibinan.flaxo.core.framework.JUnitTestingFramework
 /**
  * Java language object.
  */
-object JavaLang : AbstractLanguage("java", "java",
-        suitableTestLanguages = setOf(KotlinLang),
-        suitableTestingFrameworks = setOf(JUnitTestingFramework)
+object JavaLang : AbstractLanguage("java",
+        extensions = setOf("java"),
+        compatibleTestingLanguages = setOf(KotlinLang),
+        compatibleTestingFrameworks = setOf(JUnitTestingFramework)
 )
