@@ -27,4 +27,4 @@ include 'cmd'
 include 'ftravis'
 include 'fmoss'
 include 'client'
-
+include 'fretrofit'

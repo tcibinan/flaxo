@@ -29,7 +29,7 @@ object GithubSpec : SubjectSpek<Git>({
         subject.deleteRepository(repository.name)
     }
 
-    describe("git service") {
+    describe("github") {
 
         on("creating custom repository with single branch") {
             subject.createRepository(repository.name)
