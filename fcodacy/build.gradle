@@ -1,0 +1,10 @@
+plugins {
+    id "kotlin"
+    id "org.junit.platform.gradle.plugin"
+}
+
+dependencies {
+    compile project(":fretrofit")
+    compile "com.squareup.retrofit2:retrofit:2.3.0"
+    compile "com.squareup.retrofit2:converter-jackson:2.3.0"
+}

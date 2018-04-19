@@ -67,7 +67,6 @@ class RetrofitMockResponseDsl {
                                 .also {
                                     builder.body(ResponseBody.create(MediaType.parse("application/json"), it))
                                 }
-
                     }
                     .also {
                         headers.forEach { key, value -> it.addHeader(key, value) }
