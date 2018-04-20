@@ -23,17 +23,8 @@ class TravisSimpleService(private val client: TravisClient)
                 .first().split(" ").last()
     }
 
-    override fun travis(travisToken: String): Travis {
-        return Retrofit.Builder()
-                .baseUrl(baseUrl)
-                .addConverterFactory(JacksonConverterFactory.create())
-                .build()
-                .create(TravisClient::class.java)
-                .with(travisToken)
-    }
-
-    private fun TravisClient.with(travisToken: String): Travis =
-            SimpleTravis(this, travisToken)
+    override fun travis(travisToken: String): Travis =
+            SimpleTravis(client, travisToken)
 
     override fun parsePayload(reader: Reader): TravisBuild? =
             parseTravisWebHook(reader)

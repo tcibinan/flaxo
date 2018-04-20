@@ -143,7 +143,7 @@ class BasicDataService(private val userRepository: UserRepository,
         throw ModelException("Could not find user with $userNickname nickname")
     }
 
-    override fun updateStudentTask(updatedSolution: Solution): Solution =
+    override fun updateSolution(updatedSolution: Solution): Solution =
             solutionRepository.save(updatedSolution)
 
     override fun updateTask(updatedTask: Task): Task =

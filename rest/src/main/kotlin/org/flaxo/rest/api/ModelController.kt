@@ -1,7 +1,7 @@
 package org.flaxo.rest.api
 
 import org.flaxo.core.language.Language
-import org.flaxo.model.CourseStatus
+import org.flaxo.model.CourseLifecycle
 import org.flaxo.model.DataService
 import org.flaxo.model.EntityAlreadyExistsException
 import org.flaxo.model.EntityNotFound
@@ -22,6 +22,7 @@ import org.flaxo.travis.TravisException
 import org.flaxo.travis.TravisUser
 import io.vavr.control.Either
 import org.apache.logging.log4j.LogManager
+import org.flaxo.rest.service.codacy.CodacyService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -45,6 +46,7 @@ class ModelController @Autowired constructor(private val dataService: DataServic
                                              private val responseService: ResponseService,
                                              private val environmentService: RepositoryEnvironmentService,
                                              private val travisService: TravisService,
+                                             private val codacyService: CodacyService,
                                              private val gitService: GitService,
                                              private val mossService: MossService,
                                              private val supportedLanguages: Map<String, Language>
@@ -254,9 +256,40 @@ class ModelController @Autowired constructor(private val dataService: DataServic
                             "repository went bad due to: ${errorBody.string()}")
                 }
 
+        activatedServices.add(IntegratedService.TRAVIS)
+
+        val codacyToken = user.credentials.codacyToken
+
+        codacyToken
+                ?.also { token ->
+                    logger.info("Initialising codacy client for ${user.nickname} user")
+
+                    val codacy = codacyService.codacy(githubUserId, token)
+
+                    logger.info("Creating codacy project $courseName for ${user.nickname} user")
+
+                    val errorBody = codacy.createProject(courseName, "github.com/$githubUserId/$courseName.git")
+
+                    if (errorBody == null) {
+                        logger.info("Codacy project $courseName for ${user.nickname} user was created")
+
+                        activatedServices.add(IntegratedService.CODACY)
+                    } else {
+                        logger.info("Codacy project $courseName for ${user.nickname} user was not created due to: ${errorBody.string()}")
+                    }
+                }
+                ?: logger.info("Codacy token is not set for ${user.nickname} user so codacy service is not activated")
+
         logger.info("Changing course ${user.nickname}/$courseName status to running")
 
-        dataService.updateCourse(course.copy(status = CourseStatus.RUNNING))
+        dataService.updateCourse(
+                course.copy(
+                        state = course.state.copy(
+                                lifecycle = CourseLifecycle.RUNNING,
+                                activatedServices = activatedServices
+                        )
+                )
+        )
 
         logger.info("Course ${user.nickname}/$courseName has been successfully composed")
 
@@ -477,8 +510,8 @@ class ModelController @Autowired constructor(private val dataService: DataServic
     }
 
     private fun Travis.waitUntilTravisSynchronisationWillBeFinishedFor(travisUserId: String,
-                                                                                        attemptsLimit: Int = 20,
-                                                                                        retrievingDelay: Long = 3000
+                                                                       attemptsLimit: Int = 20,
+                                                                       retrievingDelay: Long = 3000
     ) {
         val observationDuration: (Int) -> Long = { attempt -> (attempt + 1) * retrievingDelay / 1000 }
 

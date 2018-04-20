@@ -6,6 +6,16 @@ package org.flaxo.git
 interface PullRequest : GitPayload {
 
     /**
+     * Newest pull request commit sha.
+     */
+    val lastCommitSha: String
+
+    /**
+     * Pull request base branch.
+     */
+    val baseBranch: String
+
+    /**
      * Checks if the pull request state is *opened*.
      */
     val isOpened: Boolean

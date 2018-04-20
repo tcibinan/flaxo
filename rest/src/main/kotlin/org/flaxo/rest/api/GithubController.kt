@@ -128,8 +128,13 @@ class GithubController(
                     val course = dataService.getCourse(hook.receiverRepositoryName, user)
                             ?: throw GithubException("Course ${hook.receiverRepositoryName} wasn't found for user ${user.nickname}.")
 
-                    val student = course.students.find { it.nickname == hook.authorId }
+                    val student = course.students
+                            .find { it.nickname == hook.authorId }
                             ?: dataService.addStudent(hook.authorId, course)
+
+                    student.solutions
+                            .find { it.task.name == hook.baseBranch }
+                            ?.also { dataService.updateSolution(it.copy(sha = hook.lastCommitSha)) }
 
                     logger.info("Student ${student.nickname} was initialised for course ${user.nickname}/${course.name}.")
                 } else {

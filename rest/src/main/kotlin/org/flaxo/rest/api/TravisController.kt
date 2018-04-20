@@ -38,7 +38,7 @@ class TravisController @Autowired constructor(private val travisService: TravisS
                         logger.info("Travis pull request successful build web hook received " +
                                 "for ${build.repositoryOwner}/${build.repositoryName}.")
 
-                        dataService.updateStudentTask(getStudentTaskBy(build).copy(
+                        dataService.updateSolution(getStudentTaskBy(build).copy(
                                 built = true,
                                 succeed = true
                         ))
@@ -47,7 +47,7 @@ class TravisController @Autowired constructor(private val travisService: TravisS
                         logger.info("Travis pull request failed build web hook received " +
                                 "for ${build.repositoryOwner}/${build.repositoryName}.")
 
-                        dataService.updateStudentTask(getStudentTaskBy(build).copy(
+                        dataService.updateSolution(getStudentTaskBy(build).copy(
                                 built = true,
                                 succeed = false
                         ))

@@ -127,7 +127,7 @@ interface DataService {
      *
      * @return changed tasks.
      */
-    fun updateStudentTask(updatedSolution: Solution): Solution
+    fun updateSolution(updatedSolution: Solution): Solution
 
     /**
      * Changes task.

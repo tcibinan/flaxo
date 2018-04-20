@@ -24,6 +24,8 @@ data class Solution(
         @ManyToOne(optional = false, fetch = FetchType.LAZY)
         val student: Student = Student(),
 
+        val sha: String? = null,
+
         val built: Boolean = false,
 
         val succeed: Boolean = false,
