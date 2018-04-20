@@ -1,9 +1,10 @@
 package org.flaxo.model
 
 /**
- * Services flaxo could have user access token for.
+ * Services flaxo could be integrated with.
  */
 enum class IntegratedService {
     GITHUB,
-    TRAVIS
+    TRAVIS,
+    CODACY
 }

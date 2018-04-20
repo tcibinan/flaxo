@@ -1,9 +1,13 @@
 package org.flaxo.model
 
+import io.kotlintest.matchers.beEmpty
+import io.kotlintest.matchers.contain
+import io.kotlintest.matchers.containsAll
 import io.kotlintest.matchers.haveSubstring
 import io.kotlintest.matchers.should
 import io.kotlintest.matchers.shouldBe
 import io.kotlintest.matchers.shouldEqual
+import io.kotlintest.matchers.shouldNot
 import io.kotlintest.matchers.shouldNotBe
 import io.kotlintest.matchers.shouldThrow
 import io.kotlintest.matchers.startWith
@@ -28,7 +32,7 @@ class DataServiceSpec : SubjectSpek<DataService>({
 
     val context = AnnotationConfigApplicationContext(JpaTestApplication::class.java)
 
-    subject { context.getBean("dataService", DataService::class.java) }
+    subject { context.getBean(DataService::class.java) }
 
     describe("data service") {
 
@@ -90,8 +94,9 @@ class DataServiceSpec : SubjectSpek<DataService>({
                         .forEach { it should startWith(tasksPrefix) }
             }
 
-            it("should have default status") {
-                course.status shouldBe CourseStatus.INIT
+            it("should have default state") {
+                course.state.lifecycle shouldBe CourseLifecycle.INIT
+                course.state.activatedServices should beEmpty()
             }
         }
 
@@ -152,16 +157,35 @@ class DataServiceSpec : SubjectSpek<DataService>({
             }
         }
 
-        on("changing course status") {
+        on("changing course state") {
             val owner = subject.getUser(nickname)
                     ?: throw EntityNotFound("User $nickname")
             val course = subject.getCourse(courseName, owner)
                     ?: throw EntityNotFound("Course $courseName")
-            val updatedCourse = course.copy(status = CourseStatus.RUNNING)
+            val updatedCourse = course
+                    .copy(
+                            state = course.state.copy(
+                                    lifecycle = CourseLifecycle.RUNNING,
+                                    activatedServices = listOf(
+                                            IntegratedService.GITHUB,
+                                            IntegratedService.TRAVIS
+                                    )
+                            )
+                    )
                     .also { subject.updateCourse(it) }
 
-            it("should change it") {
-                updatedCourse.status shouldBe CourseStatus.RUNNING
+            it("should change its lifecycle") {
+                updatedCourse.state.lifecycle shouldBe CourseLifecycle.RUNNING
+            }
+
+            it("should change its activated services") {
+                updatedCourse.state.activatedServices should containsAll(
+                        IntegratedService.GITHUB,
+                        IntegratedService.TRAVIS
+                )
+                updatedCourse.state.activatedServices shouldNot contain(
+                        IntegratedService.CODACY
+                )
             }
         }
 
@@ -173,6 +197,25 @@ class DataServiceSpec : SubjectSpek<DataService>({
             it("should delete the course") {
                 subject.getCourses(nickname)
                         .forEach { it.name shouldNotBe courseName }
+            }
+        }
+
+        on("addition tokens to a user") {
+            val githubToken = "githubToken"
+            val travisToken = "travisToken"
+            val codacyToken = "codacyToken"
+
+            subject.addToken(nickname, IntegratedService.CODACY, codacyToken)
+            subject.addToken(nickname, IntegratedService.TRAVIS, travisToken)
+            subject.addToken(nickname, IntegratedService.GITHUB, githubToken)
+
+            it("should add all tokens to a user credentials") {
+                val user = subject.getUser(nickname)
+                        ?: throw EntityNotFound("User $nickname")
+
+                user.credentials.githubToken shouldBe githubToken
+                user.credentials.travisToken shouldBe travisToken
+                user.credentials.codacyToken shouldBe codacyToken
             }
         }
 

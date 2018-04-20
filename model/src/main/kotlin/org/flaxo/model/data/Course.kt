@@ -1,12 +1,14 @@
 package org.flaxo.model.data
 
 import java.util.*
+import javax.persistence.CascadeType
 import javax.persistence.Entity
 import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
 import javax.persistence.Id
 import javax.persistence.OneToMany
 import javax.persistence.ManyToOne
+import javax.persistence.OneToOne
 import javax.persistence.Table
 
 /**
@@ -27,7 +29,8 @@ data class Course(
 
         val testingFramework: String = "",
 
-        val status: String = "",
+        @OneToOne(cascade = [CascadeType.ALL], optional = false, fetch = FetchType.LAZY)
+        val state: CourseState = CourseState(),
 
         @ManyToOne(optional = false, fetch = FetchType.LAZY)
         val user: User = User(),
@@ -46,9 +49,8 @@ data class Course(
             val language = course.language
             val testingLanguage = course.testingLanguage
             val testingFramework = course.testingFramework
-            val status = course.status
-            val user = course.user.nickname
-            val userGithubId = course.user.githubId
+            val state = course.state.view()
+            val user = course.user.view()
             val students = course.students.map { it.nickname }
             val tasks = course.tasks.map { it.name }
         }

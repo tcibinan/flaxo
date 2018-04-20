@@ -6,11 +6,13 @@ import org.flaxo.travis.Travis
 import org.flaxo.travis.TravisClient
 import org.flaxo.travis.build.TravisBuild
 import org.flaxo.travis.parseTravisWebHook
-import retrofit2.Retrofit
-import retrofit2.converter.jackson.JacksonConverterFactory
 import java.io.Reader
 
-class TravisSimpleService(private val baseUrl: String) : TravisService {
+/**
+ * Travis service basic implementation.
+ */
+class TravisSimpleService(private val client: TravisClient)
+    : TravisService {
 
     override fun retrieveTravisToken(githubUsername: String, githubToken: String): String {
         CmdExecutor.execute("travis", "login",

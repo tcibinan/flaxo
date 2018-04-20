@@ -7,6 +7,7 @@ import org.flaxo.model.dao.SolutionRepository
 import org.flaxo.model.dao.TaskRepository
 import org.flaxo.model.dao.UserRepository
 import org.flaxo.model.data.Course
+import org.flaxo.model.data.CourseState
 import org.flaxo.model.data.Credentials
 import org.flaxo.model.data.Student
 import org.flaxo.model.data.Solution
@@ -57,7 +58,7 @@ class BasicDataService(private val userRepository: UserRepository,
                         language = language,
                         testingLanguage = testingLanguage,
                         testingFramework = testingFramework,
-                        status = CourseStatus.INIT,
+                        state = CourseState(),
                         user = owner
                 ))
 
@@ -155,5 +156,6 @@ private fun Credentials.withServiceToken(service: IntegratedService,
     when (service) {
         IntegratedService.GITHUB -> copy(githubToken = accessToken)
         IntegratedService.TRAVIS -> copy(travisToken = accessToken)
+        IntegratedService.CODACY -> copy(codacyToken = accessToken)
     }
 }

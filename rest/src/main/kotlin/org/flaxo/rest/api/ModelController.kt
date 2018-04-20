@@ -36,6 +36,9 @@ import java.security.Principal
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
+/**
+ * Common methods controller.
+ */
 @RestController
 @RequestMapping("/rest")
 class ModelController @Autowired constructor(private val dataService: DataService,
@@ -242,6 +245,8 @@ class ModelController @Autowired constructor(private val dataService: DataServic
         travis.waitUntilTravisSynchronisationWillBeFinishedFor(travisUser.id)
 
         logger.info("Activating git repository of the course ${user.nickname}/$courseName for travis CI")
+
+        val activatedServices = mutableListOf<IntegratedService>()
 
         travis.activate(githubUserId, course.name)
                 .getOrElseThrow { errorBody ->
