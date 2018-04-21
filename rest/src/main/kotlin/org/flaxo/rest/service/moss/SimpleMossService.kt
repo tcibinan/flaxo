@@ -43,8 +43,8 @@ class SimpleMossService(private val userId: String,
                     student.nickname to
                             student.solutions
                                     .filter {
-                                        val buildReport = it.buildReport
-                                        buildReport != null && buildReport.succeed
+                                        it.buildReports.isNotEmpty()
+                                                && it.buildReports.last().succeed
                                     }
                                     .map { it.task.branch }
                 }

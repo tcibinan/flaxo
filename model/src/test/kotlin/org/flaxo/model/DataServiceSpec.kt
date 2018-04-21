@@ -17,6 +17,9 @@ import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.subject.SubjectSpek
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
+import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.support.DefaultTransactionDefinition
+import org.springframework.transaction.TransactionStatus
 
 class DataServiceSpec : SubjectSpek<DataService>({
     val nickname = "nickname"
@@ -35,22 +38,39 @@ class DataServiceSpec : SubjectSpek<DataService>({
     val codeStyleGrade = "B"
 
     val context = AnnotationConfigApplicationContext(JpaTestApplication::class.java)
+    val transactionManager = context.getBean(PlatformTransactionManager::class.java)
 
     subject { context.getBean(DataService::class.java) }
 
     describe("data service") {
 
+        var transactionStatus: TransactionStatus? = null
+
+        beforeEachTest {
+            transactionStatus = transactionManager.getTransaction(DefaultTransactionDefinition())
+        }
+
+        afterEachTest {
+            transactionStatus?.also {
+                transactionManager.commit(it)
+            }
+        }
+
         on("user addition") {
             subject.addUser(nickname, password)
 
-            it("should contain the user") {
-                subject.getUser(nickname)?.credentials?.password shouldBe password
+            it("should also add credentials for user") {
+                subject.getUser(nickname)
+                        ?.credentials
+                        ?.password shouldBe password
             }
         }
 
         on("addition user that already exists") {
             it("should throw an exception") {
-                shouldThrow<EntityAlreadyExistsException> { subject.addUser(nickname, password) }
+                shouldThrow<EntityAlreadyExistsException> {
+                    subject.addUser(nickname, password)
+                }
             }
         }
 
@@ -91,7 +111,7 @@ class DataServiceSpec : SubjectSpek<DataService>({
                     numberOfTasks,
                     owner
             )
-            val tasks = subject.getTasks(course)
+            val tasks = course.tasks
 
             it("should contain the course") {
                 course.language shouldBe language
@@ -117,7 +137,7 @@ class DataServiceSpec : SubjectSpek<DataService>({
             }
 
             it("should create tasks without plagiarism reports") {
-                tasks.forEach { it.plagiarismReport shouldBe null }
+                tasks.forEach { it.plagiarismReports should beEmpty() }
             }
 
             it("should have default state") {
@@ -170,14 +190,14 @@ class DataServiceSpec : SubjectSpek<DataService>({
             subject.addStudent(anotherStudent, course)
 
             it("should add all the student to the course") {
-                subject.getStudents(course)
+                course.students
                         .map { it.nickname }
                         .toSet() shouldEqual setOf(student, anotherStudent)
             }
 
             it("should create new entity for each student-task combination") {
-                subject.getStudents(course)
-                        .map { subject.getSolutions(it) }
+                course.students
+                        .map { it.solutions }
                         .filter { it.count() == numberOfTasks }
                         .count() shouldBe 2
             }
@@ -220,7 +240,7 @@ class DataServiceSpec : SubjectSpek<DataService>({
                     ?: throw EntityNotFound("User $nickname")
             val course = subject.getCourse(courseName, user)
                     ?: throw EntityNotFound("Course $courseName")
-            val task = subject.getTasks(course)
+            val task = course.tasks
                     .firstOrNull()
                     ?: throw EntityNotFound("There is no tasks for course $courseName")
             val matches = listOf(PlagiarismMatch(), PlagiarismMatch())
@@ -230,7 +250,8 @@ class DataServiceSpec : SubjectSpek<DataService>({
             val plagiarismReport =
                     subject.getTasks(course)
                             .first()
-                            .plagiarismReport
+                            .plagiarismReports
+                            .lastOrNull()
 
             it("should contain plagiarism report") {
                 plagiarismReport shouldNotBe null
@@ -250,10 +271,10 @@ class DataServiceSpec : SubjectSpek<DataService>({
                     ?: throw EntityNotFound("User $nickname")
             val course = subject.getCourse(courseName, user)
                     ?: throw EntityNotFound("Course $courseName")
-            val task = subject.getTasks(course)
+            val task = course.tasks
                     .firstOrNull()
                     ?: throw EntityNotFound("There is no tasks for course $courseName")
-            val solution = subject.getSolutions(task)
+            val solution = task.solutions
                     .firstOrNull()
                     ?: throw EntityNotFound("There is no solution for task in ${task.branch} course $courseName")
 
@@ -262,7 +283,8 @@ class DataServiceSpec : SubjectSpek<DataService>({
             val buildReport =
                     subject.getSolutions(task)
                             .first()
-                            .buildReport
+                            .buildReports
+                            .lastOrNull()
 
             it("should contain build report") {
                 buildReport shouldNotBe null
@@ -278,10 +300,10 @@ class DataServiceSpec : SubjectSpek<DataService>({
                     ?: throw EntityNotFound("User $nickname")
             val course = subject.getCourse(courseName, user)
                     ?: throw EntityNotFound("Course $courseName")
-            val task = subject.getTasks(course)
+            val task = course.tasks
                     .firstOrNull()
                     ?: throw EntityNotFound("There is no tasks for course $courseName")
-            val solution = subject.getSolutions(task)
+            val solution = task.solutions
                     .firstOrNull()
                     ?: throw EntityNotFound("There is no solution for task in ${task.branch} course $courseName")
 
@@ -290,7 +312,8 @@ class DataServiceSpec : SubjectSpek<DataService>({
             val codeStyleReport =
                     subject.getSolutions(task)
                             .first()
-                            .codeStyleReport
+                            .codeStyleReports
+                            .lastOrNull()
 
             it("should contain code style report") {
                 codeStyleReport shouldNotBe null
@@ -307,8 +330,7 @@ class DataServiceSpec : SubjectSpek<DataService>({
             subject.deleteCourse(courseName, user)
 
             it("should delete the course") {
-                subject.getCourses(nickname)
-                        .forEach { it.name shouldNotBe courseName }
+                subject.getCourse(courseName, user) shouldBe null
             }
         }
 

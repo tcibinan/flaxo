@@ -26,7 +26,7 @@ data class Student(
         val course: Course = Course(),
 
         @OneToMany(mappedBy = "student", orphanRemoval = true)
-        val solutions: Set<Solution> = emptySet()
+        val solutions: Set<Solution> = mutableSetOf()
 
 ) : Identifiable, Viewable {
 

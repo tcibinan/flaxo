@@ -23,21 +23,21 @@ data class Task(
 
         val branch: String = "",
 
-        @OneToOne(fetch = FetchType.LAZY)
-        val plagiarismReport: PlagiarismReport? = null,
-
         @ManyToOne(optional = false, fetch = FetchType.LAZY)
         val course: Course = Course(),
 
         @OneToMany(mappedBy = "task", orphanRemoval = true)
-        val solutions: Set<Solution> = emptySet()
+        val plagiarismReports: List<PlagiarismReport> = mutableListOf(),
+
+        @OneToMany(mappedBy = "task", orphanRemoval = true)
+        val solutions: Set<Solution> = mutableSetOf()
 
 ) : Identifiable, Viewable {
 
     override fun view(): Any = let { task ->
         object {
             val branch = task.branch
-            val plagiarismReport = task.plagiarismReport?.view()
+            val plagiarismReport = task.plagiarismReports.views()
             val solutions = task.solutions.views()
         }
     }

@@ -43,14 +43,14 @@ object MossServiceSpec : SubjectSpek<MossService>({
     val solutionEntities1: Set<Solution> = setOf(
             Solution(
                     task = Task(branch = branch1),
-                    buildReport = BuildReport(succeed = true)
+                    buildReports = listOf(BuildReport(succeed = true))
             )
     )
     val student1 = Student(nickname = student1Name, solutions = solutionEntities1)
     val solutionEntities2: Set<Solution> = setOf(
             Solution(
                     task = Task(branch = branch1),
-                    buildReport = BuildReport(succeed = false)
+                    buildReports = listOf(BuildReport(succeed = false))
             )
     )
     val student2 = Student(nickname = student2Name, solutions = solutionEntities2)

@@ -26,10 +26,11 @@ class GradleSettingsFile private constructor(private val content: String)
                             }
                             resolutionStrategy {
                                 eachPlugin {
-                                    plugins.map { it to it.pluginManagement }
-                                            .filter { it.second != null }
-                                            .map { it as Pair<GradlePlugin, GradlePluginManagement> }
-                                            .map { it.first to it.second.dependency }
+                                    plugins
+                                            .mapNotNull { plugin ->
+                                                plugin.pluginManagement
+                                                        ?.let { plugin to it.dependency }
+                                            }
                                             .forEach { (plugin, dependency) ->
                                                 put("if (requested.id.id == \"${plugin.id}\") {")
                                                 put("useModule(\"${dependency.group}:${dependency.id}:\${requested.version}\")",

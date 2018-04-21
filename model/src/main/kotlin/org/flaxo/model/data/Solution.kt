@@ -6,7 +6,7 @@ import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
 import javax.persistence.Id
 import javax.persistence.ManyToOne
-import javax.persistence.OneToOne
+import javax.persistence.OneToMany
 import javax.persistence.Table
 
 /**
@@ -28,11 +28,11 @@ data class Solution(
 
         val sha: String? = null,
 
-        @OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
-        val buildReport: BuildReport? = null,
+        @OneToMany(mappedBy = "solution", orphanRemoval = true)
+        val buildReports: List<BuildReport> = mutableListOf(),
 
-        @OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
-        val codeStyleReport: CodeStyleReport? = null,
+        @OneToMany(mappedBy = "solution", orphanRemoval = true)
+        val codeStyleReports: List<CodeStyleReport> = mutableListOf(),
 
         val deadline: Boolean = true
 
@@ -42,8 +42,8 @@ data class Solution(
         object {
             val task = solution.task.branch
             val student = solution.student.nickname
-            val buildReport = solution.buildReport?.view()
-            val codeStyleReport = solution.codeStyleReport?.view()
+            val buildReport = solution.buildReports.views()
+            val codeStyleReport = solution.buildReports.views()
             val deadline = solution.deadline
         }
     }

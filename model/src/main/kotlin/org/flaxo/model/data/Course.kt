@@ -37,10 +37,10 @@ data class Course(
         val user: User = User(),
 
         @OneToMany(mappedBy = "course", orphanRemoval = true)
-        val students: Set<Student> = emptySet(),
+        val students: Set<Student> = mutableSetOf(),
 
         @OneToMany(mappedBy = "course", orphanRemoval = true)
-        val tasks: Set<Task> = emptySet()
+        val tasks: Set<Task> = mutableSetOf()
 
 ) : Identifiable, Viewable {
 

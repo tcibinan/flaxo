@@ -65,7 +65,9 @@ class TravisController @Autowired constructor(private val travisService: TravisS
 
                         val buildReport = dataService.addBuildReport(solution, succeed = true)
 
-                        dataService.updateSolution(solution.copy(buildReport = buildReport))
+                        dataService.updateSolution(solution.copy(
+                                buildReports = solution.buildReports.plus(buildReport)
+                        ))
                     }
                     BuildStatus.FAILED -> {
                         logger.info("Travis pull request failed build web hook received " +
@@ -73,7 +75,9 @@ class TravisController @Autowired constructor(private val travisService: TravisS
 
                         val buildReport = dataService.addBuildReport(solution, succeed = false)
 
-                        dataService.updateSolution(solution.copy(buildReport = buildReport))
+                        dataService.updateSolution(solution.copy(
+                                buildReports = solution.buildReports.plus(buildReport)
+                        ))
                     }
                     BuildStatus.IN_PROGRESS -> {
                         logger.info("Travis pull request in progress build web hook received " +

@@ -24,7 +24,7 @@ data class CourseState(
         val lifecycle: CourseLifecycle = CourseLifecycle.INIT,
 
         @ElementCollection(fetch = FetchType.EAGER)
-        val activatedServices: List<IntegratedService> = emptyList()
+        val activatedServices: List<IntegratedService> = mutableListOf()
 
 ) : Identifiable, Viewable {
 

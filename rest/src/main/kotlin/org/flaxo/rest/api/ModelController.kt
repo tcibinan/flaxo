@@ -485,7 +485,9 @@ class ModelController @Autowired constructor(private val dataService: DataServic
                             }
                     )
 
-                    dataService.updateTask(task.copy(plagiarismReport = plagiarismReport))
+                    dataService.updateTask(task.copy(
+                            plagiarismReports = task.plagiarismReports.plus(plagiarismReport)
+                    ))
                 }
             }
         }

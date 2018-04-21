@@ -63,7 +63,7 @@ class BasicDataService(private val userRepository: UserRepository,
         if (getCourse(courseName, owner) != null)
             throw EntityAlreadyExistsException("Course $owner/$courseName")
 
-        val courseEntity = courseRepository
+        val course = courseRepository
                 .save(Course(
                         name = courseName,
                         language = language,
@@ -73,27 +73,20 @@ class BasicDataService(private val userRepository: UserRepository,
                         user = owner
                 ))
 
-        for (i in 1..numberOfTasks) {
-            taskRepository
-                    .save(Task(branch = "$tasksPrefix$i", course = courseEntity))
-        }
-
-        return getCourse(courseName, owner)
-                ?: throw ModelException("Could not create the course")
+        return (1..numberOfTasks)
+                .map { taskNumber ->
+                    taskRepository
+                            .save(Task(branch = "$tasksPrefix$taskNumber", course = course))
+                }
+                .let { tasks ->
+                    updateCourse(course.copy(tasks = course.tasks.plus(tasks)))
+                }
     }
 
     override fun deleteCourse(courseName: String,
                               owner: User
     ) {
         getCourse(courseName, owner)
-                ?.also {
-                    getTasks(it)
-                            .map { updateTask(it.copy(plagiarismReport = null)) }
-                            .forEach {
-                                plagiarismReportRepository.findByTask(it)
-                                        .forEach { plagiarismReportRepository.delete(it) }
-                            }
-                }
                 ?.also { courseRepository.delete(it) }
                 ?: throw EntityNotFound("Repository $courseName")
     }
@@ -118,16 +111,15 @@ class BasicDataService(private val userRepository: UserRepository,
         val student =
                 studentRepository.save(Student(nickname = nickname, course = course))
 
-        taskRepository
+        return taskRepository
                 .findAllByCourse(course)
-                .forEach { task -> solutionRepository.save(Solution(task = task, student = student)) }
-
-        return studentRepository
-                .findById(student.id)
-                .orElseThrow {
-                    ModelException("Could not create the student $nickname " +
-                            "for course ${course.user.nickname}/${course.name}")
+                .map { task -> solutionRepository.save(Solution(task = task, student = student)) }
+                .let { solutions ->
+                    studentRepository.save(student.copy(
+                            solutions = student.solutions.plus(solutions)
+                    ))
                 }
+                .also { updateCourse(course.copy(students = course.students.plus(it))) }
     }
 
     override fun getStudents(course: Course): Set<Student> =
@@ -181,7 +173,9 @@ class BasicDataService(private val userRepository: UserRepository,
                             succeed = succeed
                     ))
                     .also {
-                        updateSolution(solution.copy(buildReport = it))
+                        updateSolution(solution.copy(
+                                buildReports = solution.buildReports.plus(it)
+                        ))
                     }
 
     override fun addCodeStyleReport(solution: Solution,
@@ -194,7 +188,9 @@ class BasicDataService(private val userRepository: UserRepository,
                             grade = codeStyleGrade
                     ))
                     .also {
-                        updateSolution(solution.copy(codeStyleReport = it))
+                        updateSolution(solution.copy(
+                                codeStyleReports = solution.codeStyleReports.plus(it)
+                        ))
                     }
 
 
@@ -210,7 +206,9 @@ class BasicDataService(private val userRepository: UserRepository,
                             matches = matches
                     ))
                     .also {
-                        updateTask(task.copy(plagiarismReport = it))
+                        updateTask(task.copy(
+                                plagiarismReports = task.plagiarismReports.plus(it)
+                        ))
                     }
 }
 
