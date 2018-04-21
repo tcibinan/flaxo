@@ -13,4 +13,6 @@ interface Viewable {
     }
 }
 
-fun Set<Viewable>.toViews(): List<Any> = map { it.view() }
+fun Set<Viewable>.views(): List<Any> = map { it.view() }
+
+fun List<Viewable>.views(): List<Any> = map { it.view() }

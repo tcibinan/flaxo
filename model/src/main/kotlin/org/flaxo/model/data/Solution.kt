@@ -6,6 +6,7 @@ import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
 import javax.persistence.Id
 import javax.persistence.ManyToOne
+import javax.persistence.OneToOne
 import javax.persistence.Table
 
 /**
@@ -14,6 +15,7 @@ import javax.persistence.Table
 @Entity(name = "solution")
 @Table(name = "solution")
 data class Solution(
+
         @Id
         @GeneratedValue
         override val id: Long = -1,
@@ -26,28 +28,31 @@ data class Solution(
 
         val sha: String? = null,
 
-        val built: Boolean = false,
+        @OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
+        val buildReport: BuildReport? = null,
 
-        val succeed: Boolean = false,
-
-        val grade: String? = null,
+        @OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
+        val codeStyleReport: CodeStyleReport? = null,
 
         val deadline: Boolean = true
-) : Viewable, Identifiable {
+
+) : Identifiable, Viewable {
 
     override fun view(): Any = let { solution ->
         object {
-            val id = solution.id
-            val task = solution.task.name
+            val task = solution.task.branch
             val student = solution.student.nickname
-            val built = solution.built
-            val succeed = solution.succeed
-            val grade = solution.grade
+            val buildReport = solution.buildReport?.view()
+            val codeStyleReport = solution.codeStyleReport?.view()
             val deadline = solution.deadline
         }
     }
 
+    override fun toString(): String = "${this::class.simpleName}(id=$id)"
+
     override fun hashCode() = Objects.hash(id)
 
-    override fun equals(other: Any?) = other is Solution && other.id == id
+    override fun equals(other: Any?): Boolean =
+            this::class.isInstance(other)
+                    && (other as Identifiable).id == id
 }

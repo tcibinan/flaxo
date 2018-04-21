@@ -1,18 +1,26 @@
 package org.flaxo.model
 
+import org.flaxo.model.dao.BuildReportRepository
+import org.flaxo.model.dao.CodeStyleReportRepository
 import org.flaxo.model.dao.CourseRepository
 import org.flaxo.model.dao.CredentialsRepository
+import org.flaxo.model.dao.PlagiarismReportRepository
 import org.flaxo.model.dao.StudentRepository
 import org.flaxo.model.dao.SolutionRepository
 import org.flaxo.model.dao.TaskRepository
 import org.flaxo.model.dao.UserRepository
+import org.flaxo.model.data.BuildReport
+import org.flaxo.model.data.CodeStyleReport
 import org.flaxo.model.data.Course
 import org.flaxo.model.data.CourseState
 import org.flaxo.model.data.Credentials
+import org.flaxo.model.data.PlagiarismMatch
+import org.flaxo.model.data.PlagiarismReport
 import org.flaxo.model.data.Student
 import org.flaxo.model.data.Solution
 import org.flaxo.model.data.Task
 import org.flaxo.model.data.User
+import java.time.LocalDateTime
 
 /**
  * Data service implementation based on jpa repositories.
@@ -22,7 +30,10 @@ class BasicDataService(private val userRepository: UserRepository,
                        private val courseRepository: CourseRepository,
                        private val taskRepository: TaskRepository,
                        private val studentRepository: StudentRepository,
-                       private val solutionRepository: SolutionRepository
+                       private val solutionRepository: SolutionRepository,
+                       private val buildReportRepository: BuildReportRepository,
+                       private val codeStyleReportRepository: CodeStyleReportRepository,
+                       private val plagiarismReportRepository: PlagiarismReportRepository
 ) : DataService {
 
     override fun addUser(nickname: String,
@@ -64,7 +75,7 @@ class BasicDataService(private val userRepository: UserRepository,
 
         for (i in 1..numberOfTasks) {
             taskRepository
-                    .save(Task(name = "$tasksPrefix$i", course = courseEntity))
+                    .save(Task(branch = "$tasksPrefix$i", course = courseEntity))
         }
 
         return getCourse(courseName, owner)
@@ -75,6 +86,14 @@ class BasicDataService(private val userRepository: UserRepository,
                               owner: User
     ) {
         getCourse(courseName, owner)
+                ?.also {
+                    getTasks(it)
+                            .map { updateTask(it.copy(plagiarismReport = null)) }
+                            .forEach {
+                                plagiarismReportRepository.findByTask(it)
+                                        .forEach { plagiarismReportRepository.delete(it) }
+                            }
+                }
                 ?.also { courseRepository.delete(it) }
                 ?: throw EntityNotFound("Repository $courseName")
     }
@@ -117,6 +136,9 @@ class BasicDataService(private val userRepository: UserRepository,
     override fun getSolutions(student: Student): Set<Solution> =
             solutionRepository.findByStudent(student)
 
+    override fun getSolutions(task: Task): Set<Solution> =
+            solutionRepository.findByTask(task)
+
     override fun getTasks(course: Course): Set<Task> =
             taskRepository.findAllByCourse(course)
 
@@ -148,6 +170,48 @@ class BasicDataService(private val userRepository: UserRepository,
 
     override fun updateTask(updatedTask: Task): Task =
             taskRepository.save(updatedTask)
+
+    override fun addBuildReport(solution: Solution,
+                                succeed: Boolean
+    ): BuildReport =
+            buildReportRepository
+                    .save(BuildReport(
+                            solution = solution,
+                            date = LocalDateTime.now(),
+                            succeed = succeed
+                    ))
+                    .also {
+                        updateSolution(solution.copy(buildReport = it))
+                    }
+
+    override fun addCodeStyleReport(solution: Solution,
+                                    codeStyleGrade: String
+    ): CodeStyleReport =
+            codeStyleReportRepository
+                    .save(CodeStyleReport(
+                            solution = solution,
+                            date = LocalDateTime.now(),
+                            grade = codeStyleGrade
+                    ))
+                    .also {
+                        updateSolution(solution.copy(codeStyleReport = it))
+                    }
+
+
+    override fun addPlagiarismReport(task: Task,
+                                     url: String,
+                                     matches: List<PlagiarismMatch>
+    ): PlagiarismReport =
+            plagiarismReportRepository
+                    .save(PlagiarismReport(
+                            task = task,
+                            date = LocalDateTime.now(),
+                            url = url,
+                            matches = matches
+                    ))
+                    .also {
+                        updateTask(task.copy(plagiarismReport = it))
+                    }
 }
 
 private fun Credentials.withServiceToken(service: IntegratedService,

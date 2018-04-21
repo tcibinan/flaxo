@@ -16,6 +16,7 @@ import javax.persistence.Table
 @Entity(name = "course_state")
 @Table(name = "course_state")
 data class CourseState(
+
         @Id
         @GeneratedValue
         override val id: Long = -1,
@@ -24,17 +25,21 @@ data class CourseState(
 
         @ElementCollection(fetch = FetchType.EAGER)
         val activatedServices: List<IntegratedService> = emptyList()
-) : Viewable, Identifiable {
+
+) : Identifiable, Viewable {
 
     override fun view(): Any = let { state ->
         object {
-            val id = state.id
             val lifecycle = state.lifecycle
             val activatedServices = state.activatedServices
         }
     }
 
+    override fun toString(): String = "${this::class.simpleName}(id=$id)"
+
     override fun hashCode() = Objects.hash(id)
 
-    override fun equals(other: Any?) = other is CourseState && other.id == id
+    override fun equals(other: Any?): Boolean =
+            this::class.isInstance(other)
+                    && (other as Identifiable).id == id
 }

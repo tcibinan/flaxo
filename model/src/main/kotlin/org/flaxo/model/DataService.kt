@@ -1,6 +1,10 @@
 package org.flaxo.model
 
+import org.flaxo.model.data.BuildReport
+import org.flaxo.model.data.CodeStyleReport
 import org.flaxo.model.data.Course
+import org.flaxo.model.data.PlagiarismMatch
+import org.flaxo.model.data.PlagiarismReport
 import org.flaxo.model.data.Student
 import org.flaxo.model.data.Solution
 import org.flaxo.model.data.Task
@@ -92,9 +96,14 @@ interface DataService {
     fun getStudents(course: Course): Set<Student>
 
     /**
-     * Returns a list of student's solution.
+     * Returns a set of student's solution.
      */
     fun getSolutions(student: Student): Set<Solution>
+
+    /**
+     * Returns a solutions set for a given task.
+     */
+    fun getSolutions(task: Task): Set<Solution>
 
     /**
      * Retrieves all tasks of the course.
@@ -135,4 +144,27 @@ interface DataService {
      * @return changed task.
      */
     fun updateTask(updatedTask: Task): Task
+
+    /**
+     * Adds new build report.
+     */
+    fun addBuildReport(solution: Solution,
+                       succeed: Boolean
+    ): BuildReport
+
+    /**
+     * Adds new code style report.
+     */
+    fun addCodeStyleReport(solution: Solution,
+                           codeStyleGrade: String
+    ): CodeStyleReport
+
+    /**
+     * Adds new plagiarism report.
+     */
+    fun addPlagiarismReport(task: Task,
+                            url: String,
+                            matches: List<PlagiarismMatch>
+    ): PlagiarismReport
+
 }

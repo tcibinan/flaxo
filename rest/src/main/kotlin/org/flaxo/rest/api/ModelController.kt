@@ -8,7 +8,7 @@ import org.flaxo.model.EntityNotFound
 import org.flaxo.model.IntegratedService
 import org.flaxo.model.data.Task
 import org.flaxo.model.data.User
-import org.flaxo.model.data.toViews
+import org.flaxo.model.data.views
 import org.flaxo.moss.MossException
 import org.flaxo.moss.MossResult
 import org.flaxo.rest.service.environment.RepositoryEnvironmentService
@@ -22,6 +22,7 @@ import org.flaxo.travis.TravisException
 import org.flaxo.travis.TravisUser
 import io.vavr.control.Either
 import org.apache.logging.log4j.LogManager
+import org.flaxo.model.data.PlagiarismMatch
 import org.flaxo.rest.service.codacy.CodacyService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -347,7 +348,7 @@ class ModelController @Autowired constructor(private val dataService: DataServic
                    principal: Principal
     ): ResponseEntity<Any> =
             if (principal.name == nickname) {
-                responseService.ok(dataService.getCourses(nickname).toViews())
+                responseService.ok(dataService.getCourses(nickname).views())
             } else {
                 responseService.forbidden()
             }
@@ -364,7 +365,7 @@ class ModelController @Autowired constructor(private val dataService: DataServic
     fun getCourseStatistics(@PathVariable("owner") ownerNickname: String,
                             @PathVariable("course") courseName: String
     ): ResponseEntity<Any> {
-        logger.info("Trying to aggregate course $ownerNickname/$courseName statistics")
+        logger.info("Aggregating course $ownerNickname/$courseName statistics")
 
         val user = dataService.getUser(ownerNickname)
                 ?: return responseService.userNotFound(ownerNickname)
@@ -372,33 +373,7 @@ class ModelController @Autowired constructor(private val dataService: DataServic
         val course = dataService.getCourse(courseName, user)
                 ?: return responseService.courseNotFound(ownerNickname, courseName)
 
-        logger.info("Aggregating course $ownerNickname/$courseName students statistics")
-
-        val studentsStatistics: Map<String, List<Any>> = course.students
-                .map { it.nickname to it.solutions.toViews() }
-                .toMap()
-
-        logger.info("Aggregating course $ownerNickname/$courseName tasks statistics")
-
-        val tasksStatistics: Map<String, Any> = course.tasks
-                .map { task ->
-                    task.name to object {
-                        val mossResultUrl = task.mossUrl
-                        val mossPlagiarismMatches =
-                                task.mossUrl
-                                        ?.let { mossService.retrieveAnalysisResult(it) }
-                                        ?.matches()
-                                        .orEmpty()
-                    }
-                }
-                .toMap()
-
-        logger.info("Course $ownerNickname/$courseName statistics has been successfully aggregated")
-
-        return responseService.ok(object {
-            val perStudentStats = studentsStatistics
-            val perTaskStats = tasksStatistics
-        })
+        return responseService.ok(course.tasks.views())
     }
 
     /**
@@ -419,7 +394,7 @@ class ModelController @Autowired constructor(private val dataService: DataServic
         val course = dataService.getCourse(courseName, user)
                 ?: return responseService.courseNotFound(ownerNickname, courseName)
 
-        return responseService.ok(course.tasks.map { it.name })
+        return responseService.ok(course.tasks.map { it.branch })
     }
 
     /**
@@ -478,24 +453,39 @@ class ModelController @Autowired constructor(private val dataService: DataServic
         synchronized(executor) {
             mossTasks.forEach { mossTask ->
                 executor.execute {
-                    val taskShortName: String = mossTask.taskName.split("/").last()
+                    val branch = mossTask.taskName.split("/").last()
 
-                    val task: Task =
+                    val task =
                             course.tasks
-                                    .find { it.name == taskShortName }
-                                    ?: throw MossException("Moss task ${mossTask.taskName} aim course task $taskShortName " +
+                                    .find { it.branch == branch }
+                                    ?: throw MossException("Moss task ${mossTask.taskName} aim course task $branch " +
                                             "wasn't found for course ${course.name}")
 
                     logger.info("Analysing ${mossTask.taskName} moss task")
 
-                    val result: MossResult = mossService.client(course.language)
-                            .base(mossTask.base)
-                            .solutions(mossTask.solutions)
-                            .analyse()
+                    val mossResult =
+                            mossService.client(course.language)
+                                    .base(mossTask.base)
+                                    .solutions(mossTask.solutions)
+                                    .analyse()
 
                     logger.info("Moss task analysis ${mossTask.taskName} has finished successfully")
 
-                    dataService.updateTask(task.copy(mossUrl = result.url.toString()))
+                    val plagiarismReport = dataService.addPlagiarismReport(
+                            task = task,
+                            url = mossResult.url.toString(),
+                            matches = mossResult.matches().map {
+                                PlagiarismMatch(
+                                        student1 = it.students.first,
+                                        student2 = it.students.second,
+                                        lines = it.lines,
+                                        url = it.link,
+                                        percentage = it.percentage
+                                )
+                            }
+                    )
+
+                    dataService.updateTask(task.copy(plagiarismReport = plagiarismReport))
                 }
             }
         }

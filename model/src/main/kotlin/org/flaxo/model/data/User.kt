@@ -17,6 +17,7 @@ import javax.persistence.FetchType
 @Entity(name = "user")
 @Table(name = "user", uniqueConstraints = [UniqueConstraint(columnNames = ["nickname", "githubId"])])
 data class User(
+
         @Id
         @GeneratedValue
         override val id: Long = -1,
@@ -28,11 +29,11 @@ data class User(
         @OneToOne(cascade = [CascadeType.ALL], optional = false, fetch = FetchType.LAZY)
         @JsonIgnoreProperties
         val credentials: Credentials = Credentials()
-) : Viewable, Identifiable {
+
+) : Identifiable, Viewable {
 
     override fun view(): Any = let { user ->
         object {
-            val id = user.id
             val githubId = user.githubId
             val nickname = user.nickname
             val isGithubAuthorized = user.credentials.githubToken != null
@@ -41,8 +42,11 @@ data class User(
         }
     }
 
+    override fun toString(): String = "${this::class.simpleName}(id=$id)"
+
     override fun hashCode() = Objects.hash(id)
 
-    override fun equals(other: Any?) = other is User && other.id == id
-
+    override fun equals(other: Any?): Boolean =
+            this::class.isInstance(other)
+                    && (other as Identifiable).id == id
 }

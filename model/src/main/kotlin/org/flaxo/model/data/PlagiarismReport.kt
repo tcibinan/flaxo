@@ -1,6 +1,8 @@
 package org.flaxo.model.data
 
+import java.time.LocalDateTime
 import java.util.*
+import javax.persistence.CascadeType
 import javax.persistence.Entity
 import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
@@ -9,30 +11,31 @@ import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
 import javax.persistence.Table
 
-/**
- * Student data object.
- */
-@Entity(name = "student")
-@Table(name = "student")
-data class Student(
+@Entity(name = "plagiarism_report")
+@Table(name = "plagiarism_report")
+data class PlagiarismReport(
 
         @Id
         @GeneratedValue
         override val id: Long = -1,
 
-        val nickname: String = "",
+        override val date: LocalDateTime = LocalDateTime.MIN,
 
         @ManyToOne(optional = false, fetch = FetchType.LAZY)
-        val course: Course = Course(),
+        val task: Task = Task(),
 
-        @OneToMany(mappedBy = "student", orphanRemoval = true)
-        val solutions: Set<Solution> = emptySet()
+        val url: String = "",
 
-) : Identifiable, Viewable {
+        @OneToMany(cascade = [CascadeType.ALL])
+        val matches: List<PlagiarismMatch> = mutableListOf()
 
-    override fun view(): Any = let { student ->
+) : Identifiable, Report, Viewable {
+
+    override fun view(): Any = let { report ->
         object {
-            val name = student.nickname
+            val url = report.url
+            val date = report.date
+            val matches = report.matches.views()
         }
     }
 

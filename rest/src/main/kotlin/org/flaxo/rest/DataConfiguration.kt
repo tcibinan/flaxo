@@ -2,8 +2,11 @@ package org.flaxo.rest
 
 import org.flaxo.model.BasicDataService
 import org.flaxo.model.DataService
+import org.flaxo.model.dao.BuildReportRepository
+import org.flaxo.model.dao.CodeStyleReportRepository
 import org.flaxo.model.dao.CourseRepository
 import org.flaxo.model.dao.CredentialsRepository
+import org.flaxo.model.dao.PlagiarismReportRepository
 import org.flaxo.model.dao.StudentRepository
 import org.flaxo.model.dao.SolutionRepository
 import org.flaxo.model.dao.TaskRepository
@@ -23,7 +26,10 @@ class DataConfiguration {
             courseRepository: CourseRepository,
             taskRepository: TaskRepository,
             studentRepository: StudentRepository,
-            solutionRepository: SolutionRepository
+            solutionRepository: SolutionRepository,
+            buildReportRepository: BuildReportRepository,
+            codeStyleReportRepository: CodeStyleReportRepository,
+            plagiarismReportRepository: PlagiarismReportRepository
     ): DataService =
             BasicDataService(
                     userRepository,
@@ -31,7 +37,10 @@ class DataConfiguration {
                     courseRepository,
                     taskRepository,
                     studentRepository,
-                    solutionRepository
+                    solutionRepository,
+                    buildReportRepository,
+                    codeStyleReportRepository,
+                    plagiarismReportRepository
             )
 
     @Bean

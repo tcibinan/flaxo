@@ -17,6 +17,7 @@ import javax.persistence.Table
 @Entity(name = "course")
 @Table(name = "course")
 data class Course(
+
         @Id
         @GeneratedValue
         override val id: Long = -1,
@@ -40,11 +41,11 @@ data class Course(
 
         @OneToMany(mappedBy = "course", orphanRemoval = true)
         val tasks: Set<Task> = emptySet()
-) : Viewable, Identifiable {
+
+) : Identifiable, Viewable {
 
     override fun view(): Any = let { course ->
         object {
-            val id = course.id
             val name = course.name
             val language = course.language
             val testingLanguage = course.testingLanguage
@@ -52,11 +53,15 @@ data class Course(
             val state = course.state.view()
             val user = course.user.view()
             val students = course.students.map { it.nickname }
-            val tasks = course.tasks.map { it.name }
+            val tasks = course.tasks.map { it.branch }
         }
     }
 
+    override fun toString(): String = "${this::class.simpleName}(id=$id)"
+
     override fun hashCode() = Objects.hash(id)
 
-    override fun equals(other: Any?) = other is Course && other.id == id
+    override fun equals(other: Any?): Boolean =
+            this::class.isInstance(other)
+                    && (other as Identifiable).id == id
 }

@@ -8,6 +8,7 @@ import org.flaxo.core.language.JavaLang
 import org.flaxo.core.language.Language
 import org.flaxo.git.Branch
 import org.flaxo.git.Git
+import org.flaxo.model.data.BuildReport
 import org.flaxo.model.data.Course
 import org.flaxo.model.data.Credentials
 import org.flaxo.model.data.Student
@@ -36,18 +37,20 @@ object MossServiceSpec : SubjectSpek<MossService>({
     val student1ExtraFile = "/some/path/$student1Name/student1ExtraFile.kt"
     val student2Name = "student2"
     val student2SolutionFile = "/another/package/student2Solution.java"
-    val task1 = "task1"
+    val branch1 = "branch1"
 
     val supportedLanguages: Map<String, Language> = mapOf("java" to JavaLang)
     val solutionEntities1: Set<Solution> = setOf(
-            Solution(built = true, succeed = true,
-                    task = Task(name = task1)
+            Solution(
+                    task = Task(branch = branch1),
+                    buildReport = BuildReport(succeed = true)
             )
     )
     val student1 = Student(nickname = student1Name, solutions = solutionEntities1)
     val solutionEntities2: Set<Solution> = setOf(
-            Solution(built = true, succeed = false,
-                    task = Task(name = task1)
+            Solution(
+                    task = Task(branch = branch1),
+                    buildReport = BuildReport(succeed = false)
             )
     )
     val student2 = Student(nickname = student2Name, solutions = solutionEntities2)
@@ -59,13 +62,13 @@ object MossServiceSpec : SubjectSpek<MossService>({
     )
     val git: Git = mock {
         val student1Branches = listOf(
-                branch(task1, emptyFile(student1SolutionFile), emptyFile(student1ExtraFile))
+                branch(branch1, emptyFile(student1SolutionFile), emptyFile(student1ExtraFile))
         )
         val student2Branches = listOf(
-                branch(task1, emptyFile(student2SolutionFile))
+                branch(branch1, emptyFile(student2SolutionFile))
         )
         val userBranches = listOf(
-                branch(task1, emptyFile(userTaskFile))
+                branch(branch1, emptyFile(userTaskFile))
         )
         on { branches(student1Name, courseName) }.thenReturn(student1Branches)
         on { branches(student2Name, courseName) }.thenReturn(student2Branches)
@@ -100,12 +103,12 @@ object MossServiceSpec : SubjectSpek<MossService>({
 
             it("should contain all tasks from course") {
                 assertTrue { mossTasks.size == 1 }
-                assertTrue { mossTasks.any { it.taskName == "$userName/$courseName/$task1" } }
+                assertTrue { mossTasks.any { it.taskName == "$userName/$courseName/$branch1" } }
             }
 
             it("should only contain tasks where is at least one succeed solutions") {
-                val task: MossTask = mossTasks.find { it.taskName.endsWith(task1) }
-                        ?: throw MossTaskNotFound("Moss task with postfix $task1 not found")
+                val task: MossTask = mossTasks.find { it.taskName.endsWith(branch1) }
+                        ?: throw MossTaskNotFound("Moss task with postfix $branch1 not found")
 
                 assertTrue { task.solutions.any(filesWithFileNameOf(student1SolutionFile)) }
                 assertFalse { task.solutions.any(filesWithFileNameOf(student2SolutionFile)) }

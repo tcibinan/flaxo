@@ -2,37 +2,40 @@ package org.flaxo.model.data
 
 import java.util.*
 import javax.persistence.Entity
-import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
 import javax.persistence.Id
-import javax.persistence.ManyToOne
-import javax.persistence.OneToMany
 import javax.persistence.Table
 
 /**
- * Student data object.
+ * Plagiarism match data object.
  */
-@Entity(name = "student")
-@Table(name = "student")
-data class Student(
+@Entity(name = "plagiarism_match")
+@Table(name = "plagiarism_match")
+data class PlagiarismMatch(
 
         @Id
         @GeneratedValue
         override val id: Long = -1,
 
-        val nickname: String = "",
+        val student1: String = "",
 
-        @ManyToOne(optional = false, fetch = FetchType.LAZY)
-        val course: Course = Course(),
+        val student2: String = "",
 
-        @OneToMany(mappedBy = "student", orphanRemoval = true)
-        val solutions: Set<Solution> = emptySet()
+        val lines: Int = 0,
+
+        val url: String = "",
+
+        val percentage: Int = 0
 
 ) : Identifiable, Viewable {
 
-    override fun view(): Any = let { student ->
+    override fun view(): Any = let { match ->
         object {
-            val name = student.nickname
+            val url: String = match.url
+            val student1: String = match.student1
+            val student2: String = match.student2
+            val lines: Int = match.lines
+            val percentage: Int = match.percentage
         }
     }
 

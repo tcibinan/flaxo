@@ -12,6 +12,7 @@ import javax.persistence.Table
 @Entity(name = "credentials")
 @Table(name = "credentials")
 data class Credentials(
+
         @Id
         @GeneratedValue
         override val id: Long = -1,
@@ -23,9 +24,14 @@ data class Credentials(
         val travisToken: String? = null,
 
         val codacyToken: String? = null
+
 ) : Identifiable {
+
+    override fun toString(): String = "${this::class.simpleName}(id=$id)"
 
     override fun hashCode() = Objects.hash(id)
 
-    override fun equals(other: Any?) = other is Credentials && other.id == id
+    override fun equals(other: Any?): Boolean =
+            this::class.isInstance(other)
+                    && (other as Identifiable).id == id
 }

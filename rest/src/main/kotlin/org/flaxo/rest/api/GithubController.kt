@@ -133,7 +133,7 @@ class GithubController(
                             ?: dataService.addStudent(hook.authorId, course)
 
                     student.solutions
-                            .find { it.task.name == hook.baseBranch }
+                            .find { it.task.branch == hook.baseBranch }
                             ?.also { dataService.updateSolution(it.copy(sha = hook.lastCommitSha)) }
 
                     logger.info("Student ${student.nickname} was initialised for course ${user.nickname}/${course.name}.")
@@ -145,7 +145,7 @@ class GithubController(
                 }
             }
             else -> {
-                logger.info("Github custom web hook received from request: $request.")
+                logger.warn("Github custom web hook received from request: $request.")
 
                 //do nothing
             }

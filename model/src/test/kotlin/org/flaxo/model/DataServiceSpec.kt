@@ -11,6 +11,7 @@ import io.kotlintest.matchers.shouldNot
 import io.kotlintest.matchers.shouldNotBe
 import io.kotlintest.matchers.shouldThrow
 import io.kotlintest.matchers.startWith
+import org.flaxo.model.data.PlagiarismMatch
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
@@ -29,6 +30,9 @@ class DataServiceSpec : SubjectSpek<DataService>({
     val numberOfTasks = 4
     val student = "student"
     val anotherStudent = "anotherStudent"
+    val plagiarismUrl = "plagiarismUrl"
+    val buildSucceed = true
+    val codeStyleGrade = "B"
 
     val context = AnnotationConfigApplicationContext(JpaTestApplication::class.java)
 
@@ -56,6 +60,25 @@ class DataServiceSpec : SubjectSpek<DataService>({
             }
         }
 
+        on("addition tokens to a user") {
+            val githubToken = "githubToken"
+            val travisToken = "travisToken"
+            val codacyToken = "codacyToken"
+
+            subject.addToken(nickname, IntegratedService.CODACY, codacyToken)
+            subject.addToken(nickname, IntegratedService.TRAVIS, travisToken)
+            subject.addToken(nickname, IntegratedService.GITHUB, githubToken)
+
+            it("should add all tokens to a user credentials") {
+                val user = subject.getUser(nickname)
+                        ?: throw EntityNotFound("User $nickname")
+
+                user.credentials.githubToken shouldBe githubToken
+                user.credentials.travisToken shouldBe travisToken
+                user.credentials.codacyToken shouldBe codacyToken
+            }
+        }
+
         on("course creation") {
             val owner = subject.getUser(nickname)
                     ?: throw EntityNotFound("User $nickname")
@@ -76,12 +99,12 @@ class DataServiceSpec : SubjectSpek<DataService>({
                 course.testingFramework shouldBe testingFramework
             }
 
-            it("should also create necessary amount of tasks") {
+            it("should create necessary amount of tasks") {
                 tasks.count() shouldBe numberOfTasks
             }
 
-            it("should also create tasks with ordered numbers in the titles") {
-                tasks.map { it.name }
+            it("should create tasks with ordered numbers in the titles") {
+                tasks.map { it.branch }
                         .sorted()
                         .mapIndexed { index, name -> Pair((index + 1).toString(), name) }
                         .forEach { (taskIndex, taskName) ->
@@ -89,9 +112,12 @@ class DataServiceSpec : SubjectSpek<DataService>({
                         }
             }
 
-            it("should also create tasks with the given tasks prefix in the titles") {
-                tasks.map { it.name }
-                        .forEach { it should startWith(tasksPrefix) }
+            it("should create tasks with the given tasks prefix in the titles") {
+                tasks.forEach { it.branch should startWith(tasksPrefix) }
+            }
+
+            it("should create tasks without plagiarism reports") {
+                tasks.forEach { it.plagiarismReport shouldBe null }
             }
 
             it("should have default state") {
@@ -122,7 +148,7 @@ class DataServiceSpec : SubjectSpek<DataService>({
         on("addition course with name that already exists for another the user") {
             val anotherUser = subject.addUser(anotherNickname, password)
 
-            it("shouldn't throw an exception") {
+            it("should create a course") {
                 subject.createCourse(
                         courseName,
                         language,
@@ -157,7 +183,7 @@ class DataServiceSpec : SubjectSpek<DataService>({
             }
         }
 
-        on("changing course state") {
+        on("updating course") {
             val owner = subject.getUser(nickname)
                     ?: throw EntityNotFound("User $nickname")
             val course = subject.getCourse(courseName, owner)
@@ -174,11 +200,11 @@ class DataServiceSpec : SubjectSpek<DataService>({
                     )
                     .also { subject.updateCourse(it) }
 
-            it("should change its lifecycle") {
+            it("should change its state lifecycle") {
                 updatedCourse.state.lifecycle shouldBe CourseLifecycle.RUNNING
             }
 
-            it("should change its activated services") {
+            it("should change its state activated services") {
                 updatedCourse.state.activatedServices should containsAll(
                         IntegratedService.GITHUB,
                         IntegratedService.TRAVIS
@@ -189,33 +215,100 @@ class DataServiceSpec : SubjectSpek<DataService>({
             }
         }
 
-        on("course deletion") {
-            val owner = subject.getUser(nickname)
+        on("addition plagiarism report to a task") {
+            val user = subject.getUser(nickname)
                     ?: throw EntityNotFound("User $nickname")
-            subject.deleteCourse(courseName, owner)
+            val course = subject.getCourse(courseName, user)
+                    ?: throw EntityNotFound("Course $courseName")
+            val task = subject.getTasks(course)
+                    .firstOrNull()
+                    ?: throw EntityNotFound("There is no tasks for course $courseName")
+            val matches = listOf(PlagiarismMatch(), PlagiarismMatch())
+
+            subject.addPlagiarismReport(task, plagiarismUrl, matches)
+
+            val plagiarismReport =
+                    subject.getTasks(course)
+                            .first()
+                            .plagiarismReport
+
+            it("should contain plagiarism report") {
+                plagiarismReport shouldNotBe null
+            }
+
+            it("should contain plagiarism report url") {
+                plagiarismReport!!.url shouldBe plagiarismUrl
+            }
+
+            it("should contain plagiarism report url") {
+                plagiarismReport!!.matches shouldBe matches
+            }
+        }
+
+        on("addition build report to a task") {
+            val user = subject.getUser(nickname)
+                    ?: throw EntityNotFound("User $nickname")
+            val course = subject.getCourse(courseName, user)
+                    ?: throw EntityNotFound("Course $courseName")
+            val task = subject.getTasks(course)
+                    .firstOrNull()
+                    ?: throw EntityNotFound("There is no tasks for course $courseName")
+            val solution = subject.getSolutions(task)
+                    .firstOrNull()
+                    ?: throw EntityNotFound("There is no solution for task in ${task.branch} course $courseName")
+
+            subject.addBuildReport(solution, buildSucceed)
+
+            val buildReport =
+                    subject.getSolutions(task)
+                            .first()
+                            .buildReport
+
+            it("should contain build report") {
+                buildReport shouldNotBe null
+            }
+
+            it("should contain build report succeed status") {
+                buildReport!!.succeed shouldBe buildSucceed
+            }
+        }
+
+        on("addition code style report to a task") {
+            val user = subject.getUser(nickname)
+                    ?: throw EntityNotFound("User $nickname")
+            val course = subject.getCourse(courseName, user)
+                    ?: throw EntityNotFound("Course $courseName")
+            val task = subject.getTasks(course)
+                    .firstOrNull()
+                    ?: throw EntityNotFound("There is no tasks for course $courseName")
+            val solution = subject.getSolutions(task)
+                    .firstOrNull()
+                    ?: throw EntityNotFound("There is no solution for task in ${task.branch} course $courseName")
+
+            subject.addCodeStyleReport(solution, codeStyleGrade)
+
+            val codeStyleReport =
+                    subject.getSolutions(task)
+                            .first()
+                            .codeStyleReport
+
+            it("should contain code style report") {
+                codeStyleReport shouldNotBe null
+            }
+
+            it("should contain code style report grade") {
+                codeStyleReport!!.grade shouldBe codeStyleGrade
+            }
+        }
+
+        on("course deletion") {
+            val user = subject.getUser(nickname)
+                    ?: throw EntityNotFound("User $nickname")
+            subject.deleteCourse(courseName, user)
 
             it("should delete the course") {
                 subject.getCourses(nickname)
                         .forEach { it.name shouldNotBe courseName }
-            }
-        }
-
-        on("addition tokens to a user") {
-            val githubToken = "githubToken"
-            val travisToken = "travisToken"
-            val codacyToken = "codacyToken"
-
-            subject.addToken(nickname, IntegratedService.CODACY, codacyToken)
-            subject.addToken(nickname, IntegratedService.TRAVIS, travisToken)
-            subject.addToken(nickname, IntegratedService.GITHUB, githubToken)
-
-            it("should add all tokens to a user credentials") {
-                val user = subject.getUser(nickname)
-                        ?: throw EntityNotFound("User $nickname")
-
-                user.credentials.githubToken shouldBe githubToken
-                user.credentials.travisToken shouldBe travisToken
-                user.credentials.codacyToken shouldBe codacyToken
             }
         }
 

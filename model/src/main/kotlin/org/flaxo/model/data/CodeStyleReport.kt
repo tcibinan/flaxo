@@ -1,38 +1,35 @@
 package org.flaxo.model.data
 
+import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.Entity
 import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
 import javax.persistence.Id
 import javax.persistence.ManyToOne
-import javax.persistence.OneToMany
 import javax.persistence.Table
 
-/**
- * Student data object.
- */
-@Entity(name = "student")
-@Table(name = "student")
-data class Student(
+@Entity(name = "code_style_report")
+@Table(name = "code_style_report")
+data class CodeStyleReport(
 
         @Id
         @GeneratedValue
         override val id: Long = -1,
 
-        val nickname: String = "",
+        override val date: LocalDateTime = LocalDateTime.MIN,
 
         @ManyToOne(optional = false, fetch = FetchType.LAZY)
-        val course: Course = Course(),
+        val solution: Solution = Solution(),
 
-        @OneToMany(mappedBy = "student", orphanRemoval = true)
-        val solutions: Set<Solution> = emptySet()
+        val grade: String = "F"
 
-) : Identifiable, Viewable {
+) : Identifiable, Report, Viewable {
 
-    override fun view(): Any = let { student ->
+    override fun view(): Any = let { report ->
         object {
-            val name = student.nickname
+            val grade = report.grade
+            val date = report.date
         }
     }
 
