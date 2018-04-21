@@ -34,8 +34,9 @@ class RemoteEnvironmentFile(private val path: String,
             RemoteEnvironmentFile(path, inputStream)
 
     override fun file(): File = file ?: run {
-        val rootDirectory: Path = Files.createTempDirectory("moss-analysis")
-                .apply { toFile().deleteOnExit() }
+        val rootDirectory: Path =
+                Files.createTempDirectory("flaxo-remote-files")
+                        .also { it.toFile().deleteOnExit() }
 
         return Try {
             val fileName = name.split("/").last()
@@ -46,9 +47,7 @@ class RemoteEnvironmentFile(private val path: String,
                     .resolve(fileName)
                     .also { Files.copy(inputStream, it) }
                     .toFile()
-                    .also {
-                        this.file = it
-                    }
+                    .also { this.file = it }
         }.onFailure { e ->
             rootDirectory.toFile().deleteRecursively()
             throw RemoteFileRetrievingException(path, e)

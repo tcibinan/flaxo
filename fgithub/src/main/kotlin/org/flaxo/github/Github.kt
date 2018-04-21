@@ -13,12 +13,12 @@ import org.kohsuke.github.GitHub as KohsukeGithub
 /**
  * Github client class.
  */
-class Github(private val credentials: String,
+class Github(private val githubClientProducer: () -> KohsukeGithub,
              rawWebHookUrl: String
 ) : Git {
 
     private val webHookUrl: URL = URL(rawWebHookUrl)
-    private val github: KohsukeGithub by lazy { KohsukeGithub.connectUsingOAuth(credentials) }
+    private val github: KohsukeGithub by lazy { githubClientProducer() }
 
     override fun createRepository(repositoryName: String, private: Boolean): Repository {
         val repository = github.createRepository(repositoryName).private_(private).create()

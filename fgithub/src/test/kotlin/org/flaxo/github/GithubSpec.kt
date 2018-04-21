@@ -8,8 +8,8 @@ import io.kotlintest.matchers.shouldHave
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
-import org.jetbrains.spek.api.dsl.xon
 import org.jetbrains.spek.subject.SubjectSpek
+import org.kohsuke.github.GitHub as KohsukeGithub
 
 object GithubSpec : SubjectSpek<Git>({
 
@@ -19,11 +19,10 @@ object GithubSpec : SubjectSpek<Git>({
     val github: Git = mock { }
     val repository = GithubRepository("temp-testing-repository", userName, github)
     val mainBranch = GithubBranch("main-branch", repository, github)
-    val subbranch = GithubBranch("sub-branch", repository, github)
-    val anotherSubbranch = GithubBranch("another-sub-branch", repository, github)
+    val anotherSubbranch = GithubBranch("sub-branch", repository, github)
     val fileName = "file-name"
 
-    subject { Github(credentials, "http://example.com") }
+    subject { Github({ KohsukeGithub.connectUsingOAuth(credentials) }, "http://ignored.web.hook.url") }
 
     afterGroup {
         subject.deleteRepository(repository.name)
@@ -41,34 +40,27 @@ object GithubSpec : SubjectSpek<Git>({
             }
         }
 
-        on("creating subbranch") {
-            subject.createSubBranch(repository, mainBranch, subbranch.name)
-
-            it("should create the subbranch with the given name") {
-                subject.branches(userName, repository.name)
-                        .map { it.name } shouldContain subbranch.name
-            }
-        }
-
-        xon("loading file in branch", "getting files list is not supported yet") {
+        on("loading file in the repository") {
             subject.load(repository, mainBranch, fileName, "file content")
 
-            it("should exist only in that branch") {
+            it("should be loaded only in the targeted branch") {
                 subject.branches(userName, repository.name)
+                        .filter { it.name == mainBranch.name }
                         .flatMap { it.files() }
                         .filter { it.name == fileName }
                         .count() shouldBe 1
             }
         }
 
-        xon("creating subbranch", "getting files list is not supported yet") {
+        on("creating subbranch") {
             subject.createSubBranch(repository, mainBranch, anotherSubbranch.name)
 
-            it("should copy commits") {
+            it("should copy files from a parent branch") {
                 subject.branches(userName, repository.name)
+                        .filter { it.name == anotherSubbranch.name }
                         .flatMap { it.files() }
                         .filter { it.name == fileName }
-                        .count() shouldBe 2
+                        .count() shouldBe 1
             }
         }
     }

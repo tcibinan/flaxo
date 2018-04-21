@@ -9,11 +9,12 @@ import org.kohsuke.github.GitHub as KohsukeGithub
  * Github web hook event parser function.
  */
 fun parseGithubEvent(reader: Reader,
-                     eventType: String
+                     eventType: String,
+                     githubClient: KohsukeGithub
 ): GitPayload? =
         when (eventType) {
             "pull_request" ->
-                KohsukeGithub.offline()
+                githubClient
                         .parseEventPayload(reader, KohsukeGithubEventPayload.PullRequest::class.java)
                         ?.run { GithubPullRequest(this) }
             else -> null
