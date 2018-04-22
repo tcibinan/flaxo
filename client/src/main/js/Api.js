@@ -1,5 +1,8 @@
-import {credentials, restUrl} from './scripts';
+import {restUrl} from './scripts';
 import axios from 'axios';
+import {List, Seq} from 'immutable';
+import {CourseModel} from './model/CourseModel';
+import {TaskModel} from './model/TaskModel';
 
 export class Api {
     static retrieveAccount(credentials, onSuccess, onFailure) {
@@ -24,7 +27,12 @@ export class Api {
                         nickname: nickname
                     }
                 })
-                .then(response => onSuccess(response.data.payload))
+                .then(response => {
+                    const courses =
+                        Seq(response.data.payload)
+                            .map(courseJson => new CourseModel(courseJson));
+                    onSuccess(courses);
+                })
                 .catch(response => onFailure(response));
         }
     }
@@ -37,7 +45,10 @@ export class Api {
                     auth: credentials,
                     params: courseData
                 })
-                .then(response => onSuccess(response.data.payload))
+                .then(response => {
+                    const course = new CourseModel(response.data.payload);
+                    onSuccess(course);
+                })
                 .catch(response => onFailure(response));
         }
     }
@@ -58,7 +69,12 @@ export class Api {
                     baseURL: restUrl(),
                     auth: credentials
                 })
-                .then(response => onSuccess(response.data.payload))
+                .then(response => {
+                    const tasks =
+                        Seq(response.data.payload)
+                            .map(taskJson => new TaskModel(taskJson));
+                    onSuccess(tasks);
+                })
                 .catch(response => onFailure(response));
         }
     }

@@ -30,6 +30,8 @@ data class Course(
 
         val testingFramework: String = "",
 
+        val url: String = "",
+
         @OneToOne(cascade = [CascadeType.ALL], optional = false, fetch = FetchType.LAZY)
         val state: CourseState = CourseState(),
 
@@ -52,6 +54,7 @@ data class Course(
             val testingFramework = course.testingFramework
             val state = course.state.view()
             val user = course.user.view()
+            val url = course.url
             val students = course.students.map { it.nickname }
             val tasks = course.tasks.map { it.branch }
         }

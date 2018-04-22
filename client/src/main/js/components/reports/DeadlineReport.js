@@ -1,13 +1,31 @@
 import React from 'react';
 
 export function DeadlineReport(props) {
-    return (
-        <section className={"report " + (props.deadline ? "valid-deadline-report" : "invalid-deadline-report")}>
-            {
-                props.deadline
-                    ? <i className="material-icons">alarm_on</i>
-                    : <i className="material-icons">alarm_off</i>
+    if (props.solution.date) {
+        if (props.task.deadline) {
+            if (props.task.deadline > props.solution.date) {
+                return (
+                    <section className="report valid-deadline-report">
+                        <i className="material-icons">alarm_on</i>
+                    </section>
+                );
+            } else {
+                return (
+                    <section className="report invalid-deadline-report">
+                        <i className="material-icons">alarm_off</i>
+                    </section>
+                );
             }
-        </section>
-    )
+        } else {
+            return (
+                <section className="report valid-deadline-report">
+                    <i className="material-icons">alarm_on</i>
+                </section>
+            );
+        }
+    } else {
+        return (
+            <section className="report"/>
+        )
+    }
 }

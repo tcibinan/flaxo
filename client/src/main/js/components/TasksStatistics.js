@@ -1,6 +1,5 @@
 import React from 'react';
 import {Button, Table} from 'reactstrap';
-import Immutable from 'immutable';
 
 export class TasksStatistics extends React.Component {
 
@@ -9,41 +8,36 @@ export class TasksStatistics extends React.Component {
     }
 
     render() {
-        const tasksNames =
-            Immutable.List(this.props.course.tasks)
-                .sort();
-
-        const toStudentResultCell = (studentTasks, taskName) => {
-            const studentTask =
-                Immutable.List(studentTasks)
-                    .find(studentTask => studentTask.task === taskName);
-
-            return (
-                <td className={
-                    `${studentTask.built ? 'solution-built' : ''} ${studentTask.succeed ? 'solution-succeed' : ''}`
-                }/>
-            );
-        };
+        const tasksNames = this.props.course.tasks.sort();
 
         let studentIndex = 0;
         const studentsResults =
-            Immutable.Map(this.props.perStudentStats)
-                .map((studentTasks, student) =>
+            this.props.tasks
+                .flatMap(task => task.solutions)
+                .groupBy(solution => solution.student)
+                .map((solutions, student) =>
                     <tr>
                         <th scope="row">{studentIndex += 1}</th>
                         <td>{student}</td>
-                        {tasksNames.map(taskName => toStudentResultCell(studentTasks, taskName))}
+                        {
+                            tasksNames
+                                .map(task => {
+                                    const solution = solutions.find(solution => solution.task === task);
+                                    if (solution) {
+                                        return (<td>{solution.score}</td>)
+                                    } else {
+                                        return (<td/>);
+                                    }
+                                })
+                        }
                         <td>0</td>
                     </tr>
                 )
                 .valueSeq();
 
-        const gitRepositoryLink =
-            `https://github.com/${this.props.course.userGithubId}/${this.props.course.name}`;
-
         return (
             <dev>
-                <Button href={gitRepositoryLink} color="link" size="sm">Git repository</Button>
+                <Button href={this.props.course.url} color="link" size="sm">Git repository</Button>
                 <section className="course-stats">
                     <Table hover size="sm">
                         <thead>
@@ -58,8 +52,7 @@ export class TasksStatistics extends React.Component {
                         {
                             studentsResults.size > 0
                                 ? studentsResults
-                                :
-                                <td colSpan={tasksNames.size + 2}>There are no students on the course yet.</td>
+                                : <td colSpan={tasksNames.size + 2}>There are no students on the course yet.</td>
                         }
                         </tbody>
                     </Table>

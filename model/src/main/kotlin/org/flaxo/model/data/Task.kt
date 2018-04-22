@@ -1,5 +1,6 @@
 package org.flaxo.model.data
 
+import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.Entity
 import javax.persistence.FetchType
@@ -23,6 +24,10 @@ data class Task(
 
         val branch: String = "",
 
+        val url: String = "",
+
+        val deadline: LocalDateTime? = null,
+
         @ManyToOne(optional = false, fetch = FetchType.LAZY)
         val course: Course = Course(),
 
@@ -37,7 +42,9 @@ data class Task(
     override fun view(): Any = let { task ->
         object {
             val branch = task.branch
-            val plagiarismReport = task.plagiarismReports.views()
+            val url = task.url
+            val deadline = task.deadline
+            val plagiarismReports = task.plagiarismReports.views()
             val solutions = task.solutions.views()
         }
     }

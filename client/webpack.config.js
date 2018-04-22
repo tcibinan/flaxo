@@ -2,6 +2,7 @@ const path = require('path');
 
 module.exports = env => {
     return {
+        devtool: 'eval-source-map', //todo: Remove before release
         module: {
             rules: [
                 {

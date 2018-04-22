@@ -1,5 +1,4 @@
 import React from 'react';
-import Immutable from 'immutable';
 import {
     BuildReport,
     PlagiarismReport,
@@ -8,54 +7,36 @@ import {
     ReportScoreSuggestion
 } from './reports';
 import {Table} from 'reactstrap';
-import {gradeToNum} from '../scripts';
 
 export class TaskStatistics extends React.Component {
     render() {
         const results =
-            Immutable.List(this.props.studentTasks)
-                .map((studentTask, studentIndex) => {
-                    const matches =
-                        Immutable.List(this.props.mossPlagiarismMatches)
-                            .filter(match => studentTask.student === match.students.first
-                                || studentTask.student === match.students.second)
-                            .map(match => {
-                                return {
-                                    thisStudent:
-                                        match.students.first === studentTask.student
-                                            ? match.students.first
-                                            : match.students.second,
-                                    otherStudent:
-                                        match.students.first !== studentTask.student
-                                            ? match.students.first
-                                            : match.students.second,
-                                    lines: match.lines,
-                                    link: match.link,
-                                    percentage: match.percentage
-                                }
-                            });
-
-                    const resultSuggestion =
-                        60 * studentTask.succeed + 5 * gradeToNum(studentTask.grade) + 10 * studentTask.deadline;
+            this.props.course
+                .students
+                .map((student, studentIndex) => {
+                    const solution =
+                        this.props.task
+                            .solutions
+                            .find(solution => solution.student === student);
 
                     return (
                         <tr>
                             <th scope="row">{studentIndex + 1}</th>
-                            <td>{studentTask.student}</td>
+                            <td>{student}</td>
                             <td>
-                                <BuildReport built={studentTask.built} succeed={studentTask.succeed}/>
+                                <BuildReport solution={solution}/>
                             </td>
                             <td>
-                                <CodeStyleReport grade={studentTask.grade}/>
+                                <CodeStyleReport solution={solution}/>
                             </td>
                             <td>
-                                <PlagiarismReport matches={matches}/>
+                                <PlagiarismReport task={this.props.task} solution={solution}/>
                             </td>
                             <td>
-                                <DeadlineReport deadline={studentTask.deadline}/>
+                                <DeadlineReport task={this.props.task} solution={solution}/>
                             </td>
                             <td>
-                                <ReportScoreSuggestion suggestion={resultSuggestion}/>
+                                <ReportScoreSuggestion task={this.props.task} solution={solution}/>
                             </td>
                         </tr>
                     )

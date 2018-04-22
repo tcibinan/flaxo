@@ -55,8 +55,7 @@ export class Courses extends React.Component {
             courses => {
                 const selectedCourse =
                     this.state.selectedCourse != null
-                        ? Immutable.List(courses)
-                            .find(course => course.name === this.state.selectedCourse.name)
+                        ? courses.find(course => course.name === this.state.selectedCourse.name)
                         : null;
 
                 this.setState({courses, selectedCourse});

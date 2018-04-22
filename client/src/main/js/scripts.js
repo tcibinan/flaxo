@@ -30,3 +30,15 @@ export function gradeToNum(grade) {
             return 0;
     }
 }
+
+export function suggestScore(buildReport, codeStyleReport, date, deadline) {
+    if (date == null || buildReport == null) {
+        return 0;
+    }
+
+    const buildSucceed = buildReport ? buildReport.succeed : false;
+    const codeStyleGrade = codeStyleReport ? codeStyleReport.grade : null;
+    const deadlinePassed = deadline ? date < deadline : true;
+
+    return 60 * buildSucceed + 5 * gradeToNum(codeStyleGrade) + 10 * deadlinePassed;
+}

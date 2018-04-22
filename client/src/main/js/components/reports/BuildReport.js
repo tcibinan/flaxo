@@ -1,13 +1,15 @@
 import React from 'react';
 
 export function BuildReport(props) {
-    return (
-        <section className={"report " + (props.succeed ? "successful-build-report" : "failed-build-report")}>
-            {
-                props.succeed
-                    ? <i className="material-icons">done</i>
-                    : <i className="material-icons">clear</i>
-            }
-        </section>
-    )
+    const latestBuildReport = props.solution.buildReports.last();
+
+    if (latestBuildReport) {
+        if (latestBuildReport.succeed) {
+            return <section className="report successful-build-report"><i className="material-icons">done</i></section>;
+        } else {
+            return <section className="report failed-build-report"><i className="material-icons">clear</i></section>;
+        }
+    } else {
+        return <section className="report"/>
+    }
 }

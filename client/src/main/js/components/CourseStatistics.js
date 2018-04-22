@@ -2,7 +2,7 @@ import React from 'react';
 import {Api} from '../Api';
 import {credentials} from '../scripts';
 import ReactDOM from 'react-dom';
-import Immutable from 'immutable';
+import {Seq} from 'immutable';
 import {Notification} from './Notification';
 import {
     Nav,
@@ -23,17 +23,15 @@ export class CourseStatistics extends React.Component {
 
         this.state = {
             activeTab: '0',
-            perStudentStats: {},
-            perTaskStats: {}
+            tasks: Seq()
         };
     }
 
     componentDidMount() {
-        Api.retrieveCourseStatistics(credentials(), this.props.course.user, this.props.course.name,
-            statistics => this.setState({
-                perStudentStats: statistics.perStudentStats,
-                perTaskStats: statistics.perTaskStats
-            }),
+        Api.retrieveCourseStatistics(credentials(),
+            this.props.course.user,
+            this.props.course.name,
+            tasks => this.setState({tasks}),
             response => ReactDOM.render(
                 <Notification message={`Course statistics retrieving failed due to: ${response}`}/>,
                 document.getElementById('notifications')
@@ -46,47 +44,23 @@ export class CourseStatistics extends React.Component {
     }
 
     render() {
-        const tasks =
-            Immutable.Map(this.state.perTaskStats)
-                .map((taskData, taskName) => {
-                    return {
-                        name: taskName,
-                        mossResultUrl: taskData.mossResultUrl,
-                        mossPlagiarismMatches: taskData.mossPlagiarismMatches
-                    }
-                })
-                .valueSeq()
-                .sortBy(task => task.name);
-
         const tasksTabsNavItems =
-            tasks.map((task, index) =>
+            this.state.tasks.map((task, index) =>
                 <NavItem>
                     <NavLink onClick={() => {
                         this.toggle(index + 1);
                     }}>
-                        {task.name}
+                        {task.branch}
                     </NavLink>
                 </NavItem>
             );
 
         const tasksTabs =
-            tasks.map((task, index) => {
-                const studentTasks =
-                    Immutable.Map(this.state.perStudentStats)
-                        .map(studentTasks =>
-                            Immutable.List(studentTasks)
-                                .find(studentTask => studentTask.task === task.name)
-                        )
-                        .toList();
-
+            this.state.tasks.map((task, index) => {
                 return (
                     <TabPane tabId={index + 1}>
-                        <Task name={task.name}
-                                    user={this.props.course.userGithubId}
-                                    courseName={this.props.course.name}
-                                    mossResultUrl={task.mossResultUrl}
-                                    mossPlagiarismMatches={task.mossPlagiarismMatches}
-                                    studentTasks={studentTasks}/>
+                        <Task course={this.props.course}
+                              task={task}/>
                     </TabPane>
                 )
             });
@@ -106,7 +80,7 @@ export class CourseStatistics extends React.Component {
                 <TabContent activeTab={this.state.activeTab}>
                     <TabPane tabId="0">
                         <TasksStatistics course={this.props.course}
-                                         perStudentStats={this.state.perStudentStats}/>
+                                         tasks={this.state.tasks}/>
                     </TabPane>
                     {tasksTabs}
                 </TabContent>

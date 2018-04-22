@@ -25,7 +25,7 @@ export class NavigationBar extends React.Component {
     render() {
         return (
             <Navbar color="light" light expand="md">
-                <NavbarBrand href="/">Flaxo</NavbarBrand>
+                <NavbarBrand href="#">Flaxo</NavbarBrand>
                 <Collapse navbar>
                     <Nav className="ml-auto" navbar>
                         <NavItem>

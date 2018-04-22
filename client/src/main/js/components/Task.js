@@ -4,24 +4,20 @@ import {TaskStatistics} from './TaskStatistics';
 
 export class Task extends React.Component {
     render() {
-        const gitLink =
-            `https://github.com/${this.props.user}/${this.props.courseName}/tree/${this.props.name}`;
-
-        const mossLink =
-            this.props.mossResultUrl
-                ? this.props.mossResultUrl
-                : null;
+        const latestPlagiarismReport =
+            this.props.task
+                .plagiarismReports
+                .last();
 
         return (
             <section className="course-task">
-                <Button href={gitLink} color="link" size="sm">Git branch</Button>
+                <Button href={this.props.task.url} color="link" size="sm">Git branch</Button>
                 {
-                    mossLink
-                        ? <Button href={mossLink} color="link" size="sm">Moss analysis results</Button>
-                        : <Button color="link" size="sm" disabled>Moss analysis results</Button>
+                    latestPlagiarismReport
+                        ? <Button href={latestPlagiarismReport.url} color="link" size="sm">Plagiarism analysis results</Button>
+                        : <Button color="link" size="sm" disabled>Plagiarism analysis results</Button>
                 }
-                <TaskStatistics mossPlagiarismMatches={this.props.mossPlagiarismMatches}
-                                studentTasks={this.props.studentTasks}/>
+                <TaskStatistics course={this.props.course} task={this.props.task}/>
             </section>
         );
     }

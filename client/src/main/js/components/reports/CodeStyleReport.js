@@ -1,11 +1,15 @@
 import React from 'react';
 
 export function CodeStyleReport(props) {
-    return <section className="report">
-        {
-            props.grade
-                ? <section className={"code-style-grade code-style-grade-" + props.grade}/>
-                : <section><i className="material-icons">clear</i></section>
-        }
-    </section>
+    const latestCodeStyleReport = props.solution.codeStyleReports.last();
+
+    if (latestCodeStyleReport) {
+        return (
+            <section className="report">
+                <div className={'code-style-grade code-style-grade-' + latestCodeStyleReport.grade}/>
+            </section>
+        );
+    } else {
+        return <section className="report"/>;
+    }
 }
