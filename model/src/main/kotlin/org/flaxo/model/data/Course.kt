@@ -27,7 +27,7 @@ data class Course(
 
         val description: String? = null,
 
-        val createdDate: LocalDateTime = LocalDateTime.now(),
+        val createdDate: LocalDateTime = LocalDateTime.MIN,
 
         val language: String = "",
 

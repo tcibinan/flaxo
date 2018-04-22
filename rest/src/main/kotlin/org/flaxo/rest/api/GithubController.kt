@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.io.Reader
 import java.security.Principal
+import java.time.LocalDateTime
 import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.servlet.http.HttpServletRequest
@@ -134,7 +135,12 @@ class GithubController(
 
                     student.solutions
                             .find { it.task.branch == hook.baseBranch }
-                            ?.also { dataService.updateSolution(it.copy(sha = hook.lastCommitSha)) }
+                            ?.also {
+                                dataService.updateSolution(it.copy(
+                                        sha = hook.lastCommitSha,
+                                        date = LocalDateTime.now()
+                                ))
+                            }
 
                     logger.info("Student ${student.nickname} was initialised for course ${user.nickname}/${course.name}.")
                 } else {

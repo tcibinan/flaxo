@@ -39,6 +39,7 @@ interface DataService {
      * and index. *f.e. task-1, task-2, ...*
      *
      * @param courseName git repository name.
+     * @param description optional course description.
      * @param language main language of the course.
      * @param testingLanguage tests language.
      * @param testingFramework testing framework (f.e. junit / spek)
@@ -48,6 +49,7 @@ interface DataService {
      * @return fully formed course with necessary amount of tasks.
      */
     fun createCourse(courseName: String,
+                     description: String? = null,
                      language: String,
                      testingLanguage: String,
                      testingFramework: String,

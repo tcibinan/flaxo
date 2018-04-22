@@ -53,6 +53,7 @@ class BasicDataService(private val userRepository: UserRepository,
             userRepository.findByGithubId(githubId)
 
     override fun createCourse(courseName: String,
+                              description: String?,
                               language: String,
                               testingLanguage: String,
                               testingFramework: String,
@@ -66,6 +67,9 @@ class BasicDataService(private val userRepository: UserRepository,
         val course = courseRepository
                 .save(Course(
                         name = courseName,
+                        description = description,
+                        url = "https://github.com/${owner.githubId}/$courseName",
+                        createdDate = LocalDateTime.now(),
                         language = language,
                         testingLanguage = testingLanguage,
                         testingFramework = testingFramework,
@@ -74,9 +78,14 @@ class BasicDataService(private val userRepository: UserRepository,
                 ))
 
         return (1..numberOfTasks)
-                .map { taskNumber ->
+                .map { taskNumber -> "$tasksPrefix$taskNumber"}
+                .map { branchName ->
                     taskRepository
-                            .save(Task(branch = "$tasksPrefix$taskNumber", course = course))
+                            .save(Task(
+                                    branch = branchName,
+                                    url = "${course.url}/tree/$branchName",
+                                    course = course
+                            ))
                 }
                 .let { tasks ->
                     updateCourse(course.copy(tasks = course.tasks.plus(tasks)))

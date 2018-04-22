@@ -103,13 +103,13 @@ class DataServiceSpec : SubjectSpek<DataService>({
             val owner = subject.getUser(nickname)
                     ?: throw EntityNotFound("User $nickname")
             val course = subject.createCourse(
-                    courseName,
-                    language,
-                    testLanguage,
-                    testingFramework,
-                    tasksPrefix,
-                    numberOfTasks,
-                    owner
+                    courseName = courseName,
+                    language = language,
+                    testingLanguage = testLanguage,
+                    testingFramework = testingFramework,
+                    tasksPrefix = tasksPrefix,
+                    numberOfTasks = numberOfTasks,
+                    owner = owner
             )
             val tasks = course.tasks
 
@@ -153,13 +153,13 @@ class DataServiceSpec : SubjectSpek<DataService>({
             it("should throw an exception") {
                 shouldThrow<EntityAlreadyExistsException> {
                     subject.createCourse(
-                            courseName,
-                            language,
-                            testLanguage,
-                            testingFramework,
-                            tasksPrefix,
-                            numberOfTasks,
-                            owner
+                            courseName = courseName,
+                            language = language,
+                            testingLanguage = testLanguage,
+                            testingFramework = testingFramework,
+                            tasksPrefix = tasksPrefix,
+                            numberOfTasks = numberOfTasks,
+                            owner = owner
                     )
                 }
             }
@@ -170,13 +170,13 @@ class DataServiceSpec : SubjectSpek<DataService>({
 
             it("should create a course") {
                 subject.createCourse(
-                        courseName,
-                        language,
-                        testLanguage,
-                        testingFramework,
-                        tasksPrefix,
-                        numberOfTasks,
-                        anotherUser
+                        courseName = courseName,
+                        language = language,
+                        testingLanguage = testLanguage,
+                        testingFramework = testingFramework,
+                        tasksPrefix = tasksPrefix,
+                        numberOfTasks = numberOfTasks,
+                        owner = anotherUser
                 )
             }
         }

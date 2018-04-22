@@ -102,6 +102,7 @@ class ModelController @Autowired constructor(private val dataService: DataServic
      * Creates a course and related git repository.
      *
      * @param courseName Name of the course and related git repository.
+     * @param description Optional course description.
      * @param language Language of the course.
      * @param testLanguage Language used for tests.
      * @param testingFramework Testing framework which is used for testing.
@@ -112,6 +113,7 @@ class ModelController @Autowired constructor(private val dataService: DataServic
     @PreAuthorize("hasAuthority('USER')")
     @Transactional
     fun createCourse(@RequestParam courseName: String,
+                     @RequestParam(required = false) description: String?,
                      @RequestParam language: String,
                      @RequestParam testLanguage: String,
                      @RequestParam testingFramework: String,
@@ -150,13 +152,14 @@ class ModelController @Autowired constructor(private val dataService: DataServic
         logger.info("Creating course ${principal.name}/$courseName in database")
 
         val course = dataService.createCourse(
-                courseName,
-                language,
-                testLanguage,
-                testingFramework,
-                tasksPrefix,
-                numberOfTasks,
-                user
+                courseName = courseName,
+                description = description,
+                language = language,
+                testingLanguage = testLanguage,
+                testingFramework = testingFramework,
+                tasksPrefix = tasksPrefix,
+                numberOfTasks = numberOfTasks,
+                owner = user
         )
 
         logger.info("Course ${principal.name}/${course.name} has been successfully created")
