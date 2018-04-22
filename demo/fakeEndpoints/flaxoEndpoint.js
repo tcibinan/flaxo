@@ -49,14 +49,19 @@ module.exports = SetupEndpoint({
                     payload: [
                         {
                             name: 'JavaCourse',
+                            description:
+                            'Ambiguous course description. Ambiguous course description. Ambiguous course description. ' +
+                            'Ambiguous course description. Ambiguous course description. Ambiguous course description.',
+                            createdDate: '2018-03-08T15:00:00.000',
+                            url: 'https://github.com/flaxo-developer/JavaCourse',
                             language: 'java',
                             testingLanguage: 'java',
                             testingFramework: 'junit',
-                            url: 'https://github.com/flaxo-developer/JavaCourse',
                             state: {
                                 lifecycle: 'RUNNING',
                                 activatedServices: [
-                                    'TRAVIS'
+                                    'TRAVIS',
+                                    'CODACY'
                                 ]
                             },
                             user: {
@@ -80,6 +85,9 @@ module.exports = SetupEndpoint({
                         },
                         {
                             name: 'KotlinCourse',
+                            description: null,
+                            createdDate: '2018-03-01T15:00:00.000',
+                            url: 'https://github.com/flaxo-developer/KotlinCourse',
                             language: 'java',
                             testingLanguage: 'kotlin',
                             testingFramework: 'spek',
