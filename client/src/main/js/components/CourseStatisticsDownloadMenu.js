@@ -27,10 +27,6 @@ export class CourseStatisticsDownloadMenu extends React.Component {
                         Download as
                     </DropdownToggle>
                     <DropdownMenu>
-                        <DropdownItem header>Supported formats</DropdownItem>
-                        <DropdownItem>web json</DropdownItem>
-                        <DropdownItem divider/>
-                        <DropdownItem header>Formats to come</DropdownItem>
                         <DropdownItem disabled>json</DropdownItem>
                         <DropdownItem disabled>excel</DropdownItem>
                         <DropdownItem disabled>csv</DropdownItem>

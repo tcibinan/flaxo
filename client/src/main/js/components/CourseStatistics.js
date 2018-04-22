@@ -47,9 +47,12 @@ export class CourseStatistics extends React.Component {
         const tasksTabsNavItems =
             this.state.tasks.map((task, index) =>
                 <NavItem>
-                    <NavLink onClick={() => {
-                        this.toggle(index + 1);
-                    }}>
+                    <NavLink
+                        onClick={() => {
+                            this.toggle(index + 1);
+                        }}
+                        active={this.state.activeTab === index + 1 ? 'active' : ''}
+                    >
                         {task.branch}
                     </NavLink>
                 </NavItem>
@@ -69,9 +72,12 @@ export class CourseStatistics extends React.Component {
             <section className="course-tabs">
                 <Nav tabs>
                     <NavItem>
-                        <NavLink onClick={() => {
-                            this.toggle('0');
-                        }}>
+                        <NavLink
+                            active={this.state.activeTab === '0' ? 'active' : ''}
+                            onClick={() => {
+                                this.toggle('0');
+                            }}
+                        >
                             Course summary
                         </NavLink>
                     </NavItem>

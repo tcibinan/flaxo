@@ -9,37 +9,29 @@ import {
 } from 'reactstrap';
 import {CourseLabels} from './CourseLabels';
 
-export class CourseCard extends React.Component {
-
-    constructor(props) {
-        super(props);
-
-        this.state = props.data;
-    }
-
-    render() {
-        return (
-            <section className="course-item" onClick={() => this.props.onSelect(this.state)}>
-                <Card>
-                    <CardBody>
-                        <CardTitle>
-                            {this.state.name}
-                            <small><CourseLabels course={this.state}/></small>
-                        </CardTitle>
-                        <CardSubtitle>{this.state.tasks.length} tasks, {this.state.students.length} students</CardSubtitle>
-                        <CardText>
-                            <p>
-                                Ambiguous course description. Ambiguous course description. Ambiguous course description.
-                                Ambiguous course description. Ambiguous course description. Ambiguous course description.
-                            </p>
-                        </CardText>
-                        <CardText>
-                            <small className="text-muted">Last updated 3 mins ago</small>
-                        </CardText>
-                        <CardLink href="#">Repository</CardLink>
-                    </CardBody>
-                </Card>
-            </section>
-        );
-    }
+export function CourseCard(props) {
+    return (
+        <section className="course-item" onClick={() => props.onSelect(props.course)}>
+            <Card>
+                <CardBody>
+                    <CardTitle>
+                        {props.course.name}
+                        <small><CourseLabels course={props.course}/></small>
+                    </CardTitle>
+                    <CardSubtitle>{props.course.tasks.size} tasks, {props.course.students.size} students</CardSubtitle>
+                    {
+                        props.course.description
+                            ? <CardText>
+                                <p>{props.course.description}</p>
+                            </CardText>
+                            : <CardText/>
+                    }
+                    <CardText>
+                        <small className="text-muted">Created at {props.course.createdDate.toDateString()}</small>
+                    </CardText>
+                    <CardLink href={props.course.url}>Repository</CardLink>
+                </CardBody>
+            </Card>
+        </section>
+    );
 }

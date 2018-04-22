@@ -17,64 +17,62 @@ export class Course extends React.Component {
         this.startCourse = this.startCourse.bind(this);
         this.analysePlagiarism = this.analysePlagiarism.bind(this);
         this.deleteCourse = this.deleteCourse.bind(this);
-
-        this.state = props.data;
     }
 
     render() {
         return (
             <section className="selected-course">
                 <h2>
-                    {this.state.name}
-                    <small><CourseLabels course={this.state}/></small>
+                    {this.props.course.name}
+                    <CourseLabels course={this.props.course}/>
                 </h2>
                 <section className="course-controls">
                     <Button color="primary" outline className="course-control"
                             onClick={this.startCourse}
-                            disabled={this.state.status === 'running' ? 'disabled' : ''}>
+                            disabled={this.props.course.state.lifecycle === 'RUNNING' ? 'disabled' : ''}>
                         Start course
                     </Button>
                     <Button color="primary" outline className="course-control"
                             onClick={this.analysePlagiarism}
-                            disabled={this.state.status !== 'running' ? 'disabled' : ''}>
+                            disabled={this.props.course.state.lifecycle !== 'RUNNING' ? 'disabled' : ''}>
                         Analyse plagiarism
                     </Button>
                     <Button color="danger" outline className="course-control"
                             onClick={this.deleteCourse}>Delete course</Button>
-                    <CourseStatisticsDownloadMenu course={this.state}/>
+                    <CourseStatisticsDownloadMenu course={this.props.course}/>
                 </section>
-                <CourseStatistics course={this.state}/>
+                <CourseStatistics course={this.props.course}/>
             </section>
         );
     }
 
     startCourse() {
-        Api.startCourse(credentials(), this.state.name,
+        Api.startCourse(credentials(), this.props.name,
             () => {
-                this.state.status = 'running';
+                this.props.course.state.lifecycle = 'RUNNING';
                 this.props.onUpdate();
 
                 ReactDOM.render(
-                    <Notification succeed message={`Course ${this.state.name} has started successful.`}/>,
+                    <Notification succeed message={`Course ${this.props.course.name} has started successful.`}/>,
                     document.getElementById('notifications')
                 );
             },
             response => ReactDOM.render(
-                <Notification message={`Course ${this.state.name} starting went bad due to: ${response}`}/>,
+                <Notification message={`Course ${this.props.course.name} starting went bad due to: ${response}`}/>,
                 document.getElementById('notifications')
             )
         );
     }
 
     analysePlagiarism() {
-        Api.analysePlagiarism(credentials(), this.state.name,
+        Api.analysePlagiarism(credentials(), this.props.course.name,
             scheduledTasks => {
                 const tasks = Immutable.List(scheduledTasks).join(', ');
 
                 if (tasks) {
                     ReactDOM.render(
                         <Notification succeed
-                                      message={`Plagiarism analysis for course ${this.state.name}
+                                      message={`Plagiarism analysis for course ${this.props.course.name}
                                                 has been scheduled for ${tasks}.`}/>,
                         document.getElementById('notifications')
                     );
@@ -90,7 +88,7 @@ export class Course extends React.Component {
             response => {
                 ReactDOM.render(
                     <Notification succeed
-                                  message={`Plagiarism analysis for course ${this.state.name}
+                                  message={`Plagiarism analysis for course ${this.props.course.name}
                                             hasn't been scheduled due to: ${response}`}/>,
                     document.getElementById('notifications')
                 );
@@ -99,17 +97,17 @@ export class Course extends React.Component {
     }
 
     deleteCourse() {
-        Api.deleteCourse(credentials(), this.state.name,
+        Api.deleteCourse(credentials(), this.props.course.name,
             () => {
-                this.props.onDelete(this.state.name);
+                this.props.onDelete(this.props.course.name);
 
                 ReactDOM.render(
-                    <Notification succeed message={`Course ${this.state.name} has been deleted.`}/>,
+                    <Notification succeed message={`Course ${this.props.course.name} has been deleted.`}/>,
                     document.getElementById('notifications')
                 );
             },
             response => ReactDOM.render(
-                <Notification message={`Course ${this.state.name} deletion went bad due to: ${response}`}/>,
+                <Notification message={`Course ${this.props.course.name} deletion went bad due to: ${response}`}/>,
                 document.getElementById('notifications')
             )
         );

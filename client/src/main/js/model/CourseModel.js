@@ -5,6 +5,8 @@ import {Seq} from 'immutable';
 export class CourseModel {
     constructor(courseJson) {
         this.name = courseJson.name;
+        this.description = courseJson.description;
+        this.createdDate = new Date(courseJson.createdDate);
         this.language = courseJson.language;
         this.testingLanguage = courseJson.testingLanguage;
         this.testingFramework = courseJson.testingFramework;

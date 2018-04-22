@@ -1,5 +1,6 @@
 package org.flaxo.model.data
 
+import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.CascadeType
 import javax.persistence.Entity
@@ -23,6 +24,10 @@ data class Course(
         override val id: Long = -1,
 
         val name: String = "",
+
+        val description: String? = null,
+
+        val createdDate: LocalDateTime = LocalDateTime.now(),
 
         val language: String = "",
 
@@ -49,6 +54,8 @@ data class Course(
     override fun view(): Any = let { course ->
         object {
             val name = course.name
+            val description = course.description
+            val createdDate = course.createdDate
             val language = course.language
             val testingLanguage = course.testingLanguage
             val testingFramework = course.testingFramework

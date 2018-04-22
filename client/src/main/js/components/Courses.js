@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Immutable from 'immutable';
+import Immutable, {Seq} from 'immutable';
 import {credentials} from '../scripts';
 import {Api} from '../Api';
 import {Notification} from './Notification';
@@ -18,8 +18,7 @@ export class Courses extends React.Component {
         this.deleteCourse = this.deleteCourse.bind(this);
 
         this.state = {
-            account: props.account,
-            courses: [],
+            courses: Seq(),
             selectedCourse: null
         };
 
@@ -28,20 +27,22 @@ export class Courses extends React.Component {
 
     render() {
         if (this.state.selectedCourse == null) {
-            const courses = Immutable.List(this.state.courses)
-                .map(value => <CourseCard data={value} onSelect={this.selectCourse}/>);
+            const coursesCards =
+                this.state.courses
+                    .map(course => <CourseCard course={course} onSelect={this.selectCourse}/>)
+                    .cacheResult();
 
             return (
                 <article className="courses-list">
                     <CourseCreationModal onCourseCreation={this.updateCoursesList}/>
                     <div className="courses-list-container">
-                        {courses.size > 0 ? courses : <p>There are no courses yet.</p>}
+                        {coursesCards.size > 0 ? coursesCards : <p>There are no courses yet.</p>}
                     </div>
                 </article>
             );
         } else {
             return (
-                <Course data={this.state.selectedCourse}
+                <Course course={this.state.selectedCourse}
                         onUpdate={this.updateCoursesList}
                         onDelete={this.deleteCourse}/>
             )

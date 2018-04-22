@@ -8,8 +8,9 @@
     top: 0;
 }
 
-.course-labels {
-    margin-left: 15px;
+.course-label {
+    margin-left: 5px;
+    color: white;
 }
 
 .courses-list,
