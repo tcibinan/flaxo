@@ -12,9 +12,8 @@ module.exports = SetupEndpoint({
                 method: 'GET',
                 response: {
                     payload: {
-                        id: 3312312,
-                        githubId: "admin",
-                        nickname: "admin",
+                        githubId: 'admin',
+                        nickname: 'admin',
                         githubAuthorized: true,
                         travisAuthorized: true,
                         codacyAuthorized: true
@@ -29,239 +28,261 @@ module.exports = SetupEndpoint({
                 response: {
                     payload: [
                         {
-                            name: "java",
-                            compatibleTestingLanguages: ["java", "kotlin"],
-                            compatibleTestingFrameworks: ["junit"]
+                            name: 'java',
+                            compatibleTestingLanguages: ['java', 'kotlin'],
+                            compatibleTestingFrameworks: ['junit']
                         },
                         {
-                            name: "kotlin",
-                            compatibleTestingLanguages: ["kotlin"],
-                            compatibleTestingFrameworks: ["junit", "spek"]
+                            name: 'kotlin',
+                            compatibleTestingLanguages: ['kotlin'],
+                            compatibleTestingFrameworks: ['junit', 'spek']
                         }
                     ]
                 }
             }]
         },
         {
-            params: "/allCourses",
+            params: '/allCourses',
             requests: [{
                 method: 'GET',
                 response: {
                     payload: [
                         {
-                            id: "1",
-                            name: "JavaCourse",
-                            language: "java",
-                            testingLanguage: "java",
-                            testingFramework: "junit",
-                            status: "init",
-                            user: "admin",
-                            userGithubId: "userGithubId",
-                            students: ["student1", "student2", "student3", "student4", "student5"],
-                            tasks: ["task1", "task2", "task3"]
+                            name: 'JavaCourse',
+                            language: 'java',
+                            testingLanguage: 'java',
+                            testingFramework: 'junit',
+                            url: 'https://github.com/flaxo-developer/JavaCourse',
+                            state: {
+                                lifecycle: 'RUNNING',
+                                activatedServices: [
+                                    'TRAVIS'
+                                ]
+                            },
+                            user: {
+                                githubId: 'flaxo-developer',
+                                nickname: 'admin',
+                                githubAuthorized: true,
+                                travisAuthorized: true,
+                                codacyAuthorized: false
+                            },
+                            students: [
+                                'student1',
+                                'student2',
+                                'student3',
+                                'student4',
+                                'student5'
+                            ],
+                            tasks: [
+                                'task1',
+                                'task2'
+                            ]
                         },
                         {
-                            id: "2",
-                            name: "KotlinCourse",
-                            language: "kotlin",
-                            testingLanguage: "kotlin",
-                            testingFramework: "spek",
-                            status: "running",
-                            user: "admin",
-                            userGithubId: "userGithubId",
-                            students: ["student1", "student2", "student3"],
-                            tasks: ["task1", "task2", "task3", "task4"]
+                            name: 'KotlinCourse',
+                            language: 'java',
+                            testingLanguage: 'kotlin',
+                            testingFramework: 'spek',
+                            state: {
+                                lifecycle: 'INIT',
+                                activatedServices: []
+                            },
+                            user: {
+                                githubId: 'flaxo-developer',
+                                nickname: 'admin',
+                                githubAuthorized: true,
+                                travisAuthorized: true,
+                                codacyAuthorized: false
+                            },
+                            students: [],
+                            tasks: [
+                                'task1',
+                                'task2',
+                                'task3',
+                                'task4'
+                            ]
                         }
                     ]
                 }
             }]
         },
         {
-            params: "/{nickname}/{courseName}/statistics",
+            params: '/{nickname}/{courseName}/statistics',
             requests: [{
                 method: 'GET',
                 response: {
-                    payload: {
-                        perStudentStats: {
-                            student1: [
+                    payload: [
+                        {
+                            branch: 'task1',
+                            url: 'https://github.com/flaxo-developer/JavaCourse/tree/task1',
+                            deadline: '2018-05-10T15:00:00.000',
+                            plagiarismReports: [
                                 {
-                                    id: 11,
-                                    task: "task1",
-                                    student: "student1",
-                                    built: true,
-                                    succeed: true,
-                                    grade: "A",
-                                    deadline: true
+                                    url: 'http://analysis.example.url1',
+                                    date: '2018-04-10T10:00:00.000',
+                                    matches: []
                                 },
                                 {
-                                    id: 12,
-                                    task: "task2",
-                                    student: "student1",
-                                    built: true,
-                                    succeed: false,
-                                    deadline: true
-                                },
-                                {
-                                    id: 13,
-                                    task: "task3",
-                                    student: "student1",
-                                    built: false,
-                                    succeed: false,
-                                    deadline: true
+                                    url: 'http://analysis.example.url2',
+                                    date: '2018-04-10T15:00:00.000',
+                                    matches: [
+                                        {
+                                            url: 'http://analysis.example.url/match1',
+                                            student1: 'student1',
+                                            student2: 'student5',
+                                            lines: 800,
+                                            percentage: 85
+                                        },
+                                        {
+                                            url: 'http://analysis.example.url/match1',
+                                            student1: 'student2',
+                                            student2: 'student5',
+                                            lines: 200,
+                                            percentage: 22
+                                        }
+                                    ]
                                 }
                             ],
-                            student2: [
+                            solutions: [
                                 {
-                                    id: 21,
-                                    task: "task1",
-                                    student: "student2",
-                                    built: true,
-                                    succeed: true,
-                                    grade: "B",
-                                    deadline: true
+                                    task: 'task1',
+                                    student: 'student1',
+                                    score: 80,
+                                    date: '2018-04-10T15:00:00.000',
+                                    buildReports: [
+                                        {
+                                            succeed: true,
+                                            date: '2018-04-10T10:00:00.000'
+                                        },
+                                        {
+                                            succeed: true,
+                                            date: '2018-04-10T15:00:00.000'
+                                        }
+                                    ],
+                                    codeStyleReports: [
+                                        {
+                                            grade: 'E',
+                                            date: '2018-04-10T10:00:00.000'
+                                        },
+                                        {
+                                            grade: 'B',
+                                            date: '2018-04-10T15:00:00.000'
+                                        }
+                                    ]
                                 },
                                 {
-                                    id: 22,
-                                    task: "task2",
-                                    student: "student2",
-                                    built: true,
-                                    succeed: false,
-                                    deadline: true
+                                    task: 'task1',
+                                    student: 'student2',
+                                    score: null,
+                                    date: '2018-04-10T15:00:00.000',
+                                    buildReports: [
+                                        {
+                                            succeed: true,
+                                            date: '2018-04-10T15:00:00.000'
+                                        }
+                                    ],
+                                    codeStyleReports: [
+                                        {
+                                            grade: 'A',
+                                            date: '2018-04-10T15:00:00.000'
+                                        }
+                                    ]
                                 },
                                 {
-                                    id: 23,
-                                    task: "task3",
-                                    student: "student2",
-                                    built: false,
-                                    succeed: false,
-                                    deadline: true
+                                    task: 'task1',
+                                    student: 'student3',
+                                    score: 75,
+                                    date: '2018-04-10T15:00:00.000',
+                                    buildReports: [
+                                        {
+                                            succeed: false,
+                                            date: '2018-04-10T15:00:00.000'
+                                        }
+                                    ],
+                                    codeStyleReports: [
+                                        {
+                                            grade: 'B',
+                                            date: '2018-04-10T15:00:00.000'
+                                        }
+                                    ]
+                                },
+                                {
+                                    task: 'task1',
+                                    student: 'student4',
+                                    score: null,
+                                    date: null,
+                                    buildReports: [],
+                                    codeStyleReports: []
+                                },
+                                {
+                                    task: 'task1',
+                                    student: 'student5',
+                                    score: 70,
+                                    date: '2018-05-30T15:00:00.000',
+                                    buildReports: [
+                                        {
+                                            succeed: true,
+                                            date: '2018-04-10T15:00:00.000'
+                                        }
+                                    ],
+                                    codeStyleReports: [
+                                        {
+                                            grade: 'C',
+                                            date: '2018-04-10T15:00:00.000'
+                                        }
+                                    ]
                                 }
-                            ],
-                            student3: [
-                                {
-                                    id: 31,
-                                    task: "task1",
-                                    student: "student3",
-                                    built: true,
-                                    succeed: false,
-                                    grade: "E",
-                                    deadline: true
-                                },
-                                {
-                                    id: 32,
-                                    task: "task2",
-                                    student: "student3",
-                                    built: true,
-                                    succeed: false,
-                                    deadline: true
-                                },
-                                {
-                                    id: 33,
-                                    task: "task3",
-                                    student: "student3",
-                                    built: false,
-                                    succeed: false,
-                                    deadline: true
-                                }
-                            ],
-                            student4: [
-                                {
-                                    id: 41,
-                                    task: "task1",
-                                    student: "student4",
-                                    built: true,
-                                    succeed: true,
-                                    grade: "B",
-                                    deadline: false
-                                },
-                                {
-                                    id: 42,
-                                    task: "task2",
-                                    student: "student4",
-                                    built: true,
-                                    succeed: false,
-                                    deadline: true
-                                },
-                                {
-                                    id: 43,
-                                    task: "task3",
-                                    student: "student4",
-                                    built: false,
-                                    succeed: false,
-                                    deadline: true
-                                }
-                            ],
-                            student5: [
-                                {
-                                    id: 51,
-                                    task: "task1",
-                                    student: "student5",
-                                    built: true,
-                                    succeed: true,
-                                    grade: "C",
-                                    deadline: true
-                                },
-                                {
-                                    id: 52,
-                                    task: "task2",
-                                    student: "student5",
-                                    built: true,
-                                    succeed: false,
-                                    deadline: true
-                                },
-                                {
-                                    id: 53,
-                                    task: "task3",
-                                    student: "student5",
-                                    built: false,
-                                    succeed: false,
-                                    deadline: true
-                                }
-                            ],
+                            ]
                         },
-                        perTaskStats: {
-                            task1: {
-                                mossResultUrl: "http://mossResultUrl",
-                                mossPlagiarismMatches: [
-                                    {
-                                        students: {
-                                            first: "student1",
-                                            second: "student4"
-                                        },
-                                        lines: 50,
-                                        link: "http://plagiarismLink1",
-                                        percentage: 85
-                                    },
-                                    {
-                                        students: {
-                                            first: "student2",
-                                            second: "student4"
-                                        },
-                                        lines: 15,
-                                        link: "http://plagiarismLink2",
-                                        percentage: 15
-                                    },
-                                    {
-                                        students: {
-                                            first: "student1",
-                                            second: "student5"
-                                        },
-                                        lines: 21,
-                                        link: "http://plagiarismLink3",
-                                        percentage: 22
-                                    }
-                                ]
-                            },
-                            task2: {
-                                mossResultUrl: null,
-                                mossPlagiarismMatches: []
-                            },
-                            task3: {
-                                mossResultUrl: null,
-                                mossPlagiarismMatches: []
-                            }
+                        {
+                            branch: 'task2',
+                            url: 'https://github.com/flaxo-developer/JavaCourse/tree/task2',
+                            deadline: '2018-04-30T15:00:00.000',
+                            plagiarismReport: [],
+                            solutions: [
+                                {
+                                    task: 'task2',
+                                    student: 'student1',
+                                    score: null,
+                                    date: null,
+                                    buildReports: [],
+                                    codeStyleReports: []
+                                },
+                                {
+                                    task: 'task2',
+                                    student: 'student2',
+                                    score: null,
+                                    date: null,
+                                    buildReports: [],
+                                    codeStyleReports: []
+                                },
+                                {
+                                    task: 'task2',
+                                    student: 'student3',
+                                    score: null,
+                                    date: null,
+                                    buildReports: [],
+                                    codeStyleReports: []
+                                },
+                                {
+                                    task: 'task2',
+                                    student: 'student4',
+                                    score: null,
+                                    date: null,
+                                    buildReports: [],
+                                    codeStyleReports: []
+                                },
+                                {
+                                    task: 'task2',
+                                    student: 'student5',
+                                    score: null,
+                                    date: null,
+                                    buildReports: [],
+                                    codeStyleReports: []
+                                }
+                            ]
                         }
-                    }
+                    ]
                 }
             }]
         }
