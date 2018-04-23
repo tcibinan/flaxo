@@ -4,23 +4,52 @@
 
 Flaxo educational platform is a pragmatic way to organise, manage and report programming studying process.
 
-## What?
+## Principle
 
-The main underlying idea is quite clear: 
+The educational process in flaxo platform can be described in the five following steps.
 
 1. Teacher creates a course with flaxo which is basically a simple git repository.
-2. Teacher fill the course with tests and interfaces that students are going to implement.
+2. Teacher fill the course tasks with tests that students are going to write implementations for.
 3. Students solve the tasks and create pull requests.
-4. Flaxo make all the necessary arrangements to test and evaluate students solutions.
-5. Teacher receives well-formatted stats and results of his students progress.
+4. Flaxo make all the necessary arrangements to evaluate students solutions.
+5. Teacher receives well-formatted statistics of students progress.
 
-Key features:
+## Key features
 
-- Continuous integration results aggregating.
-- Plagiarism analysis.
-- Git-based courses support.
 
-Prerequisites: Github account which is authorized with Travis.
+### Results aggregation
+
+Flaxo aggregates results for each course task using different metrics 
+
+- solutions testing
+- code style analysis
+- plagiarism analysis
+- and additional configurable analysis
+
+![course-task-statistics](screenshots/course-task.png?raw=true)
+
+
+### Repository generator
+
+You can create a repository from scratch just selecting languages and framework for testing.
+Flaxo knows how to build a gradle project with build-in wrappers so you don't have to waste 
+your time configuring project environment.
+
+![course-creation-modal](screenshots/course-creation-modal.png?raw=true)
+
+
+### Statistics export in json, csv, xls
+
+All courses statistics could be retrieved in one of supported formats: json, csv, xls. 
+Results can be retrieved using flaxo api as well.
+
+
+### Educational flow
+
+You can create unlimited amount of courses for free. And it is as easy as it can be.
+
+![all-courses](screenshots/all-courses.png?raw=true)
+
 
 ## Supported languages and tools
 
@@ -117,33 +146,32 @@ and a list of possible travis cli commands should be listed.
 
 - Github
 - Travis CI
+- Codacy
 - [Moss](https://theory.stanford.edu/~aiken/moss/) plagiarism detecting system
-- **todo:** Codacy
 
 ### Back-end technologies
 
-- Kotlin language
-- Gradle build tool
-- Spek testing framework
+- Kotlin
+- Gradle
+- Spek
 - Spring Boot, Spring Data, Spring Security
 - Retrofit2 http client
-- and even more: h2 database, Kohsuke Github api, Kotlin test, Vavr, google/jimfs, mockito-kotlin, moji, jsoup, commons-collections4
+- and even more: h2 database, Kohsuke Github api, Kotlin test, Vavr, mockito-kotlin, moji, jsoup, commons-collections4
 
 ### Front-end technologies
 
 - Javascript (ECMAScript 6)
-- Webpack build tool
+- Webpack
 - React
+- Reactstrap
 - axios
 - js-cookie
 - Immutable.js
 
 ## TODO-list
 
-- **\[done\]** Simple user interface where a teacher could register, authorize, authorize
- using github, create a course, start course plagiarism analysis, get course stats.
 - **todo:** The ability to init a flaxo course from the existing repository.
-- **todo:** Transparent api to get course statistics in json, xls formats.
+- **todo:** Transparent api to get course statistics in json, csv, xls formats.
 
 ## Credits
 
