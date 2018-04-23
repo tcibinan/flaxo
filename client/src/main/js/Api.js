@@ -140,4 +140,19 @@ export class Api {
                 .catch(response => onFailure(response));
         }
     }
+
+    static addCodacyToken(credentials, codacyToken, onSuccess, onFailure) {
+        if (credentials.username && credentials.password) {
+            axios
+                .put('addCodacyToken', {}, {
+                    baseURL: restUrl(),
+                    auth: credentials,
+                    params: {
+                        codacyToken
+                    }
+                })
+                .then(response => onSuccess(response.data.payload))
+                .catch(response => onFailure(response));
+        }
+    }
 }

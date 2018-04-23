@@ -4,7 +4,7 @@ import Immutable from 'immutable';
 import axios from 'axios';
 import {credentials, restUrl} from '../scripts.js';
 import {Notification} from './Notification';
-import {Badge, Button} from 'reactstrap';
+import {DropdownItem} from 'reactstrap';
 
 export class Github extends React.Component {
 
@@ -14,18 +14,20 @@ export class Github extends React.Component {
         this.authWithGithub = this.authWithGithub.bind(this);
         this.redirectToGithubAuth = this.redirectToGithubAuth.bind(this);
 
-        this.state = {isAuthorized: props.isAuthorized};
+        this.state = {
+            isAuthorized: props.isAuthorized
+        };
     }
 
     render() {
-        if (this.state.isAuthorized) {
-            return <Badge color="primary">Github</Badge>;
-        } else {
+        if (!this.state.isAuthorized) {
             return (
-                <Button color="primary" onClick={this.authWithGithub}>
-                    Authorize with github
-                </Button>
+                <DropdownItem onClick={this.authWithGithub}>
+                    Github
+                </DropdownItem>
             );
+        } else {
+            return <DropdownItem className="text-success" disabled>Github</DropdownItem>;
         }
     }
 

@@ -1,5 +1,4 @@
 import React from 'react';
-import {RegistrationModal} from './RegistrationModal';
 import {Github} from './Github';
 import {Travis} from './Travis';
 import {Codacy} from './Codacy';
@@ -36,15 +35,9 @@ export class NavigationBar extends React.Component {
                                 Options
                             </DropdownToggle>
                             <DropdownMenu right>
-                                <DropdownItem>
-                                    <Github isAuthorized={this.props.account.githubAuthorized}/>{' '}
-                                </DropdownItem>
-                                <DropdownItem>
-                                    <Travis isAuthorized={this.props.account.travisAuthorized}/>{' '}
-                                </DropdownItem>
-                                <DropdownItem>
-                                    <Codacy isAuthorized={this.props.account.codacyAuthorized}/>{' '}
-                                </DropdownItem>
+                                <Github isAuthorized={this.props.account.githubAuthorized}/>
+                                <Travis isAuthorized={this.props.account.travisAuthorized}/>
+                                <Codacy isAuthorized={this.props.account.codacyAuthorized}/>
                                 <DropdownItem divider/>
                                 <DropdownItem onClick={this.props.onLogout}>
                                     Logout
