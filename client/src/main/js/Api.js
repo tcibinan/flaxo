@@ -123,4 +123,21 @@ export class Api {
                 .catch(response => onFailure(response));
         }
     }
+
+    static updateRules(credentials, courseName, taskBranch, deadline, onSuccess, onFailure) {
+        if (credentials.username && credentials.password) {
+            axios
+                .put('updateRules', {}, {
+                    baseURL: restUrl(),
+                    auth: credentials,
+                    params: {
+                        courseName,
+                        taskBranch,
+                        deadline
+                    }
+                })
+                .then(response => onSuccess(response.data.payload))
+                .catch(response => onFailure(response));
+        }
+    }
 }

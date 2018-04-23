@@ -28,7 +28,7 @@ export class Page extends React.Component {
                 this.setState({account: account});
             },
             response => ReactDOM.render(
-                <Notification succeed message={'Account retrieving failed due to: ' + response}/>,
+                <Notification failed message={'Account retrieving failed due to: ' + response}/>,
                 document.getElementById('notifications')
             )
         );

@@ -11,7 +11,7 @@ import {
     TabContent,
     TabPane
 } from 'reactstrap';
-import {TasksStatistics} from './TasksStatistics';
+import {CourseSummary} from './CourseSummary';
 import {Task} from './Task';
 
 export class CourseStatistics extends React.Component {
@@ -46,7 +46,7 @@ export class CourseStatistics extends React.Component {
     render() {
         const tasksTabsNavItems =
             this.state.tasks.map((task, index) =>
-                <NavItem>
+                <NavItem className={this.state.activeTab === index + 1 ? '' : 'course-tab'}>
                     <NavLink
                         onClick={() => {
                             this.toggle(index + 1);
@@ -85,8 +85,8 @@ export class CourseStatistics extends React.Component {
                 </Nav>
                 <TabContent activeTab={this.state.activeTab}>
                     <TabPane tabId="0">
-                        <TasksStatistics course={this.props.course}
-                                         tasks={this.state.tasks}/>
+                        <CourseSummary course={this.props.course}
+                                       tasks={this.state.tasks}/>
                     </TabPane>
                     {tasksTabs}
                 </TabContent>

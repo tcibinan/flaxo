@@ -3,7 +3,7 @@
 }
 
 .notifications {
-    position: absolute;
+    position: fixed;
     right: 0;
     top: 0;
 }
@@ -28,6 +28,7 @@
 .courses-list .course-item {
     flex-grow: 1;
     margin: 10px;
+    cursor: pointer;
 }
 
 .course-controls {
@@ -42,6 +43,10 @@
 
 .course-controls .course-control:nth-last-child {
     margin-left: auto;
+}
+
+.course-tabs .course-tab {
+    cursor: pointer;
 }
 
 .task-results,
@@ -121,4 +126,16 @@
 
 .suggesting-result {
 
+}
+
+.task-card .card,
+.course-summary .card {
+    border-radius: 0 0 4px 4px;
+    border-top: none;
+}
+
+.task-card .rules-toggle-btn,
+.task-card .save-results-btn,
+.course-summary .save-results-btn {
+    margin-left: 20px;
 }
