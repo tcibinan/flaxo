@@ -16,7 +16,7 @@ module.exports = SetupEndpoint({
                         nickname: 'admin',
                         githubAuthorized: true,
                         travisAuthorized: true,
-                        codacyAuthorized: true
+                        codacyAuthorized: false
                     }
                 }
             }]
@@ -296,6 +296,15 @@ module.exports = SetupEndpoint({
         },
         {
             params: '/updateRules',
+            requests: [{
+                method: 'PUT',
+                response: {
+                    payload: {}
+                }
+            }]
+        },
+        {
+            params: '/addCodacyToken',
             requests: [{
                 method: 'PUT',
                 response: {
