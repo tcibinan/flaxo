@@ -245,7 +245,7 @@ module.exports = SetupEndpoint({
                         {
                             branch: 'task2',
                             url: 'https://github.com/flaxo-developer/JavaCourse/tree/task2',
-                            deadline: '2018-04-30T15:00:00.000',
+                            deadline: null,
                             plagiarismReport: [],
                             solutions: [
                                 {
@@ -291,6 +291,15 @@ module.exports = SetupEndpoint({
                             ]
                         }
                     ]
+                }
+            }]
+        },
+        {
+            params: '/updateRules',
+            requests: [{
+                method: 'PUT',
+                response: {
+                    payload: {}
                 }
             }]
         }
