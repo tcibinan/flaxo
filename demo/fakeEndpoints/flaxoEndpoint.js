@@ -304,7 +304,7 @@ module.exports = SetupEndpoint({
             }]
         },
         {
-            params: '/addCodacyToken',
+            params: '/codacy/token',
             requests: [{
                 method: 'PUT',
                 response: {
