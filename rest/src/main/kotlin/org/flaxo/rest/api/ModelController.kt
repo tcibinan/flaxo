@@ -21,6 +21,7 @@ import org.flaxo.travis.Travis
 import org.flaxo.travis.TravisException
 import org.flaxo.travis.TravisUser
 import io.vavr.control.Either
+import io.vavr.kotlin.option
 import org.apache.logging.log4j.LogManager
 import org.flaxo.model.data.PlagiarismMatch
 import org.flaxo.rest.service.codacy.CodacyService
@@ -31,10 +32,14 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
@@ -331,10 +336,10 @@ class ModelController @Autowired constructor(private val dataService: DataServic
                principal: Principal
     ): ResponseEntity<Any> {
         val user = dataService.getUser(principal.name)
-                ?: throw EntityNotFound("User ${principal.name}")
+                ?: return responseService.userNotFound(principal.name)
 
         val course = dataService.getCourse(courseName, user)
-                ?: throw EntityNotFound("Course ${user.nickname}/$courseName")
+                ?: return responseService.courseNotFound(principal.name, courseName)
 
         return responseService.ok(course.view())
     }
@@ -380,45 +385,39 @@ class ModelController @Autowired constructor(private val dataService: DataServic
     }
 
     /**
-     * Returns all tasks of the course.
+     * Update task rules.
      *
-     * @param ownerNickname Course owner nickname.
-     * @param courseName Name of the course and related git repository.
+     * @param courseName Name of the course.
+     * @param taskBranch Name of the branch related to exact task.
+     * @param deadline Updated task deadline.
      */
-    @GetMapping("/{owner}/{course}/tasks")
+    @PutMapping("/updateRules")
     @PreAuthorize("hasAuthority('USER')")
-    @Transactional(readOnly = true)
-    fun getCourseTasks(@PathVariable("owner") ownerNickname: String,
-                       @PathVariable("course") courseName: String
+    @Transactional
+    fun updateRules(@RequestParam courseName: String,
+                    @RequestParam taskBranch: String,
+                    @RequestParam(required = false) deadline: String?,
+                    principal: Principal
     ): ResponseEntity<Any> {
-        val user = dataService.getUser(ownerNickname)
-                ?: return responseService.userNotFound(ownerNickname)
+        logger.info("Updating rules of ${principal.name}/$courseName/$taskBranch task")
+
+        val user = dataService.getUser(principal.name)
+                ?: return responseService.userNotFound(principal.name)
 
         val course = dataService.getCourse(courseName, user)
-                ?: return responseService.courseNotFound(ownerNickname, courseName)
+                ?: return responseService.courseNotFound(principal.name, courseName)
 
-        return responseService.ok(course.tasks.map { it.branch })
-    }
+        val task = course.tasks
+                .find { it.branch == taskBranch }
+                ?: return responseService.taskNotFound(principal.name, courseName, taskBranch)
 
-    /**
-     * Returns all students of the course.
-     *
-     * @param ownerNickname Course owner nickname.
-     * @param courseName Name of the course and related git repository.
-     */
-    @GetMapping("/{owner}/{course}/students")
-    @PreAuthorize("hasAuthority('USER')")
-    @Transactional(readOnly = true)
-    fun getCourseStudents(@PathVariable("owner") ownerNickname: String,
-                          @PathVariable("course") courseName: String
-    ): ResponseEntity<Any> {
-        val user = dataService.getUser(ownerNickname)
-                ?: return responseService.userNotFound(ownerNickname)
-
-        val course = dataService.getCourse(courseName, user)
-                ?: return responseService.courseNotFound(ownerNickname, courseName)
-
-        return responseService.ok(course.students.map { it.nickname })
+        return deadline
+                ?.let { LocalDate.parse(it) }
+                ?.let { LocalDateTime.of(it, LocalTime.MAX) }
+                ?.takeIf { it != task.deadline }
+                ?.let { dataService.updateTask(task.copy(deadline = it)) }
+                ?.let { responseService.ok(it.view()) }
+                ?: responseService.ok(task.view())
     }
 
     /**
@@ -426,7 +425,17 @@ class ModelController @Autowired constructor(private val dataService: DataServic
      */
     @GetMapping("/supportedLanguages")
     fun supportedLanguages(): ResponseEntity<Any> =
-            responseService.ok(supportedLanguages.flatten())
+            supportedLanguages
+                    .map { (name, language) ->
+                        object {
+                            val name = name
+                            val compatibleTestingLanguages =
+                                    language.compatibleTestingLanguages.map { it.name }
+                            val compatibleTestingFrameworks =
+                                    language.compatibleTestingFrameworks.map { it.name }
+                        }
+                    }
+                    .let { responseService.ok(it) }
 
     /**
      * Starts current user's course plagiarism analysis.
@@ -529,16 +538,5 @@ class ModelController @Autowired constructor(private val dataService: DataServic
 
     private inline fun <L, R> Either<L, R>.getOrElseExecute(block: (L) -> Unit): R =
             apply { if (isLeft) block(left) }.get()
-
-    private fun Map<String, Language>.flatten(): List<Any> =
-            map { (name, language) ->
-                mapOf(
-                        "name" to name,
-                        "compatibleTestingLanguages"
-                                to language.compatibleTestingLanguages.map { it.name },
-                        "compatibleTestingFrameworks"
-                                to language.compatibleTestingFrameworks.map { it.name }
-                )
-            }
 
 }

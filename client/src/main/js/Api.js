@@ -127,7 +127,7 @@ export class Api {
     static updateRules(credentials, courseName, taskBranch, deadline, onSuccess, onFailure) {
         if (credentials.username && credentials.password) {
             axios
-                .put('updateRules', {}, {
+                .put('codacy/token', {}, {
                     baseURL: restUrl(),
                     auth: credentials,
                     params: {

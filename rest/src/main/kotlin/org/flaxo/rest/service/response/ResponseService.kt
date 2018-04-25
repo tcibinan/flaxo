@@ -43,7 +43,9 @@ interface ResponseService {
     /**
      * Forms a response with status code 404 and course not found message.
      */
-    fun courseNotFound(username: String, courseName: String): ResponseEntity<Any>
+    fun courseNotFound(username: String,
+                       courseName: String
+    ): ResponseEntity<Any>
 
     /**
      * Forms a response with status code 404 and user not found message.
@@ -59,4 +61,12 @@ interface ResponseService {
      * Forms a response with status code 404 and github id not found message.
      */
     fun githubIdNotFound(username: String): ResponseEntity<Any>
+
+    /**
+     * Forms a response with status code 404 and course task not found message.
+     */
+    fun taskNotFound(username: String,
+                     courseName: String,
+                     taskBranch: String
+    ): ResponseEntity<Any>
 }

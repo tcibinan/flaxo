@@ -8,8 +8,16 @@ class SimpleResponseService : ResponseService {
     override fun userNotFound(username: String): ResponseEntity<Any> =
             notFound("User $username not found")
 
-    override fun courseNotFound(username: String, courseName: String): ResponseEntity<Any> =
+    override fun courseNotFound(username: String,
+                                courseName: String
+    ): ResponseEntity<Any> =
             notFound("Course $courseName wasn't found for user $username.")
+
+    override fun taskNotFound(username: String,
+                              courseName: String,
+                              taskBranch: String
+    ): ResponseEntity<Any> =
+            notFound("Task $taskBranch wasn't found for $username/$courseName")
 
     override fun githubTokenNotFound(username: String): ResponseEntity<Any> =
             bad("There is no github auth for $username")
