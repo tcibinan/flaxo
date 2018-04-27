@@ -212,7 +212,7 @@ class DataServiceSpec : SubjectSpek<DataService>({
                     .copy(
                             state = course.state.copy(
                                     lifecycle = CourseLifecycle.RUNNING,
-                                    activatedServices = listOf(
+                                    activatedServices = setOf(
                                             IntegratedService.GITHUB,
                                             IntegratedService.TRAVIS
                                     )

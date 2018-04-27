@@ -4,10 +4,7 @@ import org.flaxo.core.language.Language
 import org.flaxo.model.CourseLifecycle
 import org.flaxo.model.DataService
 import org.flaxo.model.EntityAlreadyExistsException
-import org.flaxo.model.EntityNotFound
 import org.flaxo.model.IntegratedService
-import org.flaxo.model.data.Task
-import org.flaxo.model.data.User
 import org.flaxo.model.data.views
 import org.flaxo.moss.MossException
 import org.flaxo.rest.service.environment.RepositoryEnvironmentService
@@ -16,9 +13,7 @@ import org.flaxo.rest.service.moss.MossService
 import org.flaxo.rest.service.moss.MossTask
 import org.flaxo.rest.service.response.ResponseService
 import org.flaxo.rest.service.travis.TravisService
-import org.flaxo.travis.Travis
 import org.flaxo.travis.TravisException
-import org.flaxo.travis.TravisUser
 import io.vavr.control.Either
 import org.apache.logging.log4j.LogManager
 import org.flaxo.codacy.CodacyException
@@ -244,9 +239,13 @@ class ModelController @Autowired constructor(private val dataService: DataServic
     }
 
     /**
-     * Composes course and enable travis builds on the git repository pull requests.
+     * Composes course and enable travis builds and codacy analysis on
+     * the git repository pull requests.
      *
-     * It is called after the teacher has finished creating tasks.
+     * Travis and codacy analysis is only activated if user has authorized
+     * with related services in flaxo.
+     *
+     * It is supposed to be called after a user has finished filling tasks.
      *
      * @param courseName Name of the course and related git repository.
      */
@@ -270,98 +269,126 @@ class ModelController @Autowired constructor(private val dataService: DataServic
         val githubUserId = user.githubId
                 ?: return responseService.githubIdNotFound(user.nickname)
 
-        logger.info("Initialising travis client for ${user.nickname} user")
+        val activatedServices = mutableSetOf<IntegratedService>()
 
-        val travis = travisService.travis(retrieveTravisToken(user, githubUserId, githubToken))
+        try {
+            travisService.activateTravis(user, course, githubToken, githubUserId)
+            activatedServices.add(IntegratedService.TRAVIS)
+        } catch (e: Exception) {
+            logger.info("Travis activation went bad for ${user.githubId}/$courseName course" +
+                    "due to: ${e.message}")
+        }
 
-        logger.info("Retrieving travis user for ${user.nickname} user")
-
-        val travisUser: TravisUser = travis.getUser()
-                .getOrElseExecute { errorBody ->
-                    return responseService.serverError(
-                            "Travis user retrieving for ${user.nickname} went bad due to: $errorBody"
-                    )
-                }
-
-        logger.info("Trigger travis user with id ${travisUser.id} sync for ${user.nickname} user")
-
-        travis.sync(travisUser.id)
-                ?.also { errorBody ->
-                    throw TravisException("Travis user ${travisUser.id} sync hasn't started due to: ${errorBody.string()}")
-                }
-
-        logger.info("Trying to ensure that current user's travis synchronisation has finished")
-
-        travis.waitUntilTravisSynchronisationWillBeFinishedFor(travisUser.id)
-
-        logger.info("Activating git repository of the course ${user.nickname}/$courseName for travis CI")
-
-        val activatedServices = mutableListOf<IntegratedService>()
-
-        travis.activate(githubUserId, course.name)
-                .getOrElseThrow { errorBody ->
-                    TravisException("Travis activation of $githubUserId/${course.name} " +
-                            "repository went bad due to: ${errorBody.string()}")
-                }
-
-        activatedServices.add(IntegratedService.TRAVIS)
-
-        val codacyToken = user.credentials.codacyToken
-
-        codacyToken
-                ?.also { token ->
-                    logger.info("Initialising codacy client for ${user.nickname} user")
-
-                    val codacy = codacyService.codacy(githubUserId, token)
-
-                    logger.info("Creating codacy project $courseName for ${user.nickname} user")
-
-                    val errorBody = codacy.createProject(courseName, "git://github.com/$githubUserId/$courseName.git")
-
-                    if (errorBody == null) {
-                        logger.info("Codacy project $courseName for ${user.nickname} user was created")
-
-                        activatedServices.add(IntegratedService.CODACY)
-                    } else {
-                        logger.info("Codacy project $courseName for ${user.nickname} user was not created due to: ${errorBody.string()}")
-                    }
-                }
-                ?: logger.info("Codacy token is not set for ${user.nickname} user so codacy service is not activated")
+        try {
+            codacyService.activateCodacy(user, course, githubUserId)
+            activatedServices.add(IntegratedService.CODACY)
+        } catch (e: Exception) {
+            logger.info("Codacy activation went bad for $githubUserId/$courseName course" +
+                    "due to: ${e.message}")
+        }
 
         logger.info("Changing course ${user.nickname}/$courseName status to running")
 
-        dataService.updateCourse(
-                course.copy(
-                        state = course.state.copy(
-                                lifecycle = CourseLifecycle.RUNNING,
-                                activatedServices = activatedServices
-                        )
+        dataService.updateCourse(course.copy(
+                state = course.state.copy(
+                        lifecycle = CourseLifecycle.RUNNING,
+                        activatedServices = activatedServices
                 )
-        )
+        ))
 
         logger.info("Course ${user.nickname}/$courseName has been successfully composed")
 
         return responseService.ok()
     }
 
-    private fun retrieveTravisToken(user: User,
-                                    githubUserId: String,
-                                    githubToken: String
-    ): String = retrieveUserWithTravisToken(user, githubUserId, githubToken)
-            .credentials
-            .travisToken
-            ?: throw TravisException("Travis token wasn't found for ${user.nickname}.")
+    @PostMapping("activateCodacy")
+    @PreAuthorize("hasAuthority('USER')")
+    @Transactional
+    fun activateCodacy(@RequestParam courseName: String,
+                       principal: Principal
+    ): ResponseEntity<Any> {
+        logger.info("Trying to activate codacy for course ${principal.name}/$courseName")
 
-    private fun retrieveUserWithTravisToken(user: User,
-                                            githubUserId: String,
-                                            githubToken: String
-    ): User = user
-            .takeUnless { it.credentials.travisToken.isNullOrBlank() }
-            ?: dataService.addToken(
-                    user.nickname,
-                    IntegratedService.TRAVIS,
-                    travisService.retrieveTravisToken(githubUserId, githubToken)
-            )
+        val user = dataService.getUser(principal.name)
+                ?: return responseService.userNotFound(principal.name)
+
+        val course = dataService.getCourse(courseName, user)
+                ?: return responseService.courseNotFound(principal.name, courseName)
+
+        val userGithubId = user.githubId
+                ?: return responseService.githubIdNotFound(user.nickname)
+
+        course.state
+                .activatedServices
+                .takeUnless { it.contains(IntegratedService.CODACY) }
+                ?.let {
+                    try {
+                        codacyService
+                                .activateCodacy(user, course, userGithubId)
+
+                        return dataService
+                                .updateCourse(course.copy(
+                                        state =
+                                        course.state.copy(
+                                                activatedServices =
+                                                course.state.activatedServices + IntegratedService.CODACY
+                                        )
+                                ))
+                                .let { responseService.ok(it) }
+                    } catch (e: Exception) {
+                        logger.info("Codacy activation failed ${e.message}")
+                        return responseService.bad(e.message)
+                    }
+                }
+                ?: return responseService.bad("Codacy is already integrated with " +
+                        "${principal.name}/$courseName course")
+    }
+
+    @PostMapping("activateTravis")
+    @PreAuthorize("hasAuthority('USER')")
+    @Transactional
+    fun activateTravis(@RequestParam courseName: String,
+                       principal: Principal
+    ): ResponseEntity<Any> {
+        logger.info("Trying to activate travis for course ${principal.name}/$courseName")
+
+        val user = dataService.getUser(principal.name)
+                ?: return responseService.userNotFound(principal.name)
+
+        val course = dataService.getCourse(courseName, user)
+                ?: return responseService.courseNotFound(principal.name, courseName)
+
+        val userGithubId = user.githubId
+                ?: return responseService.githubIdNotFound(user.nickname)
+
+        val githubToken = user.credentials.githubToken
+                ?: return responseService.githubTokenNotFound(user.nickname)
+
+        course.state
+                .activatedServices
+                .takeUnless { it.contains(IntegratedService.TRAVIS) }
+                ?.let {
+                    try {
+                        travisService
+                                .activateTravis(user, course, githubToken, userGithubId)
+
+                        return dataService
+                                .updateCourse(course.copy(
+                                        state =
+                                        course.state.copy(
+                                                activatedServices =
+                                                course.state.activatedServices + IntegratedService.TRAVIS
+                                        )
+                                ))
+                                .let { responseService.ok(it) }
+                    } catch (e: Exception) {
+                        logger.info("Travis activation failed ${e.message}")
+                        return responseService.bad(e.message)
+                    }
+                }
+                ?: return responseService.bad("Travis is already integrated with " +
+                        "${principal.name}/$courseName course")
+    }
 
     /**
      * Returns full information about the current user's course with the given [courseName].
@@ -551,31 +578,5 @@ class ModelController @Autowired constructor(private val dataService: DataServic
 
         return responseService.ok("Plagiarism analysis scheduled for tasks: $scheduledTasksNames")
     }
-
-    private fun Travis.waitUntilTravisSynchronisationWillBeFinishedFor(travisUserId: String,
-                                                                       attemptsLimit: Int = 20,
-                                                                       retrievingDelay: Long = 3000
-    ) {
-        val observationDuration: (Int) -> Long = { attempt -> (attempt + 1) * retrievingDelay / 1000 }
-
-        repeat(attemptsLimit) { attempt ->
-            Thread.sleep(retrievingDelay)
-
-            val travisUser = getUser()
-                    .getOrElseThrow { errorBody ->
-                        TravisException("Travis user $travisUserId retrieving went bad due to: ${errorBody.string()}")
-                    }
-
-            if (travisUser.isSyncing) logger.info("Travis user $travisUserId synchronisation hasn't finished " +
-                    "after ${observationDuration(attempt)} seconds.")
-            else return
-        }
-
-        throw TravisException("Travis synchronisation hasn't finished " +
-                "after ${observationDuration(attemptsLimit)} seconds.")
-    }
-
-    private inline fun <L, R> Either<L, R>.getOrElseExecute(block: (L) -> Unit): R =
-            apply { if (isLeft) block(left) }.get()
 
 }

@@ -1,5 +1,6 @@
 package org.flaxo.rest
 
+import org.flaxo.model.DataService
 import org.flaxo.rest.service.travis.TravisService
 import org.flaxo.rest.service.travis.TravisSimpleService
 import org.flaxo.travis.TravisClient
@@ -27,6 +28,8 @@ class TravisConfiguration {
                     .create(TravisClient::class.java)
 
     @Bean
-    fun travisService(travisClient: TravisClient): TravisService =
-            TravisSimpleService(travisClient)
+    fun travisService(travisClient: TravisClient,
+                      dataService: DataService
+    ): TravisService =
+            TravisSimpleService(travisClient, dataService)
 }
