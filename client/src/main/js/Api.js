@@ -185,4 +185,21 @@ export class Api {
                 .catch(response => onFailure(response));
         }
     }
+
+    static downloadStatistics(credentials, courseName, format, onSuccess, onFailure) {
+        if (credentials.username && credentials.password) {
+            axios
+                .get('statistics/download', {
+                    baseURL: restUrl(),
+                    auth: credentials,
+                    responseType: 'blob',
+                    params: {
+                        courseName,
+                        format
+                    }
+                })
+                .then(response => onSuccess(response.data))
+                .catch(response => onFailure(response));
+        }
+    }
 }

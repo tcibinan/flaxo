@@ -5,6 +5,10 @@ import {
     DropdownMenu,
     DropdownToggle
 } from 'reactstrap';
+import {credentials} from '../scripts';
+import {Api} from '../Api';
+import ReactDOM from 'react-dom';
+import {Notification} from './Notification';
 
 export class CourseStatisticsDownloadMenu extends React.Component {
 
@@ -19,6 +23,25 @@ export class CourseStatisticsDownloadMenu extends React.Component {
         this.setState({show: !this.state.show});
     }
 
+    downloadAs(format) {
+        Api.downloadStatistics(credentials(),
+            this.props.course.name,
+            format,
+            data => {
+                const url = window.URL.createObjectURL(new Blob([data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', `${this.props.course.name}-statistics.${format}`);
+                document.body.appendChild(link);
+                link.click();
+            },
+            response => ReactDOM.render(
+                <Notification failed message={`File downloading failed due to: ${response}`}/>,
+                document.getElementById('notifications')
+            )
+        )
+    }
+
     render() {
         return (
             <div className="course-control">
@@ -27,9 +50,9 @@ export class CourseStatisticsDownloadMenu extends React.Component {
                         Download as
                     </DropdownToggle>
                     <DropdownMenu>
-                        <DropdownItem disabled>json</DropdownItem>
-                        <DropdownItem disabled>excel</DropdownItem>
-                        <DropdownItem disabled>csv</DropdownItem>
+                        <DropdownItem onClick={() => this.downloadAs('json')}>json</DropdownItem>
+                        <DropdownItem disabled onClick={() => this.downloadAs('xls')}>excel</DropdownItem>
+                        <DropdownItem disabled onClick={() => this.downloadAs('csv')}>csv</DropdownItem>
                     </DropdownMenu>
                 </ButtonDropdown>
             </div>

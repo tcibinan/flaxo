@@ -13,6 +13,7 @@ export function CourseLabels(props) {
             props.course.testingFramework
         ])
             .map(value => value.toLowerCase())
+            .toSet()
             .map(value => <Badge className="course-label" color="info">{value}</Badge>);
 
     const servicesLabels =

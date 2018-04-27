@@ -9,6 +9,8 @@ import org.flaxo.core.language.JavaLang
 import org.flaxo.core.language.KotlinLang
 import org.flaxo.core.language.Language
 import org.flaxo.gradle.GradleBuildTool
+import org.flaxo.rest.service.converter.JsonStatisticsConverter
+import org.flaxo.rest.service.converter.StatisticsConverter
 import org.flaxo.rest.service.environment.RepositoryEnvironmentService
 import org.flaxo.rest.service.environment.SimpleRepositoryEnvironmentService
 import org.flaxo.travis.env.SimpleTravisEnvironmentSupplier
@@ -55,6 +57,11 @@ class CoreConfiguration {
                     supportedTestingFrameworks,
                     defaultBuildTools
             )
+
+    @Bean
+    fun statisticsConverters(): Map<String, StatisticsConverter> = mapOf(
+            "json" to JsonStatisticsConverter
+    )
 
     private fun <TYPE : NamedEntity> namedMap(vararg namedEntity: TYPE): Map<String, TYPE> =
             namedEntity.groupBy { it.name }
