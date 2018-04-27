@@ -29,7 +29,7 @@ export class Course extends React.Component {
     }
 
     startCourse() {
-        Api.startCourse(credentials(), this.props.name,
+        Api.startCourse(credentials(), this.props.course.name,
             () => {
                 this.props.course.state.lifecycle = 'RUNNING';
                 this.props.onUpdate();

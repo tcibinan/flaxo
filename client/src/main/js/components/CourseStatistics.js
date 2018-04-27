@@ -29,7 +29,7 @@ export class CourseStatistics extends React.Component {
 
     componentDidMount() {
         Api.retrieveCourseStatistics(credentials(),
-            this.props.course.user,
+            this.props.course.user.nickname,
             this.props.course.name,
             tasks => this.setState({tasks}),
             response => ReactDOM.render(

@@ -127,13 +127,13 @@ export class Api {
     static updateRules(credentials, courseName, taskBranch, deadline, onSuccess, onFailure) {
         if (credentials.username && credentials.password) {
             axios
-                .put('codacy/token', {}, {
+                .put('updateRules', {}, {
                     baseURL: restUrl(),
                     auth: credentials,
                     params: {
                         courseName,
                         taskBranch,
-                        deadline
+                        deadline: deadline ? deadline : null
                     }
                 })
                 .then(response => onSuccess(response.data.payload))
@@ -144,11 +144,11 @@ export class Api {
     static addCodacyToken(credentials, codacyToken, onSuccess, onFailure) {
         if (credentials.username && credentials.password) {
             axios
-                .put('addCodacyToken', {}, {
+                .put('codacy/token', {}, {
                     baseURL: restUrl(),
                     auth: credentials,
                     params: {
-                        codacyToken
+                        token: codacyToken
                     }
                 })
                 .then(response => onSuccess(response.data.payload))

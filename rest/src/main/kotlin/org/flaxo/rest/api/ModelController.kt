@@ -10,7 +10,6 @@ import org.flaxo.model.data.Task
 import org.flaxo.model.data.User
 import org.flaxo.model.data.views
 import org.flaxo.moss.MossException
-import org.flaxo.moss.MossResult
 import org.flaxo.rest.service.environment.RepositoryEnvironmentService
 import org.flaxo.rest.service.git.GitService
 import org.flaxo.rest.service.moss.MossService
@@ -21,8 +20,8 @@ import org.flaxo.travis.Travis
 import org.flaxo.travis.TravisException
 import org.flaxo.travis.TravisUser
 import io.vavr.control.Either
-import io.vavr.kotlin.option
 import org.apache.logging.log4j.LogManager
+import org.flaxo.codacy.CodacyException
 import org.flaxo.model.data.PlagiarismMatch
 import org.flaxo.rest.service.codacy.CodacyService
 import org.springframework.beans.factory.annotation.Autowired
@@ -188,8 +187,48 @@ class ModelController @Autowired constructor(private val dataService: DataServic
         val user = dataService.getUser(principal.name)
                 ?: return responseService.userNotFound(principal.name)
 
+        val course = dataService.getCourse(courseName, user)
+                ?: return responseService.courseNotFound(principal.name, courseName)
+
+        val githubUserId = user.githubId
+                ?: return responseService.githubIdNotFound(principal.name)
+
         val githubToken = user.credentials.githubToken
                 ?: return responseService.githubTokenNotFound(principal.name)
+
+        course.state
+                .activatedServices
+                .takeIf { it.contains(IntegratedService.TRAVIS) }
+                ?.let { user.credentials.travisToken }
+                ?.also {
+                    logger.info("Deactivating travis for ${principal.name}/$courseName course")
+
+                    travisService.travis(it)
+                            .deactivate(githubUserId, courseName)
+                            .getOrElseThrow { errorBody ->
+                                TravisException("Travis deactivation of $githubUserId/$courseName " +
+                                        "repository went bad due to: ${errorBody.string()}")
+                            }
+                }
+                ?: logger.info("Travis token wasn't found for ${user.nickname} or travis is not activated " +
+                        "with $courseName course so no travis repository is deactivated")
+
+        course.state
+                .activatedServices
+                .takeIf { it.contains(IntegratedService.CODACY) }
+                .let { user.credentials.codacyToken }
+                ?.also {
+                    logger.info("Deactivating codacy for ${principal.name}/$courseName course")
+
+                    codacyService.codacy(githubUserId, it)
+                            .deleteProject(courseName)
+                            .also { responseBody ->
+                                throw CodacyException("Codacy project $githubUserId/$courseName " +
+                                        "deletion went bad due to: $responseBody")
+                            }
+                }
+                ?: logger.info("Codacy token wasn't found for ${user.nickname} or codacy is not activated " +
+                        "with $courseName course so no codacy project is deleted")
 
         logger.info("Deleting course ${principal.name}/$courseName from the database")
 
@@ -277,7 +316,7 @@ class ModelController @Autowired constructor(private val dataService: DataServic
 
                     logger.info("Creating codacy project $courseName for ${user.nickname} user")
 
-                    val errorBody = codacy.createProject(courseName, "github.com/$githubUserId/$courseName.git")
+                    val errorBody = codacy.createProject(courseName, "git://github.com/$githubUserId/$courseName.git")
 
                     if (errorBody == null) {
                         logger.info("Codacy project $courseName for ${user.nickname} user was created")
@@ -522,12 +561,12 @@ class ModelController @Autowired constructor(private val dataService: DataServic
         repeat(attemptsLimit) { attempt ->
             Thread.sleep(retrievingDelay)
 
-            val travisUser1 = getUser()
+            val travisUser = getUser()
                     .getOrElseThrow { errorBody ->
                         TravisException("Travis user $travisUserId retrieving went bad due to: ${errorBody.string()}")
                     }
 
-            if (travisUser1.isSyncing) logger.info("Travis user $travisUserId synchronisation hasn't finished " +
+            if (travisUser.isSyncing) logger.info("Travis user $travisUserId synchronisation hasn't finished " +
                     "after ${observationDuration(attempt)} seconds.")
             else return
         }
