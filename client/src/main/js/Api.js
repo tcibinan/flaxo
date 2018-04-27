@@ -155,4 +155,34 @@ export class Api {
                 .catch(response => onFailure(response));
         }
     }
+
+    static activateTravis(credentials, courseName, onSuccess, onFailure) {
+        if (credentials.username && credentials.password) {
+            axios
+                .post('activateTravis', {}, {
+                    baseURL: restUrl(),
+                    auth: credentials,
+                    params: {
+                        courseName
+                    }
+                })
+                .then(response => onSuccess(response.data.payload))
+                .catch(response => onFailure(response));
+        }
+    }
+
+    static activateCodacy(credentials, courseName, onSuccess, onFailure) {
+        if (credentials.username && credentials.password) {
+            axios
+                .post('activateCodacy', {}, {
+                    baseURL: restUrl(),
+                    auth: credentials,
+                    params: {
+                        courseName
+                    }
+                })
+                .then(response => onSuccess(response.data.payload))
+                .catch(response => onFailure(response));
+        }
+    }
 }

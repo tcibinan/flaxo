@@ -23,7 +23,7 @@ export class CourseStatisticsDownloadMenu extends React.Component {
         return (
             <div className="course-control">
                 <ButtonDropdown isOpen={this.state.show} toggle={this.toggle}>
-                    <DropdownToggle caret>
+                    <DropdownToggle outline caret>
                         Download as
                     </DropdownToggle>
                     <DropdownMenu>

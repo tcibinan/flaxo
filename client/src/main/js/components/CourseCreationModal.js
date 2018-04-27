@@ -149,9 +149,9 @@ export class CourseCreationModal extends React.Component {
         Api.createCourse(credentials(),
             {
                 courseName: this.state.courseName,
-                courseDescription: this.state.courseDescription,
+                description: this.state.courseDescription,
                 language: this.state.language,
-                testLanguage: this.state.testLanguage,
+                testingLanguage: this.state.testLanguage,
                 testingFramework: this.state.testingFramework,
                 numberOfTasks: parseInt(this.state.numberOfTasks)
             },

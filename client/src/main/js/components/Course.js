@@ -8,6 +8,7 @@ import {CourseLabels} from './CourseLabels';
 import {Button, Modal, ModalBody, ModalFooter, ModalHeader} from 'reactstrap';
 import {CourseStatisticsDownloadMenu} from './CourseStatisticsDownloadMenu';
 import {Notification} from './Notification';
+import {ServiceActivationMenu} from './ServiceActivationMenu';
 
 export class Course extends React.Component {
 
@@ -115,6 +116,7 @@ export class Course extends React.Component {
                             disabled={this.props.course.state.lifecycle === 'RUNNING' ? 'disabled' : ''}>
                         Start course
                     </Button>
+                    <ServiceActivationMenu course={this.props.course}/>
                     <Button color="primary" outline className="course-control"
                             onClick={this.analysePlagiarism}
                             disabled={this.props.course.state.lifecycle !== 'RUNNING' ? 'disabled' : ''}>

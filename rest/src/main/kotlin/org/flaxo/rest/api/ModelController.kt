@@ -114,7 +114,7 @@ class ModelController @Autowired constructor(private val dataService: DataServic
     fun createCourse(@RequestParam courseName: String,
                      @RequestParam(required = false) description: String?,
                      @RequestParam language: String,
-                     @RequestParam testLanguage: String,
+                     @RequestParam testingLanguage: String,
                      @RequestParam testingFramework: String,
                      @RequestParam numberOfTasks: Int,
                      principal: Principal
@@ -128,11 +128,11 @@ class ModelController @Autowired constructor(private val dataService: DataServic
                 ?: return responseService.githubTokenNotFound(principal.name)
 
         logger.info("Producing course ${principal.name}/$courseName " +
-                "environment: $language, $testLanguage, $testingFramework")
+                "environment: $language, $testingLanguage, $testingFramework")
 
         val environment = environmentService.produceEnvironment(
                 language,
-                testLanguage,
+                testingLanguage,
                 testingFramework
         )
 
@@ -154,7 +154,7 @@ class ModelController @Autowired constructor(private val dataService: DataServic
                 courseName = courseName,
                 description = description,
                 language = language,
-                testingLanguage = testLanguage,
+                testingLanguage = testingLanguage,
                 testingFramework = testingFramework,
                 tasksPrefix = tasksPrefix,
                 numberOfTasks = numberOfTasks,
@@ -217,7 +217,7 @@ class ModelController @Autowired constructor(private val dataService: DataServic
 
                     codacyService.codacy(githubUserId, it)
                             .deleteProject(courseName)
-                            .also { responseBody ->
+                            ?.also { responseBody ->
                                 throw CodacyException("Codacy project $githubUserId/$courseName " +
                                         "deletion went bad due to: $responseBody")
                             }
@@ -275,16 +275,14 @@ class ModelController @Autowired constructor(private val dataService: DataServic
             travisService.activateTravis(user, course, githubToken, githubUserId)
             activatedServices.add(IntegratedService.TRAVIS)
         } catch (e: Exception) {
-            logger.info("Travis activation went bad for ${user.githubId}/$courseName course" +
-                    "due to: ${e.message}")
+            logger.info("Travis activation went bad for ${user.githubId}/$courseName course due to: $e")
         }
 
         try {
             codacyService.activateCodacy(user, course, githubUserId)
             activatedServices.add(IntegratedService.CODACY)
         } catch (e: Exception) {
-            logger.info("Codacy activation went bad for $githubUserId/$courseName course" +
-                    "due to: ${e.message}")
+            logger.info("Codacy activation went bad for $githubUserId/$courseName course due to: $e")
         }
 
         logger.info("Changing course ${user.nickname}/$courseName status to running")
@@ -301,7 +299,14 @@ class ModelController @Autowired constructor(private val dataService: DataServic
         return responseService.ok()
     }
 
-    @PostMapping("activateCodacy")
+    /**
+     * Activates codacy validations for specified [courseName].
+     *
+     * Course should be started.
+     *
+     * @param courseName Course name to activate codacy for.
+     */
+    @PostMapping("/activateCodacy")
     @PreAuthorize("hasAuthority('USER')")
     @Transactional
     fun activateCodacy(@RequestParam courseName: String,
@@ -317,6 +322,9 @@ class ModelController @Autowired constructor(private val dataService: DataServic
 
         val userGithubId = user.githubId
                 ?: return responseService.githubIdNotFound(user.nickname)
+
+        if (course.state.lifecycle != CourseLifecycle.RUNNING)
+            return responseService.bad("Course ${principal.name}/$courseName is not started yet")
 
         course.state
                 .activatedServices
@@ -334,17 +342,24 @@ class ModelController @Autowired constructor(private val dataService: DataServic
                                                 course.state.activatedServices + IntegratedService.CODACY
                                         )
                                 ))
-                                .let { responseService.ok(it) }
+                                .let { responseService.ok(it.view()) }
                     } catch (e: Exception) {
-                        logger.info("Codacy activation failed ${e.message}")
-                        return responseService.bad(e.message)
+                        logger.info("Codacy activation failed due to: $e")
+                        return responseService.bad(e.toString())
                     }
                 }
                 ?: return responseService.bad("Codacy is already integrated with " +
                         "${principal.name}/$courseName course")
     }
 
-    @PostMapping("activateTravis")
+    /**
+     * Activates travis validations for specified [courseName].
+     *
+     * Course should be started.
+     *
+     * @param courseName Course name to activate travis for.
+     */
+    @PostMapping("/activateTravis")
     @PreAuthorize("hasAuthority('USER')")
     @Transactional
     fun activateTravis(@RequestParam courseName: String,
@@ -364,6 +379,9 @@ class ModelController @Autowired constructor(private val dataService: DataServic
         val githubToken = user.credentials.githubToken
                 ?: return responseService.githubTokenNotFound(user.nickname)
 
+        if (course.state.lifecycle != CourseLifecycle.RUNNING)
+            return responseService.bad("Course ${principal.name}/$courseName is not started yet")
+
         course.state
                 .activatedServices
                 .takeUnless { it.contains(IntegratedService.TRAVIS) }
@@ -380,10 +398,10 @@ class ModelController @Autowired constructor(private val dataService: DataServic
                                                 course.state.activatedServices + IntegratedService.TRAVIS
                                         )
                                 ))
-                                .let { responseService.ok(it) }
+                                .let { responseService.ok(it.view()) }
                     } catch (e: Exception) {
-                        logger.info("Travis activation failed ${e.message}")
-                        return responseService.bad(e.message)
+                        logger.info("Travis activation failed due to: $e")
+                        return responseService.bad(e.toString())
                     }
                 }
                 ?: return responseService.bad("Travis is already integrated with " +
