@@ -16,10 +16,27 @@ interface Repository {
     val owner: String
 
     /**
+     * Number of forks.
+     */
+    val forks: Int
+
+    /**
      * Creates a branch with the given [branchName] in the repository.
      *
      * @param branchName Newly creating branch name.
      * @return Branch with the given branchName.
      */
     fun createBranch(branchName: String): Branch
+
+    /**
+     * Adds web hook for the repository.
+     */
+    fun addWebHook()
+
+    /**
+     * Returns a list of branches of the repository.
+     *
+     * @return List of branches in the repository.
+     */
+    fun branches(): List<Branch>
 }

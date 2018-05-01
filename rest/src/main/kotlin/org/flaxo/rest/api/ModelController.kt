@@ -139,13 +139,15 @@ class ModelController
         logger.info("Creating git repository for course ${principal.name}/$courseName")
 
         gitService.with(githubToken)
-                .apply {
-                    createRepository(courseName)
-                            .createBranch("prerequisites")
-                            .also { branch -> environment.getFiles().forEach { branch.load(it) } }
-                            .createSubBranches(numberOfTasks, tasksPrefix)
-
-                    addWebHook(courseName)
+                .also {
+                    it.createRepository(courseName).also {
+                        it.createBranch("prerequisites")
+                                .also { branch ->
+                                    environment.getFiles().forEach { branch.commit(it) }
+                                }
+                                .createSubBranches(numberOfTasks, tasksPrefix)
+                        it.addWebHook()
+                    }
                 }
 
         logger.info("Creating course ${principal.name}/$courseName in database")

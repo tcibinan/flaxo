@@ -29,9 +29,6 @@ class SimpleMossService(private val userId: String,
         val githubToken = user.credentials.githubToken
                 ?: throw ModelException("Github credentials wasn't found for user ${user.nickname}.")
 
-        val userGithubId = user.githubId
-                ?: throw ModelException("Github id for user ${user.nickname} wasn't found.")
-
         val git = gitService.with(githubToken)
 
         val language = supportedLanguages[course.language]
@@ -50,7 +47,8 @@ class SimpleMossService(private val userId: String,
                 }
                 .map { (student, solvedTasks) ->
                     student to
-                            git.branches(student, course.name)
+                            git.getRepository(student, course.name)
+                                    .branches()
                                     .filter { branch -> branch.name in solvedTasks }
                 }
                 .flatMap { (student, branches) ->
@@ -67,7 +65,8 @@ class SimpleMossService(private val userId: String,
                 .toMap()
 
         val tasksBases =
-                git.branches(userGithubId, course.name)
+                git.getRepository(course.name)
+                        .branches()
                         .map { branch ->
                             branch.name to branch.files()
                                     .filterBy(language)

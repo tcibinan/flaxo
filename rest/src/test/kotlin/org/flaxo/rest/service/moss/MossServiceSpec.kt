@@ -8,6 +8,7 @@ import org.flaxo.core.language.JavaLang
 import org.flaxo.core.language.Language
 import org.flaxo.git.Branch
 import org.flaxo.git.Git
+import org.flaxo.git.Repository
 import org.flaxo.model.data.BuildReport
 import org.flaxo.model.data.Course
 import org.flaxo.model.data.Credentials
@@ -60,19 +61,28 @@ object MossServiceSpec : SubjectSpek<MossService>({
     val course = Course(name = courseName, user = user, language = language,
             students = setOf(student1, student2)
     )
-    val git: Git = mock {
-        val student1Branches = listOf(
-                branch(branch1, emptyFile(student1SolutionFile), emptyFile(student1ExtraFile))
-        )
-        val student2Branches = listOf(
-                branch(branch1, emptyFile(student2SolutionFile))
-        )
+    val userRepository = mock<Repository> {
         val userBranches = listOf(
                 branch(branch1, emptyFile(userTaskFile))
         )
-        on { branches(student1Name, courseName) }.thenReturn(student1Branches)
-        on { branches(student2Name, courseName) }.thenReturn(student2Branches)
-        on { branches(userGithubId, courseName) }.thenReturn(userBranches)
+        on { branches() }.thenReturn(userBranches)
+    }
+    val student1Repository = mock<Repository> {
+        val student1Branches = listOf(
+                branch(branch1, emptyFile(student1SolutionFile), emptyFile(student1ExtraFile))
+        )
+        on { branches() }.thenReturn(student1Branches)
+    }
+    val student2Repository = mock<Repository> {
+        val student2Branches = listOf(
+                branch(branch1, emptyFile(student2SolutionFile))
+        )
+        on { branches() }.thenReturn(student2Branches)
+    }
+    val git: Git = mock {
+        on { getRepository(courseName) }.thenReturn(userRepository)
+        on { getRepository(student1Name, courseName) }.thenReturn(student1Repository)
+        on { getRepository(student2Name, courseName) }.thenReturn(student2Repository)
     }
     val gitService: GitService = mock {
         on { with(any()) }.thenReturn(git)

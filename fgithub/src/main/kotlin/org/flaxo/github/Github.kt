@@ -17,92 +17,54 @@ class Github(private val githubClientProducer: () -> KohsukeGithub,
              rawWebHookUrl: String
 ) : Git {
 
-    private val webHookUrl: URL = URL(rawWebHookUrl)
-    private val github: KohsukeGithub by lazy { githubClientProducer() }
+    val webHookUrl: URL = URL(rawWebHookUrl)
+    val client: KohsukeGithub by lazy { githubClientProducer() }
 
-    override fun createRepository(repositoryName: String, private: Boolean): Repository {
-        val repository = github.createRepository(repositoryName).private_(private).create()
-        repository.createContent(
-                "# $repositoryName",
-                "Initial commit from flaxo with love",
-                "README.md"
-        )
+    override fun createRepository(repositoryName: String,
+                                  private: Boolean
+    ): Repository {
+        client.createRepository(repositoryName)
+                .private_(private)
+                .create()
+                .also {
+                    it.createContent(
+                            "# $repositoryName",
+                            "Initial commit from flaxo with love",
+                            "README.md"
+                    )
+                }
 
         return GithubRepository(repositoryName, nickname(), this)
     }
 
     override fun deleteRepository(repositoryName: String) {
-        ghRepository(repositoryName).delete()
+        client.repository(repositoryName).delete()
     }
 
-    override fun createBranch(repository: Repository, branchName: String): Branch {
-        val ghRepository = ghRepository(repository.name)
-        val lastCommitSha = ghRepository.listCommits().asList().last().shA1
-
-        ghRepository.createBranch(branchName, lastCommitSha)
-        return GithubBranch(
-                branchName,
-                GithubRepository(repository.name, repository.owner, this),
-                this
-        )
-    }
-
-    override fun createSubBranch(repository: Repository, branch: Branch, subBranchName: String) {
-        val ghRepository = ghRepository(repository.name)
-        val sourceBranchSha = ghRepository.getBranch(branch.name).shA1
-
-        ghRepository.createBranch(subBranchName, sourceBranchSha)
-    }
-
-    override fun load(repository: Repository, branch: Branch, path: String, content: String) {
-        repository.loadFile(content, "feat: Add $path", path, branch.name)
-    }
-
-    override fun load(repository: Repository, branch: Branch, path: String, bytes: ByteArray) {
-        repository.loadFile(bytes, "feat: Add $path", path, branch.name)
-    }
-
-    override fun branches(nickname: String, repositoryName: String): List<Branch> = let { git ->
-        github.getUser(nickname)
-                .getRepository(repositoryName)
-                .branches
-                .values
-                .map { branch ->
-                    GithubBranch(branch.name, GithubRepository(branch.owner.name, branch.owner.ownerName, git), git)
-                }
-    }
-
-    override fun files(nickname: String, repositoryName: String, branchName: String): List<EnvironmentFile> =
-            github.getUser(nickname)
+    override fun forkRepository(ownerNickname: String,
+                                repositoryName: String
+    ): Repository =
+            client.getUser(ownerNickname)
                     .getRepository(repositoryName)
-                    .getTreeRecursive(branchName, 1)
-                    .tree
-                    .filter { it.type == "blob" }
-                    .map { RemoteEnvironmentFile(it.path, it.readAsBlob()) }
+                    .fork()
+                    ?.let { GithubRepository(repositoryName, nickname(), this) }
+                    ?: throw GithubException("Repository $ownerNickname/$repositoryName was not found")
 
-    override fun addWebHook(repositoryName: String) {
-        ghRepository(repositoryName)
-                .createWebHook(webHookUrl, listOf(KohsukeGithubEvent.PULL_REQUEST))
-    }
+    override fun getRepository(repositoryName: String): Repository =
+            GithubRepository(repositoryName, nickname(), this)
 
-    override fun nickname(): String =
-            github.myself.login
-                    ?: throw GithubException("Associated user nickname not found for the current github client")
+    override fun getRepository(ownerName: String,
+                               repositoryName: String
+    ): Repository =
+            GithubRepository(repositoryName, ownerName, this)
 
-    private fun repositoryRef(repositoryName: String) = "${nickname()}/$repositoryName"
+    override fun nickname(): String = client.nickname()
 
-    private fun ghRepository(repositoryName: String) = github.getRepository(repositoryRef(repositoryName))
-
-    private fun Repository.loadFile(content: String, message: String, path: String, branchName: String) {
-        ghRepository(this.name).createContent(content, message, path, branchName)
-    }
-
-    private fun Repository.loadFile(bytes: ByteArray, message: String, path: String, branchName: String) {
-        ghRepository(this.name).createContent(bytes, message, path, branchName)
-    }
-
-    override fun getPullRequest(repositoryName: String, pullRequestNumber: Int): PullRequest =
-            ghRepository(repositoryName).getPullRequest(pullRequestNumber)
+    override fun getPullRequest(repositoryName: String,
+                                pullRequestNumber: Int
+    ): PullRequest =
+            client.repository(repositoryName)
+                    .getPullRequest(pullRequestNumber)
                     ?.let { GithubPullRequest(it) }
                     ?: throw GithubException("Pull request $pullRequestNumber wasn't found " +
                             "for repositoryName ${nickname()}/$repositoryName.")

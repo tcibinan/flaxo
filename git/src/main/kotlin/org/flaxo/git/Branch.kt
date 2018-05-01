@@ -27,16 +27,38 @@ interface Branch {
      *
      * @return the current branch.
      */
-    fun load(file: EnvironmentFile): Branch
+    fun commit(file: EnvironmentFile): Branch
 
     /**
      * Commit and push the given file by given path in repository.
      *
      * @return the current branch.
      */
-    fun load(filePath: String,
-             file: EnvironmentFile
+    fun commit(filePath: String,
+               file: EnvironmentFile
     ): Branch
+
+    /**
+     * Commit and push an existing file.
+     *
+     * @return the current branch.
+     */
+    fun update(file: EnvironmentFile
+    ): Branch
+
+    /**
+     * Commit and push an existing file by given path in repository.
+     *
+     * @return the current branch.
+     */
+    fun update(filePath: String,
+               file: EnvironmentFile
+    ): Branch
+
+    /**
+     * Creates a branch that checkouts from the current branch.
+     */
+    fun createSubBranch(subBranchName: String): Branch
 
     /**
      * Creates several branches which start from the current branch.

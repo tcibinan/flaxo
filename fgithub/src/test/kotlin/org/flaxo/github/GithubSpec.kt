@@ -1,51 +1,55 @@
 package org.flaxo.github
 
-import com.nhaarman.mockito_kotlin.mock
-import org.flaxo.git.Git
 import io.kotlintest.matchers.contain
 import io.kotlintest.matchers.shouldBe
 import io.kotlintest.matchers.shouldHave
+import org.flaxo.core.env.SimpleEnvironmentFile
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.subject.SubjectSpek
 import org.kohsuke.github.GitHub as KohsukeGithub
 
-object GithubSpec : SubjectSpek<Git>({
+object GithubSpec : SubjectSpek<Github>({
 
-    val userName = System.getenv("GITHUB_TEST_NAME")
     val credentials = System.getenv("GITHUB_TEST_TOKEN")
 
-    val github: Git = mock { }
-    val repository = GithubRepository("temp-testing-repository", userName, github)
-    val mainBranch = GithubBranch("main-branch", repository, github)
-    val anotherSubbranch = GithubBranch("sub-branch", repository, github)
+    val repositoryName = "temp-testing-repository"
+    val mainBranchName = "main-branch"
+    val subBranchName = "sub-branch"
     val fileName = "file-name"
 
     subject { Github({ KohsukeGithub.connectUsingOAuth(credentials) }, "http://ignored.web.hook.url") }
 
     afterGroup {
-        subject.deleteRepository(repository.name)
+        subject.deleteRepository(repositoryName)
     }
 
     describe("github") {
 
-        on("creating custom repository with single branch") {
-            subject.createRepository(repository.name)
-                    .createBranch(mainBranch.name)
+        on("creating custom repository with a single branch") {
+            val repository = subject.createRepository(repositoryName)
+
+            repository.createBranch(mainBranchName)
 
             it("should create with a single branch") {
-                subject.branches(userName, repository.name)
-                        .map { it.name } shouldContain mainBranch.name
+                repository.branches()
+                        .map { it.name } shouldContain mainBranchName
             }
         }
 
         on("loading file in the repository") {
-            subject.load(repository, mainBranch, fileName, "file content")
+            val repository = subject.getRepository(repositoryName)
+            val mainBranch = repository
+                    .branches()
+                    .find { it.name == mainBranchName }
+                    ?: throw GithubException("Branch not found")
+
+            mainBranch.commit(SimpleEnvironmentFile(fileName, "file content"))
 
             it("should be loaded only in the targeted branch") {
-                subject.branches(userName, repository.name)
-                        .filter { it.name == mainBranch.name }
+                repository.branches()
+                        .filter { it.name == mainBranchName }
                         .flatMap { it.files() }
                         .filter { it.name == fileName }
                         .count() shouldBe 1
@@ -53,11 +57,17 @@ object GithubSpec : SubjectSpek<Git>({
         }
 
         on("creating subbranch") {
-            subject.createSubBranch(repository, mainBranch, anotherSubbranch.name)
+            val repository = subject.getRepository(repositoryName)
+            val mainBranch = repository
+                    .branches()
+                    .find { it.name == mainBranchName }
+                    ?: throw GithubException("Branch not found")
+
+            mainBranch.createSubBranch(subBranchName)
 
             it("should copy files from a parent branch") {
-                subject.branches(userName, repository.name)
-                        .filter { it.name == anotherSubbranch.name }
+                repository.branches()
+                        .filter { it.name == subBranchName }
                         .flatMap { it.files() }
                         .filter { it.name == fileName }
                         .count() shouldBe 1
