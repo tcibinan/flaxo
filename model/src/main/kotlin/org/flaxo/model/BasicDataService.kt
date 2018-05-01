@@ -20,22 +20,24 @@ import org.flaxo.model.data.Student
 import org.flaxo.model.data.Solution
 import org.flaxo.model.data.Task
 import org.flaxo.model.data.User
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 /**
  * Data service implementation based on jpa repositories.
  */
-class BasicDataService(private val userRepository: UserRepository,
-                       private val credentialsRepository: CredentialsRepository,
-                       private val courseRepository: CourseRepository,
-                       private val taskRepository: TaskRepository,
-                       private val studentRepository: StudentRepository,
-                       private val solutionRepository: SolutionRepository,
-                       private val buildReportRepository: BuildReportRepository,
-                       private val codeStyleReportRepository: CodeStyleReportRepository,
-                       private val plagiarismReportRepository: PlagiarismReportRepository
+open class BasicDataService(private val userRepository: UserRepository,
+                            private val credentialsRepository: CredentialsRepository,
+                            private val courseRepository: CourseRepository,
+                            private val taskRepository: TaskRepository,
+                            private val studentRepository: StudentRepository,
+                            private val solutionRepository: SolutionRepository,
+                            private val buildReportRepository: BuildReportRepository,
+                            private val codeStyleReportRepository: CodeStyleReportRepository,
+                            private val plagiarismReportRepository: PlagiarismReportRepository
 ) : DataService {
 
+    @Transactional
     override fun addUser(nickname: String,
                          password: String
     ): User {
@@ -46,12 +48,23 @@ class BasicDataService(private val userRepository: UserRepository,
                 .save(User(nickname = nickname, credentials = Credentials(password = password)))
     }
 
+    @Transactional(readOnly = true)
     override fun getUser(nickname: String): User? =
             userRepository.findByNickname(nickname)
 
+    @Transactional(readOnly = true)
     override fun getUserByGithubId(githubId: String): User? =
             userRepository.findByGithubId(githubId)
 
+    @Transactional
+    override fun deleteUser(username: String) {
+        val user = getUser(username)
+                ?: throw ModelException("User $username not found")
+
+        userRepository.delete(user)
+    }
+
+    @Transactional
     override fun createCourse(courseName: String,
                               description: String?,
                               language: String,
@@ -78,7 +91,7 @@ class BasicDataService(private val userRepository: UserRepository,
                 ))
 
         return (1..numberOfTasks)
-                .map { taskNumber -> "$tasksPrefix$taskNumber"}
+                .map { taskNumber -> "$tasksPrefix$taskNumber" }
                 .map { branchName ->
                     taskRepository
                             .save(Task(
@@ -92,6 +105,7 @@ class BasicDataService(private val userRepository: UserRepository,
                 }
     }
 
+    @Transactional
     override fun deleteCourse(courseName: String,
                               owner: User
     ) {
@@ -100,14 +114,17 @@ class BasicDataService(private val userRepository: UserRepository,
                 ?: throw EntityNotFound("Repository $courseName")
     }
 
+    @Transactional
     override fun updateCourse(updatedCourse: Course): Course =
             courseRepository.save(updatedCourse)
 
+    @Transactional(readOnly = true)
     override fun getCourse(name: String,
                            owner: User
     ): Course? =
             courseRepository.findByNameAndUser(name, owner)
 
+    @Transactional(readOnly = true)
     override fun getCourses(userNickname: String): Set<Course> {
         val user = getUser(userNickname)
                 ?: userNotFound(userNickname)
@@ -115,8 +132,10 @@ class BasicDataService(private val userRepository: UserRepository,
         return courseRepository.findByUser(user)
     }
 
+    @Transactional
     override fun addStudent(nickname: String,
-                            course: Course): Student {
+                            course: Course
+    ): Student {
         val student =
                 studentRepository.save(Student(nickname = nickname, course = course))
 
@@ -131,18 +150,23 @@ class BasicDataService(private val userRepository: UserRepository,
                 .also { updateCourse(course.copy(students = course.students.plus(it))) }
     }
 
+    @Transactional(readOnly = true)
     override fun getStudents(course: Course): Set<Student> =
             studentRepository.findByCourse(course)
 
+    @Transactional(readOnly = true)
     override fun getSolutions(student: Student): Set<Solution> =
             solutionRepository.findByStudent(student)
 
+    @Transactional(readOnly = true)
     override fun getSolutions(task: Task): Set<Solution> =
             solutionRepository.findByTask(task)
 
+    @Transactional(readOnly = true)
     override fun getTasks(course: Course): Set<Task> =
             taskRepository.findAllByCourse(course)
 
+    @Transactional
     override fun addToken(userNickname: String,
                           service: IntegratedService,
                           accessToken: String
@@ -155,6 +179,7 @@ class BasicDataService(private val userRepository: UserRepository,
                     }
                     ?: userNotFound(userNickname)
 
+    @Transactional
     override fun addGithubId(userNickname: String, githubId: String): User {
         val user: User = getUser(userNickname)
                 ?: userNotFound(userNickname)
@@ -166,12 +191,15 @@ class BasicDataService(private val userRepository: UserRepository,
         throw ModelException("Could not find user with $userNickname nickname")
     }
 
+    @Transactional
     override fun updateSolution(updatedSolution: Solution): Solution =
             solutionRepository.save(updatedSolution)
 
+    @Transactional
     override fun updateTask(updatedTask: Task): Task =
             taskRepository.save(updatedTask)
 
+    @Transactional
     override fun addBuildReport(solution: Solution,
                                 succeed: Boolean
     ): BuildReport =
@@ -187,6 +215,7 @@ class BasicDataService(private val userRepository: UserRepository,
                         ))
                     }
 
+    @Transactional
     override fun addCodeStyleReport(solution: Solution,
                                     codeStyleGrade: String
     ): CodeStyleReport =
@@ -202,7 +231,7 @@ class BasicDataService(private val userRepository: UserRepository,
                         ))
                     }
 
-
+    @Transactional
     override fun addPlagiarismReport(task: Task,
                                      url: String,
                                      matches: List<PlagiarismMatch>

@@ -169,4 +169,9 @@ interface DataService {
                             matches: List<PlagiarismMatch>
     ): PlagiarismReport
 
+    /**
+     * Deletes user.
+     */
+    fun deleteUser(username: String)
+
 }
