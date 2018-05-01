@@ -30,11 +30,22 @@ interface Branch {
     fun load(file: EnvironmentFile): Branch
 
     /**
+     * Commit and push the given file by given path in repository.
+     *
+     * @return the current branch.
+     */
+    fun load(filePath: String,
+             file: EnvironmentFile
+    ): Branch
+
+    /**
      * Creates several branches which start from the current branch.
      *
      * Each branch have name with [prefix] and an order number.
      *
      * @return the current branch.
      */
-    fun createSubBranches(count: Int, prefix: String): Branch
+    fun createSubBranches(count: Int,
+                          prefix: String
+    ): Branch
 }

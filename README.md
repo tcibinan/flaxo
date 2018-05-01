@@ -108,8 +108,7 @@ To run the application you should set several system variables.
 | TRAVIS_WEB_HOOK_URL | Travis web hook redirect absolute url. |
 | MOSS_USER_ID | Moss system userid. It can be received from the email or you can find someone else's one on the web and use for you own risk. |
 
-Integration tests also requires a few system variables. **todo:** Replace integration tests
-with components tests where outer services clients are just mocks.
+Integration tests also requires a few system variables.
 
 | Variable | Description |
 |---|---|
@@ -117,6 +116,7 @@ with components tests where outer services clients are just mocks.
 | GITHUB_TEST_TOKEN | Generated account access token with `repo`, `delete_repo` scopes. The access token can be generated in github account developer settings. |
 | GITHUB_REPOSITORY_ID | Repository name to perform travis tests with. |
 | TRAVIS_TEST_TOKEN | Generated using travis cli client access token. |
+| CODACY_TEST_TOKEN | Codacy token. It could be generated in codacy account settings. |
 
 ## Webpack
 

@@ -13,7 +13,7 @@ class LocalEnvironmentFile(location: String) : EnvironmentFile {
 
     private val path: Path = Paths.get(location)
 
-    override val name = path.fileName.toString()
+    override val name = location
 
     override fun content() =
             path.toFile().useLines { it.joinToString("\n") }

@@ -14,7 +14,6 @@ import org.flaxo.rest.service.moss.MossTask
 import org.flaxo.rest.service.response.ResponseService
 import org.flaxo.rest.service.travis.TravisService
 import org.flaxo.travis.TravisException
-import io.vavr.control.Either
 import org.apache.logging.log4j.LogManager
 import org.flaxo.codacy.CodacyException
 import org.flaxo.model.data.PlagiarismMatch
@@ -42,14 +41,15 @@ import java.util.concurrent.Executors
  */
 @RestController
 @RequestMapping("/rest")
-class ModelController @Autowired constructor(private val dataService: DataService,
-                                             private val responseService: ResponseService,
-                                             private val environmentService: RepositoryEnvironmentService,
-                                             private val travisService: TravisService,
-                                             private val codacyService: CodacyService,
-                                             private val gitService: GitService,
-                                             private val mossService: MossService,
-                                             private val supportedLanguages: Map<String, Language>
+class ModelController
+@Autowired constructor(private val dataService: DataService,
+                       private val responseService: ResponseService,
+                       private val environmentService: RepositoryEnvironmentService,
+                       private val travisService: TravisService,
+                       private val codacyService: CodacyService,
+                       private val gitService: GitService,
+                       private val mossService: MossService,
+                       private val supportedLanguages: Map<String, Language>
 ) {
 
     private val executor: Executor = Executors.newCachedThreadPool()
@@ -211,7 +211,7 @@ class ModelController @Autowired constructor(private val dataService: DataServic
         course.state
                 .activatedServices
                 .takeIf { it.contains(IntegratedService.CODACY) }
-                .let { user.credentials.codacyToken }
+                ?.let { user.credentials.codacyToken }
                 ?.also {
                     logger.info("Deactivating codacy for ${principal.name}/$courseName course")
 
@@ -219,7 +219,7 @@ class ModelController @Autowired constructor(private val dataService: DataServic
                             .deleteProject(courseName)
                             ?.also { responseBody ->
                                 throw CodacyException("Codacy project $githubUserId/$courseName " +
-                                        "deletion went bad due to: $responseBody")
+                                        "deletion went bad due to: ${responseBody.string()}")
                             }
                 }
                 ?: logger.info("Codacy token wasn't found for ${user.nickname} or codacy is not activated " +
