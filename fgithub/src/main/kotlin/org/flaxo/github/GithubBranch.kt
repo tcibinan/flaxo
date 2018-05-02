@@ -4,6 +4,7 @@ import org.flaxo.core.env.BinaryEnvironmentFile
 import org.flaxo.core.env.EnvironmentFile
 import org.flaxo.core.env.RemoteEnvironmentFile
 import org.flaxo.git.Branch
+import org.flaxo.git.Commit
 import org.kohsuke.github.GitHub as KohsukeGithub
 
 /**
@@ -16,12 +17,9 @@ class GithubBranch(override val name: String,
 
     private val client: KohsukeGithub = github.client
 
-    override fun commit(file: EnvironmentFile): Branch =
-            commit(file.name, file)
-
-    override fun commit(filePath: String,
-                        file: EnvironmentFile
-    ): Branch = also { branch ->
+    override fun commit(file: EnvironmentFile,
+                        filePath: String
+    ): Commit = let { branch ->
         when (file) {
             is BinaryEnvironmentFile -> client.repository(repository.name)
                     .createContent(
@@ -37,15 +35,14 @@ class GithubBranch(override val name: String,
                             filePath,
                             branch.name
                     )
+        }.let {
+            GithubCommit(it.commit.shA1, branch, branch.github)
         }
     }
 
-    override fun update(file: EnvironmentFile): Branch =
-            update(file.name, file)
-
-    override fun update(filePath: String,
-                        file: EnvironmentFile
-    ): Branch = also { branch ->
+    override fun update(file: EnvironmentFile,
+                        filePath: String
+    ): Commit = let { branch ->
         when (file) {
             is BinaryEnvironmentFile -> client.repository(repository.name)
                     .getFileContent(filePath, branch.name)
@@ -61,6 +58,8 @@ class GithubBranch(override val name: String,
                             "feat: Update $filePath",
                             branch.name
                     )
+        }.let {
+            GithubCommit(it.commit.shA1, branch, branch.github)
         }
     }
 
@@ -76,8 +75,9 @@ class GithubBranch(override val name: String,
         return GithubBranch(subBranchName, repository, github)
     }
 
-
-    override fun createSubBranches(count: Int, prefix: String): Branch = also {
+    override fun createSubBranches(count: Int,
+                                   prefix: String
+    ) {
         (1..count).map { prefix + it }
                 .forEach { createSubBranch(it) }
     }
@@ -88,5 +88,16 @@ class GithubBranch(override val name: String,
                     .tree
                     .filter { it.type == "blob" }
                     .map { RemoteEnvironmentFile(it.path, it.readAsBlob()) }
+
+    override fun createPullRequestTo(targetBranch: Branch) {
+        client.getUser(targetBranch.repository.owner)
+                .getRepository(targetBranch.repository.name)
+                .createPullRequest(
+                        "$name implementation from ${client.nickname()}",
+                        "${client.nickname()}:$name",
+                        targetBranch.name,
+                        ""
+                )
+    }
 
 }

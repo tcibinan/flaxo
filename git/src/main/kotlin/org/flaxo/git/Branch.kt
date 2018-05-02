@@ -23,37 +23,22 @@ interface Branch {
     fun files(): List<EnvironmentFile>
 
     /**
-     * Commit and push the given file.
-     *
-     * @return the current branch.
-     */
-    fun commit(file: EnvironmentFile): Branch
-
-    /**
      * Commit and push the given file by given path in repository.
      *
-     * @return the current branch.
+     * @return Performed commit.
      */
-    fun commit(filePath: String,
-               file: EnvironmentFile
-    ): Branch
-
-    /**
-     * Commit and push an existing file.
-     *
-     * @return the current branch.
-     */
-    fun update(file: EnvironmentFile
-    ): Branch
+    fun commit(file: EnvironmentFile,
+               filePath: String = file.name
+    ): Commit
 
     /**
      * Commit and push an existing file by given path in repository.
      *
-     * @return the current branch.
+     * @return Performed commit.
      */
-    fun update(filePath: String,
-               file: EnvironmentFile
-    ): Branch
+    fun update(file: EnvironmentFile,
+               filePath: String = file.name
+    ): Commit
 
     /**
      * Creates a branch that checkouts from the current branch.
@@ -69,5 +54,11 @@ interface Branch {
      */
     fun createSubBranches(count: Int,
                           prefix: String
-    ): Branch
+    )
+
+    /**
+     * Creates a pull request where base branch is current branch
+     * and target branch is [targetBranch].
+     */
+    fun createPullRequestTo(targetBranch: Branch)
 }
