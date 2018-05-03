@@ -12,7 +12,7 @@ import org.kohsuke.github.GitHub as KohsukeGithub
 
 object GithubSpec : SubjectSpek<Github>({
 
-    val credentials = System.getenv("GITHUB_TEST_TOKEN")
+    val credentials = System.getenv("GITHUB_USER1_TOKEN")
 
     val repositoryName = "temp-testing-repository"
     val mainBranchName = "main-branch"

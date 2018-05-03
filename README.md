@@ -29,7 +29,7 @@ Flaxo aggregates results for each course task using different metrics
 ![course-task-statistics](screenshots/course-task.png?raw=true)
 
 
-### Repository generator
+### Repository generation
 
 You can create a repository from scratch just selecting languages and framework for testing.
 Flaxo knows how to build a gradle project with build-in wrappers so you don't have to waste 
@@ -80,51 +80,69 @@ Currently the default build tool for all courses is gradle.
 - Spek (Kotlin testing framework)
 - **todo:** Pytest
 
-## Building
+## Contributing
 
-To build the app and run all tests. Notice that the system should have right environment.
+To build the app and run all tests.
 
 ```bash
 ./gradlew build
 ```
 
-To run the app. The application can be found at [http://localhost:8080/](http://localhost:8080/).
+To run the app. The application will be at [http://localhost:8080/](http://localhost:8080/).
 
 ```bash
 ./gradlew bootRun
 ```
 
-### Building environment
+### Environment
 
-To run the application you should set several system variables.
+*All options which are not required are used only in integration tests.*
+
+Prerequisites:
+- Github OAuth App - **required**
+- [webpack](https://webpack.js.org/guides/getting-started/) installed - **required**
+- [ruby](https://www.ruby-lang.org/en/documentation/installation/) installed - **required**
+- [travis cli client](https://github.com/travis-ci/travis.rb#installation) installed - **required**
+- 3 Github accounts
+- One of github accounts should be authorized in [travis](https://travis-ci.org)
+- The same github account should be authorized in [codacy](https://codacy.com)
+
+#### Environment variables
+
+To run the application and integration tests you should set several system variables.
+ 
 
 | Variable | Description |
 |---|---|
-| HOME_PAGE | Home page address of your application. |
-| REST_URL | Basic rest query url. Most likely it should be home page url with `/rest` at the end. |
-| GITHUB_ID | Github OAuth App id. |
-| GITHUB_SECRET | Github OAuth App secret. |
-| GITHUB_WEB_HOOK_URL | Github web hook redirect absolute url. |
-| TRAVIS_WEB_HOOK_URL | Travis web hook redirect absolute url. |
-| MOSS_USER_ID | Moss system userid. It can be received from the email or you can find someone else's one on the web and use for you own risk. |
+| REST_URL | **required**. Outer rest url. |
+| GITHUB_ID | **required**. Github OAuth App id. |
+| GITHUB_SECRET | **required**. Github OAuth App secret. |
+| GITHUB_WEB_HOOK_URL | **required**. Github web hook redirect url `REST_URL/github/hook`. |
+| TRAVIS_WEB_HOOK_URL | **required**. Travis web hook redirect url `REST_URL/travis/hook`. |
+| MOSS_USER_ID | **required**. Moss system userid. |
+| GITHUB_USER1_NAME | First account github nickname. |
+| GITHUB_USER1_TOKEN | First account github access token. |
+| TRAVIS_USER1_TOKEN | First account travis access token. |
+| CODACY_USER1_TOKEN | First account codacy access token. |
+| GITHUB_USER2_TOKEN | Second account github access token. |
+| GITHUB_USER3_TOKEN | Third account github access token. |
 
-Integration tests also requires a few system variables.
+Hints:
 
-| Variable | Description |
-|---|---|
-| GITHUB_TEST_NAME | Account nickname. |
-| GITHUB_TEST_TOKEN | Generated account access token with `repo`, `delete_repo` scopes. The access token can be generated in github account developer settings. |
-| GITHUB_REPOSITORY_ID | Repository name to perform travis tests with. |
-| TRAVIS_TEST_TOKEN | Generated using travis cli client access token. |
-| CODACY_TEST_TOKEN | Codacy token. It could be generated in codacy account settings. |
+- Rest url is of type `http://host.url/rest`, f.i. `http://127.0.0.1/rest`.
+- Github id and secret are parameters of your Github OAuth App.
+- Github access tokens should have `repo`, `delete_repo` scopes. It can be generated in [github account developer settings](https://github.com/settings/tokens).
+- Travis access token could be retrieved from travis cli or it can be found in [travis profile](https://travis-ci.org/profile).
+- Codacy access token could be generated in [codacy account settings](https://app.codacy.com/account/apiTokens).
+- Moss user id can be received through mailing registration or it can be found in several github gists.
 
-## Webpack
+#### Webpack
 
-Client-side uses webpack for building js-css bundles. It is necessary to have webpack installed locally.
+Client-side uses webpack for building bundles. It is necessary to have webpack installed locally.
 *Notice:* `node_modules` folder should lies right in the root folder of the `client` module. 
 **todo:** Extract `node_modules` folder location into application settings.
 
-## Travis integration
+#### Travis integration
 
 Currently travis platform doesn't have oauth procedure enabled 
 and the only way to retrieve travis access token is to get it from the travis cli client. 
@@ -170,8 +188,10 @@ and a list of possible travis cli commands should be listed.
 
 ## TODO-list
 
-- **todo:** The ability to init a flaxo course from the existing repository.
-- **todo:** Transparent api to get course statistics in json, csv, xls formats.
+- Flaxo course initiation from the existing repository.
+- Course statistics downloading in csv, xls formats.
+- Docker image of the flaxo system.
+- Include test coverage to flaxo repository codacy analysis.
 
 ## Credits
 
@@ -179,6 +199,7 @@ and a list of possible travis cli commands should be listed.
 { 
   "full_name": "Andrey Tsibin",
   "email": "tsibin.andr@gmail.com",
+  "telegram": "@Nameofthelaw",
   "vk": "https://vk.com/id24276156",
   "app_icon": "by Anton Ivanov from the Noun Project",
   "year": 2018,

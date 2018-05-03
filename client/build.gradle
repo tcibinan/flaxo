@@ -23,7 +23,7 @@ task webpack(type: Exec) {
     outputs.dir("$buildDir/dist")
 
     commandLine "$projectDir/node_modules/.bin/webpack",
-            "--env.REST_URL=http://localhost:8080/rest",
+            "--env.REST_URL=${System.env.REST_URL}",
             "$projectDir/src/main/js/index.js",
             "-o", "$buildDir/dist/flaxo.bundle.js"
 }

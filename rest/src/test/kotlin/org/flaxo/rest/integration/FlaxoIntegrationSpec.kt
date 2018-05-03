@@ -86,10 +86,10 @@ object FlaxoIntegrationSpec : Spek({
                     context.getBean<CodacyController>()
             )
             .build()
-    val githubId = context.environment["GITHUB_TEST_NAME"]
-    val githubToken = context.environment["GITHUB_TEST_TOKEN"]
-    val codacyToken = context.environment["CODACY_TEST_TOKEN"]
-    val travisToken = context.environment["TRAVIS_TEST_TOKEN"]
+    val githubId = context.environment["GITHUB_USER1_NAME"]
+    val githubToken = context.environment["GITHUB_USER1_TOKEN"]
+    val codacyToken = context.environment["CODACY_USER1_TOKEN"]
+    val travisToken = context.environment["TRAVIS_USER1_TOKEN"]
     val firstStudentToken = context.environment["GITHUB_USER2_TOKEN"]
     val secondStudentToken = context.environment["GITHUB_USER3_TOKEN"]
     val solutionsFiles = mapOf(

@@ -1,74 +1,42 @@
 package org.flaxo.rest.service.travis
 
-import org.flaxo.rest.TestApplication
-import org.flaxo.rest.TravisConfiguration
-import org.flaxo.rest.service.AbsentEnvironmentPropertyException
-import org.flaxo.travis.TravisException
-import io.kotlintest.matchers.shouldBe
+import com.nhaarman.mockito_kotlin.mock
+import io.vavr.kotlin.Try
+import org.flaxo.model.DataService
+import org.flaxo.travis.TravisClient
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.subject.SubjectSpek
-import org.springframework.context.annotation.AnnotationConfigApplicationContext
+import kotlin.test.assertFalse
 
 object TravisServiceSpec : SubjectSpek<TravisService>({
 
-    val context = AnnotationConfigApplicationContext(
-            TestApplication::class.java,
-            TravisConfiguration::class.java
-    )
-    val githubUsername = context.environment.getProperty("GITHUB_TEST_NAME")
-            ?: throw AbsentEnvironmentPropertyException("GITHUB_TEST_NAME")
-    val githubToken = context.environment.getProperty("GITHUB_TEST_TOKEN")
-            ?: throw AbsentEnvironmentPropertyException("GITHUB_TEST_TOKEN")
-    val githubRepositoryName = context.environment.getProperty("GITHUB_REPOSITORY_ID")
-            ?: throw AbsentEnvironmentPropertyException("GITHUB_REPOSITORY_ID")
-    val travisToken = context.environment.getProperty("TRAVIS_TEST_TOKEN")
-            ?: throw AbsentEnvironmentPropertyException("TRAVIS_TEST_TOKEN")
+    val githubUsername = System.getenv("GITHUB_USER1_NAME")
+    val githubToken = System.getenv("GITHUB_USER1_TOKEN")
 
-    subject { context.getBean("travisService", TravisService::class.java) }
+    val travisClient = mock<TravisClient> { }
+    val dataService = mock<DataService> { }
+
+    subject { TravisSimpleService(travisClient, dataService) }
 
     describe("travis service") {
         on("getting travis token") {
-            val generatedTravisToken = subject
-                    .retrieveTravisToken(githubUsername, githubToken)
 
-            val travis = subject.travis(generatedTravisToken)
+            val result = Try {
+                subject.retrieveTravisToken(githubUsername, githubToken)
+            }
 
-            it("should return valid token") {
-                val user = travis.getUser()
-                        .getOrElseThrow { errorBody ->
-                            TravisException("Travis user wasn't received due to: ${errorBody.string()}")
-                        }
+            it("should finish with zero code") {
+                assert(result.isSuccess) {
+                    "Travis token retrieving failed due to: ${result.cause.message}"
+                }
+            }
 
-                user.login shouldBe githubUsername
+            it("should return non-empty travis token") {
+                assertFalse { result.get().isBlank() }
             }
         }
     }
 
-    describe("travis client") {
-        val travis = subject.travis(travisToken)
-
-        on("deactivating a repository") {
-            val repository = travis.deactivate(githubUsername, githubRepositoryName)
-                    .getOrElseThrow { errorBody ->
-                        TravisException("Travis repository wasn't received due to: ${errorBody.string()}")
-                    }
-
-            it("should set repository to inactive status") {
-                repository.active shouldBe false
-            }
-        }
-
-        on("activating a repository") {
-            val repository = travis.activate(githubUsername, githubRepositoryName)
-                    .getOrElseThrow { errorBody ->
-                        TravisException("Travis user wasn't received due to: ${errorBody.string()}")
-                    }
-
-            it("should set repository to active status") {
-                repository.active shouldBe true
-            }
-        }
-    }
 })
