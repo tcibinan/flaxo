@@ -52,7 +52,8 @@ class DataServiceSpec : SubjectSpek<DataService>({
 
         afterEachTest {
             transactionStatus?.also {
-                transactionManager.commit(it)
+                if (it.isRollbackOnly) transactionManager.rollback(it)
+                else transactionManager.commit(it)
             }
         }
 
