@@ -277,14 +277,18 @@ class ModelController
             travisService.activateTravis(user, course, githubToken, githubUserId)
             activatedServices.add(IntegratedService.TRAVIS)
         } catch (e: Exception) {
-            logger.info("Travis activation went bad for ${user.githubId}/$courseName course due to: $e")
+            logger.info("Travis activation went bad for ${user.githubId}/$courseName course due to: " +
+                    e.stackTrace.joinToString("\n") { it.toString() }
+            )
         }
 
         try {
             codacyService.activateCodacy(user, course, githubUserId)
             activatedServices.add(IntegratedService.CODACY)
         } catch (e: Exception) {
-            logger.info("Codacy activation went bad for $githubUserId/$courseName course due to: $e")
+            logger.info("Codacy activation went bad for $githubUserId/$courseName course due to: " +
+                    e.stackTrace.joinToString("\n") { it.toString() }
+            )
         }
 
         logger.info("Changing course ${user.nickname}/$courseName status to running")

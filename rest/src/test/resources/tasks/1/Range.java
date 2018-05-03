@@ -1,4 +1,4 @@
-package org.flaxo.examples
+package org.flaxo.examples;
 
 import java.util.Iterator;
 import java.util.List;

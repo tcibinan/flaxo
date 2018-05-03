@@ -1,4 +1,4 @@
-package org.flaxo.examples
+package org.flaxo.examples;
 
 import java.util.List;
 import java.util.function.Consumer;

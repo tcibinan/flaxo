@@ -2,6 +2,7 @@ package org.flaxo.rest.service.travis
 
 import org.apache.logging.log4j.LogManager
 import org.flaxo.cmd.CmdExecutor
+import org.flaxo.core.repeatUntil
 import org.flaxo.model.DataService
 import org.flaxo.model.IntegratedService
 import org.flaxo.model.data.Course
@@ -70,7 +71,13 @@ open class TravisSimpleService(private val client: TravisClient,
 
         logger.info("Trying to ensure that current user's travis synchronisation has finished")
 
-        waitUntilSyncIsOver(travis, travisUser.id)
+        repeatUntil("Travis synchronisation finishes") {
+            travis.getUser()
+                    .getOrElseThrow { errorBody ->
+                        TravisException("Travis user ${travisUser.id} retrieving went bad due to: ${errorBody.string()}")
+                    }
+                    .let { !it.isSyncing }
+        }
 
         logger.info("Activating git repository of the course ${user.nickname}/${course.name} for travis CI")
 
@@ -79,31 +86,6 @@ open class TravisSimpleService(private val client: TravisClient,
                     TravisException("Travis activation of $githubUserId/${course.name} " +
                             "repository went bad due to: ${errorBody.string()}")
                 }
-    }
-
-    private fun waitUntilSyncIsOver(travis: Travis,
-                                    travisUserId: String,
-                                    attemptsLimit: Int = 20,
-                                    retrievingDelay: Long = 3000
-    ) {
-        val observationDuration: (Int) -> Long = { attempt -> (attempt + 1) * retrievingDelay / 1000 }
-
-        repeat(attemptsLimit) { attempt ->
-            Thread.sleep(retrievingDelay)
-
-            val travisUser = travis.getUser()
-                    .getOrElseThrow { errorBody ->
-                        TravisException("Travis user $travisUserId retrieving went bad due to: ${errorBody.string()}")
-                    }
-
-            if (travisUser.isSyncing)
-                logger.info("Travis user $travisUserId synchronisation hasn't finished " +
-                        "after ${observationDuration(attempt)} seconds.")
-            else return
-        }
-
-        throw TravisException("Travis synchronisation hasn't finished " +
-                "after ${observationDuration(attemptsLimit)} seconds.")
     }
 
     private fun retrieveTravisToken(user: User,
