@@ -145,12 +145,11 @@ object FlaxoIntegrationSpec : Spek({
                     .param("password", password)
             )
 
-            it("should create user account with given username and password") {
+            it("should create user account with given username") {
                 val user = dataService.getUser(username)
                         ?: throw ModelException("User not found")
 
                 user.nickname shouldEqual username
-                user.credentials.password shouldEqual password
             }
         }
 
