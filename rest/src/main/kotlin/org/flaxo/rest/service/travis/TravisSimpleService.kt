@@ -54,40 +54,42 @@ open class TravisSimpleService(private val client: TravisClient,
     ) {
         logger.info("Initialising travis client for ${user.nickname} user")
 
-        val travisToken = retrieveTravisToken(user, githubUserId, githubToken)
+        val travisToken = user.credentials.travisToken
+                ?: retrieveTravisToken(githubUserId, githubToken)
+                        .also { dataService.addToken(user.nickname, IntegratedService.TRAVIS, it) }
 
         val travis = travis(travisToken)
 
         logger.info("Retrieving travis user for ${user.nickname} user")
 
-        val travisUser: TravisUser = travis.getUser()
+        val travisUser: TravisUser = retrieveTravisUser(travis, user)
+
+        travis.getUser()
                 .getOrElseThrow { errorBody ->
-                    TravisException("Travis user retrieving failed for ${user.nickname} " +
-                            "due to: ${errorBody.string()}")
+                    TravisException("Travis user ${travisUser.id} retrieving went bad due to: ${errorBody.string()}")
+                }
+                .takeIf { it.isSyncing }
+                ?.also {
+                    logger.info("Waiting for existing travis synchronisation to end")
+
+                    repeatUntil("Travis synchronisation finishes") {
+                        retrieveTravisUser(travis, user)
+                                .let { !it.isSyncing }
+                    }
                 }
 
-        logger.info("Trigger travis user with id ${travisUser.id} sync for ${user.nickname} user")
+        logger.info("Triggering ${user.nickname} user new travis synchronisation")
 
-        Try {
-            repeatUntil("Travis synchronisation started",
-                    initDelay = 15,
-                    attemptsLimit = 5
-            ) {
-                travis.sync(travisUser.id) == null
-            }
-        }.onFailure { error ->
-            throw TravisException("Travis user ${travisUser.id} sync hasn't started due to: ${error.stringStackTrace()}")
-        }
+        travis.sync(travisUser.id)
+                ?.also { errorBody ->
+                    throw TravisException("Travis user ${travisUser.id} " +
+                            "sync hasn't started due to: ${errorBody.string()}")
+                }
 
-        logger.info("Trying to ensure that current user's travis synchronisation has finished")
+        logger.info("Ensuring that ${user.nickname} user travis synchronisation has finished")
 
-        repeatUntil("Travis synchronisation finishes",
-                initDelay = 15
-        ) {
-            travis.getUser()
-                    .getOrElseThrow { errorBody ->
-                        TravisException("Travis user ${travisUser.id} retrieving went bad due to: ${errorBody.string()}")
-                    }
+        repeatUntil("Travis synchronisation finishes") {
+            retrieveTravisUser(travis, user)
                     .let { !it.isSyncing }
         }
 
@@ -100,23 +102,11 @@ open class TravisSimpleService(private val client: TravisClient,
                 }
     }
 
-    private fun retrieveTravisToken(user: User,
-                                    githubUserId: String,
-                                    githubToken: String
-    ): String = retrieveUserWithTravisToken(user, githubUserId, githubToken)
-            .credentials
-            .travisToken
-            ?: throw TravisException("Travis token wasn't found for ${user.nickname}.")
-
-    private fun retrieveUserWithTravisToken(user: User,
-                                            githubUserId: String,
-                                            githubToken: String
-    ): User = user
-            .takeUnless { it.credentials.travisToken.isNullOrBlank() }
-            ?: dataService.addToken(
-                    user.nickname,
-                    IntegratedService.TRAVIS,
-                    retrieveTravisToken(githubUserId, githubToken)
-            )
+    private fun retrieveTravisUser(travis: Travis, user: User): TravisUser =
+            travis.getUser()
+                    .getOrElseThrow { errorBody ->
+                        TravisException("Travis user retrieving failed for ${user.nickname}" +
+                                " due to: ${errorBody.string()}")
+                    }
 
 }
