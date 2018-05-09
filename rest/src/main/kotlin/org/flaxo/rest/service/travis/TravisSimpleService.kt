@@ -1,7 +1,9 @@
 package org.flaxo.rest.service.travis
 
+import io.vavr.kotlin.Try
 import org.apache.logging.log4j.LogManager
 import org.flaxo.cmd.CmdExecutor
+import org.flaxo.core.of
 import org.flaxo.core.repeatUntil
 import org.flaxo.model.DataService
 import org.flaxo.model.IntegratedService
@@ -17,6 +19,7 @@ import org.flaxo.travis.parseTravisWebHook
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import java.io.Reader
+import java.util.concurrent.TimeUnit
 
 /**
  * Travis service basic implementation.
@@ -64,10 +67,19 @@ open class TravisSimpleService(private val client: TravisClient,
 
         logger.info("Trigger travis user with id ${travisUser.id} sync for ${user.nickname} user")
 
-        travis.sync(travisUser.id)
-                ?.also { errorBody ->
-                    throw TravisException("Travis user ${travisUser.id} sync hasn't started due to: ${errorBody.string()}")
-                }
+        Try {
+            repeatUntil("Travis synchronisation started",
+                    initDelay = 15,
+                    attemptsLimit = 5
+            ) {
+                travis.sync(travisUser.id) == null
+            }
+        }.onFailure {
+            travis.sync(travisUser.id)
+                    ?.also { errorBody ->
+                        throw TravisException("Travis user ${travisUser.id} sync hasn't started due to: ${errorBody.string()}")
+                    }
+        }
 
         logger.info("Trying to ensure that current user's travis synchronisation has finished")
 

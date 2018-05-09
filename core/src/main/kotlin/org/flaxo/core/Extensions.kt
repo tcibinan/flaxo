@@ -20,3 +20,20 @@ fun Throwable.stringStackTrace(): String =
                     use { printStackTrace(PrintWriter(it)) }
                 }
                 .toString()
+
+/**
+ * Retrieves [Throwable] simplified stacktrace as a formatted string.
+ */
+fun Throwable.simplifiedStringStackTrace(): String =
+        StringWriter()
+                .also {
+                    it.use {
+                        printCauses(PrintWriter(it))
+                    }
+                }
+                .toString()
+
+private fun Throwable.printCauses(pw: PrintWriter) {
+    pw.println("${this::class.simpleName}: ${this.message}")
+    cause?.printCauses(pw)
+}
