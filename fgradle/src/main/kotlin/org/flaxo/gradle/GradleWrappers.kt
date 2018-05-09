@@ -16,6 +16,10 @@ class GradleWrappers private constructor(files: Set<EnvironmentFile>)
 
         fun default(): GradleWrappers =
                 GradleWrappers(setOf(
+                        SimpleEnvironmentFile("gradlew",
+                                File("../gradlew").useLines { it.joinToString("\n") }),
+                        SimpleEnvironmentFile("gradlew.bat",
+                                File("../gradlew.bat").useLines { it.joinToString("\n") }),
                         SimpleEnvironmentFile("gradle/wrapper/gradle-wrapper.jar",
                                 File("../gradle/wrapper/gradle-wrapper.jar").useLines { it.joinToString("\n") }),
                         SimpleEnvironmentFile("gradle/wrapper/gradle-wrapper.properties",
