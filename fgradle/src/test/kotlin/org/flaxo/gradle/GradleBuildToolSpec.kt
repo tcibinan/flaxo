@@ -2,15 +2,16 @@ package org.flaxo.gradle
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
+import jdk.nashorn.internal.objects.NativeString.substring
+import org.amshove.kluent.shouldContain
+import org.amshove.kluent.shouldContainSome
+import org.amshove.kluent.shouldEqual
 import org.flaxo.core.build.BuildTool
 import org.flaxo.core.env.EnvironmentFile
 import org.flaxo.core.env.EnvironmentSupplier
 import org.flaxo.core.env.SimpleEnvironment
 import org.flaxo.core.framework.JUnitTestingFramework
 import org.flaxo.core.language.JavaLang
-import io.kotlintest.matchers.shouldBe
-import io.kotlintest.matchers.shouldHave
-import io.kotlintest.matchers.substring
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
@@ -49,7 +50,7 @@ object GradleBuildToolSpec : SubjectSpek<BuildTool>({
                     ?: throw GradleException("build.gradle wasn't found")
 
             it("should have build.gradle with all passed plugins") {
-                buildGradle.content() shouldHave substring("apply plugin: ").or(substring("id "))
+                buildGradle.content() shouldContainSome listOf("apply plugin: ", "id ")
                 buildGradle.shouldHaveName(firstPlugin, secondPlugin)
             }
 
@@ -97,32 +98,35 @@ object GradleBuildToolSpec : SubjectSpek<BuildTool>({
 })
 
 private fun EnvironmentFile.shouldHaveName(vararg plugins: GradlePlugin) {
-    plugins.forEach {
-        content() shouldHave
-                substring("apply plugin: \"${it.id}\"")
-                        .or(substring("""id "${it.id}""""))
-    }
+    plugins.map { it.id }
+            .forEach {
+                content() shouldContainSome listOf(
+                        "apply plugin: \"$it\"",
+                        "id \"$it\""
+                )
+            }
 }
 
 private fun EnvironmentFile.shouldHaveSingle(vararg plugins: GradlePlugin) {
-    plugins.forEach {
-        content()
-                .split(
-                        "apply plugin: \"${it.id}\"",
-                        """id "${it.id}""""
-                ).size - 1 shouldBe 1
-    }
+    plugins.map { it.id }
+            .forEach {
+                content()
+                        .split(
+                                "apply plugin: \"$it\"",
+                                "id \"$it\""
+                        ).size - 1 shouldEqual 1
+            }
 }
 
 private fun EnvironmentFile.shouldHaveName(vararg dependencies: GradleDependency) {
     dependencies.forEach {
-        content() shouldHave substring(it.name)
+        content() shouldContain it.name
     }
 }
 
 private fun EnvironmentFile.shouldHaveDependency(vararg dependencies: GradleDependency) {
     dependencies.forEach {
-        content() shouldHave substring(it.toString())
+        content() shouldContain it.toString()
     }
 }
 
@@ -130,6 +134,6 @@ private fun EnvironmentFile.shouldHaveSingleName(vararg dependencies: GradleDepe
     dependencies.forEach {
         content()
                 .split(it.name)
-                .size - 1 shouldBe 1
+                .size - 1 shouldEqual 1
     }
 }

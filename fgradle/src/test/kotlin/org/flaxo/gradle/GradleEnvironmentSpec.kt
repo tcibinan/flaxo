@@ -2,6 +2,7 @@ package org.flaxo.gradle
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
+import org.amshove.kluent.shouldNotBeNull
 import org.flaxo.core.build.BuildTool
 import org.flaxo.core.env.Environment
 import org.flaxo.core.env.EnvironmentSupplier
@@ -9,7 +10,6 @@ import org.flaxo.core.env.SimpleEnvironment
 import org.flaxo.core.env.SimpleEnvironmentFile
 import org.flaxo.core.framework.JUnitTestingFramework
 import org.flaxo.core.language.JavaLang
-import io.kotlintest.matchers.shouldNotBe
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
@@ -76,7 +76,7 @@ object GradleEnvironmentSpec : SubjectSpek<BuildTool>({
 
             it("should contain all files from travis environment supplier") {
                 travisFiles.forEach {
-                    environment.getFile(it.name) shouldNotBe null
+                    environment.getFile(it.name).shouldNotBeNull()
                 }
             }
         }

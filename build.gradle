@@ -39,9 +39,6 @@ allprojects {
         testImplementation 'org.amshove.kluent:kluent:1.38'
         testCompile "org.jetbrains.kotlin:kotlin-test"
 
-        // todo: Replace usages with kluent
-        testCompile "io.kotlintest:kotlintest:$kotlintest_version"
-
         testCompile "org.jetbrains.spek:spek-api:$spek_version"
         testCompile "org.jetbrains.spek:spek-data-driven-extension:$spek_version"
         testCompile "org.jetbrains.spek:spek-subject-extension:$spek_version"

@@ -1,8 +1,7 @@
 package org.flaxo.github
 
-import io.kotlintest.matchers.contain
-import io.kotlintest.matchers.shouldBe
-import io.kotlintest.matchers.shouldHave
+import org.amshove.kluent.shouldContain
+import org.amshove.kluent.shouldEqual
 import org.flaxo.core.env.SimpleEnvironmentFile
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
@@ -52,7 +51,7 @@ object GithubSpec : SubjectSpek<Github>({
                         .filter { it.name == mainBranchName }
                         .flatMap { it.files() }
                         .filter { it.name == fileName }
-                        .count() shouldBe 1
+                        .count() shouldEqual 1
             }
         }
 
@@ -70,12 +69,8 @@ object GithubSpec : SubjectSpek<Github>({
                         .filter { it.name == subBranchName }
                         .flatMap { it.files() }
                         .filter { it.name == fileName }
-                        .count() shouldBe 1
+                        .count() shouldEqual 1
             }
         }
     }
 })
-
-private infix fun <E> Collection<E>.shouldContain(element: E) {
-    this shouldHave contain(element)
-}

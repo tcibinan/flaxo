@@ -174,7 +174,7 @@ and a list of possible travis cli commands should be listed.
 - Spek
 - Spring Boot, Spring Data, Spring Security
 - Retrofit2 http client
-- and even more: h2 database, Kohsuke Github api, Kotlin test, Vavr, mockito-kotlin, moji, jsoup, commons-collections4
+- and even more: h2 database, Kohsuke Github api, Vavr, mockito-kotlin, moji, jsoup, commons-collections4
 
 ### Front-end technologies
 

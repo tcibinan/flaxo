@@ -1,9 +1,9 @@
 package org.flaxo.rest.service.environment
 
+import org.amshove.kluent.shouldThrow
 import org.flaxo.rest.CoreConfiguration
 import org.flaxo.rest.service.IncompatibleLanguage
 import org.flaxo.rest.service.IncompatibleTestingFramework
-import io.kotlintest.matchers.shouldThrow
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
@@ -23,18 +23,18 @@ object RepositoryEnvironmentServiceSpec: SubjectSpek<RepositoryEnvironmentServic
     describe("repository environment service") {
 
         on("creating an environment with incompatible languages") {
-            it("should throw a concrete exception") {
-                shouldThrow<IncompatibleLanguage> {
+            it("should throw an IncompatibleLanguage exception") {
+                {
                     subject.produceEnvironment(secondLanguage, firstLanguage, firstTestingFramework)
-                }
+                } shouldThrow IncompatibleLanguage::class
             }
         }
 
         on("creating an environment with incompatible testing language and testing framework") {
-            it("should throw a concrete exception") {
-                shouldThrow<IncompatibleTestingFramework> {
+            it("should throw an IncompatibleTestingFramework exception") {
+                {
                     subject.produceEnvironment(firstLanguage, firstLanguage, secondTestingFramework)
-                }
+                } shouldThrow IncompatibleTestingFramework::class
             }
         }
 

@@ -1,15 +1,15 @@
 package org.flaxo.codacy
 
-import io.kotlintest.matchers.shouldBe
+import org.amshove.kluent.shouldBeNull
+import org.amshove.kluent.shouldBeTrue
+import org.amshove.kluent.shouldEqual
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
+import org.jetbrains.spek.subject.SubjectSpek
 import org.flaxo.codacy.model.CommitDetails
 import org.flaxo.codacy.response.CommitDetailsResponse
 import org.flaxo.fretrofit.retrofitMock
-import org.jetbrains.spek.subject.SubjectSpek
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 object CodacySpec : SubjectSpek<Codacy>({
 
@@ -40,11 +40,11 @@ object CodacySpec : SubjectSpek<Codacy>({
             val response = subject.commitDetails(projectName, commitUUID)
 
             it("should successfully returns result") {
-                assertTrue { response.isRight }
+                response.isRight.shouldBeTrue()
             }
 
             it("should contain commit grade") {
-                response.get().commit.grade shouldBe grade
+                response.get().commit.grade shouldEqual grade
             }
         }
 
@@ -52,7 +52,7 @@ object CodacySpec : SubjectSpek<Codacy>({
             val response = subject.createProject(projectName, repositoryUrl)
 
             it("should not contain response body") {
-                assertNull(response)
+                response.shouldBeNull()
             }
         }
 
@@ -60,7 +60,7 @@ object CodacySpec : SubjectSpek<Codacy>({
             val response = subject.deleteProject(projectName)
 
             it("should not contain response body") {
-                assertNull(response)
+                response.shouldBeNull()
             }
         }
     }

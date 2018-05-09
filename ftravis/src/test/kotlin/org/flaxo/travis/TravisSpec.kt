@@ -1,9 +1,9 @@
 package org.flaxo.travis
 
-import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.mock
-import io.kotlintest.matchers.shouldBe
+import org.amshove.kluent.shouldBeFalse
+import org.amshove.kluent.shouldBeTrue
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
@@ -37,7 +37,7 @@ object TravisSpec: SubjectSpek<Travis>({
                     }
 
             it("should set repository to inactive status") {
-                repository.active shouldBe false
+                repository.active.shouldBeFalse()
             }
         }
 
@@ -48,7 +48,7 @@ object TravisSpec: SubjectSpek<Travis>({
                     }
 
             it("should set repository to active status") {
-                repository.active shouldBe true
+                repository.active.shouldBeTrue()
             }
         }
     }

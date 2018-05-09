@@ -1,16 +1,14 @@
 package org.flaxo.model
 
-import io.kotlintest.matchers.beEmpty
-import io.kotlintest.matchers.contain
-import io.kotlintest.matchers.containsAll
-import io.kotlintest.matchers.haveSubstring
-import io.kotlintest.matchers.should
-import io.kotlintest.matchers.shouldBe
-import io.kotlintest.matchers.shouldEqual
-import io.kotlintest.matchers.shouldNot
-import io.kotlintest.matchers.shouldNotBe
-import io.kotlintest.matchers.shouldThrow
-import io.kotlintest.matchers.startWith
+import org.amshove.kluent.shouldBeEmpty
+import org.amshove.kluent.shouldBeNull
+import org.amshove.kluent.shouldContain
+import org.amshove.kluent.shouldContainAll
+import org.amshove.kluent.shouldContainNone
+import org.amshove.kluent.shouldEqual
+import org.amshove.kluent.shouldNotBeNull
+import org.amshove.kluent.shouldStartWith
+import org.amshove.kluent.shouldThrow
 import org.flaxo.model.data.PlagiarismMatch
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
@@ -63,21 +61,21 @@ class DataServiceSpec : SubjectSpek<DataService>({
             it("should also add credentials for user") {
                 subject.getUser(nickname)
                         ?.credentials
-                        ?.password shouldBe password
+                        ?.password shouldEqual password
             }
         }
 
         on("addition user that already exists") {
             it("should throw an exception") {
-                shouldThrow<EntityAlreadyExistsException> {
+                {
                     subject.addUser(nickname, password)
-                }
+                } shouldThrow EntityAlreadyExistsException::class
             }
         }
 
         on("getting non-existing user") {
             it("should return null") {
-                subject.getUser("non-existing") shouldBe null
+                subject.getUser("non-existing").shouldBeNull()
             }
         }
 
@@ -94,9 +92,9 @@ class DataServiceSpec : SubjectSpek<DataService>({
                 val user = subject.getUser(nickname)
                         ?: throw EntityNotFound("User $nickname")
 
-                user.credentials.githubToken shouldBe githubToken
-                user.credentials.travisToken shouldBe travisToken
-                user.credentials.codacyToken shouldBe codacyToken
+                user.credentials.githubToken shouldEqual githubToken
+                user.credentials.travisToken shouldEqual travisToken
+                user.credentials.codacyToken shouldEqual codacyToken
             }
         }
 
@@ -115,13 +113,13 @@ class DataServiceSpec : SubjectSpek<DataService>({
             val tasks = course.tasks
 
             it("should contain the course") {
-                course.language shouldBe language
-                course.testingLanguage shouldBe testLanguage
-                course.testingFramework shouldBe testingFramework
+                course.language shouldEqual language
+                course.testingLanguage shouldEqual testLanguage
+                course.testingFramework shouldEqual testingFramework
             }
 
             it("should create necessary amount of tasks") {
-                tasks.count() shouldBe numberOfTasks
+                tasks.count() shouldEqual numberOfTasks
             }
 
             it("should create tasks with ordered numbers in the titles") {
@@ -129,21 +127,21 @@ class DataServiceSpec : SubjectSpek<DataService>({
                         .sorted()
                         .mapIndexed { index, name -> Pair((index + 1).toString(), name) }
                         .forEach { (taskIndex, taskName) ->
-                            taskName should haveSubstring(taskIndex)
+                            taskName shouldContain taskIndex
                         }
             }
 
             it("should create tasks with the given tasks prefix in the titles") {
-                tasks.forEach { it.branch should startWith(tasksPrefix) }
+                tasks.forEach { it.branch shouldStartWith tasksPrefix }
             }
 
             it("should create tasks without plagiarism reports") {
-                tasks.forEach { it.plagiarismReports should beEmpty() }
+                tasks.forEach { it.plagiarismReports.shouldBeEmpty() }
             }
 
             it("should have default state") {
-                course.state.lifecycle shouldBe CourseLifecycle.INIT
-                course.state.activatedServices should beEmpty()
+                course.state.lifecycle shouldEqual CourseLifecycle.INIT
+                course.state.activatedServices.shouldBeEmpty()
             }
         }
 
@@ -152,7 +150,7 @@ class DataServiceSpec : SubjectSpek<DataService>({
                     ?: throw EntityNotFound("User $nickname")
 
             it("should throw an exception") {
-                shouldThrow<EntityAlreadyExistsException> {
+                {
                     subject.createCourse(
                             courseName = courseName,
                             language = language,
@@ -162,7 +160,7 @@ class DataServiceSpec : SubjectSpek<DataService>({
                             numberOfTasks = numberOfTasks,
                             owner = owner
                     )
-                }
+                } shouldThrow EntityAlreadyExistsException::class
             }
         }
 
@@ -200,7 +198,7 @@ class DataServiceSpec : SubjectSpek<DataService>({
                 course.students
                         .map { it.solutions }
                         .filter { it.count() == numberOfTasks }
-                        .count() shouldBe 2
+                        .count() shouldEqual 2
             }
         }
 
@@ -222,15 +220,15 @@ class DataServiceSpec : SubjectSpek<DataService>({
                     .also { subject.updateCourse(it) }
 
             it("should change its state lifecycle") {
-                updatedCourse.state.lifecycle shouldBe CourseLifecycle.RUNNING
+                updatedCourse.state.lifecycle shouldEqual CourseLifecycle.RUNNING
             }
 
             it("should change its state activated services") {
-                updatedCourse.state.activatedServices should containsAll(
+                updatedCourse.state.activatedServices shouldContainAll listOf(
                         IntegratedService.GITHUB,
                         IntegratedService.TRAVIS
                 )
-                updatedCourse.state.activatedServices shouldNot contain(
+                updatedCourse.state.activatedServices shouldContainNone listOf(
                         IntegratedService.CODACY
                 )
             }
@@ -255,15 +253,15 @@ class DataServiceSpec : SubjectSpek<DataService>({
                             .lastOrNull()
 
             it("should contain plagiarism report") {
-                plagiarismReport shouldNotBe null
+                plagiarismReport.shouldNotBeNull()
             }
 
             it("should contain plagiarism report url") {
-                plagiarismReport!!.url shouldBe plagiarismUrl
+                plagiarismReport!!.url shouldEqual plagiarismUrl
             }
 
             it("should contain plagiarism report url") {
-                plagiarismReport!!.matches shouldBe matches
+                plagiarismReport!!.matches shouldEqual matches
             }
         }
 
@@ -288,11 +286,11 @@ class DataServiceSpec : SubjectSpek<DataService>({
                             .lastOrNull()
 
             it("should contain build report") {
-                buildReport shouldNotBe null
+                buildReport.shouldNotBeNull()
             }
 
             it("should contain build report succeed status") {
-                buildReport!!.succeed shouldBe buildSucceed
+                buildReport!!.succeed shouldEqual buildSucceed
             }
         }
 
@@ -317,11 +315,11 @@ class DataServiceSpec : SubjectSpek<DataService>({
                             .lastOrNull()
 
             it("should contain code style report") {
-                codeStyleReport shouldNotBe null
+                codeStyleReport.shouldNotBeNull()
             }
 
             it("should contain code style report grade") {
-                codeStyleReport!!.grade shouldBe codeStyleGrade
+                codeStyleReport!!.grade shouldEqual codeStyleGrade
             }
         }
 
@@ -331,7 +329,7 @@ class DataServiceSpec : SubjectSpek<DataService>({
             subject.deleteCourse(courseName, user)
 
             it("should delete the course") {
-                subject.getCourse(courseName, user) shouldBe null
+                subject.getCourse(courseName, user).shouldBeNull()
             }
         }
 
