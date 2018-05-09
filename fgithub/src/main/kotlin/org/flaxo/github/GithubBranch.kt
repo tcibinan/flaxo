@@ -5,6 +5,7 @@ import org.flaxo.core.env.EnvironmentFile
 import org.flaxo.core.env.RemoteEnvironmentFile
 import org.flaxo.git.Branch
 import org.flaxo.git.Commit
+import org.kohsuke.github.GHContentUpdateResponse
 import org.kohsuke.github.GitHub as KohsukeGithub
 
 /**
@@ -18,50 +19,50 @@ class GithubBranch(override val name: String,
     private val client: KohsukeGithub = github.client
 
     override fun commit(file: EnvironmentFile,
-                        filePath: String
+                        filePath: String,
+                        commitMessage: String
     ): Commit = let { branch ->
-        when (file) {
-            is BinaryEnvironmentFile -> client.repository(repository.name)
-                    .createContent(
-                            file.binaryContent(),
-                            "feat: Add $filePath",
-                            filePath,
-                            branch.name
-                    )
-            else -> client.repository(repository.name)
-                    .createContent(
-                            file.content(),
-                            "feat: Add $filePath",
-                            filePath,
-                            branch.name
-                    )
-        }.let {
+        createContent(file, filePath, branch, commitMessage).let {
             GithubCommit(it.commit.shA1, branch, branch.github)
         }
     }
 
+    private fun createContent(file: EnvironmentFile,
+                              filePath: String,
+                              branch: GithubBranch,
+                              commitMessage: String
+    ): GHContentUpdateResponse =
+            client.repository(branch.repository.name)
+                    .let {
+                        when (file) {
+                            is BinaryEnvironmentFile ->
+                                it.createContent(file.binaryContent(), commitMessage, filePath, branch.name)
+                            else -> it.createContent(file.content(), commitMessage, filePath, branch.name)
+                        }
+                    }
+
     override fun update(file: EnvironmentFile,
-                        filePath: String
+                        filePath: String,
+                        commitMessage: String
     ): Commit = let { branch ->
-        when (file) {
-            is BinaryEnvironmentFile -> client.repository(repository.name)
-                    .getFileContent(filePath, branch.name)
-                    .update(
-                            file.content(),
-                            "feat: Update $filePath",
-                            branch.name
-                    )
-            else -> client.repository(repository.name)
-                    .getFileContent(filePath, branch.name)
-                    .update(
-                            file.binaryContent(),
-                            "feat: Update $filePath",
-                            branch.name
-                    )
-        }.let {
+        updateContent(file, filePath, branch, commitMessage).let {
             GithubCommit(it.commit.shA1, branch, branch.github)
         }
     }
+
+    private fun updateContent(file: EnvironmentFile,
+                              filePath: String,
+                              branch: GithubBranch,
+                              commitMessage: String
+    ): GHContentUpdateResponse =
+            client.repository(repository.name)
+                    .getFileContent(filePath, branch.name)
+                    .let {
+                        when (file) {
+                            is BinaryEnvironmentFile -> it.update(file.binaryContent(), commitMessage, branch.name)
+                            else -> it.update(file.content(), commitMessage, branch.name)
+                        }
+                    }
 
     override fun createSubBranch(subBranchName: String): Branch {
         val rootBranchName = name

@@ -7,6 +7,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 public interface Traversable<T> {
+
     void forEach(final Consumer<T> consumer);
 
     default Traversable<T> filter(final Predicate<T> predicate) {

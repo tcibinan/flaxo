@@ -13,5 +13,5 @@ fun KohsukeGithub.nickname() =
 
 fun KohsukeGithub.repository(repositoryName: String)
         : KohsukeGithubRepository =
-        this.getRepository("${nickname()}/$repositoryName")
+        getRepository("${nickname()}/$repositoryName")
 

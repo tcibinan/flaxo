@@ -1,8 +1,7 @@
 package org.flaxo.rest.integration
 
-import io.kotlintest.matchers.containsAll
-import io.kotlintest.matchers.should
-import io.kotlintest.matchers.shouldBe
+import org.amshove.kluent.shouldContainAll
+import org.amshove.kluent.shouldEqual
 import org.flaxo.core.env.LocalEnvironmentFile
 import org.flaxo.core.of
 import org.flaxo.core.repeatUntil
@@ -150,8 +149,8 @@ object FlaxoIntegrationSpec : Spek({
                 val user = dataService.getUser(username)
                         ?: throw ModelException("User not found")
 
-                user.nickname shouldBe username
-                user.credentials.password shouldBe password
+                user.nickname shouldEqual username
+                user.credentials.password shouldEqual password
             }
         }
 
@@ -163,11 +162,11 @@ object FlaxoIntegrationSpec : Spek({
                     ?: throw ModelException("User not found")
 
             it("should add user github id") {
-                user.githubId shouldBe githubId
+                user.githubId shouldEqual githubId
             }
 
             it("should add user github token") {
-                user.credentials.githubToken shouldBe githubToken
+                user.credentials.githubToken shouldEqual githubToken
             }
         }
 
@@ -181,7 +180,7 @@ object FlaxoIntegrationSpec : Spek({
                     ?: throw ModelException("User not found")
 
             it("should add user codacy token") {
-                user.credentials.codacyToken shouldBe codacyToken
+                user.credentials.codacyToken shouldEqual codacyToken
             }
         }
 
@@ -197,7 +196,7 @@ object FlaxoIntegrationSpec : Spek({
 
             it("should create a git repository") {
                 khttp.get("$githubApi/repos/$githubId/$courseName")
-                        .statusCode shouldBe 200
+                        .statusCode shouldEqual 200
             }
         }
 
@@ -221,7 +220,7 @@ object FlaxoIntegrationSpec : Spek({
                                     ?.keys
                                     ?.also { fileNames ->
                                         branch.files()
-                                                .map { it.name } should containsAll(fileNames.toList())
+                                                .map { it.name } shouldContainAll fileNames.toList()
                                     }
                         }
             }
@@ -240,11 +239,11 @@ object FlaxoIntegrationSpec : Spek({
                     ?: throw ModelException("Course not found")
 
             it("should change course state lifecycle to running") {
-                course.state.lifecycle shouldBe CourseLifecycle.RUNNING
+                course.state.lifecycle shouldEqual CourseLifecycle.RUNNING
             }
 
             it("should add codacy and travis to activated services of a course") {
-                course.state.activatedServices should containsAll(
+                course.state.activatedServices shouldContainAll listOf(
                         IntegratedService.TRAVIS,
                         IntegratedService.CODACY
                 )
@@ -255,7 +254,7 @@ object FlaxoIntegrationSpec : Spek({
                         .get("$codacyApi/$githubId/$courseName",
                                 headers = mapOf("api_token" to codacyToken)
                         )
-                        .statusCode shouldBe 200
+                        .statusCode shouldEqual 200
             }
 
             it("should retrieve travis token") {
@@ -272,8 +271,8 @@ object FlaxoIntegrationSpec : Spek({
                                 )
                         )
                         .apply {
-                            statusCode shouldBe 200
-                            jsonObject.getBoolean("active") shouldBe true
+                            statusCode shouldEqual 200
+                            jsonObject.getBoolean("active") shouldEqual true
                         }
             }
         }
@@ -296,7 +295,7 @@ object FlaxoIntegrationSpec : Spek({
             it("should fork course repository for each student") {
                 git(githubToken)
                         .getRepository(courseName)
-                        .forks shouldBe solutionsFiles.size
+                        .forks shouldEqual solutionsFiles.size
             }
         }
 
@@ -344,7 +343,7 @@ object FlaxoIntegrationSpec : Spek({
                                     )
                             )
                             .run {
-                                statusCode shouldBe 200
+                                statusCode shouldEqual 200
                                 val actualBranchesBuilds =
                                         jsonObject.getJSONArray("builds")
                                                 .map { it as JSONObject }

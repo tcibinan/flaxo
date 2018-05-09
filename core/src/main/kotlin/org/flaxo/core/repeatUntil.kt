@@ -8,9 +8,8 @@ fun repeatUntil(actionTitle: String,
                 observationDuration: Long = (attemptsLimit) * retrievingDelay,
                 action: () -> Boolean
 ) {
-    repeat(attemptsLimit) { attempt ->
+    repeat(attemptsLimit) {
         Thread.sleep(retrievingDelay of TimeUnit.SECONDS)
-
         if (action()) return
     }
 

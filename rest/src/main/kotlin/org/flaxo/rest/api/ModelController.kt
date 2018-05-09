@@ -16,6 +16,7 @@ import org.flaxo.rest.service.travis.TravisService
 import org.flaxo.travis.TravisException
 import org.apache.logging.log4j.LogManager
 import org.flaxo.codacy.CodacyException
+import org.flaxo.core.stringStackTrace
 import org.flaxo.model.data.PlagiarismMatch
 import org.flaxo.rest.service.codacy.CodacyService
 import org.springframework.beans.factory.annotation.Autowired
@@ -278,7 +279,7 @@ class ModelController
             activatedServices.add(IntegratedService.TRAVIS)
         } catch (e: Exception) {
             logger.info("Travis activation went bad for ${user.githubId}/$courseName course due to: " +
-                    e.stackTrace.joinToString("\n") { it.toString() }
+                    e.stringStackTrace()
             )
         }
 
@@ -287,7 +288,7 @@ class ModelController
             activatedServices.add(IntegratedService.CODACY)
         } catch (e: Exception) {
             logger.info("Codacy activation went bad for $githubUserId/$courseName course due to: " +
-                    e.stackTrace.joinToString("\n") { it.toString() }
+                    e.stringStackTrace()
             )
         }
 
