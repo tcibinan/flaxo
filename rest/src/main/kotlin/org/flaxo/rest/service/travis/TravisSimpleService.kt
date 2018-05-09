@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager
 import org.flaxo.cmd.CmdExecutor
 import org.flaxo.core.of
 import org.flaxo.core.repeatUntil
+import org.flaxo.core.stringStackTrace
 import org.flaxo.model.DataService
 import org.flaxo.model.IntegratedService
 import org.flaxo.model.data.Course
@@ -74,16 +75,15 @@ open class TravisSimpleService(private val client: TravisClient,
             ) {
                 travis.sync(travisUser.id) == null
             }
-        }.onFailure {
-            travis.sync(travisUser.id)
-                    ?.also { errorBody ->
-                        throw TravisException("Travis user ${travisUser.id} sync hasn't started due to: ${errorBody.string()}")
-                    }
+        }.onFailure { error ->
+            throw TravisException("Travis user ${travisUser.id} sync hasn't started due to: ${error.stringStackTrace()}")
         }
 
         logger.info("Trying to ensure that current user's travis synchronisation has finished")
 
-        repeatUntil("Travis synchronisation finishes") {
+        repeatUntil("Travis synchronisation finishes",
+                initDelay = 15
+        ) {
             travis.getUser()
                     .getOrElseThrow { errorBody ->
                         TravisException("Travis user ${travisUser.id} retrieving went bad due to: ${errorBody.string()}")

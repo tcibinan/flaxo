@@ -14,11 +14,19 @@ class GradleWrappers private constructor(files: Set<EnvironmentFile>)
 
     companion object {
 
+        fun default(): GradleWrappers =
+                GradleWrappers(setOf(
+                        SimpleEnvironmentFile("gradle/wrapper/gradle-wrapper.jar",
+                                File("../gradle/wrapper/gradle-wrapper.jar").useLines { it.joinToString("\n") }),
+                        SimpleEnvironmentFile("gradle/wrapper/gradle-wrapper.properties",
+                                File("../gradle/wrapper/gradle-wrapper.properties").useLines { it.joinToString("\n") })
+                ))
+
         fun with(gradleBuild: EnvironmentFile,
                  gradleSettings: EnvironmentFile
         ): GradleWrappers {
             val dir = createTempDir("wrappers-generating-${Random().nextInt()}")
-            dir.deleteOnExit()
+                    .also { it.deleteOnExit() }
 
             return Try(generateWrappers(dir, gradleBuild, gradleSettings))
                     .onFailure {

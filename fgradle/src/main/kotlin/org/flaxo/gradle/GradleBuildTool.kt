@@ -87,7 +87,7 @@ data class GradleBuildTool(private val travis: EnvironmentSupplier,
     private fun gradleEnvironment(): Environment {
         val gradleBuild = produceGradleBuild()
         val gradleSettings = produceGradleSettings()
-        return GradleWrappers.with(gradleBuild, gradleSettings)
+        return GradleWrappers.default()
                 .plus(gradleBuild)
                 .plus(gradleSettings)
     }
