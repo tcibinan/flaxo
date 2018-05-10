@@ -1,11 +1,9 @@
 package org.flaxo.rest.service.travis
 
-import io.vavr.kotlin.Try
 import org.apache.logging.log4j.LogManager
 import org.flaxo.cmd.CmdExecutor
 import org.flaxo.core.of
 import org.flaxo.core.repeatUntil
-import org.flaxo.core.stringStackTrace
 import org.flaxo.model.DataService
 import org.flaxo.model.IntegratedService
 import org.flaxo.model.data.Course
@@ -68,6 +66,7 @@ open class TravisSimpleService(private val client: TravisClient,
                 .getOrElseThrow { errorBody ->
                     TravisException("Travis user ${travisUser.id} retrieving went bad due to: ${errorBody.string()}")
                 }
+                .also { Thread.sleep(10 of TimeUnit.SECONDS) }
                 .takeIf { it.isSyncing }
                 ?.also {
                     logger.info("Waiting for existing travis synchronisation to end")
@@ -88,7 +87,8 @@ open class TravisSimpleService(private val client: TravisClient,
 
         logger.info("Ensuring that ${user.nickname} user travis synchronisation has finished")
 
-        repeatUntil("Travis synchronisation finishes") {
+        repeatUntil("Travis synchronisation finishes",
+                initDelay = 10) {
             retrieveTravisUser(travis, user)
                     .let { !it.isSyncing }
         }
