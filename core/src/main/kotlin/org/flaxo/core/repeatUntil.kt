@@ -14,6 +14,7 @@ fun repeatUntil(actionTitle: String,
                 attemptsLimit: Int = 20,
                 retrievingDelay: Long = 3,
                 initDelay: Long = 3,
+                afterDelay: Long = 0,
                 observationDuration: Long = (attemptsLimit) * retrievingDelay,
                 action: () -> Boolean
 ) {
@@ -24,7 +25,11 @@ fun repeatUntil(actionTitle: String,
 
     repeat(attemptsLimit) {
         try {
-            if (action()) return
+            if (action()) {
+                afterDelay.takeIf { it > 0 }
+                        ?.also { Thread.sleep(it of TimeUnit.SECONDS) }
+                return
+            }
         } catch (e: Throwable) {
             messages.add(e.simplifiedStringStackTrace())
         }

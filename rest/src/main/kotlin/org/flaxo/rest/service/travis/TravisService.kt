@@ -11,14 +11,28 @@ import java.io.Reader
  */
 interface TravisService {
 
+    /**
+     * Retrieves travis access token.
+     *
+     * May cause travis account *sync*.
+     */
     fun retrieveTravisToken(githubUsername: String,
                             githubToken: String
     ): String
 
+    /**
+     * Returns travis client authorized with the given [travisToken].
+     */
     fun travis(travisToken: String): Travis
 
+    /**
+     * Parses travis build webhook payload.
+     */
     fun parsePayload(reader: Reader): TravisBuild?
 
+    /**
+     * Activates [course] repository for [user].
+     */
     fun activateTravis(user: User,
                        course: Course,
                        githubToken: String,

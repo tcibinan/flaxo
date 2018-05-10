@@ -54,7 +54,12 @@ open class TravisSimpleService(private val client: TravisClient,
 
         val travisToken = user.credentials.travisToken
                 ?: retrieveTravisToken(githubUserId, githubToken)
-                        .also { dataService.addToken(user.nickname, IntegratedService.TRAVIS, it) }
+                        .also {
+                            dataService.addToken(user.nickname, IntegratedService.TRAVIS, it)
+                            // sleep is necessary because after travis token retrieving
+                            // travis synchronisation is scheduled on travis-ci.org.
+                            Thread.sleep(10 of TimeUnit.SECONDS)
+                        }
 
         val travis = travis(travisToken)
 
@@ -62,20 +67,14 @@ open class TravisSimpleService(private val client: TravisClient,
 
         val travisUser: TravisUser = retrieveTravisUser(travis, user)
 
-        travis.getUser()
-                .getOrElseThrow { errorBody ->
-                    TravisException("Travis user ${travisUser.id} retrieving went bad due to: ${errorBody.string()}")
-                }
-                .also { Thread.sleep(10 of TimeUnit.SECONDS) }
-                .takeIf { it.isSyncing }
-                ?.also {
-                    logger.info("Waiting for existing travis synchronisation to end")
+        if (travisUser.isSyncing) {
+            logger.info("Waiting for existing travis synchronisation to end")
 
-                    repeatUntil("Travis synchronisation finishes") {
-                        retrieveTravisUser(travis, user)
-                                .let { !it.isSyncing }
-                    }
-                }
+            repeatUntil("Travis synchronisation finishes") {
+                retrieveTravisUser(travis, user)
+                        .let { !it.isSyncing }
+            }
+        }
 
         logger.info("Triggering ${user.nickname} user new travis synchronisation")
 
@@ -88,7 +87,9 @@ open class TravisSimpleService(private val client: TravisClient,
         logger.info("Ensuring that ${user.nickname} user travis synchronisation has finished")
 
         repeatUntil("Travis synchronisation finishes",
-                initDelay = 10) {
+                initDelay = 10,
+                afterDelay = 3
+        ) {
             retrieveTravisUser(travis, user)
                     .let { !it.isSyncing }
         }
@@ -102,7 +103,9 @@ open class TravisSimpleService(private val client: TravisClient,
                 }
     }
 
-    private fun retrieveTravisUser(travis: Travis, user: User): TravisUser =
+    private fun retrieveTravisUser(travis: Travis,
+                                   user: User
+    ): TravisUser =
             travis.getUser()
                     .getOrElseThrow { errorBody ->
                         TravisException("Travis user retrieving failed for ${user.nickname}" +
