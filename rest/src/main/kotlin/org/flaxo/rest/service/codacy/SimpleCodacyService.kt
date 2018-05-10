@@ -5,6 +5,7 @@ import org.flaxo.codacy.Codacy
 import org.flaxo.codacy.CodacyClient
 import org.flaxo.codacy.CodacyException
 import org.flaxo.codacy.SimpleCodacy
+import org.flaxo.core.repeatUntil
 import org.flaxo.model.data.Course
 import org.flaxo.model.data.User
 import org.springframework.transaction.annotation.Propagation
@@ -35,16 +36,16 @@ open class SimpleCodacyService(private val client: CodacyClient
 
                     logger.info("Creating codacy project ${course.name} for ${user.nickname} user")
 
-                    val errorBody = codacy.createProject(
-                            course.name,
-                            "git://github.com/$githubUserId/${course.name}.git"
-                    )
+                    repeatUntil("Codacy project created",
+                            attemptsLimit = 5) {
+                        val errorBody = codacy.createProject(
+                                course.name,
+                                "git://github.com/$githubUserId/${course.name}.git"
+                        )
 
-                    if (errorBody == null) {
-                        logger.info("Codacy project ${course.name} for ${user.nickname} user was created")
-                    } else {
-                        throw CodacyException("Codacy project ${course.name} for ${user.nickname} user was " +
-                                "not created due to: ${errorBody.string()}")
+                        if (errorBody != null)
+                            throw CodacyException("Codacy project was not created due to: ${errorBody.string()}")
+                        else true
                     }
                 }
                 ?: throw CodacyException("Codacy token is not set for ${user.nickname} user so codacy " +

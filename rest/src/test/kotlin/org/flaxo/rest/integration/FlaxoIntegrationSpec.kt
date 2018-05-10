@@ -183,6 +183,17 @@ object FlaxoIntegrationSpec : Spek({
             }
         }
 
+        on("adding user travis data") {
+            dataService.addToken(username, IntegratedService.TRAVIS, travisToken)
+
+            val user = dataService.getUser(username)
+                    ?: throw ModelException("User not found")
+
+            it("should add user travis token") {
+                user.credentials.travisToken shouldEqual travisToken
+            }
+        }
+
         on("creating course") {
             mockMvc.perform(post("/rest/createCourse")
                     .principal(principal())
