@@ -15,8 +15,8 @@ class LocalEnvironmentFile(location: String) : EnvironmentFile {
 
     override val name = location
 
-    override fun content() =
-            path.toFile().useLines { it.joinToString("\n") }
+    override fun content(): String =
+            file().useLines { it.joinToString("\n") }
 
     override fun with(path: String): EnvironmentFile =
             LocalEnvironmentFile(path)

@@ -25,6 +25,8 @@ interface Branch {
     /**
      * Commit and push the given file by given path in repository.
      *
+     * It may be necessary to have delays between calling of such a method.
+     *
      * @return Performed commit.
      */
     fun commit(file: EnvironmentFile,
@@ -34,6 +36,8 @@ interface Branch {
 
     /**
      * Commit and push an existing file by given path in repository.
+     *
+     * It may be necessary to have delays between calling of such a method.
      *
      * @return Performed commit.
      */

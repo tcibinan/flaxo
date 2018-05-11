@@ -44,7 +44,7 @@ object FlaxoIntegrationSpec : Spek({
     val username = "test"
     val password = "test"
     val courseName = "integration-test-course-" + Random().nextInt().let { Math.abs(it) }
-    val tasksFiles = mapOf(
+    val teacherFiles = mapOf(
             "task-1" to mapOf(
                     "src/main/java/org/flaxo/examples/Range.java"
                             to LocalEnvironmentFile("src/test/resources/tasks/1/Range.java"),
@@ -91,17 +91,18 @@ object FlaxoIntegrationSpec : Spek({
     val travisToken = context.environment["TRAVIS_USER1_TOKEN"]
     val firstStudentToken = context.environment["GITHUB_USER2_TOKEN"]
     val secondStudentToken = context.environment["GITHUB_USER3_TOKEN"]
-    val solutionsFiles = mapOf(
-            firstStudentToken to mapOf(
-                    "task-1" to mapOf(
-                            "src/main/java/org/flaxo/examples/Range.java"
-                                    to LocalEnvironmentFile("src/test/resources/solutions1/1/Range.java")
-                    ),
-                    "task-2" to mapOf(
-                            "src/main/java/org/flaxo/examples/Traversable.java"
-                                    to LocalEnvironmentFile("src/test/resources/solutions1/2/Traversable.java")
-                    )
+    val firstStudentFiles = mapOf(
+            "task-1" to mapOf(
+                    "src/main/java/org/flaxo/examples/Range.java"
+                            to LocalEnvironmentFile("src/test/resources/solutions1/1/Range.java")
+            ),
+            "task-2" to mapOf(
+                    "src/main/java/org/flaxo/examples/Traversable.java"
+                            to LocalEnvironmentFile("src/test/resources/solutions1/2/Traversable.java")
             )
+    )
+    val gitTokenToFiles = mapOf(
+            firstStudentToken to firstStudentFiles
     )
     val solutionsCommits = mutableListOf<Commit>()
     val git: (String) -> Git = { context.getBean<GitService>().with(it) }
@@ -123,7 +124,7 @@ object FlaxoIntegrationSpec : Spek({
                         dataService.deleteUser(user.nickname)
                     }
 
-            solutionsFiles.keys
+            gitTokenToFiles.keys
                     .mapNotNull { token ->
                         try {
                             git(token).deleteRepository(courseName)
@@ -215,9 +216,10 @@ object FlaxoIntegrationSpec : Spek({
                     .getRepository(courseName)
                     .branches()
                     .forEach { branch ->
-                        tasksFiles[branch.name]
+                        teacherFiles[branch.name]
                                 ?.forEach { filePath, file ->
                                     branch.commit(file, filePath)
+                                    Thread.sleep(5 of TimeUnit.SECONDS)
                                 }
                     }
 
@@ -226,9 +228,10 @@ object FlaxoIntegrationSpec : Spek({
                         .getRepository(courseName)
                         .branches()
                         .forEach { branch ->
-                            tasksFiles[branch.name]
-                                    ?.keys
-                                    ?.also { fileNames ->
+                            teacherFiles[branch.name]
+                                    .orEmpty()
+                                    .keys
+                                    .also { fileNames ->
                                         branch.files()
                                                 .map { it.name } shouldContainAll fileNames.toList()
                                     }
@@ -288,16 +291,23 @@ object FlaxoIntegrationSpec : Spek({
         }
 
         on("pushing solutions") {
-            solutionsFiles.forEach { token, solutions ->
+            gitTokenToFiles.forEach { token, solutions ->
                 git(token)
                         .forkRepository(githubId, courseName)
+                        .also {
+                            // It may be needed to have a delay between
+                            // forking a repository and pushing files into it.
+                            Thread.sleep(10 of TimeUnit.SECONDS)
+                        }
                         .branches()
                         .mapNotNull { branch ->
                             solutions[branch.name]
-                                    ?.map { (filePath, file) ->
+                                    .orEmpty()
+                                    .map { (filePath, file) ->
                                         branch.update(file, filePath)
+                                                .also { Thread.sleep(5 of TimeUnit.SECONDS) }
                                     }
-                                    ?.lastOrNull()
+                                    .lastOrNull()
                         }
                         .also { solutionsCommits.addAll(it) }
             }
@@ -305,12 +315,12 @@ object FlaxoIntegrationSpec : Spek({
             it("should fork course repository for each student") {
                 git(githubToken)
                         .getRepository(courseName)
-                        .forks shouldEqual solutionsFiles.size
+                        .forks shouldEqual gitTokenToFiles.size
             }
         }
 
         on("creating solutions pull requests") {
-            solutionsFiles
+            gitTokenToFiles
                     .mapValues { (_, solutions) -> solutions.keys }
                     .forEach { token, solutionsBranches ->
                         git(token).apply {
@@ -335,7 +345,7 @@ object FlaxoIntegrationSpec : Spek({
                     }
 
             val expectedBranchesBuilds =
-                    solutionsFiles
+                    gitTokenToFiles
                             .values
                             .flatMap { it.keys }
                             .groupingBy { it }
