@@ -12,6 +12,9 @@ import org.springframework.context.annotation.PropertySource
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 
+/**
+ * Flaxo spring boot application.
+ */
 @SpringBootApplication(scanBasePackages = ["org.flaxo"])
 @EnableJpaRepositories("org.flaxo.model.dao")
 @EnableGlobalMethodSecurity(prePostEnabled = true)

@@ -8,15 +8,26 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
+/**
+ * Flaxo test controller.
+ */
 @RestController
 @RequestMapping("/rest")
 class FlaxoController @Autowired constructor(
         val responseService: ResponseService
 ) {
 
+    /**
+     * Shows welcome message.
+     */
     @GetMapping("/")
     fun index() = responseService.ok("Welcome to flaxo")
 
+    /**
+     * Echoes the given message.
+     *
+     * An example of security usage.
+     */
     @GetMapping("/echo")
     @PreAuthorize("hasAuthority('USER')")
     fun echo(@RequestParam("message") message: String) =

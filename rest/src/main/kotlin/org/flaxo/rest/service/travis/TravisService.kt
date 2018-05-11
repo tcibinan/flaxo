@@ -1,7 +1,6 @@
 package org.flaxo.rest.service.travis
 
-import org.flaxo.model.data.Course
-import org.flaxo.model.data.User
+import org.flaxo.rest.service.ComposingIntegratedService
 import org.flaxo.travis.Travis
 import org.flaxo.travis.build.TravisBuild
 import java.io.Reader
@@ -9,7 +8,7 @@ import java.io.Reader
 /**
  * Travis service interface.
  */
-interface TravisService {
+interface TravisService : ComposingIntegratedService {
 
     /**
      * Retrieves travis access token.
@@ -26,16 +25,8 @@ interface TravisService {
     fun travis(travisToken: String): Travis
 
     /**
-     * Parses travis build webhook payload.
+     * Parses travis build webhook payload from [reader].
      */
     fun parsePayload(reader: Reader): TravisBuild?
 
-    /**
-     * Activates [course] repository for [user].
-     */
-    fun activateTravis(user: User,
-                       course: Course,
-                       githubToken: String,
-                       githubUserId: String
-    )
 }

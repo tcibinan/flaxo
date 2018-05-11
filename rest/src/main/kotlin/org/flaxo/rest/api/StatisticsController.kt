@@ -18,6 +18,9 @@ import java.security.Principal
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
+/**
+ * Course statistics controller.
+ */
 @RestController
 @RequestMapping("rest/statistics")
 class StatisticsController(private val dataService: DataService,
@@ -27,6 +30,10 @@ class StatisticsController(private val dataService: DataService,
 
     private val logger = LogManager.getLogger(ModelController::class.java)
 
+    /**
+     * Returns a downloadable [principal]'s [courseName] statistics
+     * in the given [format].
+     */
     @GetMapping("/download")
     @PreAuthorize("hasAuthority('USER')")
     @Transactional(readOnly = true)

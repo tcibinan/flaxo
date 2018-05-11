@@ -27,6 +27,11 @@ import java.util.concurrent.TimeUnit
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
+/**
+ * Github integration controller.
+ *
+ * Stores user's unique codes in an expiring map: [states].
+ */
 @RestController
 @RequestMapping("/rest/github")
 class GithubController(
@@ -43,6 +48,11 @@ class GithubController(
     )
     private val logger = LogManager.getLogger(GithubController::class.java)
 
+    /**
+     * Github OAuth entry point method.
+     *
+     * Calls by the flaxo ui and redirects browser to the github OAuth page.
+     */
     @GetMapping("/auth")
     @PreAuthorize("hasAuthority('USER')")
     fun githubAuth(principal: Principal): Any {
@@ -62,6 +72,12 @@ class GithubController(
         })
     }
 
+    /**
+     * Add github access token to a user credentials
+     * and redirects user browser to a home page.
+     *
+     * Calls github api to exchange user's code to an access token.
+     */
     @GetMapping("/auth/code")
     @Transactional
     fun githubAuthToken(@RequestParam("code") code: String,
@@ -87,15 +103,14 @@ class GithubController(
                 ?: throw GithubException("Access token was not received from github.")
 
         val nickname = synchronized(states) {
-            val key = states.filterValues { it == state }
+            states.filterValues { it == state }
                     .apply {
                         if (size > 1)
                             throw GithubException("Two users have the same random state for github auth.")
                     }
-                    .keys.first()
-
-            states.remove(key)
-            key
+                    .keys
+                    .first()
+                    .also { states.remove(it) }
         }
 
         val githubId = gitService.with(accessToken).nickname()
@@ -106,6 +121,9 @@ class GithubController(
         response.sendRedirect("/")
     }
 
+    /**
+     * Retrieves and handle github webhook.
+     */
     @PostMapping("/hook")
     @Transactional
     fun webHook(request: HttpServletRequest) {

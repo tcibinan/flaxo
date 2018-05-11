@@ -1,5 +1,6 @@
 package org.flaxo.rest.api
 
+import io.vavr.kotlin.Try
 import org.flaxo.core.language.Language
 import org.flaxo.model.CourseLifecycle
 import org.flaxo.model.DataService
@@ -261,38 +262,35 @@ class ModelController
         logger.info("Trying to compose course ${principal.name}/$courseName")
 
         val user = dataService.getUser(principal.name)
+                ?.also {
+                    it.credentials.githubToken ?: return responseService.githubTokenNotFound(it.nickname)
+                    it.githubId ?: return responseService.githubIdNotFound(it.nickname)
+                }
                 ?: return responseService.userNotFound(principal.name)
 
         val course = dataService.getCourse(courseName, user)
                 ?: return responseService.courseNotFound(principal.name, courseName)
 
-        val githubToken = user.credentials.githubToken
-                ?: return responseService.githubTokenNotFound(principal.name)
+        val composingServices = mapOf(
+                IntegratedService.CODACY to codacyService,
+                IntegratedService.TRAVIS to travisService
+        )
 
-        val githubUserId = user.githubId
-                ?: return responseService.githubIdNotFound(user.nickname)
+        val activatedServices = composingServices
+                .mapNotNull { (serviceType, service) ->
+                    Try { service.activateServiceFor(user, course) }
+                            .map { serviceType }
+                            .onFailure {
+                                logger.info("$serviceType activation went bad for ${user.nickname}/$courseName course due to: " +
+                                        it.stringStackTrace()
+                                )
+                            }
+                            .orNull
+                }
+                .toSet()
 
-        val activatedServices = mutableSetOf<IntegratedService>()
-
-        try {
-            travisService.activateTravis(user, course, githubToken, githubUserId)
-            activatedServices.add(IntegratedService.TRAVIS)
-        } catch (e: Exception) {
-            logger.info("Travis activation went bad for ${user.githubId}/$courseName course due to: " +
-                    e.stringStackTrace()
-            )
-        }
-
-        try {
-            codacyService.activateCodacy(user, course, githubUserId)
-            activatedServices.add(IntegratedService.CODACY)
-        } catch (e: Exception) {
-            logger.info("Codacy activation went bad for $githubUserId/$courseName course due to: " +
-                    e.stringStackTrace()
-            )
-        }
-
-        logger.info("Changing course ${user.nickname}/$courseName status to running")
+        logger.info("Changing course ${user.nickname}/$courseName status to running " +
+                "with activated services: $activatedServices")
 
         dataService.updateCourse(course.copy(
                 state = course.state.copy(
@@ -327,9 +325,6 @@ class ModelController
         val course = dataService.getCourse(courseName, user)
                 ?: return responseService.courseNotFound(principal.name, courseName)
 
-        val userGithubId = user.githubId
-                ?: return responseService.githubIdNotFound(user.nickname)
-
         if (course.state.lifecycle != CourseLifecycle.RUNNING)
             return responseService.bad("Course ${principal.name}/$courseName is not started yet")
 
@@ -338,8 +333,7 @@ class ModelController
                 .takeUnless { it.contains(IntegratedService.CODACY) }
                 ?.let {
                     try {
-                        codacyService
-                                .activateCodacy(user, course, userGithubId)
+                        codacyService.activateServiceFor(user, course)
 
                         return dataService
                                 .updateCourse(course.copy(
@@ -380,12 +374,6 @@ class ModelController
         val course = dataService.getCourse(courseName, user)
                 ?: return responseService.courseNotFound(principal.name, courseName)
 
-        val userGithubId = user.githubId
-                ?: return responseService.githubIdNotFound(user.nickname)
-
-        val githubToken = user.credentials.githubToken
-                ?: return responseService.githubTokenNotFound(user.nickname)
-
         if (course.state.lifecycle != CourseLifecycle.RUNNING)
             return responseService.bad("Course ${principal.name}/$courseName is not started yet")
 
@@ -394,8 +382,7 @@ class ModelController
                 .takeUnless { it.contains(IntegratedService.TRAVIS) }
                 ?.let {
                     try {
-                        travisService
-                                .activateTravis(user, course, githubToken, userGithubId)
+                        travisService.activateServiceFor(user, course)
 
                         return dataService
                                 .updateCourse(course.copy(

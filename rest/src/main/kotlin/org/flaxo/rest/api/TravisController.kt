@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping
 import java.io.Reader
 import javax.servlet.http.HttpServletRequest
 
+/**
+ * Travis integration controller.
+ */
 @Controller
 @RequestMapping("/rest/travis")
 class TravisController @Autowired constructor(private val travisService: TravisService,
@@ -25,6 +28,9 @@ class TravisController @Autowired constructor(private val travisService: TravisS
 
     private val logger = LogManager.getLogger(TravisController::class.java)
 
+    /**
+     * Retrieves and handle travis build webhook.
+     */
     @PostMapping("/hook")
     @Transactional
     fun travisWebHook(request: HttpServletRequest) {

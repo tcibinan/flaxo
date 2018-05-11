@@ -24,6 +24,9 @@ class CodacyController(private val dataService: DataService,
 
     private val logger = LogManager.getLogger(CodacyController::class.java)
 
+    /**
+     * Adds a codacy token to [principal] credentials.
+     */
     @PutMapping("/token")
     @PreAuthorize("hasAuthority('USER')")
     @Transactional

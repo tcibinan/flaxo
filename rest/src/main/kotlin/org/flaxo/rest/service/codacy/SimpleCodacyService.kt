@@ -23,33 +23,34 @@ open class SimpleCodacyService(private val client: CodacyClient
             SimpleCodacy(githubId, codacyToken, client)
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    override fun activateCodacy(user: User,
-                                course: Course,
-                                githubUserId: String
+    override fun activateServiceFor(user: User,
+                                    course: Course
     ) {
-        user.credentials
-                .codacyToken
-                ?.also { token ->
-                    logger.info("Initialising codacy client for ${user.nickname} user")
+        val githubId = user.githubId
+                ?: throw CodacyException("Codacy validations can't be activated because ${user.nickname} user" +
+                        "doesn't have github id")
 
-                    val codacy = codacy(githubUserId, token)
-
-                    logger.info("Creating codacy project ${course.name} for ${user.nickname} user")
-
-                    repeatUntil("Codacy project created",
-                            attemptsLimit = 5) {
-                        val errorBody = codacy.createProject(
-                                course.name,
-                                "git://github.com/$githubUserId/${course.name}.git"
-                        )
-
-                        if (errorBody != null)
-                            throw CodacyException("Codacy project was not created due to: ${errorBody.string()}")
-                        else true
-                    }
-                }
+        val codacyToken = user.credentials.codacyToken
                 ?: throw CodacyException("Codacy token is not set for ${user.nickname} user so codacy " +
                         "service is not activated")
+
+        logger.info("Initialising codacy client for ${user.nickname} user")
+
+        val codacy = codacy(githubId, codacyToken)
+
+        logger.info("Creating codacy project ${course.name} for ${user.nickname} user")
+
+        repeatUntil("Codacy project created",
+                attemptsLimit = 5) {
+            val errorBody = codacy.createProject(
+                    course.name,
+                    "git://github.com/$githubId/${course.name}.git"
+            )
+
+            if (errorBody != null)
+                throw CodacyException("Codacy project was not created due to: ${errorBody.string()}")
+            else true
+        }
     }
 
 }

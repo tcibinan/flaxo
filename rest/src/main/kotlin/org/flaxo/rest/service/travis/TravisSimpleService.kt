@@ -45,16 +45,23 @@ open class TravisSimpleService(private val client: TravisClient,
             parseTravisWebHook(reader)
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    override fun activateTravis(user: User,
-                                course: Course,
-                                githubToken: String,
-                                githubUserId: String
+    override fun activateServiceFor(user: User,
+                                    course: Course
     ) {
+        val githubToken = user.credentials.githubToken
+                ?: throw TravisException("Travis validation can't be activated because ${user.nickname} user" +
+                        "doesn't have github token")
+
+        val githubId = user.githubId
+                ?: throw TravisException("Travis validation can't be activated because ${user.nickname} user" +
+                        "doesn't have github id")
+
         logger.info("Initialising travis client for ${user.nickname} user")
 
         val travisToken = user.credentials.travisToken
-                ?: retrieveTravisToken(githubUserId, githubToken)
+                ?: retrieveTravisToken(githubId, githubToken)
                         .also {
+                            logger.info("Adding newely retrieved travis token to ${user.nickname} user")
                             dataService.addToken(user.nickname, IntegratedService.TRAVIS, it)
                             // sleep is necessary because after travis token retrieving
                             // travis synchronisation is scheduled on travis-ci.org.
@@ -70,7 +77,7 @@ open class TravisSimpleService(private val client: TravisClient,
         logger.info("Triggering ${user.nickname} user travis synchronisation")
 
         // Delay is needed to prevent travis synchronizations overlap
-        performAfter(15 of TimeUnit.SECONDS) {
+        performAfter(60 of TimeUnit.SECONDS) {
             travis.sync(travisUser.id)
                     ?.also { errorBody ->
                         throw TravisException("Travis user ${travisUser.id} " +
@@ -88,7 +95,7 @@ open class TravisSimpleService(private val client: TravisClient,
         logger.info("Ensuring that ${user.nickname} user has ${course.name} travis repository")
 
         repeatUntil("Travis repository appears after synchronization") {
-            travis.getRepository(githubUserId, course.name)
+            travis.getRepository(githubId, course.name)
                     .getOrElseThrow { errorBody ->
                         TravisException("Travis user retrieving failed for ${user.nickname}" +
                                 " due to: ${errorBody.string()}")
@@ -98,9 +105,9 @@ open class TravisSimpleService(private val client: TravisClient,
 
         logger.info("Activating travis repository of the course ${user.nickname}/${course.name}")
 
-        travis.activate(githubUserId, course.name)
+        travis.activate(githubId, course.name)
                 .getOrElseThrow { errorBody ->
-                    TravisException("Travis activation of $githubUserId/${course.name} " +
+                    TravisException("Travis activation of $githubId/${course.name} " +
                             "repository went bad due to: ${errorBody.string()}")
                 }
     }
