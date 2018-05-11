@@ -74,8 +74,10 @@ open class BasicDataService(private val userRepository: UserRepository,
                               numberOfTasks: Int,
                               owner: User
     ): Course {
-        if (getCourse(courseName, owner) != null)
-            throw EntityAlreadyExistsException("Course $owner/$courseName")
+        getCourse(courseName, owner)
+                ?.also {
+                    throw EntityAlreadyExistsException("Course $owner/$courseName")
+                }
 
         val course = courseRepository
                 .save(Course(
@@ -179,8 +181,25 @@ open class BasicDataService(private val userRepository: UserRepository,
                     }
                     ?: userNotFound(userNickname)
 
+    private fun Credentials.withServiceToken(service: IntegratedService,
+                                             accessToken: String
+    ): Credentials = run {
+        when (service) {
+            IntegratedService.GITHUB -> copy(githubToken = accessToken)
+            IntegratedService.TRAVIS -> copy(travisToken = accessToken)
+            IntegratedService.CODACY -> copy(codacyToken = accessToken)
+        }
+    }
+
     @Transactional
-    override fun addGithubId(userNickname: String, githubId: String): User {
+    override fun addGithubId(userNickname: String,
+                             githubId: String
+    ): User {
+        userRepository.findByGithubId(githubId)
+                ?.also {
+                    throw ModelException("User with $githubId github id already exists")
+                }
+
         val user: User = getUser(userNickname)
                 ?: userNotFound(userNickname)
 
@@ -248,14 +267,4 @@ open class BasicDataService(private val userRepository: UserRepository,
                                 plagiarismReports = task.plagiarismReports.plus(it)
                         ))
                     }
-}
-
-private fun Credentials.withServiceToken(service: IntegratedService,
-                                         accessToken: String
-): Credentials = run {
-    when (service) {
-        IntegratedService.GITHUB -> copy(githubToken = accessToken)
-        IntegratedService.TRAVIS -> copy(travisToken = accessToken)
-        IntegratedService.CODACY -> copy(codacyToken = accessToken)
-    }
 }

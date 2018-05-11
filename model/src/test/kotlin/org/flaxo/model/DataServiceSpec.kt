@@ -21,8 +21,12 @@ import org.springframework.transaction.TransactionStatus
 
 class DataServiceSpec : SubjectSpek<DataService>({
     val nickname = "nickname"
-    val anotherNickname = "anotherNickname"
     val password = "password"
+    val githubId = "githubId"
+    val anotherNickname = "anotherNickname"
+    val githubToken = "githubToken"
+    val travisToken = "travisToken"
+    val codacyToken = "codacyToken"
     val courseName = "course"
     val language = "language"
     val testLanguage = "testLanguage"
@@ -55,8 +59,9 @@ class DataServiceSpec : SubjectSpek<DataService>({
             }
         }
 
-        on("user addition") {
+        on("users addition") {
             subject.addUser(nickname, password)
+            subject.addUser(anotherNickname, password)
 
             it("should also add credentials for user") {
                 subject.getUser(nickname)
@@ -65,8 +70,8 @@ class DataServiceSpec : SubjectSpek<DataService>({
             }
         }
 
-        on("addition user that already exists") {
-            it("should throw an exception") {
+        on("addition user with the same nickname") {
+            it("should throw an EntityAlreadyExistsException") {
                 {
                     subject.addUser(nickname, password)
                 } shouldThrow EntityAlreadyExistsException::class
@@ -80,10 +85,6 @@ class DataServiceSpec : SubjectSpek<DataService>({
         }
 
         on("addition tokens to a user") {
-            val githubToken = "githubToken"
-            val travisToken = "travisToken"
-            val codacyToken = "codacyToken"
-
             subject.addToken(nickname, IntegratedService.CODACY, codacyToken)
             subject.addToken(nickname, IntegratedService.TRAVIS, travisToken)
             subject.addToken(nickname, IntegratedService.GITHUB, githubToken)
@@ -95,6 +96,25 @@ class DataServiceSpec : SubjectSpek<DataService>({
                 user.credentials.githubToken shouldEqual githubToken
                 user.credentials.travisToken shouldEqual travisToken
                 user.credentials.codacyToken shouldEqual codacyToken
+            }
+        }
+
+        on("setting user github id") {
+            subject.addGithubId(nickname, githubId)
+
+            val user = subject.getUser(nickname)
+                    ?: throw EntityNotFound("User $nickname")
+
+            it("should set user's github id") {
+                user.githubId shouldEqual githubId
+            }
+        }
+
+        on("setting user github id that is already used by another one") {
+            it("should throw an exception") {
+                {
+                    subject.addGithubId(anotherNickname, githubId)
+                } shouldThrow Throwable::class
             }
         }
 
@@ -165,7 +185,8 @@ class DataServiceSpec : SubjectSpek<DataService>({
         }
 
         on("addition course with name that already exists for another the user") {
-            val anotherUser = subject.addUser(anotherNickname, password)
+            val owner = subject.getUser(anotherNickname)
+                    ?: throw EntityNotFound("User $anotherNickname")
 
             it("should create a course") {
                 subject.createCourse(
@@ -175,7 +196,7 @@ class DataServiceSpec : SubjectSpek<DataService>({
                         testingFramework = testingFramework,
                         tasksPrefix = tasksPrefix,
                         numberOfTasks = numberOfTasks,
-                        owner = anotherUser
+                        owner = owner
                 )
             }
         }

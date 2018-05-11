@@ -15,7 +15,12 @@ import javax.persistence.FetchType
  * User data object.
  */
 @Entity(name = "user")
-@Table(name = "user", uniqueConstraints = [UniqueConstraint(columnNames = ["nickname", "githubId"])])
+@Table(name = "user",
+        uniqueConstraints = [
+            UniqueConstraint(columnNames = ["nickname"]),
+            UniqueConstraint(columnNames = ["githubId"])
+        ]
+)
 data class User(
 
         @Id
