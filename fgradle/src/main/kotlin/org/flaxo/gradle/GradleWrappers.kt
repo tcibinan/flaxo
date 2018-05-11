@@ -20,8 +20,8 @@ class GradleWrappers private constructor(files: Set<EnvironmentFile>)
                                 File("../gradlew").useLines { it.joinToString("\n") }),
                         SimpleEnvironmentFile("gradlew.bat",
                                 File("../gradlew.bat").useLines { it.joinToString("\n") }),
-                        SimpleEnvironmentFile("gradle/wrapper/gradle-wrapper.jar",
-                                File("../gradle/wrapper/gradle-wrapper.jar").useLines { it.joinToString("\n") }),
+                        BinaryEnvironmentFile("gradle/wrapper/gradle-wrapper.jar",
+                                File("../gradle/wrapper/gradle-wrapper.jar").readBytes()),
                         SimpleEnvironmentFile("gradle/wrapper/gradle-wrapper.properties",
                                 File("../gradle/wrapper/gradle-wrapper.properties").useLines { it.joinToString("\n") })
                 ))

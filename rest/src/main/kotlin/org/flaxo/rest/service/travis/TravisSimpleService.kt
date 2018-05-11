@@ -67,34 +67,36 @@ open class TravisSimpleService(private val client: TravisClient,
 
         val travisUser: TravisUser = retrieveTravisUser(travis, user)
 
-        if (travisUser.isSyncing) {
-            logger.info("Waiting for existing travis synchronisation to end")
+        logger.info("Triggering ${user.nickname} user travis synchronisation")
 
-            repeatUntil("Travis synchronisation finishes") {
-                retrieveTravisUser(travis, user)
-                        .let { !it.isSyncing }
-            }
+        // Delay is needed to prevent travis synchronizations overlap
+        performAfter(15 of TimeUnit.SECONDS) {
+            travis.sync(travisUser.id)
+                    ?.also { errorBody ->
+                        throw TravisException("Travis user ${travisUser.id} " +
+                                "sync hasn't started due to: ${errorBody.string()}")
+                    }
         }
-
-        logger.info("Triggering ${user.nickname} user new travis synchronisation")
-
-        travis.sync(travisUser.id)
-                ?.also { errorBody ->
-                    throw TravisException("Travis user ${travisUser.id} " +
-                            "sync hasn't started due to: ${errorBody.string()}")
-                }
 
         logger.info("Ensuring that ${user.nickname} user travis synchronisation has finished")
 
-        repeatUntil("Travis synchronisation finishes",
-                initDelay = 10,
-                afterDelay = 3
-        ) {
+        repeatUntil("Travis synchronisation finishes") {
             retrieveTravisUser(travis, user)
                     .let { !it.isSyncing }
         }
 
-        logger.info("Activating git repository of the course ${user.nickname}/${course.name} for travis CI")
+        logger.info("Ensuring that ${user.nickname} user has ${course.name} travis repository")
+
+        repeatUntil("Travis repository appears after synchronization") {
+            travis.getRepository(githubUserId, course.name)
+                    .getOrElseThrow { errorBody ->
+                        TravisException("Travis user retrieving failed for ${user.nickname}" +
+                                " due to: ${errorBody.string()}")
+                    }
+                    .let { true }
+        }
+
+        logger.info("Activating travis repository of the course ${user.nickname}/${course.name}")
 
         travis.activate(githubUserId, course.name)
                 .getOrElseThrow { errorBody ->
@@ -112,4 +114,9 @@ open class TravisSimpleService(private val client: TravisClient,
                                 " due to: ${errorBody.string()}")
                     }
 
+}
+
+private fun performAfter(millis: Long, block: () -> Unit) {
+    Thread.sleep(millis)
+    block()
 }

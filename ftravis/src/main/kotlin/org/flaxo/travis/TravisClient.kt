@@ -24,7 +24,26 @@ interface TravisClient {
     ): Call<TravisUser>
 
     /**
-     * Activates the [repositorySlug].
+     * Retrieves repository by [repositorySlug].
+     *
+     * Repository slug is usually one of the following:
+     * - username/repository
+     * - username%2Frepository
+     *
+     * Also requires travis authorization token.
+     */
+    @Headers("Travis-API-Version: 3")
+    @GET("/repo/{repository_slug}")
+    fun getRepository(@Header("Authorization") authorization: String,
+                      @Path("repository_slug") repositorySlug: String
+    ): Call<TravisRepository>
+
+    /**
+     * Activates repository by [repositorySlug].
+     *
+     * Repository slug is usually one of the following:
+     * - username/repository
+     * - username%2Frepository
      *
      * Also requires travis authorization token.
      */
@@ -35,7 +54,11 @@ interface TravisClient {
     ): Call<TravisRepository>
 
     /**
-     * Deactivates the [repositorySlug].
+     * Deactivates repository by [repositorySlug].
+     *
+     * Repository slug is usually one of the following:
+     * - username/repository
+     * - username%2Frepository
      *
      * Also requires travis authorization token.
      */
@@ -47,6 +70,10 @@ interface TravisClient {
 
     /**
      * Triggers sync for travis user by id [travisUserId].
+     *
+     * Repository slug is usually one of the following:
+     * - username/repository
+     * - username%2Frepository
      *
      * Also requires travis authorization token.
      */

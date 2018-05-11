@@ -18,7 +18,17 @@ interface Travis {
     fun getUser(): Either<ResponseBody, TravisUser>
 
     /**
-     * Activates builds on the [repositoryName].
+     * Retrieves travis repository by [repositoryName].
+     *
+     * @param userName Git owner nickname.
+     * @param repositoryName Git repository name to be retrieved.
+     * @return Either travis repository or response body
+     * of the request to travis api if something went bad.
+     */
+    fun getRepository(userName: String, repositoryName: String): Either<ResponseBody, TravisRepository>
+
+    /**
+     * Activates builds on the repository by [repositoryName].
      *
      * @param userName Git owner nickname.
      * @param repositoryName Git repository name to be activated.
@@ -28,7 +38,7 @@ interface Travis {
     fun activate(userName: String, repositoryName: String): Either<ResponseBody, TravisRepository>
 
     /**
-     * Deactivates builds on the [repositoryName].
+     * Deactivates builds on the repository by [repositoryName].
      *
      * @param userName Git owner nickname.
      * @param repositoryName Git repository name to be deactivated.

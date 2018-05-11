@@ -2,6 +2,7 @@ package org.flaxo.travis
 
 import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.mock
+import okhttp3.ResponseBody
 import org.amshove.kluent.shouldBeFalse
 import org.amshove.kluent.shouldBeTrue
 import org.jetbrains.spek.api.dsl.describe
@@ -15,20 +16,51 @@ object TravisSpec: SubjectSpek<Travis>({
 
     val githubUsername = "githubUsername"
     val travisToken = "travisToken"
+    val travisAuthorization = "token $travisToken"
+    val nonExistingRepositoryName = "nonExistingRepositoryName"
+    val nonExistingRepositorySlug = "$githubUsername/$nonExistingRepositoryName"
     val repositoryName = "repositoryName"
     val repositorySlug = "$githubUsername/$repositoryName"
-    val firstResponse = Response.success(TravisRepository().also { it.active = false })
-    val secondResponse = Response.success(TravisRepository().also { it.active = true })
+    val repositoryNonFoundResponse = Response.error<TravisRepository>(404,
+            ResponseBody.create(null, "repository not found"))
+    val repositoryResponse = Response.success(TravisRepository())
+    val deactivatedRepositoryResponse = Response.success(TravisRepository().also { it.active = false })
+    val activatedRepositoryResponse = Response.success(TravisRepository().also { it.active = true })
     val call = mock<Call<TravisRepository>> {
-        on { execute() }.thenReturn(firstResponse, secondResponse)
+        on { execute() }.thenReturn(
+                repositoryNonFoundResponse,
+                repositoryResponse,
+                deactivatedRepositoryResponse,
+                activatedRepositoryResponse
+        )
     }
     val travisClient = mock<TravisClient> {
-        on { activate(eq("token $travisToken"), eq(repositorySlug)) }.thenReturn(call)
-        on { deactivate(eq("token $travisToken"), eq(repositorySlug)) }.thenReturn(call)
+        on { getRepository(eq(travisAuthorization), eq(nonExistingRepositorySlug)) }.thenReturn(call)
+        on { getRepository(eq(travisAuthorization), eq(repositorySlug)) }.thenReturn(call)
+        on { activate(eq(travisAuthorization), eq(repositorySlug)) }.thenReturn(call)
+        on { deactivate(eq(travisAuthorization), eq(repositorySlug)) }.thenReturn(call)
     }
     subject { SimpleTravis(travisClient, travisToken) }
 
     describe("travis wrapper") {
+
+        on("getting non-existing travis repository") {
+            val eitherRepository = subject.getRepository(githubUsername, nonExistingRepositoryName)
+
+            it("should throw return errorBody") {
+                eitherRepository.isLeft.shouldBeTrue()
+            }
+        }
+
+        on("getting travis repository") {
+            val eitherRepository = subject.getRepository(githubUsername, repositoryName)
+
+            it("should return travis repository instance") {
+                eitherRepository.getOrElseThrow { errorBody ->
+                    throw TravisException(errorBody.string())
+                }
+            }
+        }
 
         on("deactivating a repository") {
             val repository = subject.deactivate(githubUsername, repositoryName)

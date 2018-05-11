@@ -15,11 +15,21 @@ class SimpleTravis(private val travisClient: TravisClient,
             travisClient.getUser(authorization())
                     .call()
 
-    override fun activate(userName: String, repositoryName: String): Either<ResponseBody, TravisRepository> =
+    override fun getRepository(userName: String,
+                               repositoryName: String
+    ): Either<ResponseBody, TravisRepository> =
+            travisClient.getRepository(authorization(), repositorySlug(userName, repositoryName))
+                    .call()
+
+    override fun activate(userName: String,
+                          repositoryName: String
+    ): Either<ResponseBody, TravisRepository> =
             travisClient.activate(authorization(), repositorySlug(userName, repositoryName))
                     .call()
 
-    override fun deactivate(userName: String, repositoryName: String): Either<ResponseBody, TravisRepository> =
+    override fun deactivate(userName: String,
+                            repositoryName: String
+    ): Either<ResponseBody, TravisRepository> =
             travisClient.deactivate(authorization(), repositorySlug(userName, repositoryName))
                     .call()
 
@@ -29,7 +39,9 @@ class SimpleTravis(private val travisClient: TravisClient,
 
     private fun authorization() = "token $travisToken"
 
-    private fun repositorySlug(userName: String, repositoryName: String) =
+    private fun repositorySlug(userName: String,
+                               repositoryName: String
+    ) =
             "$userName/$repositoryName"
 
     private fun <T> Call<T>.call(): Either<ResponseBody, T> =
