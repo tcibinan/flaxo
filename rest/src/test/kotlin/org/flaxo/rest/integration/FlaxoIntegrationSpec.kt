@@ -14,6 +14,7 @@ import org.flaxo.model.IntegratedService
 import org.flaxo.model.ModelException
 import org.flaxo.rest.Application
 import org.flaxo.rest.api.CodacyController
+import org.flaxo.rest.api.CourseController
 import org.flaxo.rest.api.UserController
 import org.flaxo.rest.service.codacy.CodacyService
 import org.flaxo.rest.service.data.UserDetailsImpl
@@ -81,6 +82,7 @@ object FlaxoIntegrationSpec : Spek({
     val mockMvc = MockMvcBuilders
             .standaloneSetup(
                     context.getBean<UserController>(),
+                    context.getBean<CourseController>(),
                     context.getBean<CodacyController>()
             )
             .build()

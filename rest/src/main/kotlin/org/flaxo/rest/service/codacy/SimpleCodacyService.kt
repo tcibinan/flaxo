@@ -23,8 +23,8 @@ open class SimpleCodacyService(private val client: CodacyClient
             SimpleCodacy(githubId, codacyToken, client)
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    override fun activateServiceFor(user: User,
-                                    course: Course
+    override fun activateFor(user: User,
+                             course: Course
     ) {
         val githubId = user.githubId
                 ?: throw CodacyException("Codacy validations can't be activated because ${user.nickname} user" +

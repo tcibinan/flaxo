@@ -312,7 +312,7 @@ class CourseController(private val dataService: DataService,
 
         val activatedServices = composingServices
                 .mapNotNull { (serviceType, service) ->
-                    Try { service.activateServiceFor(user, course) }
+                    Try { service.activateFor(user, course) }
                             .map { serviceType }
                             .onFailure {
                                 logger.info("$serviceType activation went bad for ${user.nickname}/$courseName course due to: " +
@@ -367,7 +367,7 @@ class CourseController(private val dataService: DataService,
                 .takeUnless { it.contains(IntegratedService.CODACY) }
                 ?.let {
                     try {
-                        codacyService.activateServiceFor(user, course)
+                        codacyService.activateFor(user, course)
 
                         return dataService
                                 .updateCourse(course.copy(
@@ -416,7 +416,7 @@ class CourseController(private val dataService: DataService,
                 .takeUnless { it.contains(IntegratedService.TRAVIS) }
                 ?.let {
                     try {
-                        travisService.activateServiceFor(user, course)
+                        travisService.activateFor(user, course)
 
                         return dataService
                                 .updateCourse(course.copy(

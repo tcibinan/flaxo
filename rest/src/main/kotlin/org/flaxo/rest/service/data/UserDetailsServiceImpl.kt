@@ -5,6 +5,9 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 
+/**
+ * Security user details service.
+ */
 class UserDetailsServiceImpl(
         private val dataService: DataService
 ) : UserDetailsService {

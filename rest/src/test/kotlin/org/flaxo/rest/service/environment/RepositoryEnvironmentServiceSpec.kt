@@ -2,8 +2,8 @@ package org.flaxo.rest.service.environment
 
 import org.amshove.kluent.shouldThrow
 import org.flaxo.rest.CoreConfiguration
-import org.flaxo.rest.service.IncompatibleLanguage
-import org.flaxo.rest.service.IncompatibleTestingFramework
+import org.flaxo.rest.service.IncompatibleLanguageException
+import org.flaxo.rest.service.IncompatibleTestingFrameworkException
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
@@ -26,7 +26,7 @@ object RepositoryEnvironmentServiceSpec: SubjectSpek<RepositoryEnvironmentServic
             it("should throw an IncompatibleLanguage exception") {
                 {
                     subject.produceEnvironment(secondLanguage, firstLanguage, firstTestingFramework)
-                } shouldThrow IncompatibleLanguage::class
+                } shouldThrow IncompatibleLanguageException::class
             }
         }
 
@@ -34,7 +34,7 @@ object RepositoryEnvironmentServiceSpec: SubjectSpek<RepositoryEnvironmentServic
             it("should throw an IncompatibleTestingFramework exception") {
                 {
                     subject.produceEnvironment(firstLanguage, firstLanguage, secondTestingFramework)
-                } shouldThrow IncompatibleTestingFramework::class
+                } shouldThrow IncompatibleTestingFrameworkException::class
             }
         }
 

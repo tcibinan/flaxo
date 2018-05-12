@@ -15,6 +15,9 @@ import org.jsoup.Jsoup
 import java.net.URL
 import java.nio.file.Paths
 
+/**
+ * Moss service basic implementation.
+ */
 class SimpleMossService(private val userId: String,
                         private val gitService: GitService,
                         private val supportedLanguages: Map<String, Language>

@@ -24,13 +24,13 @@ class NoDefaultBuildTool(language: Language)
 /**
  * Incompatible testing framework for testing language exception.
  */
-class IncompatibleTestingFramework(testingFramework: TestingFramework, testingLanguage: Language)
+class IncompatibleTestingFrameworkException(testingFramework: TestingFramework, testingLanguage: Language)
     : Throwable("$testingLanguage doesn't support $testingFramework as testing framework")
 
 /**
  * Incompatible testing language for core language exception.
  */
-class IncompatibleLanguage(language: Language, testingLanguage: Language)
+class IncompatibleLanguageException(language: Language, testingLanguage: Language)
     : Throwable("$language doesn't support $testingLanguage as language for tests")
 
 /**

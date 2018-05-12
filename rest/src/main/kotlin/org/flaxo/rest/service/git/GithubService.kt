@@ -7,6 +7,9 @@ import org.flaxo.github.parseGithubEvent
 import java.io.Reader
 import org.kohsuke.github.GitHub as KohsukeGithub
 
+/**
+ * Github integration service.
+ */
 class GithubService(
         private val webHookUrl: String
 ) : GitService {

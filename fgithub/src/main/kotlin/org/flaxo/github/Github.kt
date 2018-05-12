@@ -29,7 +29,7 @@ class Github(private val githubClientProducer: () -> KohsukeGithub,
                 .also {
                     it.createContent(
                             "# $repositoryName",
-                            "Initial commit from flaxo with love",
+                            "Initial commit from flaxo with love ♥",
                             "README.md"
                     )
                 }
@@ -46,7 +46,7 @@ class Github(private val githubClientProducer: () -> KohsukeGithub,
     ): Repository =
             client.getUser(ownerNickname)
                     .getRepository(repositoryName)
-                    .fork()
+                    ?.fork()
                     ?.let { GithubRepository(repositoryName, nickname(), this) }
                     ?: throw GithubException("Repository $ownerNickname/$repositoryName was not found")
 

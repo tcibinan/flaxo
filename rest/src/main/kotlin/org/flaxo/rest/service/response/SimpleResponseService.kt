@@ -3,6 +3,9 @@ package org.flaxo.rest.service.response
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 
+/**
+ * Response service basic implementation.
+ */
 class SimpleResponseService : ResponseService {
 
     override fun userNotFound(username: String): ResponseEntity<Any> =

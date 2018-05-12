@@ -45,8 +45,8 @@ open class TravisSimpleService(private val client: TravisClient,
             parseTravisWebHook(reader)
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    override fun activateServiceFor(user: User,
-                                    course: Course
+    override fun activateFor(user: User,
+                             course: Course
     ) {
         val githubToken = user.credentials.githubToken
                 ?: throw TravisException("Travis validation can't be activated because ${user.nickname} user" +

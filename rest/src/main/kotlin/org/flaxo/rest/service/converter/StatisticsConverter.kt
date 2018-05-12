@@ -1,7 +1,7 @@
 package org.flaxo.rest.service.converter
 
 /**
- * Interface of statistics converter.
+ * Interface of course statistics converter.
  *
  * It is used to form a course statistics to a different
  * file formats.
