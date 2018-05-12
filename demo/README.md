@@ -3,6 +3,11 @@
 This module is used for mocking backend server. It can be usefull for 
 front-end development or representation of the UI design.
 
+Set system variable `REST_URL`. It will change client's endpoint to the fake backend.
+```bash
+export REST_URL=http://localhost:8081/api/flaxo/
+```
+
 First of all install http-fake-backend framework
 
 ```bash

@@ -7,7 +7,7 @@ module.exports = SetupEndpoint({
     name: 'flaxo',
     urls: [
         {
-            params: '/account',
+            params: '/user',
             requests: [{
                 method: 'GET',
                 response: {
@@ -22,7 +22,7 @@ module.exports = SetupEndpoint({
             }]
         },
         {
-            params: '/supportedLanguages',
+            params: '/settings/languages',
             requests: [{
                 method: 'GET',
                 response: {
@@ -42,7 +42,7 @@ module.exports = SetupEndpoint({
             }]
         },
         {
-            params: '/allCourses',
+            params: '/course/all',
             requests: [{
                 method: 'GET',
                 response: {
@@ -115,7 +115,7 @@ module.exports = SetupEndpoint({
             }]
         },
         {
-            params: '/{nickname}/{courseName}/statistics',
+            params: '/statistics',
             requests: [{
                 method: 'GET',
                 response: {
@@ -295,7 +295,7 @@ module.exports = SetupEndpoint({
             }]
         },
         {
-            params: '/updateRules',
+            params: '/task/update/rules',
             requests: [{
                 method: 'PUT',
                 response: {
