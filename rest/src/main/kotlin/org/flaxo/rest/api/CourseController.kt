@@ -1,13 +1,16 @@
 package org.flaxo.rest.api
 
 import io.vavr.kotlin.Try
-import org.flaxo.core.language.Language
+import org.apache.logging.log4j.LogManager
+import org.flaxo.codacy.CodacyException
+import org.flaxo.core.stringStackTrace
 import org.flaxo.model.CourseLifecycle
 import org.flaxo.model.DataService
-import org.flaxo.model.EntityAlreadyExistsException
 import org.flaxo.model.IntegratedService
+import org.flaxo.model.data.PlagiarismMatch
 import org.flaxo.model.data.views
 import org.flaxo.moss.MossException
+import org.flaxo.rest.service.codacy.CodacyService
 import org.flaxo.rest.service.environment.RepositoryEnvironmentService
 import org.flaxo.rest.service.git.GitService
 import org.flaxo.rest.service.moss.MossService
@@ -15,88 +18,82 @@ import org.flaxo.rest.service.moss.MossTask
 import org.flaxo.rest.service.response.ResponseService
 import org.flaxo.rest.service.travis.TravisService
 import org.flaxo.travis.TravisException
-import org.apache.logging.log4j.LogManager
-import org.flaxo.codacy.CodacyException
-import org.flaxo.core.stringStackTrace
-import org.flaxo.model.data.PlagiarismMatch
-import org.flaxo.rest.service.codacy.CodacyService
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
 /**
- * Common methods controller.
+ * Course handling controller.
  */
 @RestController
-@RequestMapping("/rest")
-class ModelController
-@Autowired constructor(private val dataService: DataService,
+@RequestMapping("/rest/course")
+class CourseController(private val dataService: DataService,
                        private val responseService: ResponseService,
                        private val environmentService: RepositoryEnvironmentService,
                        private val travisService: TravisService,
                        private val codacyService: CodacyService,
                        private val gitService: GitService,
-                       private val mossService: MossService,
-                       private val supportedLanguages: Map<String, Language>
+                       private val mossService: MossService
 ) {
 
-    private val executor: Executor = Executors.newCachedThreadPool()
-    private val logger = LogManager.getLogger(ModelController::class.java)
     private val tasksPrefix = "task-"
+    private val logger = LogManager.getLogger(AccountController::class.java)
+    private val executor: Executor = Executors.newCachedThreadPool()
 
     /**
-     * Register user in the flaxo system.
-     *
-     * @param nickname Of the creating user.
-     * @param password Of the creating user.
+     * Imports a course from an existing git repository or the [principal] by its [repositoryName].
      */
-    @PostMapping("/register")
-    @Transactional
-    fun register(@RequestParam nickname: String,
-                 @RequestParam password: String
+    @PostMapping("/import")
+    fun import(@RequestParam repositoryName: String,
+               @RequestParam(required = false) description: String?,
+               @RequestParam language: String,
+               @RequestParam testingLanguage: String,
+               @RequestParam testingFramework: String,
+               principal: Principal
     ): ResponseEntity<Any> {
-        logger.info("Trying to register user $nickname")
-
-        return try {
-            dataService.addUser(nickname, password)
-
-            logger.info("User $nickname was registered successfully")
-
-            responseService.ok()
-        } catch (e: EntityAlreadyExistsException) {
-            logger.info("Trying to create user with $nickname nickname that is already registered")
-
-            responseService.bad("User $nickname already exists")
-        }
-    }
-
-    /**
-     * Returns user account information.
-     */
-    @GetMapping("/account")
-    @PreAuthorize("hasAuthority('USER')")
-    @Transactional(readOnly = true)
-    fun user(principal: Principal): Any {
-        logger.info("Trying to retrieve user ${principal.name}")
+        logger.info("Trying to import course ${principal.name}/$repositoryName from an existing repository")
 
         val user = dataService.getUser(principal.name)
                 ?: return responseService.userNotFound(principal.name)
 
-        return responseService.ok(user.view())
+        val githubId = user.githubId
+                ?: return responseService.githubIdNotFound(user.nickname)
+
+        val githubToken = user.credentials.githubToken
+                ?: return responseService.githubTokenNotFound(user.nickname)
+
+        gitService.with(githubToken)
+                .getRepository(repositoryName)
+                .takeIf { it.exists() }
+                ?.also { repository ->
+                    logger.info("Scanning for tasks of the importing course ${principal.name}/$repositoryName")
+                    repository.branches()
+                            .map { it.name }
+                            .filter { it.startsWith(tasksPrefix) }
+                            .also { tasksNames ->
+                                dataService.createCourse(
+                                        repositoryName,
+                                        description,
+                                        language,
+                                        testingLanguage,
+                                        testingFramework,
+                                        tasksNames,
+                                        user
+                                )
+                            }
+                }
+                ?: return responseService.bad("Github repository $githubId/$repositoryName")
+
+        return responseService.ok("Course ${user.nickname}/$repositoryName was created")
     }
 
     /**
@@ -110,7 +107,7 @@ class ModelController
      * @param numberOfTasks Number of tasks in the course and number of tasks branches
      * in the git repository.
      */
-    @PostMapping("/createCourse")
+    @PostMapping("/create")
     @PreAuthorize("hasAuthority('USER')")
     @Transactional
     fun createCourse(@RequestParam courseName: String,
@@ -171,11 +168,48 @@ class ModelController
     }
 
     /**
+     * Returns full information about the current user's course with the given [courseName].
+     *
+     * @param courseName Name of the course and related git repository.
+     */
+    @GetMapping("/")
+    @PreAuthorize("hasAuthority('USER')")
+    @Transactional(readOnly = true)
+    fun course(@RequestParam courseName: String,
+               principal: Principal
+    ): ResponseEntity<Any> {
+        val user = dataService.getUser(principal.name)
+                ?: return responseService.userNotFound(principal.name)
+
+        val course = dataService.getCourse(courseName, user)
+                ?: return responseService.courseNotFound(principal.name, courseName)
+
+        return responseService.ok(course.view())
+    }
+
+    /**
+     * Returns full information about all courses of the given user.
+     *
+     * @param nickname User nickname to retrieve courses from.
+     */
+    @GetMapping("/all")
+    @PreAuthorize("hasAuthority('USER')")
+    @Transactional(readOnly = true)
+    fun allCourses(@RequestParam nickname: String,
+                   principal: Principal
+    ): ResponseEntity<Any> =
+            if (principal.name == nickname) {
+                responseService.ok(dataService.getCourses(nickname).views())
+            } else {
+                responseService.forbidden()
+            }
+
+    /**
      * Deletes a current user course from the flaxo system and delete git repository as well.
      *
      * @param courseName Name of the course and related git repository.
      */
-    @PostMapping("/deleteCourse")
+    @DeleteMapping("/delete")
     @PreAuthorize("hasAuthority('USER')")
     @Transactional
     fun deleteCourse(@RequestParam courseName: String,
@@ -253,11 +287,11 @@ class ModelController
      *
      * @param courseName Name of the course and related git repository.
      */
-    @PostMapping("/composeCourse")
+    @PostMapping("/activate")
     @PreAuthorize("hasAuthority('USER')")
     @Transactional
-    fun composeCourse(@RequestParam courseName: String,
-                      principal: Principal
+    fun activate(@RequestParam courseName: String,
+                 principal: Principal
     ): ResponseEntity<Any> {
         logger.info("Trying to compose course ${principal.name}/$courseName")
 
@@ -311,7 +345,7 @@ class ModelController
      *
      * @param courseName Course name to activate codacy for.
      */
-    @PostMapping("/activateCodacy")
+    @PostMapping("/activate/codacy")
     @PreAuthorize("hasAuthority('USER')")
     @Transactional
     fun activateCodacy(@RequestParam courseName: String,
@@ -360,7 +394,7 @@ class ModelController
      *
      * @param courseName Course name to activate travis for.
      */
-    @PostMapping("/activateTravis")
+    @PostMapping("/activate/travis")
     @PreAuthorize("hasAuthority('USER')")
     @Transactional
     fun activateTravis(@RequestParam courseName: String,
@@ -403,124 +437,11 @@ class ModelController
     }
 
     /**
-     * Returns full information about the current user's course with the given [courseName].
+     * Starts current user's [courseName] plagiarism analysis.
      *
      * @param courseName Name of the course and related git repository.
      */
-    @GetMapping("course")
-    @PreAuthorize("hasAuthority('USER')")
-    @Transactional(readOnly = true)
-    fun course(@RequestParam courseName: String,
-               principal: Principal
-    ): ResponseEntity<Any> {
-        val user = dataService.getUser(principal.name)
-                ?: return responseService.userNotFound(principal.name)
-
-        val course = dataService.getCourse(courseName, user)
-                ?: return responseService.courseNotFound(principal.name, courseName)
-
-        return responseService.ok(course.view())
-    }
-
-    /**
-     * Returns full information about all courses of the given user.
-     *
-     * @param nickname User nickname to retrieve courses from.
-     */
-    @GetMapping("allCourses")
-    @PreAuthorize("hasAuthority('USER')")
-    @Transactional(readOnly = true)
-    fun allCourses(@RequestParam nickname: String,
-                   principal: Principal
-    ): ResponseEntity<Any> =
-            if (principal.name == nickname) {
-                responseService.ok(dataService.getCourses(nickname).views())
-            } else {
-                responseService.forbidden()
-            }
-
-    /**
-     * Returns all statistics of the course.
-     *
-     * @param ownerNickname Course owner nickname.
-     * @param courseName Name of the course and related git repository.
-     */
-    @GetMapping("/{owner}/{course}/statistics")
-    @PreAuthorize("hasAuthority('USER')")
-    @Transactional(readOnly = true)
-    fun getCourseStatistics(@PathVariable("owner") ownerNickname: String,
-                            @PathVariable("course") courseName: String
-    ): ResponseEntity<Any> {
-        logger.info("Aggregating course $ownerNickname/$courseName statistics")
-
-        val user = dataService.getUser(ownerNickname)
-                ?: return responseService.userNotFound(ownerNickname)
-
-        val course = dataService.getCourse(courseName, user)
-                ?: return responseService.courseNotFound(ownerNickname, courseName)
-
-        return responseService.ok(course.tasks.views())
-    }
-
-    /**
-     * Update task rules.
-     *
-     * @param courseName Name of the course.
-     * @param taskBranch Name of the branch related to exact task.
-     * @param deadline Updated task deadline.
-     */
-    @PutMapping("/updateRules")
-    @PreAuthorize("hasAuthority('USER')")
-    @Transactional
-    fun updateRules(@RequestParam courseName: String,
-                    @RequestParam taskBranch: String,
-                    @RequestParam(required = false) deadline: String?,
-                    principal: Principal
-    ): ResponseEntity<Any> {
-        logger.info("Updating rules of ${principal.name}/$courseName/$taskBranch task")
-
-        val user = dataService.getUser(principal.name)
-                ?: return responseService.userNotFound(principal.name)
-
-        val course = dataService.getCourse(courseName, user)
-                ?: return responseService.courseNotFound(principal.name, courseName)
-
-        val task = course.tasks
-                .find { it.branch == taskBranch }
-                ?: return responseService.taskNotFound(principal.name, courseName, taskBranch)
-
-        return deadline
-                ?.let { LocalDate.parse(it) }
-                ?.let { LocalDateTime.of(it, LocalTime.MAX) }
-                ?.takeIf { it != task.deadline }
-                ?.let { dataService.updateTask(task.copy(deadline = it)) }
-                ?.let { responseService.ok(it.view()) }
-                ?: responseService.ok(task.view())
-    }
-
-    /**
-     * Returns a list of supported languages by flaxo.
-     */
-    @GetMapping("/supportedLanguages")
-    fun supportedLanguages(): ResponseEntity<Any> =
-            supportedLanguages
-                    .map { (name, language) ->
-                        object {
-                            val name = name
-                            val compatibleTestingLanguages =
-                                    language.compatibleTestingLanguages.map { it.name }
-                            val compatibleTestingFrameworks =
-                                    language.compatibleTestingFrameworks.map { it.name }
-                        }
-                    }
-                    .let { responseService.ok(it) }
-
-    /**
-     * Starts current user's course plagiarism analysis.
-     *
-     * @param courseName Name of the course and related git repository.
-     */
-    @PostMapping("/analysePlagiarism")
+    @PostMapping("/analyse/plagiarism")
     @PreAuthorize("hasAuthority('USER')")
     @Transactional
     fun analysePlagiarism(@RequestParam courseName: String,

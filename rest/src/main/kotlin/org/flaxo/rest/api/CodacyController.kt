@@ -3,6 +3,7 @@ package org.flaxo.rest.api
 import org.apache.logging.log4j.LogManager
 import org.flaxo.model.DataService
 import org.flaxo.model.IntegratedService
+import org.flaxo.rest.service.codacy.CodacyService
 import org.flaxo.rest.service.response.ResponseService
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -30,8 +31,8 @@ class CodacyController(private val dataService: DataService,
     @PutMapping("/token")
     @PreAuthorize("hasAuthority('USER')")
     @Transactional
-    fun putCodacyToken(@RequestParam token: String,
-                       principal: Principal
+    fun putToken(@RequestParam token: String,
+                 principal: Principal
     ): ResponseEntity<Any> {
         logger.info("Putting codacy token for ${principal.name}")
 

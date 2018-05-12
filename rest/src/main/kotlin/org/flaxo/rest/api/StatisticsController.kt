@@ -2,6 +2,7 @@ package org.flaxo.rest.api
 
 import org.apache.logging.log4j.LogManager
 import org.flaxo.model.DataService
+import org.flaxo.model.data.views
 import org.flaxo.rest.service.converter.StatisticsConverter
 import org.flaxo.rest.service.response.ResponseService
 import org.springframework.core.io.ByteArrayResource
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -22,13 +24,13 @@ import javax.servlet.http.HttpServletResponse
  * Course statistics controller.
  */
 @RestController
-@RequestMapping("rest/statistics")
+@RequestMapping("/rest/statistics")
 class StatisticsController(private val dataService: DataService,
                            private val responseService: ResponseService,
                            private val statisticsConverters: Map<String, StatisticsConverter>
 ) {
 
-    private val logger = LogManager.getLogger(ModelController::class.java)
+    private val logger = LogManager.getLogger(AccountController::class.java)
 
     /**
      * Returns a downloadable [principal]'s [courseName] statistics
@@ -74,5 +76,28 @@ class StatisticsController(private val dataService: DataService,
                             .contentLength(statistics.size.toLong())
                             .body(ByteArrayResource(statistics))
                 }
+    }
+
+    /**
+     * Returns all statistics of the course.
+     *
+     * @param ownerNickname Course owner nickname.
+     * @param courseName Name of the course and related git repository.
+     */
+    @GetMapping("/")
+    @PreAuthorize("hasAuthority('USER')")
+    @Transactional(readOnly = true)
+    fun getCourseStatistics(@RequestParam("owner") ownerNickname: String,
+                            @RequestParam("course") courseName: String
+    ): ResponseEntity<Any> {
+        logger.info("Aggregating course $ownerNickname/$courseName statistics")
+
+        val user = dataService.getUser(ownerNickname)
+                ?: return responseService.userNotFound(ownerNickname)
+
+        val course = dataService.getCourse(courseName, user)
+                ?: return responseService.courseNotFound(ownerNickname, courseName)
+
+        return responseService.ok(course.tasks.views())
     }
 }

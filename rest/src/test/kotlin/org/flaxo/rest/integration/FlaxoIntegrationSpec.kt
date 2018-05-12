@@ -14,7 +14,7 @@ import org.flaxo.model.IntegratedService
 import org.flaxo.model.ModelException
 import org.flaxo.rest.Application
 import org.flaxo.rest.api.CodacyController
-import org.flaxo.rest.api.ModelController
+import org.flaxo.rest.api.AccountController
 import org.flaxo.rest.service.codacy.CodacyService
 import org.flaxo.rest.service.data.UserDetailsImpl
 import org.flaxo.rest.service.git.GitService
@@ -26,14 +26,13 @@ import org.json.JSONObject
 import org.springframework.beans.factory.getBean
 import org.springframework.boot.SpringApplication
 import org.springframework.core.env.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.security.Principal
 import java.util.*
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.authority.AuthorityUtils
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import java.util.concurrent.TimeUnit
 
 object FlaxoIntegrationSpec : Spek({
@@ -81,7 +80,7 @@ object FlaxoIntegrationSpec : Spek({
     }
     val mockMvc = MockMvcBuilders
             .standaloneSetup(
-                    context.getBean<ModelController>(),
+                    context.getBean<AccountController>(),
                     context.getBean<CodacyController>()
             )
             .build()
@@ -115,7 +114,7 @@ object FlaxoIntegrationSpec : Spek({
                         dataService
                                 .getCourse(courseName, user)
                                 ?.also {
-                                    mockMvc.perform(post("/rest/deleteCourse")
+                                    mockMvc.perform(delete("/rest/course/delete")
                                             .principal(principal())
                                             .param("courseName", courseName)
                                     )
@@ -141,7 +140,7 @@ object FlaxoIntegrationSpec : Spek({
     describe("flaxo course creation scenario") {
 
         on("registering user") {
-            mockMvc.perform(post("/rest/register")
+            mockMvc.perform(post("/rest/user/register")
                     .param("nickname", username)
                     .param("password", password)
             )
@@ -196,7 +195,7 @@ object FlaxoIntegrationSpec : Spek({
         }
 
         on("creating course") {
-            mockMvc.perform(post("/rest/createCourse")
+            mockMvc.perform(post("/rest/course/create")
                     .principal(principal())
                     .param("courseName", courseName)
                     .param("language", "java")
@@ -240,7 +239,7 @@ object FlaxoIntegrationSpec : Spek({
         }
 
         on("starting course") {
-            mockMvc.perform(post("/rest/composeCourse")
+            mockMvc.perform(post("/rest/course/activate")
                     .principal(principal())
                     .param("courseName", courseName)
             )

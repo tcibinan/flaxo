@@ -59,6 +59,29 @@ interface DataService {
     ): Course
 
     /**
+     * Creates a course model with the provided parameters.
+     *
+     * Also create tasks with the given [tasksNames].
+     *
+     * @param courseName git repository name.
+     * @param description optional course description.
+     * @param language main language of the course.
+     * @param testingLanguage tests language.
+     * @param testingFramework testing framework (f.e. junit / spek)
+     * @param tasksNames tasks name to be created.
+     * @param owner course author.
+     * @return fully formed course with necessary amount of tasks.
+     */
+    fun createCourse(courseName: String,
+                     description: String? = null,
+                     language: String,
+                     testingLanguage: String,
+                     testingFramework: String,
+                     tasksNames: List<String>,
+                     owner: User
+    ): Course
+
+    /**
      * Removes course model.
      */
     fun deleteCourse(courseName: String,

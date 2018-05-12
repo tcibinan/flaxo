@@ -34,12 +34,13 @@ import javax.servlet.http.HttpServletResponse
  */
 @RestController
 @RequestMapping("/rest/github")
-class GithubController(
-        private val responseService: ResponseService,
-        private val dataService: DataService,
-        private val gitService: GitService,
-        @Value("\${GITHUB_ID}") private val clientId: String,
-        @Value("\${GITHUB_SECRET}") private val clientSecret: String
+class GithubController(private val responseService: ResponseService,
+                       private val dataService: DataService,
+                       private val gitService: GitService,
+                       @Value("\${GITHUB_ID}")
+                       private val clientId: String,
+                       @Value("\${GITHUB_SECRET}")
+                       private val clientSecret: String
 ) {
 
     private val githubAuthUrl = "https://github.com/login/oauth"

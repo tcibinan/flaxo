@@ -73,6 +73,28 @@ open class BasicDataService(private val userRepository: UserRepository,
                               tasksPrefix: String,
                               numberOfTasks: Int,
                               owner: User
+    ): Course =
+            (1..numberOfTasks)
+                    .map { taskNumber -> "$tasksPrefix$taskNumber" }
+                    .let { tasksNames ->
+                        createCourse(
+                                courseName,
+                                description,
+                                language,
+                                testingLanguage,
+                                testingFramework,
+                                tasksNames,
+                                owner
+                        )
+                    }
+
+    override fun createCourse(courseName: String,
+                              description: String?,
+                              language: String,
+                              testingLanguage: String,
+                              testingFramework: String,
+                              tasksNames: List<String>,
+                              owner: User
     ): Course {
         getCourse(courseName, owner)
                 ?.also {
@@ -92,8 +114,7 @@ open class BasicDataService(private val userRepository: UserRepository,
                         user = owner
                 ))
 
-        return (1..numberOfTasks)
-                .map { taskNumber -> "$tasksPrefix$taskNumber" }
+        return tasksNames
                 .map { branchName ->
                     taskRepository
                             .save(Task(

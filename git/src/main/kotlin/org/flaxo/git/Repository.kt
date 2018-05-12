@@ -39,4 +39,9 @@ interface Repository {
      * @return List of branches in the repository.
      */
     fun branches(): List<Branch>
+
+    /**
+     * Checks if the repository exists.
+     */
+    fun exists(): Boolean
 }

@@ -3,11 +3,20 @@ package org.flaxo.github
 import org.flaxo.git.Branch
 import org.flaxo.git.Repository
 import org.kohsuke.github.GHEvent
+import java.io.IOException
 
 data class GithubRepository(override val name: String,
                             override val owner: String,
                             private val github: Github
 ) : Repository {
+
+    override fun exists(): Boolean =
+        try {
+            client.repository(name)
+            true
+        } catch (e: IOException) {
+            false
+        }
 
     private val client = github.client
 

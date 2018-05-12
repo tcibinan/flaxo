@@ -8,25 +8,59 @@ import org.flaxo.travis.build.BuildStatus
 import org.flaxo.travis.build.TravisBuild
 import org.flaxo.travis.build.TravisPullRequestBuild
 import org.apache.logging.log4j.LogManager
+import org.flaxo.model.IntegratedService
+import org.flaxo.rest.service.response.ResponseService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Controller
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 import java.io.Reader
+import java.security.Principal
 import javax.servlet.http.HttpServletRequest
 
 /**
  * Travis integration controller.
  */
-@Controller
+@RestController
 @RequestMapping("/rest/travis")
 class TravisController @Autowired constructor(private val travisService: TravisService,
                                               private val dataService: DataService,
-                                              private val gitService: GitService
+                                              private val gitService: GitService,
+                                              private val responseService: ResponseService
 ) {
 
     private val logger = LogManager.getLogger(TravisController::class.java)
+
+    /**
+     * Adds a travis token to [principal] credentials.
+     */
+    @PutMapping("/token")
+    @PreAuthorize("hasAuthority('USER')")
+    @Transactional
+    fun putToken(@RequestParam token: String,
+                 principal: Principal
+    ): ResponseEntity<Any> {
+        logger.info("Putting travis token for ${principal.name} user")
+
+        val user = dataService.getUser(principal.name)
+                ?: return responseService.userNotFound(principal.name)
+
+        if (token.isBlank()) {
+            logger.error("Given travis token for ${principal.name} is invalid")
+            return responseService.bad("Given travis token is invalid")
+        }
+
+        dataService.addToken(user.nickname, IntegratedService.TRAVIS, token)
+
+        logger.info("Travis token was added for ${principal.name}")
+        return responseService.ok()
+    }
 
     /**
      * Retrieves and handle travis build webhook.
