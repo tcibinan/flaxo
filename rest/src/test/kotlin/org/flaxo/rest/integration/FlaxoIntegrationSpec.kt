@@ -14,7 +14,7 @@ import org.flaxo.model.IntegratedService
 import org.flaxo.model.ModelException
 import org.flaxo.rest.Application
 import org.flaxo.rest.api.CodacyController
-import org.flaxo.rest.api.AccountController
+import org.flaxo.rest.api.UserController
 import org.flaxo.rest.service.codacy.CodacyService
 import org.flaxo.rest.service.data.UserDetailsImpl
 import org.flaxo.rest.service.git.GitService
@@ -80,7 +80,7 @@ object FlaxoIntegrationSpec : Spek({
     }
     val mockMvc = MockMvcBuilders
             .standaloneSetup(
-                    context.getBean<AccountController>(),
+                    context.getBean<UserController>(),
                     context.getBean<CodacyController>()
             )
             .build()

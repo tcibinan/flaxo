@@ -15,15 +15,15 @@ import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
 
 /**
- * Common methods controller.
+ * Users handling controller.
  */
 @RestController
 @RequestMapping("/rest/user")
-class AccountController(private val dataService: DataService,
-                        private val responseService: ResponseService
+class UserController(private val dataService: DataService,
+                     private val responseService: ResponseService
 ) {
 
-    private val logger = LogManager.getLogger(AccountController::class.java)
+    private val logger = LogManager.getLogger(UserController::class.java)
 
     /**
      * Register user in the flaxo system.

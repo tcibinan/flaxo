@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
+/**
+ * Flaxo settings controller.
+ */
 @RestController
 @RequestMapping("/rest/settings")
 class SettingsController(private val responseService: ResponseService,

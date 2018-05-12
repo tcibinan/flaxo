@@ -8,7 +8,7 @@ export class Api {
     static retrieveAccount(credentials, onSuccess, onFailure) {
         if (credentials.username && credentials.password) {
             axios
-                .get('account', {
+                .get('user', {
                     baseURL: restUrl(),
                     auth: credentials
                 })
@@ -20,7 +20,7 @@ export class Api {
     static retrieveCourses(credentials, nickname, onSuccess, onFailure) {
         if (credentials.username && credentials.password) {
             axios
-                .get('allCourses', {
+                .get('course/all', {
                     baseURL: restUrl(),
                     auth: credentials,
                     params: {
@@ -40,7 +40,7 @@ export class Api {
     static createCourse(credentials, courseData, onSuccess, onFailure) {
         if (credentials.username && credentials.password) {
             axios
-                .post('createCourse', {}, {
+                .post('course/create', {}, {
                     baseURL: restUrl(),
                     auth: credentials,
                     params: courseData
@@ -55,7 +55,7 @@ export class Api {
 
     static retrieveLanguages(onSuccess, onFailure) {
         axios
-            .get('supportedLanguages', {
+            .get('settings/languages', {
                 baseURL: restUrl()
             })
             .then(response => onSuccess(response.data.payload))
@@ -65,9 +65,13 @@ export class Api {
     static retrieveCourseStatistics(credentials, username, courseName, onSuccess, onFailure) {
         if (credentials.username && credentials.password) {
             axios
-                .get(`/${username}/${courseName}/statistics`, {
+                .get('statistics', {
                     baseURL: restUrl(),
-                    auth: credentials
+                    auth: credentials,
+                    params: {
+                        owner: username,
+                        course: courseName
+                    }
                 })
                 .then(response => {
                     const tasks =
@@ -82,7 +86,7 @@ export class Api {
     static startCourse(credentials, courseName, onSuccess, onFailure) {
         if (credentials.username && credentials.password) {
             axios
-                .post('composeCourse', {}, {
+                .post('course/activate', {}, {
                     baseURL: restUrl(),
                     auth: credentials,
                     params: {
@@ -97,7 +101,7 @@ export class Api {
     static deleteCourse(credentials, courseName, onSuccess, onFailure) {
         if (credentials.username && credentials.password) {
             axios
-                .post('deleteCourse', {}, {
+                .delete('course/delete', {
                     baseURL: restUrl(),
                     auth: credentials,
                     params: {
@@ -112,7 +116,7 @@ export class Api {
     static analysePlagiarism(credentials, courseName, onSuccess, onFailure) {
         if (credentials.username && credentials.password) {
             axios
-                .post('analysePlagiarism', {}, {
+                .post('course/analyse/plagiarism', {}, {
                     baseURL: restUrl(),
                     auth: credentials,
                     params: {
@@ -127,7 +131,7 @@ export class Api {
     static updateRules(credentials, courseName, taskBranch, deadline, onSuccess, onFailure) {
         if (credentials.username && credentials.password) {
             axios
-                .put('updateRules', {}, {
+                .put('task/update/rules', {}, {
                     baseURL: restUrl(),
                     auth: credentials,
                     params: {
@@ -159,7 +163,7 @@ export class Api {
     static activateTravis(credentials, courseName, onSuccess, onFailure) {
         if (credentials.username && credentials.password) {
             axios
-                .post('activateTravis', {}, {
+                .post('course/activate/travis', {}, {
                     baseURL: restUrl(),
                     auth: credentials,
                     params: {
@@ -174,7 +178,7 @@ export class Api {
     static activateCodacy(credentials, courseName, onSuccess, onFailure) {
         if (credentials.username && credentials.password) {
             axios
-                .post('activateCodacy', {}, {
+                .post('course/activate/codacy', {}, {
                     baseURL: restUrl(),
                     auth: credentials,
                     params: {

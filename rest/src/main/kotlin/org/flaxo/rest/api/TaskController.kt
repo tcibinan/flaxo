@@ -20,6 +20,9 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 
+/**
+ * Tasks handling controller.
+ */
 @RestController
 @RequestMapping("/rest/task")
 class TaskController(private val dataService: DataService,

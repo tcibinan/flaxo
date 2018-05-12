@@ -32,7 +32,7 @@ import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
 /**
- * Course handling controller.
+ * Courses handling controller.
  */
 @RestController
 @RequestMapping("/rest/course")
@@ -46,7 +46,7 @@ class CourseController(private val dataService: DataService,
 ) {
 
     private val tasksPrefix = "task-"
-    private val logger = LogManager.getLogger(AccountController::class.java)
+    private val logger = LogManager.getLogger(UserController::class.java)
     private val executor: Executor = Executors.newCachedThreadPool()
 
     /**
