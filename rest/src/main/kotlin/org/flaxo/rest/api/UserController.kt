@@ -54,7 +54,7 @@ class UserController(private val dataService: DataService,
     /**
      * Returns user account information.
      */
-    @GetMapping("/")
+    @GetMapping
     @PreAuthorize("hasAuthority('USER')")
     @Transactional(readOnly = true)
     fun user(principal: Principal): Any {

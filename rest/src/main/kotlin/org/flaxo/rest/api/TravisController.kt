@@ -86,7 +86,8 @@ class TravisController @Autowired constructor(private val travisService: TravisS
                                 "for user ${user.nickname}.")
 
                 val pullRequest = gitService.with(githubCredentials)
-                        .getPullRequest(course.name, hook.number)
+                        .getRepository(course.name)
+                        .getPullRequest(hook.number)
 
                 val student = course.students
                         .find { it.nickname == pullRequest.authorId }

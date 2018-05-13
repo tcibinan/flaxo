@@ -2,14 +2,15 @@ package org.flaxo.rest.api
 
 import io.vavr.kotlin.Try
 import org.apache.logging.log4j.LogManager
-import org.flaxo.codacy.CodacyException
 import org.flaxo.core.stringStackTrace
 import org.flaxo.model.CourseLifecycle
 import org.flaxo.model.DataService
 import org.flaxo.model.IntegratedService
+import org.flaxo.model.data.CourseState
 import org.flaxo.model.data.PlagiarismMatch
 import org.flaxo.model.data.views
 import org.flaxo.moss.MossException
+import org.flaxo.rest.service.CourseValidation
 import org.flaxo.rest.service.codacy.CodacyService
 import org.flaxo.rest.service.environment.RepositoryEnvironmentService
 import org.flaxo.rest.service.git.GitService
@@ -17,7 +18,6 @@ import org.flaxo.rest.service.moss.MossService
 import org.flaxo.rest.service.moss.MossTask
 import org.flaxo.rest.service.response.ResponseService
 import org.flaxo.rest.service.travis.TravisService
-import org.flaxo.travis.TravisException
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.transaction.annotation.Transactional
@@ -42,7 +42,8 @@ class CourseController(private val dataService: DataService,
                        private val travisService: TravisService,
                        private val codacyService: CodacyService,
                        private val gitService: GitService,
-                       private val mossService: MossService
+                       private val mossService: MossService,
+                       private val courseValidations: Map<IntegratedService, CourseValidation>
 ) {
 
     private val tasksPrefix = "task-"
@@ -172,7 +173,7 @@ class CourseController(private val dataService: DataService,
      *
      * @param courseName Name of the course and related git repository.
      */
-    @GetMapping("/")
+    @GetMapping
     @PreAuthorize("hasAuthority('USER')")
     @Transactional(readOnly = true)
     fun course(@RequestParam courseName: String,
@@ -223,45 +224,15 @@ class CourseController(private val dataService: DataService,
         val course = dataService.getCourse(courseName, user)
                 ?: return responseService.courseNotFound(principal.name, courseName)
 
-        val githubUserId = user.githubId
-                ?: return responseService.githubIdNotFound(principal.name)
-
         val githubToken = user.credentials.githubToken
                 ?: return responseService.githubTokenNotFound(principal.name)
 
-        course.state
-                .activatedServices
-                .takeIf { it.contains(IntegratedService.TRAVIS) }
-                ?.let { user.credentials.travisToken }
-                ?.also {
-                    logger.info("Deactivating travis for ${principal.name}/$courseName course")
-
-                    travisService.travis(it)
-                            .deactivate(githubUserId, courseName)
-                            .getOrElseThrow { errorBody ->
-                                TravisException("Travis deactivation of $githubUserId/$courseName " +
-                                        "repository went bad due to: ${errorBody.string()}")
-                            }
-                }
-                ?: logger.info("Travis token wasn't found for ${user.nickname} or travis is not activated " +
-                        "with $courseName course so no travis repository is deactivated")
+        logger.info("Deactivating validations for ${principal.name}/$courseName course")
 
         course.state
                 .activatedServices
-                .takeIf { it.contains(IntegratedService.CODACY) }
-                ?.let { user.credentials.codacyToken }
-                ?.also {
-                    logger.info("Deactivating codacy for ${principal.name}/$courseName course")
-
-                    codacyService.codacy(githubUserId, it)
-                            .deleteProject(courseName)
-                            ?.also { responseBody ->
-                                throw CodacyException("Codacy project $githubUserId/$courseName " +
-                                        "deletion went bad due to: ${responseBody.string()}")
-                            }
-                }
-                ?: logger.info("Codacy token wasn't found for ${user.nickname} or codacy is not activated " +
-                        "with $courseName course so no codacy project is deleted")
+                .mapNotNull { courseValidations[it] }
+                .forEach { it.deactivate(course) }
 
         logger.info("Deleting course ${principal.name}/$courseName from the database")
 
@@ -269,7 +240,9 @@ class CourseController(private val dataService: DataService,
 
         logger.info("Deleting course ${principal.name}/$courseName git repository")
 
-        gitService.with(githubToken).deleteRepository(courseName)
+        gitService.with(githubToken)
+                .getRepository(courseName)
+                .delete()
 
         logger.info("Course ${principal.name}/$courseName has been successfully deleted")
 
@@ -305,14 +278,9 @@ class CourseController(private val dataService: DataService,
         val course = dataService.getCourse(courseName, user)
                 ?: return responseService.courseNotFound(principal.name, courseName)
 
-        val composingServices = mapOf(
-                IntegratedService.CODACY to codacyService,
-                IntegratedService.TRAVIS to travisService
-        )
-
-        val activatedServices = composingServices
+        val activatedServices = courseValidations
                 .mapNotNull { (serviceType, service) ->
-                    Try { service.activateFor(user, course) }
+                    Try { service.activate(course) }
                             .map { serviceType }
                             .onFailure {
                                 logger.info("$serviceType activation went bad for ${user.nickname}/$courseName course due to: " +
@@ -367,7 +335,7 @@ class CourseController(private val dataService: DataService,
                 .takeUnless { it.contains(IntegratedService.CODACY) }
                 ?.let {
                     try {
-                        codacyService.activateFor(user, course)
+                        codacyService.activate(course)
 
                         return dataService
                                 .updateCourse(course.copy(
@@ -416,7 +384,7 @@ class CourseController(private val dataService: DataService,
                 .takeUnless { it.contains(IntegratedService.TRAVIS) }
                 ?.let {
                     try {
-                        travisService.activateFor(user, course)
+                        travisService.activate(course)
 
                         return dataService
                                 .updateCourse(course.copy(
@@ -510,6 +478,33 @@ class CourseController(private val dataService: DataService,
                         .map { it.split("/").last() }
 
         return responseService.ok("Plagiarism analysis scheduled for tasks: $scheduledTasksNames")
+    }
+
+    /**
+     * Synchronize all validations results.
+     */
+    @GetMapping("/sync")
+    @Transactional
+    fun synchronize(@RequestParam courseName: String,
+                    principal: Principal
+    ): ResponseEntity<Any> {
+        logger.info("Syncing ${principal.name} $courseName course validations")
+
+        val user = dataService.getUser(principal.name)
+                ?: return responseService.userNotFound(principal.name)
+
+        val course = dataService.getCourse(courseName, user)
+                ?: return responseService.courseNotFound(principal.name, courseName)
+
+        course.takeIf { it.state.lifecycle == CourseLifecycle.RUNNING }
+                ?.state
+                ?.activatedServices
+                ?.mapNotNull { courseValidations[it] }
+                ?.forEach { it.refresh(course) }
+                ?: return responseService.bad("Course ${user.nickname}/${course.name} " +
+                        "is not running to be synchronized")
+
+        return responseService.ok("Course validations are synchronized")
     }
 
 }

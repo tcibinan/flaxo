@@ -1,12 +1,12 @@
 package org.flaxo.rest.service.codacy
 
 import org.flaxo.codacy.Codacy
-import org.flaxo.rest.service.ActivatedCourseValidation
+import org.flaxo.rest.service.CourseValidation
 
 /**
  * Codacy service interface.
  */
-interface CodacyService: ActivatedCourseValidation {
+interface CodacyService: CourseValidation {
 
     /**
      * Returns codacy client authorized wuth the given [codacyToken]

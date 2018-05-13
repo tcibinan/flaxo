@@ -1,6 +1,6 @@
 package org.flaxo.rest.service.travis
 
-import org.flaxo.rest.service.ActivatedCourseValidation
+import org.flaxo.rest.service.CourseValidation
 import org.flaxo.travis.Travis
 import org.flaxo.travis.build.TravisBuild
 import java.io.Reader
@@ -8,7 +8,7 @@ import java.io.Reader
 /**
  * Travis service interface.
  */
-interface TravisService : ActivatedCourseValidation {
+interface TravisService : CourseValidation {
 
     /**
      * Retrieves travis access token.

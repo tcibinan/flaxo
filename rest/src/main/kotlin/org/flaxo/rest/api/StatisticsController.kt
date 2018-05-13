@@ -83,7 +83,7 @@ class StatisticsController(private val dataService: DataService,
      * @param ownerNickname Course owner nickname.
      * @param courseName Name of the course and related git repository.
      */
-    @GetMapping("/")
+    @GetMapping
     @PreAuthorize("hasAuthority('USER')")
     @Transactional(readOnly = true)
     fun getCourseStatistics(@RequestParam("owner") ownerNickname: String,

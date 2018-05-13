@@ -9,10 +9,14 @@ import org.flaxo.core.language.JavaLang
 import org.flaxo.core.language.KotlinLang
 import org.flaxo.core.language.Language
 import org.flaxo.gradle.GradleBuildTool
+import org.flaxo.model.IntegratedService
+import org.flaxo.rest.service.CourseValidation
+import org.flaxo.rest.service.codacy.CodacyService
 import org.flaxo.rest.service.converter.JsonStatisticsConverter
 import org.flaxo.rest.service.converter.StatisticsConverter
 import org.flaxo.rest.service.environment.RepositoryEnvironmentService
 import org.flaxo.rest.service.environment.SimpleRepositoryEnvironmentService
+import org.flaxo.rest.service.travis.TravisService
 import org.flaxo.travis.env.SimpleTravisEnvironmentSupplier
 import org.flaxo.travis.env.TravisEnvironmentSupplier
 import org.springframework.beans.factory.annotation.Value
@@ -64,6 +68,14 @@ class CoreConfiguration {
     @Bean
     fun statisticsConverters(): Map<String, StatisticsConverter> = mapOf(
             "json" to JsonStatisticsConverter
+    )
+
+    @Bean
+    fun courseValidations(codacyService: CodacyService,
+                          travisService: TravisService
+    ): Map<IntegratedService, CourseValidation> = mapOf(
+            IntegratedService.CODACY to codacyService,
+            IntegratedService.TRAVIS to travisService
     )
 
     private fun <TYPE : NamedEntity> namedMap(vararg namedEntity: TYPE): Map<String, TYPE> =

@@ -128,7 +128,7 @@ object FlaxoIntegrationSpec : Spek({
             gitTokenToFiles.keys
                     .mapNotNull { token ->
                         try {
-                            git(token).deleteRepository(courseName)
+                            git(token).getRepository(courseName).delete()
                             null
                         } catch (e: Throwable) {
                             e
@@ -207,6 +207,9 @@ object FlaxoIntegrationSpec : Spek({
             )
 
             it("should create a git repository") {
+                // sleep is needed to avoid 403 answer (it happens sometimes)
+                Thread.sleep(15 of TimeUnit.SECONDS)
+
                 khttp.get("$githubApi/repos/$githubId/$courseName")
                         .statusCode shouldEqual 200
             }

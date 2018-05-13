@@ -21,6 +21,11 @@ interface Repository {
     val forks: Int
 
     /**
+     * Completely deletes a repository from the git service.
+     */
+    fun delete()
+
+    /**
      * Creates a branch with the given [branchName] in the repository.
      *
      * @param branchName Newly creating branch name.
@@ -44,4 +49,14 @@ interface Repository {
      * Checks if the repository exists.
      */
     fun exists(): Boolean
+
+    /**
+     * Retrieves pull request by the given [pullRequestNumber].
+     */
+    fun getPullRequest(pullRequestNumber: Int): PullRequest
+
+    /**
+     * Retrieves all open pull request for this repository.
+     */
+    fun getOpenPullRequests(): List<PullRequest>
 }

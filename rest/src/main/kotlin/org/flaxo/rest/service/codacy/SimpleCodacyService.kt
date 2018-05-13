@@ -6,8 +6,8 @@ import org.flaxo.codacy.CodacyClient
 import org.flaxo.codacy.CodacyException
 import org.flaxo.codacy.SimpleCodacy
 import org.flaxo.core.repeatUntil
+import org.flaxo.model.ModelException
 import org.flaxo.model.data.Course
-import org.flaxo.model.data.User
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 
@@ -23,9 +23,9 @@ open class SimpleCodacyService(private val client: CodacyClient
             SimpleCodacy(githubId, codacyToken, client)
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    override fun activateFor(user: User,
-                             course: Course
-    ) {
+    override fun activate(course: Course) {
+        val user = course.user
+
         val githubId = user.githubId
                 ?: throw CodacyException("Codacy validations can't be activated because ${user.nickname} user" +
                         "doesn't have github id")
@@ -51,6 +51,34 @@ open class SimpleCodacyService(private val client: CodacyClient
                 throw CodacyException("Codacy project was not created due to: ${errorBody.string()}")
             else true
         }
+    }
+
+    override fun deactivate(course: Course) {
+        val user = course.user
+
+        logger.info("Deactivating codacy for ${user.nickname}/${course.name} course")
+
+        val githubId = user.githubId
+                ?: throw ModelException("Github id for ${user.nickname} user was not found")
+
+        user.credentials
+                .codacyToken
+                ?.also {
+                    codacy(githubId, it)
+                            .deleteProject(course.name)
+                            ?.also { responseBody ->
+                                throw CodacyException("Codacy project $githubId/${course.name} " +
+                                        "deletion went bad due to: ${responseBody.string()}")
+                            }
+                    logger.info("Codacy deactivation for ${user.nickname}/${course.name} course " +
+                            "has finished successfully")
+                }
+                ?: logger.info("Codacy token wasn't found for ${user.nickname} " +
+                        "so no codacy project is deleted")
+    }
+
+    override fun refresh(course: Course) {
+        TODO("not implemented")
     }
 
 }

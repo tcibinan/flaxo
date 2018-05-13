@@ -50,7 +50,7 @@ export class RegistrationModal extends React.Component {
         event.preventDefault();
 
         axios
-            .post('register', {}, {
+            .post('/user/register', {}, {
                 params: {
                     nickname: this.state.username,
                     password: this.state.password

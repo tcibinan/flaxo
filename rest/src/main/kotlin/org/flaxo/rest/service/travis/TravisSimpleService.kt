@@ -6,6 +6,7 @@ import org.flaxo.core.of
 import org.flaxo.core.repeatUntil
 import org.flaxo.model.DataService
 import org.flaxo.model.IntegratedService
+import org.flaxo.model.ModelException
 import org.flaxo.model.data.Course
 import org.flaxo.model.data.User
 import org.flaxo.travis.SimpleTravis
@@ -45,9 +46,9 @@ open class TravisSimpleService(private val client: TravisClient,
             parseTravisWebHook(reader)
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    override fun activateFor(user: User,
-                             course: Course
-    ) {
+    override fun activate(course: Course) {
+        val user = course.user
+
         val githubToken = user.credentials.githubToken
                 ?: throw TravisException("Travis validation can't be activated because ${user.nickname} user" +
                         "doesn't have github token")
@@ -110,6 +111,34 @@ open class TravisSimpleService(private val client: TravisClient,
                     TravisException("Travis activation of $githubId/${course.name} " +
                             "repository went bad due to: ${errorBody.string()}")
                 }
+    }
+
+    override fun deactivate(course: Course) {
+        val user = course.user
+
+        logger.info("Deactivating travis for ${user.nickname}/${course.name} course")
+
+        val githubId = user.githubId
+                ?: throw ModelException("Github id for ${user.nickname} user was not found")
+
+        user.credentials
+                .travisToken
+                ?.also {
+                    travis(it)
+                            .deactivate(githubId, course.name)
+                            .getOrElseThrow { errorBody ->
+                                TravisException("Travis deactivation of $githubId/${course.name}" +
+                                        "repository went bad due to: ${errorBody.string()}")
+                            }
+                    logger.info("Travis deactivation for ${user.nickname}/${course.name} course " +
+                            "has finished successfully")
+                }
+                ?: logger.info("Travis token wasn't found for ${user.nickname} course " +
+                        "so no travis repository is deactivated")
+    }
+
+    override fun refresh(course: Course) {
+        TODO("not implemented")
     }
 
     private fun retrieveTravisUser(travis: Travis,

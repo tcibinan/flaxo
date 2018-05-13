@@ -1,10 +1,6 @@
 package org.flaxo.github
 
-import org.flaxo.core.env.EnvironmentFile
-import org.flaxo.core.env.RemoteEnvironmentFile
-import org.flaxo.git.Branch
 import org.flaxo.git.Git
-import org.flaxo.git.PullRequest
 import org.flaxo.git.Repository
 import java.net.URL
 import org.kohsuke.github.GHEvent as KohsukeGithubEvent
@@ -37,10 +33,6 @@ class Github(private val githubClientProducer: () -> KohsukeGithub,
         return GithubRepository(repositoryName, nickname(), this)
     }
 
-    override fun deleteRepository(repositoryName: String) {
-        client.repository(repositoryName).delete()
-    }
-
     override fun forkRepository(ownerNickname: String,
                                 repositoryName: String
     ): Repository =
@@ -59,13 +51,4 @@ class Github(private val githubClientProducer: () -> KohsukeGithub,
             GithubRepository(repositoryName, ownerName, this)
 
     override fun nickname(): String = client.nickname()
-
-    override fun getPullRequest(repositoryName: String,
-                                pullRequestNumber: Int
-    ): PullRequest =
-            client.repository(repositoryName)
-                    .getPullRequest(pullRequestNumber)
-                    ?.let { GithubPullRequest(it) }
-                    ?: throw GithubException("Pull request $pullRequestNumber wasn't found " +
-                            "for repositoryName ${nickname()}/$repositoryName.")
 }

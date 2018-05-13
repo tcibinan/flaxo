@@ -26,23 +26,6 @@ interface Git {
     ): Repository
 
     /**
-     * Completely deletes a repository from the git service.
-     *
-     * @param repositoryName To be deleted.
-     */
-    fun deleteRepository(repositoryName: String)
-
-    /**
-     * Retrieves [repositoryName] pull request by [pullRequestNumber].
-     *
-     * @param repositoryName Git repository name.
-     * @param pullRequestNumber Git pull request identifier.
-     */
-    fun getPullRequest(repositoryName: String,
-                       pullRequestNumber: Int
-    ): PullRequest
-
-    /**
      * Forks existing repository of [ownerNickname] user with [repositoryName].
      *
      * @return Forked repository.

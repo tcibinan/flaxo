@@ -21,7 +21,8 @@ object GithubSpec : SubjectSpek<Github>({
     subject { Github({ KohsukeGithub.connectUsingOAuth(credentials) }, "http://ignored.web.hook.url") }
 
     afterGroup {
-        subject.deleteRepository(repositoryName)
+        subject.getRepository(repositoryName)
+                .delete()
     }
 
     describe("github") {

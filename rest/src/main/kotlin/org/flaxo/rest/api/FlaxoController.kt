@@ -17,7 +17,7 @@ class FlaxoController(private val responseService: ResponseService) {
     /**
      * Shows welcome message.
      */
-    @GetMapping("/")
+    @GetMapping
     fun index() = responseService.ok("Welcome to flaxo")
 
     /**
