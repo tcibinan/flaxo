@@ -1,18 +1,36 @@
 package org.flaxo.travis
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.annotation.JsonProperty
-
 /**
- * Travis user class.
+ * Travis user interface.
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
-class TravisUser {
-    var id: String = ""
-    var login: String = ""
-    var name: String = ""
-    @JsonProperty("is_syncing")
-    var isSyncing: Boolean = false
-    @JsonProperty("github_id")
-    var githubId: Int = 0
+interface TravisUser {
+
+    /**
+     * Travis user id.
+     */
+    val id: String
+
+    /**
+     * Travis user login.
+     */
+    val login: String
+
+    /**
+     * Travis user name.
+     */
+    val name: String
+
+    /**
+     * Travis user synchronisation status flag.
+     *
+     * If flag is false then it *does not* mean that
+     * underlying travis synchronization processes has
+     * finished.
+     */
+    val isSyncing: Boolean
+
+    /**
+     * Travis user github id.
+     */
+    val githubId: Int
 }

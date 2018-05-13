@@ -1,6 +1,8 @@
 package org.flaxo.travis
 
 import okhttp3.ResponseBody
+import org.flaxo.travis.retrofit.RetrofitTravisRepositoryPOJO
+import org.flaxo.travis.retrofit.RetrofitTravisUserPOJO
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -21,7 +23,7 @@ interface TravisClient {
     @Headers("Travis-API-Version: 3")
     @GET("user")
     fun getUser(@Header("Authorization") authorization: String
-    ): Call<TravisUser>
+    ): Call<RetrofitTravisUserPOJO>
 
     /**
      * Retrieves repository by [repositorySlug].
@@ -36,7 +38,7 @@ interface TravisClient {
     @GET("/repo/{repository_slug}")
     fun getRepository(@Header("Authorization") authorization: String,
                       @Path("repository_slug") repositorySlug: String
-    ): Call<TravisRepository>
+    ): Call<RetrofitTravisRepositoryPOJO>
 
     /**
      * Activates repository by [repositorySlug].
@@ -51,7 +53,7 @@ interface TravisClient {
     @POST("/repo/{repository_slug}/activate")
     fun activate(@Header("Authorization") authorization: String,
                  @Path("repository_slug") repositorySlug: String
-    ): Call<TravisRepository>
+    ): Call<RetrofitTravisRepositoryPOJO>
 
     /**
      * Deactivates repository by [repositorySlug].
@@ -66,7 +68,7 @@ interface TravisClient {
     @POST("/repo/{repository_slug}/deactivate")
     fun deactivate(@Header("Authorization") authorization: String,
                    @Path("repository_slug") repositorySlug: String
-    ): Call<TravisRepository>
+    ): Call<RetrofitTravisRepositoryPOJO>
 
     /**
      * Triggers sync for travis user by id [travisUserId].

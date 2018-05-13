@@ -9,7 +9,7 @@ import org.flaxo.model.IntegratedService
 import org.flaxo.model.ModelException
 import org.flaxo.model.data.Course
 import org.flaxo.model.data.User
-import org.flaxo.travis.SimpleTravis
+import org.flaxo.travis.retrofit.RetrofitTravisImpl
 import org.flaxo.travis.Travis
 import org.flaxo.travis.TravisClient
 import org.flaxo.travis.TravisException
@@ -40,7 +40,7 @@ open class TravisSimpleService(private val client: TravisClient,
     }
 
     override fun travis(travisToken: String): Travis =
-            SimpleTravis(client, travisToken)
+            RetrofitTravisImpl(client, travisToken)
 
     override fun parsePayload(reader: Reader): TravisBuild? =
             parseTravisWebHook(reader)

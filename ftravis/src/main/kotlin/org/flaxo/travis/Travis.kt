@@ -25,7 +25,9 @@ interface Travis {
      * @return Either travis repository or response body
      * of the request to travis api if something went bad.
      */
-    fun getRepository(userName: String, repositoryName: String): Either<ResponseBody, TravisRepository>
+    fun getRepository(userName: String,
+                      repositoryName: String
+    ): Either<ResponseBody, TravisRepository>
 
     /**
      * Activates builds on the repository by [repositoryName].
@@ -35,7 +37,9 @@ interface Travis {
      * @return Either activated travis repository or response body
      * of the request to travis api if something went bad.
      */
-    fun activate(userName: String, repositoryName: String): Either<ResponseBody, TravisRepository>
+    fun activate(userName: String,
+                 repositoryName: String
+    ): Either<ResponseBody, TravisRepository>
 
     /**
      * Deactivates builds on the repository by [repositoryName].
@@ -45,7 +49,9 @@ interface Travis {
      * @return Either deactivated travis repository or response body
      * of the request to travis api if something went bad.
      */
-    fun deactivate(userName: String, repositoryName: String): Either<ResponseBody, TravisRepository>
+    fun deactivate(userName: String,
+                   repositoryName: String
+    ): Either<ResponseBody, TravisRepository>
 
     /**
      * Triggers a sync on a user's travis account with user's github account.

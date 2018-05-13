@@ -5,6 +5,8 @@ import com.nhaarman.mockito_kotlin.mock
 import okhttp3.ResponseBody
 import org.amshove.kluent.shouldBeFalse
 import org.amshove.kluent.shouldBeTrue
+import org.flaxo.travis.retrofit.RetrofitTravisImpl
+import org.flaxo.travis.retrofit.RetrofitTravisRepositoryPOJO
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
@@ -12,7 +14,7 @@ import org.jetbrains.spek.subject.SubjectSpek
 import retrofit2.Call
 import retrofit2.Response
 
-object TravisSpec: SubjectSpek<Travis>({
+object RetrofitTravisSpec: SubjectSpek<Travis>({
 
     val githubUsername = "githubUsername"
     val travisToken = "travisToken"
@@ -21,12 +23,12 @@ object TravisSpec: SubjectSpek<Travis>({
     val nonExistingRepositorySlug = "$githubUsername/$nonExistingRepositoryName"
     val repositoryName = "repositoryName"
     val repositorySlug = "$githubUsername/$repositoryName"
-    val repositoryNonFoundResponse = Response.error<TravisRepository>(404,
+    val repositoryNonFoundResponse = Response.error<RetrofitTravisRepositoryPOJO>(404,
             ResponseBody.create(null, "repository not found"))
-    val repositoryResponse = Response.success(TravisRepository())
-    val deactivatedRepositoryResponse = Response.success(TravisRepository().also { it.active = false })
-    val activatedRepositoryResponse = Response.success(TravisRepository().also { it.active = true })
-    val call = mock<Call<TravisRepository>> {
+    val repositoryResponse = Response.success(RetrofitTravisRepositoryPOJO())
+    val deactivatedRepositoryResponse = Response.success(RetrofitTravisRepositoryPOJO().also { it.active = false })
+    val activatedRepositoryResponse = Response.success(RetrofitTravisRepositoryPOJO().also { it.active = true })
+    val call = mock<Call<RetrofitTravisRepositoryPOJO>> {
         on { execute() }.thenReturn(
                 repositoryNonFoundResponse,
                 repositoryResponse,
@@ -40,9 +42,10 @@ object TravisSpec: SubjectSpek<Travis>({
         on { activate(eq(travisAuthorization), eq(repositorySlug)) }.thenReturn(call)
         on { deactivate(eq(travisAuthorization), eq(repositorySlug)) }.thenReturn(call)
     }
-    subject { SimpleTravis(travisClient, travisToken) }
 
-    describe("travis wrapper") {
+    subject { RetrofitTravisImpl(travisClient, travisToken) }
+
+    describe("retrofit travis") {
 
         on("getting non-existing travis repository") {
             val eitherRepository = subject.getRepository(githubUsername, nonExistingRepositoryName)

@@ -8,4 +8,7 @@ dependencies {
     // http client
     compile "com.squareup.retrofit2:retrofit:2.3.0"
     compile "com.squareup.retrofit2:converter-jackson:2.3.0"
+
+    // jtravis
+    compile "fr.inria.jtravis:jtravis:2.0"
 }

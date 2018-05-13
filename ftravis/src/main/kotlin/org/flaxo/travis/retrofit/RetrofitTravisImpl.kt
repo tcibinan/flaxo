@@ -1,37 +1,45 @@
-package org.flaxo.travis
+package org.flaxo.travis.retrofit
 
 import io.vavr.control.Either
 import okhttp3.ResponseBody
+import org.flaxo.travis.Travis
+import org.flaxo.travis.TravisClient
+import org.flaxo.travis.TravisRepository
+import org.flaxo.travis.TravisUser
 import retrofit2.Call
 
 /**
  * Travis client implementation class.
  */
-class SimpleTravis(private val travisClient: TravisClient,
-                   private val travisToken: String
+class RetrofitTravisImpl(private val travisClient: TravisClient,
+                         private val travisToken: String
 ) : Travis {
 
     override fun getUser(): Either<ResponseBody, TravisUser> =
             travisClient.getUser(authorization())
                     .call()
+                    .map { RetrofitTravisUser(it) }
 
     override fun getRepository(userName: String,
                                repositoryName: String
     ): Either<ResponseBody, TravisRepository> =
             travisClient.getRepository(authorization(), repositorySlug(userName, repositoryName))
                     .call()
+                    .map { RetrofitTravisRepository(it) }
 
     override fun activate(userName: String,
                           repositoryName: String
     ): Either<ResponseBody, TravisRepository> =
             travisClient.activate(authorization(), repositorySlug(userName, repositoryName))
                     .call()
+                    .map { RetrofitTravisRepository(it) }
 
     override fun deactivate(userName: String,
                             repositoryName: String
     ): Either<ResponseBody, TravisRepository> =
             travisClient.deactivate(authorization(), repositorySlug(userName, repositoryName))
                     .call()
+                    .map { RetrofitTravisRepository(it) }
 
     override fun sync(travisUserId: String): ResponseBody? =
             travisClient.sync(authorization(), travisUserId)
