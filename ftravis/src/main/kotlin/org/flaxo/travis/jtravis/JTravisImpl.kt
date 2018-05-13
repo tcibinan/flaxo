@@ -2,9 +2,10 @@ package org.flaxo.travis.jtravis
 
 import fr.inria.jtravis.JTravis
 import io.vavr.control.Either
-import okhttp3.MediaType
 import okhttp3.ResponseBody
 import org.flaxo.travis.Travis
+import org.flaxo.travis.TravisBuild
+import org.flaxo.travis.TravisBuildType
 import org.flaxo.travis.TravisRepository
 import org.flaxo.travis.TravisUser
 
@@ -26,12 +27,7 @@ class JTravisImpl : Travis {
                     .fromSlug("$userName/$repositoryName")
                     .map { JTravisRepository(it) }
                     .map { Either.right<ResponseBody, TravisRepository>(it) }
-                    .orElseGet {
-                        Either.left(ResponseBody.create(
-                                MediaType.parse("application/json"),
-                                "repository not found"
-                        ))
-                    }
+                    .orElseGet { Either.left(ResponseBody.create(null, "repository not found")) }
 
 
     override fun activate(userName: String,
@@ -47,6 +43,13 @@ class JTravisImpl : Travis {
     }
 
     override fun sync(travisUserId: String): ResponseBody? {
+        TODO("not implemented")
+    }
+
+    override fun getBuilds(userName: String,
+                           repositoryName: String,
+                           eventType: TravisBuildType
+    ): Either<ResponseBody, List<TravisBuild>> {
         TODO("not implemented")
     }
 }

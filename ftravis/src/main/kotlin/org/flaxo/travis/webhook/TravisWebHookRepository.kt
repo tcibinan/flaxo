@@ -6,6 +6,8 @@ package org.flaxo.travis.webhook
  * Uses to map json to object model.
  */
 class TravisWebHookRepository {
+
     var name: String = ""
+
     var owner_name: String = ""
 }

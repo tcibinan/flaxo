@@ -1,6 +1,7 @@
 package org.flaxo.travis
 
 import okhttp3.ResponseBody
+import org.flaxo.travis.retrofit.RetrofitTravisBuildsPOJO
 import org.flaxo.travis.retrofit.RetrofitTravisRepositoryPOJO
 import org.flaxo.travis.retrofit.RetrofitTravisUserPOJO
 import retrofit2.Call
@@ -9,6 +10,7 @@ import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 /**
  * Travis retrofit client.
@@ -84,6 +86,19 @@ interface TravisClient {
     fun sync(@Header("Authorization") authorization: String,
              @Path("travis_user_id") travisUserId: String
     ): Call<ResponseBody>
+
+    /**
+     * Retrieves builds for the repository by [repositorySlug].
+     *
+     * Filters builds by the given [eventType], [buildState].
+     */
+    @Headers("Travis-API-Version: 3")
+    @GET("/repo/{repository_slug}/builds")
+    fun getBuilds(@Header("Authorization") authorization: String,
+                  @Path("repository_slug") repositorySlug: String,
+                  @Query("event_type") eventType: String? = null,
+                  @Query("build_state") buildState: String? = null
+    ): Call<RetrofitTravisBuildsPOJO>
 
 }
 

@@ -4,16 +4,15 @@ import org.flaxo.model.DataService
 import org.flaxo.rest.service.git.GitService
 import org.flaxo.rest.service.travis.TravisService
 import org.flaxo.travis.TravisException
-import org.flaxo.travis.build.BuildStatus
-import org.flaxo.travis.build.TravisBuild
-import org.flaxo.travis.build.TravisPullRequestBuild
+import org.flaxo.travis.TravisBuildStatus
+import org.flaxo.travis.TravisBuild
+import org.flaxo.travis.TravisPullRequestBuild
 import org.apache.logging.log4j.LogManager
 import org.flaxo.model.IntegratedService
 import org.flaxo.rest.service.response.ResponseService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
-import org.springframework.stereotype.Controller
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
@@ -87,7 +86,7 @@ class TravisController @Autowired constructor(private val travisService: TravisS
 
                 val pullRequest = gitService.with(githubCredentials)
                         .getRepository(course.name)
-                        .getPullRequest(hook.number)
+                        .getPullRequest(hook.pullRequestNumber)
 
                 val student = course.students
                         .find { it.nickname == pullRequest.authorId }
@@ -99,8 +98,8 @@ class TravisController @Autowired constructor(private val travisService: TravisS
                         ?: throw TravisException("Student task ${hook.branch} wasn't found for student ${student.nickname} " +
                                 "in course ${hook.repositoryOwner}/${hook.repositoryName}.")
 
-                when (hook.status) {
-                    BuildStatus.SUCCEED -> {
+                when (hook.buildStatus) {
+                    TravisBuildStatus.SUCCEED -> {
                         logger.info("Travis pull request successful build web hook received " +
                                 "for ${hook.repositoryOwner}/${hook.repositoryName}.")
 
@@ -110,7 +109,7 @@ class TravisController @Autowired constructor(private val travisService: TravisS
                                 buildReports = solution.buildReports.plus(buildReport)
                         ))
                     }
-                    BuildStatus.FAILED -> {
+                    TravisBuildStatus.FAILED -> {
                         logger.info("Travis pull request failed build web hook received " +
                                 "for ${hook.repositoryOwner}/${hook.repositoryName}.")
 
@@ -120,7 +119,7 @@ class TravisController @Autowired constructor(private val travisService: TravisS
                                 buildReports = solution.buildReports.plus(buildReport)
                         ))
                     }
-                    BuildStatus.IN_PROGRESS -> {
+                    TravisBuildStatus.IN_PROGRESS -> {
                         logger.info("Travis pull request in progress build web hook received " +
                                 "for ${hook.repositoryOwner}/${hook.repositoryName}.")
 

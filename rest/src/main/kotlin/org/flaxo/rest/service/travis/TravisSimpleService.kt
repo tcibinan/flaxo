@@ -14,7 +14,7 @@ import org.flaxo.travis.Travis
 import org.flaxo.travis.TravisClient
 import org.flaxo.travis.TravisException
 import org.flaxo.travis.TravisUser
-import org.flaxo.travis.build.TravisBuild
+import org.flaxo.travis.TravisBuild
 import org.flaxo.travis.parseTravisWebHook
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional

@@ -61,5 +61,15 @@ interface Travis {
      * if something went bad.
      */
     fun sync(travisUserId: String): ResponseBody?
+
+    /**
+     * Retrieves a list of build for [userName]'s [repositoryName].
+     *
+     * Filters builds by given [eventType].
+     */
+    fun getBuilds(userName: String,
+                  repositoryName: String,
+                  eventType: TravisBuildType = TravisBuildType.PULL_REQUEST
+    ): Either<ResponseBody, List<TravisBuild>>
 }
 

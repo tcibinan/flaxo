@@ -1,7 +1,5 @@
 package org.flaxo.travis
 
-import org.flaxo.travis.build.BuildStatus
-import org.flaxo.travis.build.TravisPullRequestBuild
 import io.vavr.kotlin.Try
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
@@ -75,7 +73,7 @@ object TravisWebHookParserSpec : Spek({
                     ?: throw TravisException("Travis pull request web hook wasn't parsed properly.")
 
             it("should get pull request github number") {
-                assertTrue { build.number == pullRequestNumber }
+                assertTrue { build.pullRequestNumber == pullRequestNumber }
             }
 
             it("should get pull request branch") {
@@ -83,7 +81,7 @@ object TravisWebHookParserSpec : Spek({
             }
 
             it("should get build status") {
-                assertTrue { build.status == BuildStatus.SUCCEED }
+                assertTrue { build.buildStatus == TravisBuildStatus.SUCCEED }
             }
 
             it("should get pull request repository owner") {

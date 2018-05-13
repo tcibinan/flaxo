@@ -1,4 +1,4 @@
-package org.flaxo.travis.build
+package org.flaxo.travis
 
 /**
  * Travis pull request build interface.
@@ -22,5 +22,5 @@ interface TravisPullRequestBuild : TravisBuild {
     /**
      * Git pull request identifier.
      */
-    val number: Int
+    val pullRequestNumber: Int
 }

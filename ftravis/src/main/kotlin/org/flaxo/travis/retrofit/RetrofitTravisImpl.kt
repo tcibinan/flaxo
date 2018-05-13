@@ -3,6 +3,8 @@ package org.flaxo.travis.retrofit
 import io.vavr.control.Either
 import okhttp3.ResponseBody
 import org.flaxo.travis.Travis
+import org.flaxo.travis.TravisBuild
+import org.flaxo.travis.TravisBuildType
 import org.flaxo.travis.TravisClient
 import org.flaxo.travis.TravisRepository
 import org.flaxo.travis.TravisUser
@@ -44,6 +46,18 @@ class RetrofitTravisImpl(private val travisClient: TravisClient,
     override fun sync(travisUserId: String): ResponseBody? =
             travisClient.sync(authorization(), travisUserId)
                     .callUnit()
+
+    override fun getBuilds(userName: String,
+                           repositoryName: String,
+                           eventType: TravisBuildType
+    ): Either<ResponseBody, List<TravisBuild>> =
+            travisClient
+                    .getBuilds(authorization(),
+                            repositorySlug(userName, repositoryName),
+                            eventType.apiParam
+                    )
+                    .call()
+                    .map { it.builds.map { RetrofitTravisBuild(it) } }
 
     private fun authorization() = "token $travisToken"
 

@@ -2,7 +2,7 @@ package org.flaxo.rest.service.travis
 
 import org.flaxo.rest.service.CourseValidation
 import org.flaxo.travis.Travis
-import org.flaxo.travis.build.TravisBuild
+import org.flaxo.travis.TravisBuild
 import java.io.Reader
 
 /**
