@@ -5,7 +5,6 @@ import okhttp3.ResponseBody
 import org.flaxo.travis.Travis
 import org.flaxo.travis.TravisBuild
 import org.flaxo.travis.TravisBuildType
-import org.flaxo.travis.TravisClient
 import org.flaxo.travis.TravisRepository
 import org.flaxo.travis.TravisUser
 import retrofit2.Call
@@ -51,13 +50,30 @@ class RetrofitTravisImpl(private val travisClient: TravisClient,
                            repositoryName: String,
                            eventType: TravisBuildType
     ): Either<ResponseBody, List<TravisBuild>> =
+            getBuildsRecursive(userName, repositoryName, eventType)
+                    .map { it.map { RetrofitTravisBuild(it) } }
+
+    private fun getBuildsRecursive(userName: String,
+                                   repositoryName: String,
+                                   eventType: TravisBuildType,
+                                   offset: Int = 0
+    ): Either<ResponseBody, List<RetrofitTravisBuildPOJO>> =
             travisClient
                     .getBuilds(authorization(),
                             repositorySlug(userName, repositoryName),
-                            eventType.apiParam
+                            eventType = eventType.apiParam,
+                            offset = offset
                     )
                     .call()
-                    .map { it.builds.map { RetrofitTravisBuild(it) } }
+                    .map { prevBuilds ->
+                        prevBuilds.takeUnless { it.pagination.isLast }
+                                ?.let {
+                                    getBuildsRecursive(userName, repositoryName, eventType, prevBuilds.pagination.offset)
+                                            .takeIf { it.isRight }
+                                            ?.let { prevBuilds.builds + it.get() }
+                                }
+                                ?: prevBuilds.builds
+                    }
 
     private fun authorization() = "token $travisToken"
 

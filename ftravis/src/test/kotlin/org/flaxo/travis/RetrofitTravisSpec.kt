@@ -7,6 +7,7 @@ import org.amshove.kluent.shouldBeFalse
 import org.amshove.kluent.shouldBeTrue
 import org.flaxo.travis.retrofit.RetrofitTravisImpl
 import org.flaxo.travis.retrofit.RetrofitTravisRepositoryPOJO
+import org.flaxo.travis.retrofit.TravisClient
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on

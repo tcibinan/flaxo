@@ -3,7 +3,7 @@ package org.flaxo.rest.service.travis
 import com.nhaarman.mockito_kotlin.mock
 import io.vavr.kotlin.Try
 import org.flaxo.model.DataService
-import org.flaxo.travis.TravisClient
+import org.flaxo.travis.retrofit.TravisClient
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on

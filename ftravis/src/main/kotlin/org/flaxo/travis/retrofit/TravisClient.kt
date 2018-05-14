@@ -1,4 +1,4 @@
-package org.flaxo.travis
+package org.flaxo.travis.retrofit
 
 import okhttp3.ResponseBody
 import org.flaxo.travis.retrofit.RetrofitTravisBuildsPOJO
@@ -90,14 +90,16 @@ interface TravisClient {
     /**
      * Retrieves builds for the repository by [repositorySlug].
      *
-     * Filters builds by the given [eventType], [buildState].
+     * Filters builds by the given [eventType] and supports pagination
+     * through [offset] builds and page [limit].
      */
     @Headers("Travis-API-Version: 3")
     @GET("/repo/{repository_slug}/builds")
     fun getBuilds(@Header("Authorization") authorization: String,
                   @Path("repository_slug") repositorySlug: String,
                   @Query("event_type") eventType: String? = null,
-                  @Query("build_state") buildState: String? = null
+                  @Query("offset") offset: Int = 0,
+                  @Query("limit") limit: Int = 25
     ): Call<RetrofitTravisBuildsPOJO>
 
 }

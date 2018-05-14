@@ -4,11 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-class RetrofitTravisBuildsPOJO {
+class TravisPaginationPOJO {
 
-    var builds: List<RetrofitTravisBuildPOJO> = emptyList()
+    @JsonProperty("is_last")
+    var isLast: Boolean = false
 
-    @JsonProperty("@pagination")
-    lateinit var pagination: TravisPaginationPOJO
-
+    var offset: Int = 0
 }

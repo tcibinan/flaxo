@@ -11,7 +11,7 @@ import org.flaxo.model.data.Course
 import org.flaxo.model.data.User
 import org.flaxo.travis.retrofit.RetrofitTravisImpl
 import org.flaxo.travis.Travis
-import org.flaxo.travis.TravisClient
+import org.flaxo.travis.retrofit.TravisClient
 import org.flaxo.travis.TravisException
 import org.flaxo.travis.TravisUser
 import org.flaxo.travis.TravisBuild

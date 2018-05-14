@@ -3,7 +3,7 @@ package org.flaxo.rest
 import org.flaxo.model.DataService
 import org.flaxo.rest.service.travis.TravisService
 import org.flaxo.rest.service.travis.TravisSimpleService
-import org.flaxo.travis.TravisClient
+import org.flaxo.travis.retrofit.TravisClient
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import retrofit2.Retrofit
