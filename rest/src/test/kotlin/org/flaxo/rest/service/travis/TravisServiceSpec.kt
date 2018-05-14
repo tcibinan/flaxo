@@ -18,7 +18,7 @@ object TravisServiceSpec : SubjectSpek<TravisService>({
     val travisClient = mock<TravisClient> { }
     val dataService = mock<DataService> { }
 
-    subject { TravisSimpleService(travisClient, dataService) }
+    subject { SimpleTravisService(travisClient, dataService) }
 
     describe("travis service") {
         on("getting travis token") {

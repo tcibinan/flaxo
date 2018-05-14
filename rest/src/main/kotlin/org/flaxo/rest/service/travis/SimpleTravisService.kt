@@ -27,11 +27,11 @@ import java.util.concurrent.TimeUnit
 /**
  * Travis service basic implementation.
  */
-open class TravisSimpleService(private val client: TravisClient,
+open class SimpleTravisService(private val client: TravisClient,
                                private val dataService: DataService
 ) : TravisService {
 
-    private val logger = LogManager.getLogger(TravisSimpleService::class.java)
+    private val logger = LogManager.getLogger(SimpleTravisService::class.java)
 
     override fun retrieveTravisToken(githubUsername: String, githubToken: String): String {
         CmdExecutor.execute("travis", "login",

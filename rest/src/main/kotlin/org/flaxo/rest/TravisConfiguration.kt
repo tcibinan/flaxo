@@ -2,7 +2,7 @@ package org.flaxo.rest
 
 import org.flaxo.model.DataService
 import org.flaxo.rest.service.travis.TravisService
-import org.flaxo.rest.service.travis.TravisSimpleService
+import org.flaxo.rest.service.travis.SimpleTravisService
 import org.flaxo.travis.retrofit.TravisClient
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -31,5 +31,5 @@ class TravisConfiguration {
     fun travisService(travisClient: TravisClient,
                       dataService: DataService
     ): TravisService =
-            TravisSimpleService(travisClient, dataService)
+            SimpleTravisService(travisClient, dataService)
 }

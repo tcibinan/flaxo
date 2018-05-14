@@ -93,7 +93,53 @@ open class SimpleCodacyService(private val client: CodacyClient,
 
     @Transactional
     override fun refresh(course: Course) {
-        TODO("not implemented")
+        val user = course.user
+
+        val githubId = user.githubId
+                ?: throw ModelException("Github id for ${user.nickname} user was not found")
+
+        val codacyToken = user.credentials.codacyToken
+                ?: throw CodacyException("Codacy token is not set for ${user.nickname} user so codacy " +
+                        "service is not activated")
+
+        logger.info("Codacy analyses results refreshing is started for ${user.nickname}/${course.name} course")
+
+        course.tasks
+                .flatMap { it.solutions }
+                .forEach { solution ->
+                    solution.commits
+                            .lastOrNull()
+                            ?.let { commit ->
+                                codacy(githubId, codacyToken)
+                                        .commitDetails(course.name, commit.sha)
+                                        .getOrElseThrow { errorBody ->
+                                            CodacyException("Codacy commit details retrieving failed due to: " +
+                                                    errorBody.string())
+                                        }
+                                        .commit
+                            }
+                            ?.let { codacyCommit ->
+                                val latestGrade = solution.codeStyleReports
+                                        .lastOrNull()
+                                        ?.grade
+                                        ?: "No grade"
+
+                                codacyCommit.takeIf { it.grade != latestGrade }
+                            }
+                            ?.also { codacyCommit ->
+                                logger.info(
+                                        "Updating ${solution.student.nickname} student code style report " +
+                                                "for ${solution.task.branch} branch " +
+                                                "of ${user.nickname}/${course.name} course"
+                                )
+                                dataService.addCodeStyleReport(
+                                        solution,
+                                        codeStyleGrade = codacyCommit.grade
+                                )
+                            }
+                }
+
+        logger.info("Codacy analyses results were refreshed for ${user.nickname}/${course.name} course")
     }
 
 }
