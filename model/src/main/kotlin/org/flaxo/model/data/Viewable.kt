@@ -1,7 +1,7 @@
 package org.flaxo.model.data
 
 /**
- * Interface describing a data object that can be displayed as simple json.
+ * Interface describing a data object that can be displayed as a simple json.
  */
 interface Viewable {
 
@@ -13,6 +13,7 @@ interface Viewable {
     }
 }
 
-fun Set<Viewable>.views(): List<Any> = map { it.view() }
-
-fun List<Viewable>.views(): List<Any> = map { it.view() }
+/**
+ * Returns views of the collection elements.
+ */
+fun Collection<Viewable>.views(): List<Any> = map { it.view() }

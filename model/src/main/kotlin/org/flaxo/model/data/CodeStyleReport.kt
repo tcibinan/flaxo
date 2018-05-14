@@ -9,6 +9,9 @@ import javax.persistence.Id
 import javax.persistence.ManyToOne
 import javax.persistence.Table
 
+/**
+ * Code style report entity.
+ */
 @Entity(name = "code_style_report")
 @Table(name = "code_style_report")
 data class CodeStyleReport(

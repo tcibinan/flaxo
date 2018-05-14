@@ -11,6 +11,9 @@ import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
 import javax.persistence.Table
 
+/**
+ * Plagiarism report entity.
+ */
 @Entity(name = "plagiarism_report")
 @Table(name = "plagiarism_report")
 data class PlagiarismReport(

@@ -9,6 +9,9 @@ import javax.persistence.Id
 import javax.persistence.ManyToOne
 import javax.persistence.Table
 
+/**
+ * Build report entity.
+ */
 @Entity(name = "build_report")
 @Table(name = "build_report")
 data class BuildReport(

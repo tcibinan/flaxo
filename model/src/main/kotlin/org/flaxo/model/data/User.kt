@@ -12,7 +12,7 @@ import javax.persistence.CascadeType
 import javax.persistence.FetchType
 
 /**
- * User data object.
+ * User entity.
  */
 @Entity(name = "user")
 @Table(name = "user",

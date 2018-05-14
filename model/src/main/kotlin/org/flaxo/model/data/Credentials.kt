@@ -7,7 +7,7 @@ import javax.persistence.Id
 import javax.persistence.Table
 
 /**
- * Credentials data object.
+ * Credentials entity.
  */
 @Entity(name = "credentials")
 @Table(name = "credentials")

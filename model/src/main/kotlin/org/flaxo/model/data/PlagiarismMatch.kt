@@ -7,7 +7,7 @@ import javax.persistence.Id
 import javax.persistence.Table
 
 /**
- * Plagiarism match data object.
+ * Plagiarism match entity.
  */
 @Entity(name = "plagiarism_match")
 @Table(name = "plagiarism_match")

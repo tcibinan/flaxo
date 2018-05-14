@@ -13,7 +13,7 @@ import javax.persistence.OneToOne
 import javax.persistence.Table
 
 /**
- * Course data object.
+ * Course entity.
  */
 @Entity(name = "course")
 @Table(name = "course")

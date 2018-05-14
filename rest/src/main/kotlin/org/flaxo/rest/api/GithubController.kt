@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.io.Reader
 import java.security.Principal
-import java.time.LocalDateTime
 import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.servlet.http.HttpServletRequest
@@ -138,39 +137,35 @@ class GithubController(private val responseService: ResponseService,
 
         when (hook) {
             is PullRequest -> {
-                if (hook.isOpened) {
-                    logger.info("Github opening pull request web hook received from ${hook.authorId} " +
-                            "to ${hook.receiverId}/${hook.receiverRepositoryName}")
+                logger.info("Github pull request web hook received from ${hook.authorId} " +
+                        "to ${hook.receiverId}/${hook.receiverRepositoryName}.")
 
-                    val user = dataService.getUserByGithubId(hook.receiverId)
-                            ?: throw GithubException("User with githubId ${hook.receiverId} wasn't found in database.")
+                val user = dataService.getUserByGithubId(hook.receiverId)
+                        ?: throw GithubException("User with githubId ${hook.receiverId} wasn't found in database.")
 
-                    val course = dataService.getCourse(hook.receiverRepositoryName, user)
-                            ?: throw GithubException("Course ${hook.receiverRepositoryName} wasn't found for user ${user.nickname}.")
+                val course = dataService.getCourse(hook.receiverRepositoryName, user)
+                        ?: throw GithubException("Course ${hook.receiverRepositoryName} wasn't found for user ${user.nickname}.")
 
-                    val student = course.students
-                            .find { it.nickname == hook.authorId }
-                            ?: dataService.addStudent(hook.authorId, course)
+                val student = course.students
+                        .find { it.nickname == hook.authorId }
+                        ?: dataService.addStudent(hook.authorId, course).also {
+                            logger.info("Student ${it.nickname} was initialised for course ${user.nickname}/${course.name}.")
+                        }
 
-                    student.solutions
-                            .find { it.task.branch == hook.baseBranch }
-                            ?.also {
-                                dataService.updateSolution(it.copy(
-                                        sha = hook.lastCommitSha,
-                                        date = LocalDateTime.now()
-                                ))
-                            }
-
-                    logger.info("Student ${student.nickname} was initialised for course ${user.nickname}/${course.name}.")
-                } else {
-                    logger.info("Github updating pull request web hook received from ${hook.authorId} " +
-                            "to ${hook.receiverId}/${hook.receiverRepositoryName}.")
-
-                    // do nothing
-                }
+                student.solutions
+                        .find { it.task.branch == hook.baseBranch }
+                        ?.also {
+                            logger.info("Add ${hook.lastCommitSha} commit to ${student.nickname} student solution " +
+                                    "for course ${user.nickname}/${course.name}.")
+                            dataService.addCommit(it, hook.lastCommitSha)
+                        }
             }
             else -> {
-                logger.warn("Github custom web hook received from request: $request.")
+                val message = request.inputStream
+                        .bufferedReader()
+                        .useLines { it.joinToString("\n") }
+
+                logger.warn("Github custom web hook received from request: $message.")
 
                 //do nothing
             }

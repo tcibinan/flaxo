@@ -11,7 +11,7 @@ import javax.persistence.Id
 import javax.persistence.Table
 
 /**
- * Course state data object.
+ * Course state entity.
  */
 @Entity(name = "course_state")
 @Table(name = "course_state")

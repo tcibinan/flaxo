@@ -1,6 +1,5 @@
 package org.flaxo.model.data
 
-import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.Entity
 import javax.persistence.FetchType
@@ -11,7 +10,7 @@ import javax.persistence.OneToMany
 import javax.persistence.Table
 
 /**
- * Student task data object.
+ * Solution entity.
  */
 @Entity(name = "solution")
 @Table(name = "solution")
@@ -27,7 +26,8 @@ data class Solution(
         @ManyToOne(optional = false, fetch = FetchType.LAZY)
         val student: Student = Student(),
 
-        val sha: String? = null,
+        @OneToMany(mappedBy = "solution", orphanRemoval = true)
+        val commits: List<Commit> = mutableListOf(),
 
         @OneToMany(mappedBy = "solution", orphanRemoval = true)
         val buildReports: List<BuildReport> = mutableListOf(),
@@ -35,9 +35,7 @@ data class Solution(
         @OneToMany(mappedBy = "solution", orphanRemoval = true)
         val codeStyleReports: List<CodeStyleReport> = mutableListOf(),
 
-        val score: Int? = null,
-
-        val date: LocalDateTime? = null
+        val score: Int? = null
 
 ) : Identifiable, Viewable {
 
@@ -46,7 +44,7 @@ data class Solution(
             val task = solution.task.branch
             val student = solution.student.nickname
             val score = solution.score
-            val date = solution.date
+            val commits = solution.commits
             val buildReports = solution.buildReports.views()
             val codeStyleReports = solution.codeStyleReports.views()
         }

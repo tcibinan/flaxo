@@ -2,6 +2,7 @@ package org.flaxo.model
 
 import org.flaxo.model.data.BuildReport
 import org.flaxo.model.data.CodeStyleReport
+import org.flaxo.model.data.Commit
 import org.flaxo.model.data.Course
 import org.flaxo.model.data.PlagiarismMatch
 import org.flaxo.model.data.PlagiarismReport
@@ -183,6 +184,13 @@ interface DataService {
     fun addCodeStyleReport(solution: Solution,
                            codeStyleGrade: String
     ): CodeStyleReport
+
+    /**
+     * Adds commit by its [commitSha] to [solution].
+     */
+    fun addCommit(solution: Solution,
+                  commitSha: String
+    ): Commit
 
     /**
      * Adds new plagiarism report.

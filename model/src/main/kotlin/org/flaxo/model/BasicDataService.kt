@@ -2,6 +2,7 @@ package org.flaxo.model
 
 import org.flaxo.model.dao.BuildReportRepository
 import org.flaxo.model.dao.CodeStyleReportRepository
+import org.flaxo.model.dao.CommitRepository
 import org.flaxo.model.dao.CourseRepository
 import org.flaxo.model.dao.CredentialsRepository
 import org.flaxo.model.dao.PlagiarismReportRepository
@@ -11,6 +12,7 @@ import org.flaxo.model.dao.TaskRepository
 import org.flaxo.model.dao.UserRepository
 import org.flaxo.model.data.BuildReport
 import org.flaxo.model.data.CodeStyleReport
+import org.flaxo.model.data.Commit
 import org.flaxo.model.data.Course
 import org.flaxo.model.data.CourseState
 import org.flaxo.model.data.Credentials
@@ -34,7 +36,8 @@ open class BasicDataService(private val userRepository: UserRepository,
                             private val solutionRepository: SolutionRepository,
                             private val buildReportRepository: BuildReportRepository,
                             private val codeStyleReportRepository: CodeStyleReportRepository,
-                            private val plagiarismReportRepository: PlagiarismReportRepository
+                            private val plagiarismReportRepository: PlagiarismReportRepository,
+                            private val commitRepository: CommitRepository
 ) : DataService {
 
     @Transactional
@@ -251,7 +254,7 @@ open class BasicDataService(private val userRepository: UserRepository,
                     ))
                     .also {
                         updateSolution(solution.copy(
-                                buildReports = solution.buildReports.plus(it)
+                                buildReports = solution.buildReports + it
                         ))
                     }
 
@@ -267,7 +270,7 @@ open class BasicDataService(private val userRepository: UserRepository,
                     ))
                     .also {
                         updateSolution(solution.copy(
-                                codeStyleReports = solution.codeStyleReports.plus(it)
+                                codeStyleReports = solution.codeStyleReports + it
                         ))
                     }
 
@@ -285,7 +288,23 @@ open class BasicDataService(private val userRepository: UserRepository,
                     ))
                     .also {
                         updateTask(task.copy(
-                                plagiarismReports = task.plagiarismReports.plus(it)
+                                plagiarismReports = task.plagiarismReports + it
+                        ))
+                    }
+
+    @Transactional
+    override fun addCommit(solution: Solution,
+                           commitSha: String
+    ): Commit =
+            commitRepository
+                    .save(Commit(
+                            solution = solution,
+                            date = LocalDateTime.now(),
+                            sha = commitSha
+                    ))
+                    .also {
+                        updateSolution(solution.copy(
+                                commits = solution.commits + it
                         ))
                     }
 }

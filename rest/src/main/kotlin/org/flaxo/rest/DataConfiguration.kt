@@ -4,6 +4,7 @@ import org.flaxo.model.BasicDataService
 import org.flaxo.model.DataService
 import org.flaxo.model.dao.BuildReportRepository
 import org.flaxo.model.dao.CodeStyleReportRepository
+import org.flaxo.model.dao.CommitRepository
 import org.flaxo.model.dao.CourseRepository
 import org.flaxo.model.dao.CredentialsRepository
 import org.flaxo.model.dao.PlagiarismReportRepository
@@ -23,37 +24,35 @@ import org.springframework.security.crypto.password.PasswordEncoder
 class DataConfiguration {
 
     @Bean
-    fun nonSecuredDataService(
-            userRepository: UserRepository,
-            credentialsRepository: CredentialsRepository,
-            courseRepository: CourseRepository,
-            taskRepository: TaskRepository,
-            studentRepository: StudentRepository,
-            solutionRepository: SolutionRepository,
-            buildReportRepository: BuildReportRepository,
-            codeStyleReportRepository: CodeStyleReportRepository,
-            plagiarismReportRepository: PlagiarismReportRepository
-    ): DataService =
-            BasicDataService(
-                    userRepository,
-                    credentialsRepository,
-                    courseRepository,
-                    taskRepository,
-                    studentRepository,
-                    solutionRepository,
-                    buildReportRepository,
-                    codeStyleReportRepository,
-                    plagiarismReportRepository
-            )
+    fun nonSecuredDataService(userRepository: UserRepository,
+                              credentialsRepository: CredentialsRepository,
+                              courseRepository: CourseRepository,
+                              taskRepository: TaskRepository,
+                              studentRepository: StudentRepository,
+                              solutionRepository: SolutionRepository,
+                              buildReportRepository: BuildReportRepository,
+                              codeStyleReportRepository: CodeStyleReportRepository,
+                              plagiarismReportRepository: PlagiarismReportRepository,
+                              commitRepository: CommitRepository
+    ): DataService = BasicDataService(
+            userRepository,
+            credentialsRepository,
+            courseRepository,
+            taskRepository,
+            studentRepository,
+            solutionRepository,
+            buildReportRepository,
+            codeStyleReportRepository,
+            plagiarismReportRepository,
+            commitRepository
+    )
 
     @Bean
-    fun dataService(
-            nonSecuredDataService: DataService,
-            passwordEncoder: PasswordEncoder
-    ): DataService =
-            SecuredDataService(
-                    nonSecuredDataService,
-                    passwordEncoder
-            )
+    fun dataService(nonSecuredDataService: DataService,
+                    passwordEncoder: PasswordEncoder
+    ): DataService = SecuredDataService(
+            nonSecuredDataService,
+            passwordEncoder
+    )
 
 }
