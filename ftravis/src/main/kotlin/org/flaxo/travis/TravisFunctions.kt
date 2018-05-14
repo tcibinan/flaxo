@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect
 import com.fasterxml.jackson.annotation.PropertyAccessor
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.flaxo.travis.webhook.SimpleTravisPullRequestBuild
 import org.flaxo.travis.webhook.TravisWebHook
 import java.io.Reader
@@ -13,6 +15,7 @@ import java.io.Reader
  */
 fun parseTravisWebHook(reader: Reader): TravisBuild? =
         ObjectMapper()
+                .registerModules(KotlinModule(), JavaTimeModule())
                 .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.NONE)
                 .readerFor(TravisWebHook::class.java)
                 .withoutFeatures(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)

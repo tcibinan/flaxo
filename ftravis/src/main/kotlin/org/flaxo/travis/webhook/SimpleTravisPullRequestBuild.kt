@@ -13,7 +13,7 @@ class SimpleTravisPullRequestBuild(webHook: TravisWebHook)
     override val buildStatus: TravisBuildStatus =
             TravisBuildStatus.retrieve(webHook.statusMessage)
 
-    override val repositoryOwner: String = webHook.repository.owner_name
+    override val repositoryOwner: String = webHook.repository.ownerName
 
     override val repositoryName: String = webHook.repository.name
 
@@ -24,6 +24,6 @@ class SimpleTravisPullRequestBuild(webHook: TravisWebHook)
 
     override val commitSha: String = webHook.commit
 
-    override val finishedAt: LocalDateTime = webHook.finishedAt
+    override val finishedAt: LocalDateTime? = webHook.finishedAt
 
 }

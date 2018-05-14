@@ -1,13 +1,16 @@
 package org.flaxo.travis.webhook
 
+import com.fasterxml.jackson.annotation.JsonProperty
+
 /**
  * Travis web hook repository class.
  *
  * Uses to map json to object model.
  */
-class TravisWebHookRepository {
+class TravisWebHookRepository(
 
-    var name: String = ""
+    val name: String = "",
 
-    var owner_name: String = ""
-}
+    @JsonProperty("owner_name")
+    val ownerName: String = ""
+)

@@ -8,23 +8,22 @@ import java.time.LocalDateTime
  *
  * Uses to map json to object model.
  */
-class TravisWebHook {
-
+class TravisWebHook(
     @JsonProperty("status_message")
-    var statusMessage: String = ""
+    val statusMessage: String = "",
 
-    var type: String = ""
+    val type: String = "",
 
-    var branch: String = ""
+    val branch: String = "",
 
     @JsonProperty("pull_request_number")
-    var pullRequestNumber: String? = null
+    val pullRequestNumber: String? = null,
 
-    var commit: String = ""
+    val commit: String = "",
 
     @JsonProperty("finished_at")
-    var finishedAt: LocalDateTime? = null
+    val finishedAt: LocalDateTime? = null,
 
-    lateinit var repository: TravisWebHookRepository
-}
+    val repository: TravisWebHookRepository = TravisWebHookRepository()
+)
 

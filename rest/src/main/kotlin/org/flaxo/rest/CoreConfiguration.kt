@@ -53,7 +53,6 @@ class CoreConfiguration {
                     KotlinLang to GradleBuildTool(travisEnvironmentSupplier)
             )
 
-
     @Bean
     fun repositoryEnvironmentService(supportedLanguages: Map<String, Language>,
                                      supportedTestingFrameworks: Map<String, TestingFramework>,
