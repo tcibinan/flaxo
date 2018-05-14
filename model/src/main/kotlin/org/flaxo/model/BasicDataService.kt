@@ -244,12 +244,13 @@ open class BasicDataService(private val userRepository: UserRepository,
 
     @Transactional
     override fun addBuildReport(solution: Solution,
-                                succeed: Boolean
+                                succeed: Boolean,
+                                date: LocalDateTime
     ): BuildReport =
             buildReportRepository
                     .save(BuildReport(
                             solution = solution,
-                            date = LocalDateTime.now(),
+                            date = date,
                             succeed = succeed
                     ))
                     .also {
@@ -260,12 +261,13 @@ open class BasicDataService(private val userRepository: UserRepository,
 
     @Transactional
     override fun addCodeStyleReport(solution: Solution,
-                                    codeStyleGrade: String
+                                    codeStyleGrade: String,
+                                    date: LocalDateTime
     ): CodeStyleReport =
             codeStyleReportRepository
                     .save(CodeStyleReport(
                             solution = solution,
-                            date = LocalDateTime.now(),
+                            date = date,
                             grade = codeStyleGrade
                     ))
                     .also {
@@ -277,12 +279,13 @@ open class BasicDataService(private val userRepository: UserRepository,
     @Transactional
     override fun addPlagiarismReport(task: Task,
                                      url: String,
-                                     matches: List<PlagiarismMatch>
+                                     matches: List<PlagiarismMatch>,
+                                     date: LocalDateTime
     ): PlagiarismReport =
             plagiarismReportRepository
                     .save(PlagiarismReport(
                             task = task,
-                            date = LocalDateTime.now(),
+                            date = date,
                             url = url,
                             matches = matches
                     ))

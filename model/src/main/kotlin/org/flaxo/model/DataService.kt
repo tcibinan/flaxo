@@ -10,6 +10,7 @@ import org.flaxo.model.data.Student
 import org.flaxo.model.data.Solution
 import org.flaxo.model.data.Task
 import org.flaxo.model.data.User
+import java.time.LocalDateTime
 
 /**
  * Data service type for all model operations.
@@ -175,14 +176,16 @@ interface DataService {
      * Adds new build report.
      */
     fun addBuildReport(solution: Solution,
-                       succeed: Boolean
+                       succeed: Boolean,
+                       date: LocalDateTime = LocalDateTime.now()
     ): BuildReport
 
     /**
      * Adds new code style report.
      */
     fun addCodeStyleReport(solution: Solution,
-                           codeStyleGrade: String
+                           codeStyleGrade: String,
+                           date: LocalDateTime = LocalDateTime.now()
     ): CodeStyleReport
 
     /**
@@ -197,7 +200,8 @@ interface DataService {
      */
     fun addPlagiarismReport(task: Task,
                             url: String,
-                            matches: List<PlagiarismMatch>
+                            matches: List<PlagiarismMatch>,
+                            date: LocalDateTime = LocalDateTime.now()
     ): PlagiarismReport
 
     /**

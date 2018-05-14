@@ -6,6 +6,8 @@ import org.flaxo.codacy.CodacyClient
 import org.flaxo.codacy.CodacyException
 import org.flaxo.codacy.SimpleCodacy
 import org.flaxo.core.repeatUntil
+import org.flaxo.model.DataService
+import org.flaxo.model.IntegratedService
 import org.flaxo.model.ModelException
 import org.flaxo.model.data.Course
 import org.springframework.transaction.annotation.Propagation
@@ -14,7 +16,8 @@ import org.springframework.transaction.annotation.Transactional
 /**
  * Codacy service basic implementation.
  */
-open class SimpleCodacyService(private val client: CodacyClient
+open class SimpleCodacyService(private val client: CodacyClient,
+                               private val dataService: DataService
 ) : CodacyService {
 
     private val logger = LogManager.getLogger(SimpleCodacyService::class.java)
@@ -53,10 +56,9 @@ open class SimpleCodacyService(private val client: CodacyClient
         }
     }
 
+    @Transactional
     override fun deactivate(course: Course) {
         val user = course.user
-
-        logger.info("Deactivating codacy for ${user.nickname}/${course.name} course")
 
         val githubId = user.githubId
                 ?: throw ModelException("Github id for ${user.nickname} user was not found")
@@ -64,19 +66,32 @@ open class SimpleCodacyService(private val client: CodacyClient
         user.credentials
                 .codacyToken
                 ?.also {
+                    logger.info("Deactivating codacy for ${user.nickname}/${course.name} course")
+
                     codacy(githubId, it)
                             .deleteProject(course.name)
                             ?.also { responseBody ->
                                 throw CodacyException("Codacy project $githubId/${course.name} " +
                                         "deletion went bad due to: ${responseBody.string()}")
                             }
+
                     logger.info("Codacy deactivation for ${user.nickname}/${course.name} course " +
                             "has finished successfully")
+                }
+                ?.also {
+                    logger.info("Removing codacy from activated services of ${user.nickname}/${course.name} course")
+
+                    dataService.updateCourse(course.copy(
+                            state = course.state.copy(
+                                    activatedServices = course.state.activatedServices - IntegratedService.CODACY
+                            )
+                    ))
                 }
                 ?: logger.info("Codacy token wasn't found for ${user.nickname} " +
                         "so no codacy project is deleted")
     }
 
+    @Transactional
     override fun refresh(course: Course) {
         TODO("not implemented")
     }

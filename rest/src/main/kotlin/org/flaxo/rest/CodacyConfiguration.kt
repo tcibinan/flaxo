@@ -1,6 +1,7 @@
 package org.flaxo.rest
 
 import org.flaxo.codacy.CodacyClient
+import org.flaxo.model.DataService
 import org.flaxo.rest.service.codacy.CodacyService
 import org.flaxo.rest.service.codacy.SimpleCodacyService
 import org.springframework.context.annotation.Bean
@@ -27,7 +28,9 @@ class CodacyConfiguration {
                     .create(CodacyClient::class.java)
 
     @Bean
-    fun codacyService(codacyClient: CodacyClient): CodacyService =
-            SimpleCodacyService(codacyClient)
+    fun codacyService(codacyClient: CodacyClient,
+                      dataService: DataService
+    ): CodacyService =
+            SimpleCodacyService(codacyClient, dataService)
 
 }

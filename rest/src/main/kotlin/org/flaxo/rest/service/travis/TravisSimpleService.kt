@@ -15,10 +15,13 @@ import org.flaxo.travis.retrofit.TravisClient
 import org.flaxo.travis.TravisException
 import org.flaxo.travis.TravisUser
 import org.flaxo.travis.TravisBuild
+import org.flaxo.travis.TravisBuildStatus
+import org.flaxo.travis.TravisBuildType
 import org.flaxo.travis.parseTravisWebHook
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import java.io.Reader
+import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
 
 /**
@@ -113,10 +116,9 @@ open class TravisSimpleService(private val client: TravisClient,
                 }
     }
 
+    @Transactional
     override fun deactivate(course: Course) {
         val user = course.user
-
-        logger.info("Deactivating travis for ${user.nickname}/${course.name} course")
 
         val githubId = user.githubId
                 ?: throw ModelException("Github id for ${user.nickname} user was not found")
@@ -124,21 +126,105 @@ open class TravisSimpleService(private val client: TravisClient,
         user.credentials
                 .travisToken
                 ?.also {
+                    logger.info("Deactivating travis for ${user.nickname}/${course.name} course")
+
                     travis(it)
                             .deactivate(githubId, course.name)
                             .getOrElseThrow { errorBody ->
                                 TravisException("Travis deactivation of $githubId/${course.name}" +
                                         "repository went bad due to: ${errorBody.string()}")
                             }
+
                     logger.info("Travis deactivation for ${user.nickname}/${course.name} course " +
                             "has finished successfully")
+                }
+                ?.also {
+                    logger.info("Removing travis from activated services of ${user.nickname}/${course.name} course")
+
+                    dataService.updateCourse(course.copy(
+                            state = course.state.copy(
+                                    activatedServices = course.state.activatedServices - IntegratedService.TRAVIS
+                            )
+                    ))
                 }
                 ?: logger.info("Travis token wasn't found for ${user.nickname} course " +
                         "so no travis repository is deactivated")
     }
 
+    @Transactional
     override fun refresh(course: Course) {
-        TODO("not implemented")
+        val user = course.user
+
+        val githubId = user.githubId
+                ?: throw ModelException("Github id for ${user.nickname} user was not found")
+
+        val travisToken = user.credentials.travisToken
+                ?: throw ModelException("Travis token is not specified for ${user.nickname}")
+
+        logger.info("Travis build results refreshing is started for ${user.nickname}/${course.name} course")
+
+        course.tasks
+                .flatMap { it.solutions }
+                .forEach { solution ->
+                    solution.commits
+                            .lastOrNull()
+                            ?.let { commit ->
+                                travis(travisToken)
+                                        .getBuilds(
+                                                userName = githubId,
+                                                repositoryName = course.name,
+                                                eventType = TravisBuildType.PULL_REQUEST
+                                        )
+                                        .getOrElseThrow { errorBody ->
+                                            TravisException("Travis builds retrieving failed due to: " +
+                                                    errorBody.string())
+                                        }
+                                        .filter { it.commitSha == commit.sha }
+                                        .filter {
+                                            it.buildStatus in setOf(
+                                                    TravisBuildStatus.SUCCEED,
+                                                    TravisBuildStatus.FAILED
+                                            )
+                                        }
+                                        .filter { it.finishedAt != null }
+                                        .sortedBy { it.finishedAt }
+                                        .lastOrNull()
+                            }
+                            ?.also { latestBuild ->
+                                val latestBuildReportDate = solution.buildReports
+                                        .lastOrNull()
+                                        ?.date
+                                        ?: LocalDateTime.MIN
+
+                                latestBuild.takeIf {
+                                    it.finishedAt ?: LocalDateTime.MIN > latestBuildReportDate
+                                }
+                            }
+                            ?.also {
+                                logger.info(
+                                        "Updating ${solution.student.nickname} student build report " +
+                                                "for ${solution.task.branch} branch " +
+                                                "of ${user.nickname}/${course.name} course"
+                                )
+                                when (it.buildStatus) {
+                                    TravisBuildStatus.SUCCEED -> dataService.addBuildReport(
+                                            solution,
+                                            succeed = true,
+                                            date = it.finishedAt ?: LocalDateTime.MIN
+                                    )
+                                    TravisBuildStatus.FAILED -> dataService.addBuildReport(
+                                            solution,
+                                            succeed = false,
+                                            date = it.finishedAt ?: LocalDateTime.MIN
+                                    )
+                                    else -> logger.info(
+                                            "Commit ${it.commitSha} will be ignored during the current refreshing."
+                                    )
+                                }
+                            }
+                }
+
+        logger.info("Travis build results were refreshed for ${user.nickname}/${course.name} course")
     }
 
     private fun retrieveTravisUser(travis: Travis,
