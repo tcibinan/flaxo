@@ -20,6 +20,7 @@ object GithubWebHookParserSpec : SubjectSpek<(Reader) -> GitPayload?>({
     val repositoryName = "repositoryName"
     val baseBranch = "baseBranch"
     val lastCommitSha = "lastCommitSha"
+    val mergeCommitSha = "mergeCommitSha"
 
     val pullRequestCommitsBody =
             """
@@ -65,7 +66,7 @@ object GithubWebHookParserSpec : SubjectSpek<(Reader) -> GitPayload?>({
     val pullRequestBody =
             """
                 {
-                    "merge_commit_sha": "01e731a0c8b81edc7787b573fc0d60911a6fb408"
+                    "merge_commit_sha": "mergeCommitSha"
                 }
             """.trimIndent()
 
@@ -131,6 +132,10 @@ object GithubWebHookParserSpec : SubjectSpek<(Reader) -> GitPayload?>({
 
             it("should determine pull request last commit sha") {
                 assertTrue { payload.lastCommitSha == lastCommitSha }
+            }
+
+            it("should determine pull request merge commit sha") {
+                assertTrue { payload.mergeCommitSha == mergeCommitSha }
             }
         }
     }

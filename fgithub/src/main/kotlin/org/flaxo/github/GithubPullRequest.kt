@@ -12,7 +12,7 @@ class GithubPullRequest : PullRequest {
 
     override val baseBranch: String
     override val lastCommitSha: String
-    override val mergeCommitSha: String
+    override val mergeCommitSha: String?
     override val authorId: String
     override val receiverId: String
     override val receiverRepositoryName: String

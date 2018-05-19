@@ -9,11 +9,6 @@ import org.flaxo.core.language.JavaLang
 import org.flaxo.core.language.KotlinLang
 import org.flaxo.core.language.Language
 import org.flaxo.gradle.GradleBuildTool
-import org.flaxo.rest.Application
-import org.flaxo.rest.CodacyConfiguration
-import org.flaxo.rest.CoreConfiguration
-import org.flaxo.rest.DataConfiguration
-import org.flaxo.rest.TravisConfiguration
 import org.flaxo.rest.service.IncompatibleLanguageException
 import org.flaxo.rest.service.IncompatibleTestingFrameworkException
 import org.flaxo.travis.env.SimpleTravisEnvironmentSupplier
@@ -22,7 +17,6 @@ import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.subject.SubjectSpek
-import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 object RepositoryEnvironmentServiceSpec : SubjectSpek<RepositoryEnvironmentService>({
     val firstLanguage = "java"
