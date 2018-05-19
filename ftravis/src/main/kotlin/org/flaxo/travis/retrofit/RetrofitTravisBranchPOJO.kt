@@ -1,8 +1,8 @@
 package org.flaxo.travis.retrofit
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-
-@JsonIgnoreProperties(ignoreUnknown = true)
+/**
+ * Travis api response branch POJO.
+ */
 class RetrofitTravisBranchPOJO {
 
     var name: String = ""

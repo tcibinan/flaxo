@@ -3,6 +3,7 @@ package org.flaxo.rest.service.travis
 import com.nhaarman.mockito_kotlin.mock
 import io.vavr.kotlin.Try
 import org.flaxo.model.DataService
+import org.flaxo.rest.service.git.GitService
 import org.flaxo.travis.retrofit.TravisClient
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
@@ -17,8 +18,9 @@ object TravisServiceSpec : SubjectSpek<TravisService>({
 
     val travisClient = mock<TravisClient> { }
     val dataService = mock<DataService> { }
+    val gitService = mock<GitService> { }
 
-    subject { SimpleTravisService(travisClient, dataService) }
+    subject { SimpleTravisService(travisClient, dataService, gitService) }
 
     describe("travis service") {
         on("getting travis token") {

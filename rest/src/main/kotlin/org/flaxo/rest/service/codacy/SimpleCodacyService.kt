@@ -1,11 +1,13 @@
 package org.flaxo.rest.service.codacy
 
+import io.vavr.kotlin.Try
 import org.apache.logging.log4j.LogManager
 import org.flaxo.codacy.Codacy
 import org.flaxo.codacy.CodacyClient
 import org.flaxo.codacy.CodacyException
 import org.flaxo.codacy.SimpleCodacy
 import org.flaxo.core.repeatUntil
+import org.flaxo.core.stringStackTrace
 import org.flaxo.model.DataService
 import org.flaxo.model.IntegratedService
 import org.flaxo.model.ModelException
@@ -104,19 +106,25 @@ open class SimpleCodacyService(private val client: CodacyClient,
 
         logger.info("Codacy analyses results refreshing is started for ${user.nickname}/${course.name} course")
 
+        val codacy = codacy(githubId, codacyToken)
+
         course.tasks
                 .flatMap { it.solutions }
                 .forEach { solution ->
                     solution.commits
                             .lastOrNull()
                             ?.let { commit ->
-                                codacy(githubId, codacyToken)
-                                        .commitDetails(course.name, commit.sha)
-                                        .getOrElseThrow { errorBody ->
-                                            CodacyException("Codacy commit details retrieving failed due to: " +
-                                                    errorBody.string())
-                                        }
-                                        .commit
+                                Try {
+                                    codacy
+                                            .commitDetails(course.name, commit.sha)
+                                            .getOrElseThrow { errorBody ->
+                                                CodacyException("Codacy commit details retrieving failed due to: " +
+                                                        errorBody.string())
+                                            }
+                                            .commit
+                                }.onFailure {
+                                    logger.error("Codacy commit details retrieving failed due to: ${it.stringStackTrace()}")
+                                }.orNull
                             }
                             ?.let { codacyCommit ->
                                 val latestGrade = solution.codeStyleReports

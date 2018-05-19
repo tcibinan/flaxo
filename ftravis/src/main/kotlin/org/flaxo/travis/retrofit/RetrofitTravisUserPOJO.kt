@@ -1,12 +1,10 @@
 package org.flaxo.travis.retrofit
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
- * Travis user class.
+ * Travis api response user POJO.
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
 class RetrofitTravisUserPOJO {
 
     var id: String = ""

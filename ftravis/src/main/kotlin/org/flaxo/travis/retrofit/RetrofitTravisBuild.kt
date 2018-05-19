@@ -4,9 +4,11 @@ import org.flaxo.travis.TravisBuildStatus
 import org.flaxo.travis.TravisPullRequestBuild
 import java.time.LocalDateTime
 
-class RetrofitTravisBuild(pojo: RetrofitTravisBuildPOJO): TravisPullRequestBuild {
+class RetrofitTravisBuild(pojo: RetrofitTravisBuildPOJO) : TravisPullRequestBuild {
 
-    override val repositoryOwner: String = pojo.repository.owner.name
+    // Workaround on repository minimal representation
+    override val repositoryOwner: String = pojo.repository.slug.split("/").firstOrNull()
+            ?: "repositoryOwnerWasNotRetrieved"
 
     override val repositoryName: String = pojo.repository.name
 

@@ -483,7 +483,7 @@ class CourseController(private val dataService: DataService,
     /**
      * Synchronize all validations results.
      */
-    @GetMapping("/sync")
+    @PostMapping("/sync")
     @Transactional
     fun synchronize(@RequestParam courseName: String,
                     principal: Principal

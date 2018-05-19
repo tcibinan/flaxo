@@ -44,7 +44,7 @@ data class Solution(
             val task = solution.task.branch
             val student = solution.student.nickname
             val score = solution.score
-            val commits = solution.commits
+            val commits = solution.commits.views()
             val buildReports = solution.buildReports.views()
             val codeStyleReports = solution.codeStyleReports.views()
         }

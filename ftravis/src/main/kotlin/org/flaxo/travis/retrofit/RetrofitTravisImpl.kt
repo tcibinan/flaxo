@@ -66,7 +66,7 @@ class RetrofitTravisImpl(private val travisClient: TravisClient,
                     )
                     .call()
                     .map { prevBuilds ->
-                        prevBuilds.takeUnless { it.pagination.isLast }
+                        prevBuilds.takeUnless { it.pagination.last }
                                 ?.let {
                                     getBuildsRecursive(userName, repositoryName, eventType, prevBuilds.pagination.offset)
                                             .takeIf { it.isRight }

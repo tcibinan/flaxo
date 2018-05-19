@@ -12,6 +12,7 @@ class GithubPullRequest : PullRequest {
 
     override val baseBranch: String
     override val lastCommitSha: String
+    override val mergeCommitSha: String
     override val authorId: String
     override val receiverId: String
     override val receiverRepositoryName: String
@@ -20,6 +21,7 @@ class GithubPullRequest : PullRequest {
     constructor(pullRequestEventPayload: KohsukeGithubEventPayload.PullRequest) {
         this.baseBranch = pullRequestEventPayload.pullRequest.base.ref
         this.lastCommitSha = pullRequestEventPayload.pullRequest.lastCommit()
+        this.mergeCommitSha = pullRequestEventPayload.pullRequest.mergeCommitSha
         this.authorId = pullRequestEventPayload.pullRequest.user.login
         this.receiverId = pullRequestEventPayload.repository.owner.login
         this.receiverRepositoryName = pullRequestEventPayload.repository.name
@@ -29,6 +31,7 @@ class GithubPullRequest : PullRequest {
     constructor(pullRequest: KohsukeGithubPullRequest) {
         this.baseBranch = pullRequest.base.ref
         this.lastCommitSha = pullRequest.lastCommit()
+        this.mergeCommitSha = pullRequest.mergeCommitSha
         this.authorId = pullRequest.user.login
         this.receiverId = pullRequest.repository.owner.login
         this.receiverRepositoryName = pullRequest.repository.name

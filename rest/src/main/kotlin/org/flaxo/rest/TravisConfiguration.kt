@@ -1,6 +1,11 @@
 package org.flaxo.rest
 
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.flaxo.model.DataService
+import org.flaxo.rest.service.git.GitService
 import org.flaxo.rest.service.travis.TravisService
 import org.flaxo.rest.service.travis.SimpleTravisService
 import org.flaxo.travis.retrofit.TravisClient
@@ -23,13 +28,17 @@ class TravisConfiguration {
     fun travisClient(): TravisClient =
             Retrofit.Builder()
                     .baseUrl(baseUrl)
-                    .addConverterFactory(JacksonConverterFactory.create())
+                    .addConverterFactory(JacksonConverterFactory.create(
+                            ObjectMapper().registerModules(KotlinModule(), JavaTimeModule())
+                                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                    ))
                     .build()
                     .create(TravisClient::class.java)
 
     @Bean
     fun travisService(travisClient: TravisClient,
-                      dataService: DataService
+                      dataService: DataService,
+                      gitService: GitService
     ): TravisService =
-            SimpleTravisService(travisClient, dataService)
+            SimpleTravisService(travisClient, dataService, gitService)
 }

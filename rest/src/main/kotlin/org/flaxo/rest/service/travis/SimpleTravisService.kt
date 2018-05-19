@@ -4,11 +4,13 @@ import org.apache.logging.log4j.LogManager
 import org.flaxo.cmd.CmdExecutor
 import org.flaxo.core.of
 import org.flaxo.core.repeatUntil
+import org.flaxo.github.GithubException
 import org.flaxo.model.DataService
 import org.flaxo.model.IntegratedService
 import org.flaxo.model.ModelException
 import org.flaxo.model.data.Course
 import org.flaxo.model.data.User
+import org.flaxo.rest.service.git.GitService
 import org.flaxo.travis.retrofit.RetrofitTravisImpl
 import org.flaxo.travis.Travis
 import org.flaxo.travis.retrofit.TravisClient
@@ -28,7 +30,8 @@ import java.util.concurrent.TimeUnit
  * Travis service basic implementation.
  */
 open class SimpleTravisService(private val client: TravisClient,
-                               private val dataService: DataService
+                               private val dataService: DataService,
+                               private val gitService: GitService
 ) : TravisService {
 
     private val logger = LogManager.getLogger(SimpleTravisService::class.java)
@@ -158,46 +161,61 @@ open class SimpleTravisService(private val client: TravisClient,
         val githubId = user.githubId
                 ?: throw ModelException("Github id for ${user.nickname} user was not found")
 
+        val githubToken = user.credentials.githubToken
+                ?: throw ModelException("Github token is not specified for ${user.nickname}")
+
         val travisToken = user.credentials.travisToken
                 ?: throw ModelException("Travis token is not specified for ${user.nickname}")
 
         logger.info("Travis build results refreshing is started for ${user.nickname}/${course.name} course")
 
+        val travis = travis(travisToken)
+
+        logger.info("Retrieving open pull requests for ${user.nickname}/${course.name} course")
+
+        val openPullRequests = gitService.with(githubToken)
+                .getRepository(course.name)
+                .getOpenPullRequests()
+
+        logger.info("Retrieving travis builds for ${user.nickname}/${course.name} course")
+
+        val travisBuilds = travis
+                .getBuilds(githubId, course.name, eventType = TravisBuildType.PULL_REQUEST)
+                .peekLeft { errorBody ->
+                    logger.info("Travis builds retrieving failed due to: " + errorBody.string())
+                }
+                .orNull
+
         course.tasks
+                .takeIf { travisBuilds != null }.orEmpty()
                 .flatMap { it.solutions }
+                .filter { it.commits.isNotEmpty() }
                 .forEach { solution ->
-                    solution.commits
-                            .lastOrNull()
-                            ?.let { commit ->
-                                travis(travisToken)
-                                        .getBuilds(
-                                                userName = githubId,
-                                                repositoryName = course.name,
-                                                eventType = TravisBuildType.PULL_REQUEST
-                                        )
-                                        .getOrElseThrow { errorBody ->
-                                            TravisException("Travis builds retrieving failed due to: " +
-                                                    errorBody.string())
-                                        }
-                                        .filter { it.commitSha == commit.sha }
-                                        .filter {
-                                            it.buildStatus in setOf(
-                                                    TravisBuildStatus.SUCCEED,
-                                                    TravisBuildStatus.FAILED
-                                            )
-                                        }
-                                        .filter { it.finishedAt != null }
-                                        .sortedBy { it.finishedAt }
-                                        .lastOrNull()
+                    val pullRequest = openPullRequests
+                            .filter { it.authorId == solution.student.nickname }
+                            .firstOrNull { it.baseBranch == solution.task.branch }
+                            ?: throw GithubException("Pull request solution of ${solution.student.nickname}/${solution.task.branch} student " +
+                                    "for ${user.nickname}/${course.name} course was not found")
+
+                    travisBuilds
+                            .filter { it.commitSha == pullRequest.mergeCommitSha }
+                            .filter {
+                                it.buildStatus in setOf(
+                                        TravisBuildStatus.SUCCEED,
+                                        TravisBuildStatus.FAILED
+                                )
                             }
-                            ?.also { latestBuild ->
+                            .filter { it.finishedAt != null }
+                            .sortedBy { it.finishedAt }
+                            .lastOrNull()
+                            ?.let { latestBuild ->
                                 val latestBuildReportDate = solution.buildReports
                                         .lastOrNull()
                                         ?.date
                                         ?: LocalDateTime.MIN
 
                                 latestBuild.takeIf {
-                                    it.finishedAt ?: LocalDateTime.MIN > latestBuildReportDate
+                                    (it.finishedAt ?: LocalDateTime.MIN) > latestBuildReportDate
                                 }
                             }
                             ?.also {
@@ -218,7 +236,8 @@ open class SimpleTravisService(private val client: TravisClient,
                                             date = it.finishedAt ?: LocalDateTime.MIN
                                     )
                                     else -> logger.info(
-                                            "Commit ${it.commitSha} will be ignored during the current refreshing."
+                                            "Commit ${it.commitSha} will be ignored during the current refreshing" +
+                                                    "due to unexpected build status."
                                     )
                                 }
                             }

@@ -1,10 +1,11 @@
 package org.flaxo.travis.retrofit
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDateTime
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+/**
+ * Travis api response build POJO.
+ */
 class RetrofitTravisBuildPOJO {
 
     var state: String = ""
@@ -23,5 +24,4 @@ class RetrofitTravisBuildPOJO {
     lateinit var branch: RetrofitTravisBranchPOJO
 
     lateinit var commit: RetrofitTravisCommitPOJO
-
 }

@@ -11,6 +11,12 @@ interface PullRequest : GitPayload {
     val lastCommitSha: String
 
     /**
+     * Git creates a technical commit where it merges target and source branches.
+     * This property represents sha of that commit.
+     */
+    val mergeCommitSha: String
+
+    /**
      * Pull request base branch.
      */
     val baseBranch: String
