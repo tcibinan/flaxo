@@ -156,7 +156,16 @@ module.exports = SetupEndpoint({
                                     task: 'task1',
                                     student: 'student1',
                                     score: 80,
-                                    date: '2018-04-10T15:00:00.000',
+                                    commits: [
+                                        {
+                                            sha: 'task1student1sha1',
+                                            date: '2018-04-10T10:00:00.000'
+                                        },
+                                        {
+                                            sha: 'task1student1sha2',
+                                            date: '2018-04-10T15:00:00.000'
+                                        }
+                                    ],
                                     buildReports: [
                                         {
                                             succeed: true,
@@ -182,7 +191,12 @@ module.exports = SetupEndpoint({
                                     task: 'task1',
                                     student: 'student2',
                                     score: null,
-                                    date: '2018-04-10T15:00:00.000',
+                                    commits: [
+                                        {
+                                            sha: 'task1student2sha1',
+                                            date: '2018-04-10T15:00:00.000'
+                                        }
+                                    ],
                                     buildReports: [
                                         {
                                             succeed: true,
@@ -200,7 +214,12 @@ module.exports = SetupEndpoint({
                                     task: 'task1',
                                     student: 'student3',
                                     score: 75,
-                                    date: '2018-04-10T15:00:00.000',
+                                    commits: [
+                                        {
+                                            sha: 'task1student3sha1',
+                                            date: '2018-04-10T15:00:00.000'
+                                        }
+                                    ],
                                     buildReports: [
                                         {
                                             succeed: false,
@@ -218,7 +237,7 @@ module.exports = SetupEndpoint({
                                     task: 'task1',
                                     student: 'student4',
                                     score: null,
-                                    date: null,
+                                    commits: [],
                                     buildReports: [],
                                     codeStyleReports: []
                                 },
@@ -227,6 +246,12 @@ module.exports = SetupEndpoint({
                                     student: 'student5',
                                     score: 70,
                                     date: '2018-05-30T15:00:00.000',
+                                    commits: [
+                                        {
+                                            sha: 'task1student5sha1',
+                                            date: '2018-05-30T15:00:00.000'
+                                        }
+                                    ],
                                     buildReports: [
                                         {
                                             succeed: true,
@@ -252,7 +277,7 @@ module.exports = SetupEndpoint({
                                     task: 'task2',
                                     student: 'student1',
                                     score: null,
-                                    date: null,
+                                    commits: [],
                                     buildReports: [],
                                     codeStyleReports: []
                                 },
@@ -260,7 +285,7 @@ module.exports = SetupEndpoint({
                                     task: 'task2',
                                     student: 'student2',
                                     score: null,
-                                    date: null,
+                                    commits: [],
                                     buildReports: [],
                                     codeStyleReports: []
                                 },
@@ -268,7 +293,7 @@ module.exports = SetupEndpoint({
                                     task: 'task2',
                                     student: 'student3',
                                     score: null,
-                                    date: null,
+                                    commits: [],
                                     buildReports: [],
                                     codeStyleReports: []
                                 },
@@ -276,7 +301,7 @@ module.exports = SetupEndpoint({
                                     task: 'task2',
                                     student: 'student4',
                                     score: null,
-                                    date: null,
+                                    commits: [],
                                     buildReports: [],
                                     codeStyleReports: []
                                 },
@@ -284,7 +309,7 @@ module.exports = SetupEndpoint({
                                     task: 'task2',
                                     student: 'student5',
                                     score: null,
-                                    date: null,
+                                    commits: [],
                                     buildReports: [],
                                     codeStyleReports: []
                                 }
