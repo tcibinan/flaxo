@@ -45,6 +45,7 @@ object GithubWebHookParserSpec : SubjectSpek<(Reader) -> GitPayload?>({
                 {
                     "action": "opened",
                     "pull_request": {
+                        "url": "http://pull_request_url",
                         "user": {
                             "login": "$pullRequestAuthor"
                         },
@@ -61,13 +62,22 @@ object GithubWebHookParserSpec : SubjectSpek<(Reader) -> GitPayload?>({
                 }
             """.trimIndent()
 
+    val pullRequestBody =
+            """
+                {
+                    "merge_commit_sha": "01e731a0c8b81edc7787b573fc0d60911a6fb408"
+                }
+            """.trimIndent()
+
     val connectionMock = mock<HttpURLConnection> {
         on { requestMethod }.thenReturn("GET")
         on { responseCode }.thenReturn(200)
         on { inputStream }.thenReturn(
                 pullRequestCommitsBody.byteInputStream(),
+                pullRequestBody.byteInputStream(),
                 repositoryOwnerUserBody.byteInputStream(),
                 pullRequestCommitsBody.byteInputStream(),
+                pullRequestBody.byteInputStream(),
                 repositoryOwnerUserBody.byteInputStream()
         )
     }
