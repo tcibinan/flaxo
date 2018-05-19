@@ -7,6 +7,7 @@ import {
     CardTitle,
     Table
 } from 'reactstrap';
+import {CourseStatisticsRefresh} from './CourseStatisticsRefresh';
 
 export class CourseSummary extends React.Component {
 
@@ -60,6 +61,7 @@ export class CourseSummary extends React.Component {
                         >
                             Save results
                         </Button>
+                        <CourseStatisticsRefresh course={this.props.course}/>
                         <section className="course-stats">
                             <Table hover size="sm">
                                 <thead>

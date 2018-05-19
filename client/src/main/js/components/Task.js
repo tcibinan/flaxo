@@ -9,6 +9,7 @@ import {
 } from 'reactstrap';
 import {Rules} from './Rules';
 import {TaskStatistics} from './TaskStatistics';
+import {CourseStatisticsRefresh} from './CourseStatisticsRefresh';
 
 export class Task extends React.Component {
 
@@ -68,6 +69,7 @@ export class Task extends React.Component {
                         >
                             Rules
                         </Button>
+                        <CourseStatisticsRefresh course={this.props.course}/>
                         <Collapse isOpen={this.state.rulesCollapse}>
                             <hr/>
                             <Rules course={this.props.course} task={this.props.task}/>

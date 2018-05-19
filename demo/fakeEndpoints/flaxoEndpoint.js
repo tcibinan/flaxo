@@ -42,6 +42,15 @@ module.exports = SetupEndpoint({
             }]
         },
         {
+            params: '/course/sync',
+            requests: [{
+                method: 'POST',
+                response: {
+                    payload: 'OK'
+                }
+            }]
+        },
+        {
             params: '/course/all',
             requests: [{
                 method: 'GET',

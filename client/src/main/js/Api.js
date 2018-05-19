@@ -128,6 +128,21 @@ export class Api {
         }
     }
 
+    static syncCourse(credentials, courseName, onSuccess, onFailure) {
+        if (credentials.username && credentials.password) {
+            axios
+                .post('course/sync', {}, {
+                    baseURL: restUrl(),
+                    auth: credentials,
+                    params: {
+                        courseName
+                    }
+                })
+                .then(response => onSuccess(response.data.payload))
+                .catch(response => onFailure(response));
+        }
+    }
+
     static updateRules(credentials, courseName, taskBranch, deadline, onSuccess, onFailure) {
         if (credentials.username && credentials.password) {
             axios

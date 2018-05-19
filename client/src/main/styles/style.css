@@ -134,8 +134,18 @@
     border-top: none;
 }
 
+.icon-btn {
+}
+
 .task-card .rules-toggle-btn,
 .task-card .save-results-btn,
-.course-summary .save-results-btn {
+.task-card .icon-btn,
+.course-summary .save-results-btn,
+.course-summary .icon-btn {
     margin-left: 20px;
+}
+
+.task-card .icon-btn,
+.course-summary .icon-btn {
+    line-height: 16px;
 }

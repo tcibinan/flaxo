@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Immutable, {Seq} from 'immutable';
+import {Seq} from 'immutable';
 import {credentials} from '../scripts';
 import {Api} from '../Api';
 import {Notification} from './Notification';
