@@ -10,5 +10,7 @@ class TravisPaginationPOJO {
     @JsonProperty("is_last")
     var last: Boolean = false
 
+    var next: TravisNextPagePOJO? = null
+
     var offset: Int = 0
 }

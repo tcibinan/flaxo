@@ -67,8 +67,10 @@ class RetrofitTravisImpl(private val travisClient: TravisClient,
                     .call()
                     .map { prevBuilds ->
                         prevBuilds.takeUnless { it.pagination.last }
+                                ?.takeIf { it.pagination.next?.offset != null }
                                 ?.let {
-                                    getBuildsRecursive(userName, repositoryName, eventType, prevBuilds.pagination.offset)
+                                    val nextPageOffset = prevBuilds.pagination.next?.offset ?: 0
+                                    getBuildsRecursive(userName, repositoryName, eventType, nextPageOffset)
                                             .takeIf { it.isRight }
                                             ?.let { prevBuilds.builds + it.get() }
                                 }
