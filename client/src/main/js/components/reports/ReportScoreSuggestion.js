@@ -18,10 +18,15 @@ export function ReportScoreSuggestion(props) {
             .codeStyleReports
             .last();
 
+    const latestCommit =
+        props.solution
+            .commits
+            .last();
+
     const suggestedResult = suggestScore(
         latestBuildReport,
         latestCodeStyleReport,
-        props.solution.date,
+        latestCommit,
         props.task.deadline
     );
 

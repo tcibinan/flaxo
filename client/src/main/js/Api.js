@@ -146,7 +146,7 @@ export class Api {
     static updateRules(credentials, courseName, taskBranch, deadline, onSuccess, onFailure) {
         if (credentials.username && credentials.password) {
             axios
-                .put('task/update/rules', {}, {
+                .post('task/update/rules', {}, {
                     baseURL: restUrl(),
                     auth: credentials,
                     params: {
