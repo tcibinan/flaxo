@@ -66,4 +66,40 @@ class TaskController(private val dataService: DataService,
                 ?.let { responseService.ok(it.view()) }
                 ?: responseService.ok(task.view())
     }
+
+    /**
+     * Update task solutions scores.
+     *
+     * @param courseName Name of the course.
+     * @param taskBranch Name of the branch related to exact task.
+     * @param scores Updates students scores.
+     */
+    @PostMapping("/update/scores")
+    @PreAuthorize("hasAuthority('USER')")
+    @Transactional
+    fun updateScores(@RequestParam courseName: String,
+                     @RequestParam taskBranch: String,
+                     @RequestParam scores: Map<String, Int>,
+                     principal: Principal
+    ): ResponseEntity<Any> {
+        logger.info("Updating scores for ${principal.name}/$courseName/$taskBranch task")
+
+        val user = dataService.getUser(principal.name)
+                ?: return responseService.userNotFound(principal.name)
+
+        val course = dataService.getCourse(courseName, user)
+                ?: return responseService.courseNotFound(principal.name, courseName)
+
+        val task = course.tasks
+                .find { it.branch == taskBranch }
+                ?: return responseService.taskNotFound(principal.name, courseName, taskBranch)
+
+        task.solutions
+                .filter { it.student.nickname in scores }
+                .filterNot { it.score != scores.get(it.student.nickname) }
+                .map { it.copy(score = scores.get(it.student.nickname)) }
+                .forEach { dataService.updateSolution(it) }
+
+        return responseService.ok()
+    }
 }
