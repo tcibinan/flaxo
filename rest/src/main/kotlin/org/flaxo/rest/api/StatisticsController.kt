@@ -69,7 +69,7 @@ class StatisticsController(private val dataService: DataService,
                 .let { statistics ->
                     ResponseEntity.ok()
                             .header(HttpHeaders.CONTENT_DISPOSITION,
-                                    "attachment;filename=$courseName-statistics.json"
+                                    "attachment;filename=$courseName-statistics.${statisticsConverter.extension}"
                             )
                             .contentType(MediaType.APPLICATION_JSON)
                             .contentLength(statistics.size.toLong())

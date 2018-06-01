@@ -51,8 +51,8 @@ export class CourseStatisticsDownloadMenu extends React.Component {
                     </DropdownToggle>
                     <DropdownMenu>
                         <DropdownItem onClick={() => this.downloadAs('json')}>json</DropdownItem>
+                        <DropdownItem onClick={() => this.downloadAs('csv')}>csv</DropdownItem>
                         <DropdownItem disabled onClick={() => this.downloadAs('xls')}>excel</DropdownItem>
-                        <DropdownItem disabled onClick={() => this.downloadAs('csv')}>csv</DropdownItem>
                     </DropdownMenu>
                 </ButtonDropdown>
             </div>

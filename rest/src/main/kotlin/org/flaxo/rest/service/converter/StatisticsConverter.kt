@@ -9,6 +9,11 @@ package org.flaxo.rest.service.converter
 interface StatisticsConverter {
 
     /**
+     * Statistics file extension.
+     */
+    val extension: String
+
+    /**
      * Converts given statistics to a single string.
      *
      * Map is supposed to be organised as the following example:

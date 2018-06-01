@@ -12,6 +12,7 @@ import org.flaxo.gradle.GradleBuildTool
 import org.flaxo.model.IntegratedService
 import org.flaxo.rest.service.CourseValidation
 import org.flaxo.rest.service.codacy.CodacyService
+import org.flaxo.rest.service.converter.CsvStatisticsConverter
 import org.flaxo.rest.service.converter.JsonStatisticsConverter
 import org.flaxo.rest.service.converter.StatisticsConverter
 import org.flaxo.rest.service.environment.RepositoryEnvironmentService
@@ -66,7 +67,8 @@ class CoreConfiguration {
 
     @Bean
     fun statisticsConverters(): Map<String, StatisticsConverter> = mapOf(
-            "json" to JsonStatisticsConverter
+            "json" to JsonStatisticsConverter,
+            "csv" to CsvStatisticsConverter
     )
 
     @Bean
