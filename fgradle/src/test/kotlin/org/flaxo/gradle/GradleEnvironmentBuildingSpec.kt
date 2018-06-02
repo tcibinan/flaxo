@@ -74,9 +74,9 @@ object GradleEnvironmentBuildingSpec : Spek({
                 tempDir.deleteOnExit()
 
                 CmdExecutor.within(tempDir).execute("touch", gradleBuildFile)
-                File(tempDir, gradleBuildFile).fillWith(buildFile.content())
+                File(tempDir, gradleBuildFile).fillWith(buildFile.content)
                 CmdExecutor.within(tempDir).execute("touch", gradleSettingsFile)
-                File(tempDir, gradleSettingsFile).fillWith(settingsFile.content())
+                File(tempDir, gradleSettingsFile).fillWith(settingsFile.content)
                 GradleCmdExecutor.within(tempDir).build()
             }
         }

@@ -1,17 +1,13 @@
 package org.flaxo.gradle
 
 import org.flaxo.core.env.EnvironmentFile
+import java.nio.file.Path
+import java.nio.file.Paths
 
-class GradleBuildFile
-private constructor(private val content: String)
+class GradleBuildFile private constructor(override val content: String)
     : EnvironmentFile {
 
-    override val name = "build.gradle"
-
-    override fun content() = content
-
-    // temporary implementation
-    override fun with(path: String): EnvironmentFile = this
+    override val path: Path = Paths.get("build.gradle")
 
     companion object {
 

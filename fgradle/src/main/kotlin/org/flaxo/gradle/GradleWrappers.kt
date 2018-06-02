@@ -44,8 +44,8 @@ class GradleWrappers private constructor(files: Set<EnvironmentFile>)
                                      gradleBuild: EnvironmentFile,
                                      gradleSettings: EnvironmentFile
         ): () -> GradleWrappers = {
-            File(dir, gradleBuild.name).fillWith(gradleBuild.content())
-            File(dir, gradleSettings.name).fillWith(gradleSettings.content())
+            File(dir, gradleBuild.fileName).fillWith(gradleBuild.content)
+            File(dir, gradleSettings.fileName).fillWith(gradleSettings.content)
 
             GradleCmdExecutor.within(dir).wrapper()
 

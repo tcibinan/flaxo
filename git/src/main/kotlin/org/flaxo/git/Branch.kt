@@ -1,6 +1,7 @@
 package org.flaxo.git
 
 import org.flaxo.core.env.EnvironmentFile
+import java.nio.file.Path
 
 /**
  * Git repository branch interface.
@@ -30,8 +31,8 @@ interface Branch {
      * @return Performed commit.
      */
     fun commit(file: EnvironmentFile,
-               filePath: String = file.name,
-               commitMessage: String = "feat: Add $filePath"
+               repositoryFilePath: Path = file.path.fileName,
+               commitMessage: String = "feat: Add $repositoryFilePath"
     ): Commit
 
     /**
@@ -42,8 +43,8 @@ interface Branch {
      * @return Performed commit.
      */
     fun update(file: EnvironmentFile,
-               filePath: String = file.name,
-               commitMessage: String = "feat: Update $filePath"
+               repositoryFilePath: Path = file.path.fileName,
+               commitMessage: String = "feat: Update $repositoryFilePath"
     ): Commit
 
     /**

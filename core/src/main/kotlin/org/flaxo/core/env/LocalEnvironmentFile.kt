@@ -6,21 +6,14 @@ import java.nio.file.Paths
 
 /**
  * Local environment file.
- *
- * Uses server file system to receive file by its location.
  */
 class LocalEnvironmentFile(location: String) : EnvironmentFile {
 
-    private val path: Path = Paths.get(location)
+    override val path: Path = Paths.get(location)
 
-    override val name = location
+    override val content: String
+        get() = file.useLines { it.joinToString("\n") }
 
-    override fun content(): String =
-            file().useLines { it.joinToString("\n") }
-
-    override fun with(path: String): EnvironmentFile =
-            LocalEnvironmentFile(path)
-
-    override fun file(): File = path.toFile()
+    override val file: File = path.toFile()
 
 }

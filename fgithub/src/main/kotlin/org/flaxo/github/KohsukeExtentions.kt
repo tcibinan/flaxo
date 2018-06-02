@@ -11,7 +11,7 @@ fun KohsukeGithub.nickname() =
         myself.login
                 ?: throw GithubException("Associated user nickname not found for the current github client")
 
-fun KohsukeGithub.repository(repositoryName: String)
+fun KohsukeGithub.repository(owner: String,
+                             repositoryName: String)
         : KohsukeGithubRepository =
-        getRepository("${nickname()}/$repositoryName")
-
+        getUser(owner).getRepository(repositoryName)

@@ -14,7 +14,7 @@ data class GithubRepository(override val name: String,
 
     override fun exists(): Boolean =
         try {
-            client.repository(name)
+            client.repository(owner, name)
             true
         } catch (e: IOException) {
             false
@@ -22,14 +22,14 @@ data class GithubRepository(override val name: String,
 
     private val client = github.client
 
-    override val forks: Int = client.repository(name).forks
+    override val forks: Int = client.repository(owner, name).forks
 
     override fun delete() {
-        client.repository(name).delete()
+        client.repository(owner, name).delete()
     }
 
     override fun branches(): List<Branch> =
-            client.repository(name)
+            client.repository(owner, name)
                     .branches
                     .values
                     .map { branch ->
@@ -37,7 +37,7 @@ data class GithubRepository(override val name: String,
                     }
 
     override fun createBranch(branchName: String): Branch {
-        client.repository(name).apply {
+        client.repository(owner, name).apply {
             listCommits().asList().last().shA1.also {
                 createBranch(branchName, it)
             }
@@ -47,19 +47,19 @@ data class GithubRepository(override val name: String,
     }
 
     override fun addWebHook() {
-        client.repository(name)
+        client.repository(owner, name)
                 .createWebHook(github.webHookUrl, listOf(GHEvent.PULL_REQUEST))
     }
 
     override fun getPullRequest(pullRequestNumber: Int): PullRequest =
-            client.repository(name)
+            client.repository(owner, name)
                     .getPullRequest(pullRequestNumber)
                     ?.let { GithubPullRequest(it) }
                     ?: throw GithubException("Pull request $pullRequestNumber wasn't found " +
                             "for repositoryName ${github.nickname()}/$name.")
 
     override fun getOpenPullRequests(): List<PullRequest> =
-            client.repository(name)
+            client.repository(owner, name)
                     .getPullRequests(GHIssueState.OPEN)
                     .map { GithubPullRequest(it) }
 

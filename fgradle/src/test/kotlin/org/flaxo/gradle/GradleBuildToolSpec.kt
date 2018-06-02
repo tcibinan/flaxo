@@ -2,7 +2,6 @@ package org.flaxo.gradle
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
-import jdk.nashorn.internal.objects.NativeString.substring
 import org.amshove.kluent.shouldContain
 import org.amshove.kluent.shouldContainSome
 import org.amshove.kluent.shouldEqual
@@ -46,11 +45,11 @@ object GradleBuildToolSpec : SubjectSpek<BuildTool>({
                             .addPlugin(secondPlugin)
             val environment = buildTool.getEnvironment()
             val buildGradle = environment.getFiles()
-                    .find { it.name == "build.gradle" }
+                    .find { it.fileName == "build.gradle" }
                     ?: throw GradleException("build.gradle wasn't found")
 
             it("should have build.gradle with all passed plugins") {
-                buildGradle.content() shouldContainSome listOf("apply plugin: ", "id ")
+                buildGradle.content shouldContainSome listOf("apply plugin: ", "id ")
                 buildGradle.shouldHaveName(firstPlugin, secondPlugin)
             }
 
@@ -67,7 +66,7 @@ object GradleBuildToolSpec : SubjectSpek<BuildTool>({
                             .addDependency(secondDependency)
             val environment = buildTool.getEnvironment()
             val buildGradle = environment.getFiles()
-                    .find { it.name == "build.gradle" }
+                    .find { it.fileName == "build.gradle" }
                     ?: throw GradleException("build.gradle wasn't found")
 
             it("should have build.gradle with build.gradle containing single dependency") {
@@ -86,7 +85,7 @@ object GradleBuildToolSpec : SubjectSpek<BuildTool>({
                             .addDependency(compilingDependency)
             val environment = buildTool.getEnvironment()
             val buildGradle = environment.getFiles()
-                    .find { it.name == "build.gradle" }
+                    .find { it.fileName == "build.gradle" }
                     ?: throw GradleException("build.gradle wasn't found")
 
             it("should contain all dependencies") {
@@ -100,7 +99,7 @@ object GradleBuildToolSpec : SubjectSpek<BuildTool>({
 private fun EnvironmentFile.shouldHaveName(vararg plugins: GradlePlugin) {
     plugins.map { it.id }
             .forEach {
-                content() shouldContainSome listOf(
+                content shouldContainSome listOf(
                         "apply plugin: \"$it\"",
                         "id \"$it\""
                 )
@@ -110,29 +109,30 @@ private fun EnvironmentFile.shouldHaveName(vararg plugins: GradlePlugin) {
 private fun EnvironmentFile.shouldHaveSingle(vararg plugins: GradlePlugin) {
     plugins.map { it.id }
             .forEach {
-                content()
+                content
                         .split(
                                 "apply plugin: \"$it\"",
                                 "id \"$it\""
-                        ).size - 1 shouldEqual 1
+                        )
+                        .size - 1 shouldEqual 1
             }
 }
 
 private fun EnvironmentFile.shouldHaveName(vararg dependencies: GradleDependency) {
     dependencies.forEach {
-        content() shouldContain it.name
+        content shouldContain it.name
     }
 }
 
 private fun EnvironmentFile.shouldHaveDependency(vararg dependencies: GradleDependency) {
     dependencies.forEach {
-        content() shouldContain it.toString()
+        content shouldContain it.toString()
     }
 }
 
 private fun EnvironmentFile.shouldHaveSingleName(vararg dependencies: GradleDependency) {
     dependencies.forEach {
-        content()
+        content
                 .split(it.name)
                 .size - 1 shouldEqual 1
     }

@@ -34,6 +34,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.authority.AuthorityUtils
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
+import java.nio.file.Paths
 import java.util.concurrent.TimeUnit
 
 object FlaxoIntegrationSpec : Spek({
@@ -46,15 +47,15 @@ object FlaxoIntegrationSpec : Spek({
     val courseName = "integration-test-course-" + Random().nextInt().let { Math.abs(it) }
     val teacherFiles = mapOf(
             "task-1" to mapOf(
-                    "src/main/java/org/flaxo/examples/Range.java"
+                    Paths.get("src/main/java/org/flaxo/examples/Range.java")
                             to LocalEnvironmentFile("src/test/resources/tasks/1/Range.java"),
-                    "src/test/kotlin/org/flaxo/examples/RangeSpec.kt"
+                    Paths.get("src/test/kotlin/org/flaxo/examples/RangeSpec.kt")
                             to LocalEnvironmentFile("src/test/resources/tasks/1/RangeSpec.kt")
             ),
             "task-2" to mapOf(
-                    "src/main/java/org/flaxo/examples/Traversable.java"
+                    Paths.get("src/main/java/org/flaxo/examples/Traversable.java")
                             to LocalEnvironmentFile("src/test/resources/tasks/2/Traversable.java"),
-                    "src/test/kotlin/org/flaxo/examples/TraversableSpec.kt"
+                    Paths.get("src/test/kotlin/org/flaxo/examples/TraversableSpec.kt")
                             to LocalEnvironmentFile("src/test/resources/tasks/2/TraversableSpec.kt")
             )
     )
@@ -94,11 +95,11 @@ object FlaxoIntegrationSpec : Spek({
     val secondStudentToken = context.environment["GITHUB_USER3_TOKEN"]
     val firstStudentFiles = mapOf(
             "task-1" to mapOf(
-                    "src/main/java/org/flaxo/examples/Range.java"
+                    Paths.get("src/main/java/org/flaxo/examples/Range.java")
                             to LocalEnvironmentFile("src/test/resources/solutions1/1/Range.java")
             ),
             "task-2" to mapOf(
-                    "src/main/java/org/flaxo/examples/Traversable.java"
+                    Paths.get("src/main/java/org/flaxo/examples/Traversable.java")
                             to LocalEnvironmentFile("src/test/resources/solutions1/2/Traversable.java")
             )
     )
@@ -237,7 +238,7 @@ object FlaxoIntegrationSpec : Spek({
                                     .keys
                                     .also { fileNames ->
                                         branch.files()
-                                                .map { it.name } shouldContainAll fileNames.toList()
+                                                .map { it.path } shouldContainAll fileNames.toList()
                                     }
                         }
             }

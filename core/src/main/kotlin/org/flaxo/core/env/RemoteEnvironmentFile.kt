@@ -1,6 +1,5 @@
 package org.flaxo.core.env
 
-import io.vavr.kotlin.Try
 import java.io.File
 import java.io.InputStream
 import java.nio.file.Files
@@ -13,51 +12,34 @@ import java.nio.file.Paths
  * Loads the given [inputStream] to the local tmp directory by the given [path].
  * **Notice:** Local file and the tmp directory will be deleted only after
  * the jvm will stop. So the proper way to use [RemoteEnvironmentFile] is the
- * one where you call [close] after all calculations have been done. It will
- * delete [file] from the file system if there is one.
+ * one where you call [close] after all calculations have been done.
  */
-class RemoteEnvironmentFile(private val path: String,
+class RemoteEnvironmentFile(path: String,
                             private val inputStream: InputStream
 ) : EnvironmentFile {
 
-    private var file: File? = null
+    override val path: Path = Paths.get(path)
 
-    override val name = path
+    override val content: String
+        get() = file
+                .readLines()
+                .joinToString("\n")
 
-    override fun content(): String =
-            (file ?: run { file() })
-                    .readLines()
-                    .joinToString("\n")
+    override fun inFolder(folder: Path): EnvironmentFile =
+            folder.resolve(fileName).toString().let {
+                RemoteEnvironmentFile(it, inputStream)
+            }
 
-
-    override fun with(path: String): EnvironmentFile =
-            RemoteEnvironmentFile(path, inputStream)
-
-    override fun file(): File = file ?: run {
-        val rootDirectory: Path =
-                Files.createTempDirectory("flaxo-remote-files")
-                        .also { it.toFile().deleteOnExit() }
-
-        return Try {
-            val fileName = name.split("/").last()
-
-            Paths.get(name.replace(fileName, ""))
-                    .let { rootDirectory.resolve(it) }
-                    .let { Files.createDirectories(it) }
-                    .resolve(fileName)
-                    .also { Files.copy(inputStream, it) }
-                    .toFile()
-                    .also { this.file = it }
-        }.onFailure { e ->
-            rootDirectory.toFile().deleteRecursively()
-            throw RemoteFileRetrievingException(path, e)
-        }.get()
-    }
+    override val file: File
+        get() = path.toFile()
+                .takeUnless { it.exists() }
+                ?.also {
+                    it.parentFile.mkdirs()
+                    Files.copy(inputStream, it.toPath())
+                }
+                ?: path.toFile()
 
     override fun close() {
-        file?.delete()
+        path.toFile().delete()
     }
 }
-
-class RemoteFileRetrievingException(path: String, cause: Throwable)
-    : RuntimeException(path, cause)

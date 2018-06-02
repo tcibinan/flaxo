@@ -37,20 +37,21 @@ class SimpleMoss(override val userId: String,
         }.andFinally {
             // Moji's socket client does not implement AutoCloseable
             client.close()
-        }
+        }.get()
 
         return SimpleMossResult(client.resultURL, { url -> Jsoup.connect(url) })
     }
 
     private fun loadBaseFile(file: EnvironmentFile) = loadFile(file, isBase = true)
 
-    private fun loadFile(environmentFile: EnvironmentFile, isBase: Boolean = false) =
+    private fun loadFile(environmentFile: EnvironmentFile,
+                         isBase: Boolean = false) =
             environmentFile.use {
                 Try {
-                    client.uploadFile(it.file(), isBase)
+                    client.uploadFile(it.file, isBase)
                 }.onFailure { e ->
                     throw MossException("Can't load ${if (isBase) "base" else "solutions"} " +
-                            "file ${environmentFile.name} to moss server", e)
+                            "file ${it.fileName} to moss server", e)
                 }
             }
 

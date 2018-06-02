@@ -1,51 +1,61 @@
 package org.flaxo.core.env
 
 import java.io.File
+import java.nio.file.Path
 
 /**
- * Repository file.
+ * Environment file.
  *
- * It could be task, solution, doc file in string or binary representation.
+ * It could be task, solution, doc file in string, binary or file representation.
  *
  * Sometimes there is need to close and free resources so the proper way to
  * use [EnvironmentFile] is to use it as a typical [AutoCloseable] resource.
  */
-interface EnvironmentFile: AutoCloseable {
+interface EnvironmentFile : AutoCloseable {
 
     /**
      * Full path of the environment file.
      */
-    val name: String
+    val path: Path
+
+    val fileName: String
+        get() = path.fileName.toString()
 
     /**
-     * @return String representation of the environment file.
+     * String content of the environment file.
+     *
      * @throws UnsupportedOperationException if the environment file doesn't have string representation.
      */
-    fun content(): String =
+    val content: String
+        get() = throw UnsupportedOperationException(
+                "There is no String representation for " +
+                        "the instances of ${this::class.simpleName}"
+        )
+
+    /**
+     * Binary content of the environment file.
+     */
+    val binaryContent: ByteArray
+        get() = content.toByteArray()
+
+    /**
+     * [File] representation of the environment file.
+     *
+     * @throws UnsupportedOperationException if the environment file doesn't have [File] representation.
+     */
+    val file: File
+        get() = throw UnsupportedOperationException(
+                "There is no java.io.File representation for " +
+                        "the instances of ${this::class.simpleName}"
+        )
+
+    /**
+     * @return an environment file copy in the new location by the given [folder].
+     */
+    fun inFolder(folder: Path): EnvironmentFile =
             throw UnsupportedOperationException(
-                    "There is no String representation for " +
-                            "the instances of ${this::class.simpleName}"
+                    "Operation is not supported for instance of ${this::class.simpleName}"
             )
-
-    /**
-     * @return binary content of the environment file.
-     */
-    fun binaryContent(): ByteArray = content().toByteArray()
-
-    /**
-     * @return java.io.file representation of the environment file.
-     * @throws UnsupportedOperationException if the environment file doesn't have java.io.file representation.
-     */
-    fun file(): File =
-            throw UnsupportedOperationException(
-                    "There is no java.io.File representation for " +
-                            "the instances of ${this::class.simpleName}"
-            )
-
-    /**
-     * @return an environment file with the new [path] and the same content.
-     */
-    fun with(path: String): EnvironmentFile
 
     override fun close() {
         // There is nothing to close by default

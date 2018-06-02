@@ -51,7 +51,7 @@ object GithubSpec : SubjectSpek<Github>({
                 repository.branches()
                         .filter { it.name == mainBranchName }
                         .flatMap { it.files() }
-                        .filter { it.name == fileName }
+                        .filter { it.fileName == fileName }
                         .count() shouldEqual 1
             }
         }
@@ -69,7 +69,7 @@ object GithubSpec : SubjectSpek<Github>({
                 repository.branches()
                         .filter { it.name == subBranchName }
                         .flatMap { it.files() }
-                        .filter { it.name == fileName }
+                        .filter { it.fileName == fileName }
                         .count() shouldEqual 1
             }
         }

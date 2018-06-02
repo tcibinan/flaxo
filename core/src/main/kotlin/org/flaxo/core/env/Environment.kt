@@ -4,7 +4,9 @@ package org.flaxo.core.env
  * Repository environment interface.
  */
 interface Environment {
+
     operator fun plus(environment: Environment): Environment
+
     operator fun plus(file: EnvironmentFile): Environment
 
     /**
@@ -16,5 +18,5 @@ interface Environment {
      * Returns file from the current environment by the given name.
      */
     fun getFile(fileName: String): EnvironmentFile? =
-            getFiles().firstOrNull { it.name == fileName }
+            getFiles().firstOrNull { it.path.toString() == fileName }
 }

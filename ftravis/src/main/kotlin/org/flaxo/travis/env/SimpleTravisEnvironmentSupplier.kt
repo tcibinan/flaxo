@@ -26,35 +26,26 @@ data class SimpleTravisEnvironmentSupplier(private val language: Language? = nul
     private val jvmLanguages = setOf(JavaLang, KotlinLang)
 
     override fun withLanguage(language: Language): EnvironmentSupplier =
-            if (language in jvmLanguages) {
-                copy(language = language)
-            } else {
-                throw UnsupportedLanguageException(language)
-            }
+            if (language in jvmLanguages) copy(language = language)
+            else throw UnsupportedLanguageException(language)
 
     override fun withTestingLanguage(testingLanguage: Language): EnvironmentSupplier =
-            if (testingLanguage in jvmLanguages) {
-                copy(testingLanguage = testingLanguage)
-            } else {
-                throw UnsupportedLanguageException(testingLanguage)
-            }
+            if (testingLanguage in jvmLanguages) copy(testingLanguage = testingLanguage)
+            else throw UnsupportedLanguageException(testingLanguage)
 
     // currently where is no validations for testing frameworks
     override fun withTestingFramework(testingFramework: TestingFramework): EnvironmentSupplier =
             copy(testingFramework = testingFramework)
 
     override fun getEnvironment(): Environment {
-        language
-                ?: throw TravisException("There is no language for travis environment")
-        testingLanguage
-                ?: throw TravisException("There is no testing language for travis environment")
-        testingFramework
-                ?: throw TravisException("There is no testing framework for travis environment")
+        language ?: throw TravisException("There is no language for travis environment")
+        testingLanguage ?: throw TravisException("There is no testing language for travis environment")
+        testingFramework ?: throw TravisException("There is no testing framework for travis environment")
 
-        return SimpleEnvironment(setOf(produceTravisYmlFile()))
+        return SimpleEnvironment(setOf(travisYmlFile()))
     }
 
-    private fun produceTravisYmlFile(): EnvironmentFile =
+    private fun travisYmlFile(): EnvironmentFile =
             SimpleEnvironmentFile(".travis.yml",
                     """
                         language: java

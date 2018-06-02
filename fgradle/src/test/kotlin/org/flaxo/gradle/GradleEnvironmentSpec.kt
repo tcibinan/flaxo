@@ -76,7 +76,7 @@ object GradleEnvironmentSpec : SubjectSpek<BuildTool>({
 
             it("should contain all files from travis environment supplier") {
                 travisFiles.forEach {
-                    environment.getFile(it.name).shouldNotBeNull()
+                    environment.getFile(it.fileName).shouldNotBeNull()
                 }
             }
         }
@@ -87,12 +87,12 @@ class EnvironmentFileNotFound(message: String) : RuntimeException(message)
 
 private fun Environment.fileIsNotBlank(fileName: String): Boolean =
         getFile(fileName)
-                ?.content()
+                ?.content
                 ?.isNotBlank()
                 ?: throw EnvironmentFileNotFound("$fileName wasn't found in the environment")
 
 private fun Environment.binaryFileIsNotEmpty(fileName: String): Boolean =
         getFile(fileName)
-                ?.binaryContent()
+                ?.binaryContent
                 ?.isNotEmpty()
                 ?: throw EnvironmentFileNotFound("$fileName wasn't found in the environment")

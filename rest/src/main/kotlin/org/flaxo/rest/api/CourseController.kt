@@ -6,8 +6,9 @@ import org.flaxo.core.stringStackTrace
 import org.flaxo.model.CourseLifecycle
 import org.flaxo.model.DataService
 import org.flaxo.model.IntegratedService
-import org.flaxo.model.data.CourseState
+import org.flaxo.model.data.Course
 import org.flaxo.model.data.PlagiarismMatch
+import org.flaxo.model.data.Task
 import org.flaxo.model.data.views
 import org.flaxo.moss.MossException
 import org.flaxo.rest.service.CourseValidation
@@ -28,6 +29,8 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ExecutionException
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
@@ -47,7 +50,7 @@ class CourseController(private val dataService: DataService,
 ) {
 
     private val tasksPrefix = "task-"
-    private val logger = LogManager.getLogger(UserController::class.java)
+    private val logger = LogManager.getLogger(CourseController::class.java)
     private val executor: Executor = Executors.newCachedThreadPool()
 
     /**
@@ -427,57 +430,71 @@ class CourseController(private val dataService: DataService,
 
         val mossTasks: List<MossTask> = mossService.extractMossTasks(course)
 
+        logger.info("${mossTasks.size} moss tasks were extracted for ${user.nickname}/$courseName")
+
         logger.info("Scheduling moss tasks to execute for ${user.nickname}/$courseName")
 
-        synchronized(executor) {
-            mossTasks.forEach { mossTask ->
-                executor.execute {
-                    val branch = mossTask.taskName.split("/").last()
-
-                    val task =
-                            course.tasks
-                                    .find { it.branch == branch }
-                                    ?: throw MossException("Moss task ${mossTask.taskName} aim course task $branch " +
-                                            "wasn't found for course ${course.name}")
-
-                    logger.info("Analysing ${mossTask.taskName} moss task")
-
-                    val mossResult =
-                            mossService.client(course.language)
-                                    .base(mossTask.base)
-                                    .solutions(mossTask.solutions)
-                                    .analyse()
-
-                    logger.info("Moss task analysis ${mossTask.taskName} has finished successfully")
-
-                    val plagiarismReport = dataService.addPlagiarismReport(
-                            task = task,
-                            url = mossResult.url.toString(),
-                            matches = mossResult.matches().map {
-                                PlagiarismMatch(
-                                        student1 = it.students.first,
-                                        student2 = it.students.second,
-                                        lines = it.lines,
-                                        url = it.link,
-                                        percentage = it.percentage
-                                )
-                            }
-                    )
-
-                    dataService.updateTask(task.copy(
-                            plagiarismReports = task.plagiarismReports.plus(plagiarismReport)
-                    ))
-                }
-            }
-        }
+        val submittedTasks = submitMossTasksExecution(mossTasks, course)
 
         logger.info("Moss plagiarism analysis has been started for ${principal.name}/$courseName")
+
+        Try {
+            CompletableFuture.allOf(*submittedTasks).get()
+        }.onFailure { e ->
+            logger.error("Moss plagiarism analysis went bad for some of the tasks: ${e.stringStackTrace()}")
+        }.get()
 
         val scheduledTasksNames: List<String> =
                 mossTasks.map { it.taskName }
                         .map { it.split("/").last() }
 
-        return responseService.ok("Plagiarism analysis scheduled for tasks: $scheduledTasksNames")
+        return responseService.ok("Plagiarism analysis has finished for tasks: $scheduledTasksNames")
+    }
+
+    private fun submitMossTasksExecution(mossTasks: List<MossTask>,
+                                         course: Course
+    ): Array<CompletableFuture<Void>> = synchronized(executor) {
+        mossTasks.map { mossTask ->
+            CompletableFuture.runAsync(Runnable { analyseMossTask(mossTask, course, course.tasks) }, executor)
+        }
+    }.toTypedArray()
+
+    private fun analyseMossTask(mossTask: MossTask, course: Course, courseTasks: Set<Task>) {
+        val branch = mossTask.taskName.split("/").last()
+
+        val task = courseTasks.find { it.branch == branch }
+                ?: throw MossException("Moss task ${mossTask.taskName} aim course task $branch " +
+                        "wasn't found for course ${course.name}")
+
+        logger.info("Analysing ${mossTask.taskName} moss task for ${mossTask.base.size} bases files " +
+                "and ${mossTask.solutions.size} solutions files")
+
+        val mossResult =
+                mossService.client(course.language)
+                        .base(mossTask.base)
+                        .solutions(mossTask.solutions)
+                        .analyse()
+
+        logger.info("Moss task analysis ${mossTask.taskName} has finished successfully and " +
+                "is available by ${mossResult.url}")
+
+        val plagiarismReport = dataService.addPlagiarismReport(
+                task = task,
+                url = mossResult.url.toString(),
+                matches = mossResult.matches().map {
+                    PlagiarismMatch(
+                            student1 = it.students.first,
+                            student2 = it.students.second,
+                            lines = it.lines,
+                            url = it.link,
+                            percentage = it.percentage
+                    )
+                }
+        )
+
+        dataService.updateTask(task.copy(
+                plagiarismReports = task.plagiarismReports.plus(plagiarismReport)
+        ))
     }
 
     /**

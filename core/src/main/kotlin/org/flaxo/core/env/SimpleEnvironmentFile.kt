@@ -1,18 +1,16 @@
 package org.flaxo.core.env
 
+import java.nio.file.Path
+import java.nio.file.Paths
+
 /**
- * In-memory environment file implementation.
+ * In-memory environment file.
  */
-class SimpleEnvironmentFile(
-        override val name: String,
-        private val content: String
+class SimpleEnvironmentFile(override val path: Path,
+                            override val content: String
 ) : EnvironmentFile {
 
-    override fun content() = content
-
-    override fun binaryContent() = content().toByteArray()
-
-    override fun with(path: String): EnvironmentFile =
-            SimpleEnvironmentFile(path, content)
+    constructor(fileName: String, content: String) :
+            this(Paths.get(fileName), content)
 
 }

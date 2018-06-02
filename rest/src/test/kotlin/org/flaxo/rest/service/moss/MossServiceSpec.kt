@@ -127,7 +127,7 @@ object MossServiceSpec : SubjectSpek<MossService>({
             it("should only contain tasks with solutions on the proper language") {
                 mossTasks.flatMap { it.solutions }
                         .also {
-                            assertTrue { it.all { it.name.endsWith("java") } }
+                            assertTrue { it.all { it.fileName.endsWith("java") } }
                         }
             }
 
@@ -136,7 +136,7 @@ object MossServiceSpec : SubjectSpek<MossService>({
                 val solutions: List<EnvironmentFile> = task.solutions
 
                 assertTrue { solutions.size == 1 }
-                assertTrue { solutions.any { it.name.split("/").first() == student1Name } }
+                assertTrue { solutions.any { it.path.contains(Paths.get(student1Name)) } }
             }
 
             it("should contains tasks where each base file have 'base' as a root folder") {
@@ -144,7 +144,7 @@ object MossServiceSpec : SubjectSpek<MossService>({
                 val base: List<EnvironmentFile> = task.base
 
                 assertTrue { base.isNotEmpty() }
-                assertTrue { base.all { it.name.split("/").first() == "base" } }
+                assertTrue { base.all { it.path.contains(Paths.get("base")) } }
             }
 
             it("should contains tasks where each environment file could be retrieved as a valid java.io.File") {
@@ -152,7 +152,7 @@ object MossServiceSpec : SubjectSpek<MossService>({
                 val files: List<EnvironmentFile> = task.base + task.solutions
 
                 assertTrue {
-                    files.map { it.file() }
+                    files.map { it.file }
                             .map { it.readLines().joinToString("") }
                             .all { it.isNotBlank() }
                 }
@@ -175,5 +175,5 @@ private fun emptyFile(filePath: String) =
         RemoteEnvironmentFile(filePath, "files content".byteInputStream())
 
 private fun filesWithFileNameOf(filePath: String): (EnvironmentFile) -> Boolean =
-        { it.name.endsWith(Paths.get(filePath).fileName.toString()) }
+        { it.fileName == Paths.get(filePath).fileName.toString() }
 

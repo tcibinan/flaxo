@@ -29,7 +29,7 @@ object TravisEnvironmentSpec : SubjectSpek<TravisEnvironmentSupplier>({
             it("should contain non blank .travis.yml") {
                 assertTrue {
                     travisYml
-                            ?.content()
+                            ?.content
                             ?.isNotBlank()
                             ?: throw EnvironmentFileNotFound("$travisYml file not found in the environment")
                 }
@@ -38,7 +38,7 @@ object TravisEnvironmentSpec : SubjectSpek<TravisEnvironmentSupplier>({
             it("should contain .travis.yml with webhookurl") {
                 assertTrue {
                     travisYml
-                            ?.content()
+                            ?.content
                             ?.contains(travisWebHookUrl)
                             ?: throw EnvironmentFileNotFound("$travisYml file not found in the environment")
                 }

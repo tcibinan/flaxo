@@ -11,9 +11,11 @@ import org.flaxo.moss.SimpleMossResult
 import org.flaxo.rest.service.UnsupportedLanguage
 import org.flaxo.rest.service.git.GitService
 import it.zielke.moji.SocketClient
+import org.apache.logging.log4j.LogManager
 import org.jsoup.Jsoup
 import java.net.URL
-import java.nio.file.Paths
+import java.nio.file.Files
+import java.nio.file.Path
 
 /**
  * Moss service basic implementation.
@@ -22,6 +24,8 @@ class SimpleMossService(private val userId: String,
                         private val gitService: GitService,
                         private val supportedLanguages: Map<String, Language>
 ) : MossService {
+
+    private val logger = LogManager.getLogger(SimpleMossService::class.java)
 
     override fun client(language: String): Moss =
             SimpleMoss(userId, language, SocketClient())
@@ -37,6 +41,10 @@ class SimpleMossService(private val userId: String,
         val language = supportedLanguages[course.language]
                 ?: throw UnsupportedLanguage("Language ${course.language} is not supported for analysis yet.")
 
+        logger.info("Aggregating course ${user.nickname}/${course.name} solutions as the local files")
+
+        // TODO: 02/06/18 Figure out how to delete temp folder
+        val tempFilesPath = Files.createTempDirectory("moss-extracting")
 
         val tasksSolutions = course.students
                 .map { student ->
@@ -62,10 +70,18 @@ class SimpleMossService(private val userId: String,
                     solutions.flatMap { (student, branch) ->
                         branch.files()
                                 .filterBy(language)
-                                .map(toFileInFolder(student))
+                                .map(toFileInFolder(tempFilesPath, student)).also {
+                                    logger.info("Student $student solutions were aggregated as local files " +
+                                            "for course ${user.nickname}/${course.name}")
+                                }
                     }
                 }
                 .toMap()
+
+        logger.info("Course ${user.nickname}/${course.name} solutions was aggregated successfully: " +
+                "${filesSummary(tasksSolutions)}")
+
+        logger.info("Aggregating course ${user.nickname}/${course.name} bases as the local files")
 
         val tasksBases =
                 git.getRepository(course.name)
@@ -73,11 +89,14 @@ class SimpleMossService(private val userId: String,
                         .map { branch ->
                             branch.name to branch.files()
                                     .filterBy(language)
-                                    .map(toFileInFolder("base"))
+                                    .map(toFileInFolder(tempFilesPath, "base"))
                         }
                         .filter { (task, _) -> task in tasksSolutions.keys }
                         .filter { (_, files) -> files.isNotEmpty() }
                         .toMap()
+
+        logger.info("Course ${user.nickname}/${course.name} solutions was aggregated successfully: " +
+                "${filesSummary(tasksBases)}")
 
         return tasksBases.keys
                 .map { branch ->
@@ -93,14 +112,20 @@ class SimpleMossService(private val userId: String,
                 }
     }
 
+    private fun filesSummary(tasksBases: Map<String, List<EnvironmentFile>>) =
+            tasksBases.map { (task, bases) -> task to bases.map { it.path } }
+
     override fun retrieveAnalysisResult(mossResultUrl: String): MossResult =
             SimpleMossResult(URL(mossResultUrl), { url -> Jsoup.connect(url) })
 
-    private fun toFileInFolder(student: String): (EnvironmentFile) -> EnvironmentFile =
-            { it.with("$student/${Paths.get(it.name).fileName}") }
+    private fun toFileInFolder(folder: Path,
+                               student: String
+    ): (EnvironmentFile) -> EnvironmentFile =
+            { it.inFolder(folder.resolve(student)) }
 
 }
 
-private fun List<EnvironmentFile>.filterBy(language: Language): List<EnvironmentFile> =
-        filter { file -> language.extensions.any { file.name.endsWith(it) } }
+private fun List<EnvironmentFile>.filterBy(language: Language)
+        : List<EnvironmentFile> =
+        filter { file -> language.extensions.any { file.fileName.endsWith(it) } }
 

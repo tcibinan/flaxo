@@ -1,15 +1,15 @@
 package org.flaxo.core.env
 
+import java.nio.file.Path
+import java.nio.file.Paths
+
 /**
  * Binary file class.
  */
-class BinaryEnvironmentFile(override val name: String,
-                            private val bytes: ByteArray
+class BinaryEnvironmentFile(name: String,
+                            override val binaryContent: ByteArray
 ) : EnvironmentFile {
 
-    override fun binaryContent() = bytes
-
-    override fun with(path: String): EnvironmentFile =
-            BinaryEnvironmentFile(path, bytes)
+    override val path: Path = Paths.get(name)
 
 }
