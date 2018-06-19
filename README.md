@@ -60,7 +60,7 @@ The flaxo system is built to be open and expandable. There is no limitations fro
 Nevertheless CI vendors have lists of supported languages and tools. _See travis, moss, codacy limitations._
 
 Moreover the flaxo presents an easy way to generate courses from scratch using api or gui interface.
-A user doesn't have to create a repository, generate boilerplate branches structure, 
+User doesn't have to create a repository, generate boilerplate branches structure, 
 manage build tools, look for newest tools versions trying to find ones that work well with each other.
 You just click a few buttons or send a single http request and everything will be done in a few seconds.
 
@@ -177,7 +177,7 @@ and a list of possible travis cli commands should be listed.
 - Spek
 - Spring Boot, Spring Data, Spring Security
 - Retrofit2 http client
-- and even more: h2 database, Kohsuke Github api, Vavr, mockito-kotlin, moji, jsoup, commons-collections4
+- and even more: h2 database, Kohsuke Github api, Vavr, mockito-kotlin, moji, jsoup, commons-collections4, ...
 
 ### Front-end technologies
 
@@ -191,10 +191,10 @@ and a list of possible travis cli commands should be listed.
 
 ## TODO-list
 
-- Flaxo course initiation from the existing repository.
-- Course statistics downloading in csv, xls formats.
-- Docker image of the flaxo system.
-- Include test coverage to flaxo repository codacy analysis.
+- Add xls format for course statistics downloading.
+- Build docker images of the flaxo system.
+- Append test coverage to flaxo travis analysis.
+- Rewrite front-end using Redux framework.
 
 ## Credits
 
