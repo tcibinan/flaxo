@@ -1,0 +1,147 @@
+.notifications {
+    position: fixed;
+    right: 0;
+    top: 0;
+}
+
+.course-label {
+    margin-left: 5px;
+    color: white;
+}
+
+.courses-list,
+.selected-course {
+    padding-top: 20px;
+    padding-left: 50px;
+    padding-right: 50px;
+}
+
+.courses-list-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.courses-list .course-item {
+    flex-grow: 1;
+    margin: 10px;
+    cursor: pointer;
+}
+
+.course-controls {
+    display: flex;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+.course-controls .course-control:not(:nth-child(1)) {
+    margin-left: 10px;
+}
+
+.course-controls .course-control:nth-last-child {
+    margin-left: auto;
+}
+
+.course-tabs .course-tab {
+    cursor: pointer;
+}
+
+.task-results,
+.course-stats {
+    margin-top: 15px;
+}
+
+.task-results th {
+    text-align: center;
+}
+
+.report {
+    display: flex;
+    justify-content: center;
+}
+
+.successful-build-report {
+    color: green;
+}
+
+.failed-build-report {
+    color: #c9302c;
+}
+
+.plagiarism-report {
+}
+
+.valid-plagiarism-report {
+    color: green;
+}
+
+.invalid-plagiarism-report {
+    color: #c9302c;
+}
+
+.plagiarism-marker {
+    vertical-align: middle;
+}
+
+.code-style-grade {
+    width: 30px;
+    height: 30px;
+    background-size: contain;
+}
+
+.code-style-grade-A {
+    background-image: url("images/codacy_grade_a.png");
+}
+
+.code-style-grade-B {
+    background-image: url("images/codacy_grade_b.png");
+}
+
+.code-style-grade-C {
+    background-image: url("images/codacy_grade_c.png");
+}
+
+.code-style-grade-D {
+    background-image: url("images/codacy_grade_d.png");
+}
+
+.code-style-grade-E {
+    background-image: url("images/codacy_grade_e.png");
+}
+
+.code-style-grade-F {
+    background-image: url("images/codacy_grade_f.png");
+}
+
+.valid-deadline-report {
+    color: green;
+}
+
+.invalid-deadline-report {
+    color: #c9302c;
+}
+
+.suggesting-result {
+
+}
+
+.task-card .card,
+.course-summary .card {
+    border-radius: 0 0 4px 4px;
+    border-top: none;
+}
+
+.icon-btn {
+}
+
+.task-card .rules-toggle-btn,
+.task-card .save-results-btn,
+.task-card .icon-btn,
+.course-summary .save-results-btn,
+.course-summary .icon-btn {
+    margin-left: 20px;
+}
+
+.task-card .icon-btn,
+.course-summary .icon-btn {
+    line-height: 16px;
+}
