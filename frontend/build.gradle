@@ -41,11 +41,12 @@ compileKotlin2Js {
 }
 
 kotlinFrontend {
+    sourceMaps = true
+
     npm {
         dependency('react', '16.4.2')
         dependency('react-dom', '16.4.2')
         dependency('js-cookie', '2.2.0')
-        dependency('axios', '0.18.0')
         dependency('jquery', '3.3.1')
         dependency('popper.js', '1.14.4')
         dependency('bootstrap', '4.1.3')
@@ -56,6 +57,7 @@ kotlinFrontend {
     webpackBundle {
         bundleName = 'flaxo'
         contentPath = file('src/main/web')
-        mode = 'production'
+        mode = 'development'
+//        mode = 'production'
     }
 }

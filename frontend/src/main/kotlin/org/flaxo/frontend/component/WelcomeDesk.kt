@@ -1,15 +1,14 @@
-package components
+package org.flaxo.frontend.component
 
 import react.RBuilder
 import react.RComponent
 import react.RProps
 import react.dom.*
-import EmptyState
-import registrationModal
+import org.flaxo.frontend.data.User
 
-class WelcomeDeskProps(var onLogin: (String, String, Account) -> Unit) : RProps
+class WelcomeDeskProps(var onLogin: (String, String, User) -> Unit) : RProps
 
-fun RBuilder.welcomeDesk(onLogin: (String, String, Account) -> Unit) = child(WelcomeDesk::class) {
+fun RBuilder.welcomeDesk(onLogin: (String, String, User) -> Unit) = child(WelcomeDesk::class) {
     attrs.onLogin = onLogin
 }
 
@@ -27,7 +26,7 @@ class WelcomeDesk : RComponent<WelcomeDeskProps, EmptyState>() {
             p("lead") {
                 registrationModal(props.onLogin)
                 +" "
-//                authenticationModal(props.onLogin)
+                authenticationModal(props.onLogin)
             }
         }
 
