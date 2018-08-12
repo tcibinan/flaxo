@@ -1,3 +1,3 @@
 package org.flaxo.frontend.data
 
-class Course
+class Course(val name: String)

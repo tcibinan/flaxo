@@ -1,24 +1,40 @@
 package org.flaxo.frontend.component
 
+import kotlinx.html.ButtonType
+import kotlinx.html.InputType
+import kotlinx.html.classes
+import kotlinx.html.hidden
+import kotlinx.html.id
 import org.flaxo.frontend.data.User
-import kotlinx.html.*
 import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
+import kotlinx.html.role
+import kotlinx.html.tabIndex
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.frontend.client.FlaxoHttpCallException
 import org.flaxo.frontend.data.Credentials
 import org.w3c.dom.HTMLInputElement
-import react.*
-import react.dom.*
-
-class RegistrationModalProps(var onLogin: (String, String, User) -> Unit) : RProps
-class RegistrationModalState(var username: String? = null,
-                             var password: String? = null) : RState
+import react.RBuilder
+import react.RComponent
+import react.RProps
+import react.RState
+import react.dom.button
+import react.dom.div
+import react.dom.form
+import react.dom.h5
+import react.dom.input
+import react.dom.small
+import react.dom.span
+import react.setState
 
 fun RBuilder.registrationModal(onLogin: (String, String, User) -> Unit) = child(RegistrationModal::class) {
     attrs.onLogin = onLogin
 }
+
+class RegistrationModalProps(var onLogin: (String, String, User) -> Unit) : RProps
+class RegistrationModalState(var username: String? = null,
+                             var password: String? = null) : RState
 
 class RegistrationModal(props: RegistrationModalProps)
     : RComponent<RegistrationModalProps, RegistrationModalState>(props) {
@@ -48,7 +64,6 @@ class RegistrationModal(props: RegistrationModalProps)
                 id = REGISTRATION_MODAL_ID
                 tabIndex = "-1"
                 role = "dialog"
-                attributes["aria-labelledby"] = "exampleModalLabel"
                 attributes["aria-hidden"] = "true"
             }
             div("modal-dialog") {
@@ -146,15 +161,6 @@ class RegistrationModal(props: RegistrationModalProps)
                 }
                 +"Account password"
             }
-        }
-    }
-
-    private fun RBuilder.label(text: String, forInput: String) {
-        label {
-            attrs {
-                this.htmlFor = forInput
-            }
-            +text
         }
     }
 

@@ -6,11 +6,11 @@ import react.RProps
 import react.dom.*
 import org.flaxo.frontend.data.User
 
-class WelcomeDeskProps(var onLogin: (String, String, User) -> Unit) : RProps
-
 fun RBuilder.welcomeDesk(onLogin: (String, String, User) -> Unit) = child(WelcomeDesk::class) {
     attrs.onLogin = onLogin
 }
+
+class WelcomeDeskProps(var onLogin: (String, String, User) -> Unit) : RProps
 
 class WelcomeDesk : RComponent<WelcomeDeskProps, EmptyState>() {
 

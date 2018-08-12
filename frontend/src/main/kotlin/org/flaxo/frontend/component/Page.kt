@@ -1,9 +1,10 @@
 package org.flaxo.frontend.component
 
+import courses
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.frontend.client.FlaxoHttpCallException
-import org.flaxo.frontend.data.Credentials
+import org.flaxo.frontend.credentials
 import react.*
 import react.dom.div
 import org.flaxo.frontend.wrapper.Cookies
@@ -24,11 +25,9 @@ class Page: RComponent<EmptyProps, PageState>(EmptyProps()) {
 
     init {
         flaxoClient = Container.flaxoClient
-        val username = Cookies.get(USERNAME_COOKIE)
-        val password = Cookies.get(PASSWORD_COOKIE)
-        if (username != null && password != null) {
+        credentials?.also {
             try {
-                val user = flaxoClient.getSelf(Credentials(username, password))
+                val user = flaxoClient.getSelf(it)
                 state.user = user
             } catch (e: FlaxoHttpCallException) {
                 console.log(e)
@@ -38,18 +37,12 @@ class Page: RComponent<EmptyProps, PageState>(EmptyProps()) {
     }
 
     override fun RBuilder.render() {
-        val account = state.user
-        if (account != null) {
+        val user = state.user
+        if (user != null) {
             div("page") {
-                navigationBar(account, ::onLogout)
-//                courses(account)
+                navigationBar(user, ::onLogout)
+                courses(user)
             }
-//            return (
-//            <article className="page">
-//            <NavigationBar account={this.state.account} onLogout={this.onLogout}/>
-//            <Courses account={this.state.account}/>
-//            </article>
-//            );
         } else {
             div("page") {
                 welcomeDesk(::onLogin)

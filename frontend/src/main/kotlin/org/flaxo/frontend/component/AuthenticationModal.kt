@@ -1,6 +1,5 @@
 package org.flaxo.frontend.component
 
-import kotlinx.html.*
 import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
 import org.flaxo.frontend.Container
@@ -9,16 +8,33 @@ import org.flaxo.frontend.client.FlaxoHttpCallException
 import org.flaxo.frontend.data.Credentials
 import org.flaxo.frontend.data.User
 import org.w3c.dom.HTMLInputElement
-import react.*
-import react.dom.*
-
-class AuthenticationModalProps(var onLogin: (String, String, User) -> Unit) : RProps
-class AuthenticationModalState(var username: String? = null,
-                               var password: String? = null) : RState
+import kotlinx.html.ButtonType
+import kotlinx.html.InputType
+import kotlinx.html.classes
+import kotlinx.html.hidden
+import kotlinx.html.id
+import kotlinx.html.role
+import kotlinx.html.tabIndex
+import react.RBuilder
+import react.RComponent
+import react.RProps
+import react.RState
+import react.dom.button
+import react.dom.div
+import react.dom.form
+import react.dom.h5
+import react.dom.input
+import react.dom.small
+import react.dom.span
+import react.setState
 
 fun RBuilder.authenticationModal(onLogin: (String, String, User) -> Unit) = child<AuthenticationModalProps, AuthenticationModal> {
     attrs.onLogin = onLogin
 }
+
+class AuthenticationModalProps(var onLogin: (String, String, User) -> Unit) : RProps
+class AuthenticationModalState(var username: String? = null,
+                               var password: String? = null) : RState
 
 class AuthenticationModal(props: AuthenticationModalProps)
     : RComponent<AuthenticationModalProps, AuthenticationModalState>(props) {
@@ -47,7 +63,6 @@ class AuthenticationModal(props: AuthenticationModalProps)
                     id = AUTHORIZATION_MODAL_ID
                     tabIndex = "-1"
                     role = "dialog"
-                    attributes["aria-labelledby"] = "exampleModalLabel"
                     attributes["aria-hidden"] = "true"
                 }
                 div("modal-dialog") {
@@ -146,15 +161,6 @@ class AuthenticationModal(props: AuthenticationModalProps)
                 }
                 +"Account password"
             }
-        }
-    }
-
-    private fun RBuilder.label(text: String, forInput: String) {
-        label {
-            attrs {
-                this.htmlFor = forInput
-            }
-            +text
         }
     }
 
