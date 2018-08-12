@@ -12,12 +12,14 @@ First of all install http-fake-backend framework
 
 ```bash
 git clone https://github.com/micromata/http-fake-backend.git
+cd http-fake-backend/
 npm install
 ```
 
 Add fake endpoints to fakeEndpoints folder and run
 
 ```bash
+cd ..
 gradle moveEndpointToFakeBackend
 ( cd http-fake-backend/ && npm run start:dev )
 ```

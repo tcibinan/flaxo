@@ -103,7 +103,7 @@ To run the app. The application will be at [http://localhost:8080/](http://local
 
 Prerequisites:
 - Github OAuth App - **required**
-- [webpack](https://webpack.js.org/guides/getting-started/) installed - **required**
+- [node.js + npm](https://nodejs.org/en/download/) installed - **required**
 - [ruby](https://www.ruby-lang.org/en/documentation/installation/) installed - **required**
 - [travis cli client](https://github.com/travis-ci/travis.rb#installation) installed - **required**
 - 3 Github accounts
@@ -191,6 +191,7 @@ and a list of possible travis cli commands should be listed.
 
 ## TODO-list
 
+- Replace client module with frontend module (replace javascript with kotlin-js).
 - Add xls format for course statistics downloading.
 - Build docker images of the flaxo system.
 - Append test coverage to flaxo travis analysis.
