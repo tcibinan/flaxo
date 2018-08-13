@@ -44,8 +44,11 @@ export class CourseStatistics extends React.Component {
     }
 
     render() {
+        const sortedTasks = this.state.tasks.sortBy((task) => task.branch)
+
         const tasksTabsNavItems =
-            this.state.tasks.map((task, index) =>
+            sortedTasks
+                .map((task, index) =>
                 <NavItem className={this.state.activeTab === index + 1 ? '' : 'course-tab'}>
                     <NavLink
                         onClick={() => {
@@ -59,7 +62,7 @@ export class CourseStatistics extends React.Component {
             );
 
         const tasksTabs =
-            this.state.tasks.map((task, index) => {
+            sortedTasks.map((task, index) => {
                 return (
                     <TabPane tabId={index + 1}>
                         <Task course={this.props.course}

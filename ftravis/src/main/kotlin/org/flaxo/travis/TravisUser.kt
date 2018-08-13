@@ -16,11 +16,6 @@ interface TravisUser {
     val login: String
 
     /**
-     * Travis user name.
-     */
-    val name: String
-
-    /**
      * Travis user synchronisation status flag.
      *
      * If flag is false then it *does not* mean that

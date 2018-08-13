@@ -9,8 +9,6 @@ class JTravisUser(owner: Owner) : TravisUser {
 
     override val login: String = owner.login
 
-    override val name: String = owner.name
-
     override val isSyncing: Boolean = owner.isSyncing
 
     override val githubId: Int = owner.githubId

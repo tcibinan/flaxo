@@ -8,8 +8,6 @@ class RetrofitTravisUser(pojo: RetrofitTravisUserPOJO): TravisUser {
 
     override val login: String by lazy { pojo.login }
 
-    override val name: String by lazy { pojo.name }
-
     override val isSyncing: Boolean by lazy { pojo.isSyncing }
 
     override val githubId: Int by lazy { pojo.githubId }

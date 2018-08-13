@@ -11,8 +11,6 @@ class RetrofitTravisUserPOJO {
 
     var login: String = ""
 
-    var name: String = ""
-
     @JsonProperty("is_syncing")
     var isSyncing: Boolean = false
 
