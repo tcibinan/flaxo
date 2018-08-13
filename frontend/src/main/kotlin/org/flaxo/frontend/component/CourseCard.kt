@@ -22,14 +22,14 @@ fun RBuilder.courseCard(course: Course, onSelect: (Course) -> Unit) = section(cl
                 courseLabels(course)
             }
             h6(classes = "card-subtitle mb-2 text-muted") {
-//                +"${course.tasks.size} tasks, ${course.students.size} students"
+                +"${course.tasks.size} tasks, ${course.students.size} students"
             }
             p(classes = "card-text") {
-//                +course.description
+                course.description?.also { +it }
             }
             p(classes = "card-text") {
                 small(classes = "text-muted") {
-//                    +"Created at ${course.createdDate.toDateString()}"
+                    +"Created at ${course.createdDate.toDateString()}"
                 }
             }
         }

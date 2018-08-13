@@ -1,9 +1,9 @@
 package org.flaxo.frontend.client
 
 import org.flaxo.frontend.data.*
-import org.flaxo.frontend.data.Language
 import org.flaxo.frontend.wrapper.btoa
 import org.w3c.xhr.XMLHttpRequest
+import kotlin.js.Date
 
 class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
 
@@ -54,9 +54,10 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
             request.setRequestHeader("Authorization", authorizationToken(credentials))
             request.send()
             if (request.status.toInt() == 200) {
-                return JSON.parse<Payload<Array<Course>>>(request.responseText)
+                return JSON.parse<Payload<Array<dynamic>>>(request.responseText)
                         .payload
                         ?.toList()
+                        ?.map { courseFromDynamic(it) }
                         ?: throw FlaxoHttpCallException("There is no courses in server response")
             } else {
                 throw FlaxoHttpCallException(request.responseText)
@@ -64,6 +65,36 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
         } catch (e: Throwable) {
             throw FlaxoHttpCallException("User courses retrieving failed.", e)
         }
+    }
+
+    private fun courseFromDynamic(courseJson: dynamic): Course =
+            Course(name = courseJson.name,
+                    state = courseStateFromDynamic(courseJson.state),
+                    language = courseJson.language,
+                    testingLanguage = courseJson.testingLanguage,
+                    testingFramework = courseJson.testingFramework,
+                    description = courseJson.description,
+                    createdDate = Date(courseJson.createdDate as String),
+                    tasks = (courseJson.tasks as Array<String>).toList(),
+                    students = (courseJson.students as Array<String>).toList(),
+                    url = courseJson.url,
+                    user = userFromDynamic(courseJson.user))
+
+    private fun userFromDynamic(userJson: dynamic): User {
+        return User(
+                githubId = userJson.githubId,
+                nickname = userJson.nickname,
+                isGithubAuthorized = userJson.githubAuthorized,
+                isTravisAuthorized = userJson.travisAuthorized,
+                isCodacyAuthorized = userJson.codacyAuthorized
+        )
+    }
+
+    private fun courseStateFromDynamic(courseStateJson: dynamic): CourseState {
+        return CourseState(
+                lifecycle = courseStateJson.lifecycle,
+                activatedServices = (courseStateJson.activatedServices as Array<String>).toList()
+        )
     }
 
     override fun createCourse(credentials: Credentials, courseParameters: CourseParameters): Course {
@@ -92,8 +123,8 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
     // todo: Replace with kotlinx.serialization features
     private fun languageFromDynamic(languageJson: dynamic) =
             Language(name = languageJson.name,
-                     compatibleTestingLanguages = (languageJson.compatibleTestingLanguages as Array<String>).toList(),
-                     compatibleTestingFrameworks = (languageJson.compatibleTestingFrameworks as Array<String>).toList())
+                    compatibleTestingLanguages = (languageJson.compatibleTestingLanguages as Array<String>).toList(),
+                    compatibleTestingFrameworks = (languageJson.compatibleTestingFrameworks as Array<String>).toList())
 
     override fun getCourseStatistics(credentials: Credentials, username: String, courseName: String): CourseStatistics {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.

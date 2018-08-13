@@ -72,7 +72,6 @@ class CourseCreationModal(props: CourseCreationModalProps)
         flaxoClient = Container.flaxoClient
         launch {
             flaxoClient.getAvailableLanguages().also { languages ->
-                console.log(languages)
                 setState {
                     flaxoLanguages = languages
                     language = languages.firstOrNull()
