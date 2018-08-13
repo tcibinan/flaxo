@@ -1,3 +1,4 @@
+import kotlinx.coroutines.experimental.launch
 import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
 import org.flaxo.frontend.Container
@@ -14,6 +15,7 @@ import kotlinx.html.tabIndex
 import org.flaxo.frontend.component.label
 import org.flaxo.frontend.credentials
 import org.flaxo.frontend.data.CourseParameters
+import org.w3c.dom.HTMLSelectElement
 import react.RBuilder
 import react.RComponent
 import react.RProps
@@ -68,12 +70,23 @@ class CourseCreationModal(props: CourseCreationModalProps)
     init {
         state = CourseCreationModalState()
         flaxoClient = Container.flaxoClient
-        flaxoClient.getAvailableLanguages().also { languages ->
-            setState {
-                flaxoLanguages = languages
-                language = languages.first().name
-                testingLanguage = languages.first().compatibleTestingLanguages.first().name
-                testingFramework = languages.first().compatibleTestingFrameworks.first().name
+        launch {
+            flaxoClient.getAvailableLanguages().also { languages ->
+                console.log(languages)
+                setState {
+                    flaxoLanguages = languages
+                    language = languages.firstOrNull()
+                            ?.name
+                            ?: "not found"
+                    testingLanguage = languages.firstOrNull()
+                            ?.compatibleTestingLanguages
+                            ?.firstOrNull()
+                            ?: "not found"
+                    testingFramework = languages.firstOrNull()
+                            ?.compatibleTestingFrameworks
+                            ?.firstOrNull()
+                            ?: "not found"
+                }
             }
         }
     }
@@ -216,8 +229,20 @@ class CourseCreationModal(props: CourseCreationModalProps)
                     id = LANGUAGE_SELECT_ID
                     classes = setOf("form-control")
                     onChangeFunction = { event ->
-                        val target = event.target as HTMLInputElement
-                        setState { language = target.value }
+                        val target = event.target as HTMLSelectElement
+                        setState {
+                            language = target.value
+                            testingLanguage = state.flaxoLanguages
+                                    .find { it.name == language }
+                                    ?.compatibleTestingLanguages
+                                    ?.firstOrNull()
+                                    ?: "not found"
+                            testingFramework = state.flaxoLanguages
+                                    .find { it.name == testingLanguage }
+                                    ?.compatibleTestingFrameworks
+                                    ?.firstOrNull()
+                                    ?: "not found"
+                        }
                     }
                     attributes["aria-describedby"] = LANGUAGE_SELECT_HELP_ID
                 }
@@ -246,8 +271,15 @@ class CourseCreationModal(props: CourseCreationModalProps)
                     id = TESTING_LANGUAGE_SELECT_ID
                     classes = setOf("form-control")
                     onChangeFunction = { event ->
-                        val target = event.target as HTMLInputElement
-                        setState { testingLanguage = target.value }
+                        val target = event.target as HTMLSelectElement
+                        setState {
+                            testingLanguage = target.value
+                            testingFramework = state.flaxoLanguages
+                                    .find { it.name == testingLanguage }
+                                    ?.compatibleTestingFrameworks
+                                    ?.firstOrNull()
+                                    ?: "not found"
+                        }
                     }
                     attributes["aria-describedby"] = TESTING_LANGUAGE_SELECT_HELP_ID
                 }
@@ -257,8 +289,8 @@ class CourseCreationModal(props: CourseCreationModalProps)
                         ?.compatibleTestingLanguages
                         ?.forEach {
                             option {
-                                attrs.selected = it.name == state.testingLanguage
-                                +it.name
+                                attrs.selected = it == state.testingLanguage
+                                +it
                             }
                         }
             }
@@ -280,7 +312,7 @@ class CourseCreationModal(props: CourseCreationModalProps)
                     id = TESTING_FRAMEWORK_SELECT_ID
                     classes = setOf("form-control")
                     onChangeFunction = { event ->
-                        val target = event.target as HTMLInputElement
+                        val target = event.target as HTMLSelectElement
                         setState { testingFramework = target.value }
                     }
                     attributes["aria-describedby"] = TESTING_FRAMEWORK_SELECT_HELP_ID
@@ -291,8 +323,8 @@ class CourseCreationModal(props: CourseCreationModalProps)
                         ?.compatibleTestingFrameworks
                         ?.forEach {
                             option {
-                                attrs.selected = it.name == state.testingFramework
-                                +it.name
+                                attrs.selected = it == state.testingFramework
+                                +it
                             }
                         }
             }

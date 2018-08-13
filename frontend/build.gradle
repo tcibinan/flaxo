@@ -27,22 +27,20 @@ repositories {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-js:$kotlin_version"
-    testCompile 'org.jetbrains.kotlin:kotlin-test-js'
+    testCompile "org.jetbrains.kotlin:kotlin-test-js:$kotlin_version"
     compile 'org.jetbrains:kotlin-react:16.4.2-pre.38-kotlin-1.2.60',
             'org.jetbrains:kotlin-react-dom:16.4.2-pre.38-kotlin-1.2.60'
+    compile 'org.jetbrains.kotlinx:kotlinx-coroutines-core-js:0.24.0'
 }
 
 compileKotlin2Js {
     kotlinOptions.metaInfo = true
     kotlinOptions.outputFile = "$project.buildDir.path/js/${project.name}.js"
-    kotlinOptions.sourceMap = true
     kotlinOptions.moduleKind = 'commonjs'
     kotlinOptions.main = "call"
 }
 
 kotlinFrontend {
-    sourceMaps = true
-
     npm {
         dependency('react', '16.4.2')
         dependency('react-dom', '16.4.2')
@@ -59,5 +57,11 @@ kotlinFrontend {
         contentPath = file('src/main/web')
         mode = 'development'
 //        mode = 'production'
+    }
+}
+
+kotlin {
+    experimental {
+        coroutines "enable"
     }
 }

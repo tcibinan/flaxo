@@ -1,6 +1,7 @@
 package org.flaxo.frontend.component
 
 import courses
+import kotlinx.coroutines.experimental.launch
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.frontend.client.FlaxoHttpCallException
@@ -25,13 +26,14 @@ class Page: RComponent<EmptyProps, PageState>(EmptyProps()) {
 
     init {
         flaxoClient = Container.flaxoClient
-        credentials?.also {
-            try {
-                val user = flaxoClient.getSelf(it)
-                state.user = user
-            } catch (e: FlaxoHttpCallException) {
-                console.log(e)
-                // TODO 12.08.18: Notify user that user retrieving failed
+        launch {
+            credentials?.also {
+                try {
+                    setState { user = flaxoClient.getSelf(it) }
+                } catch (e: FlaxoHttpCallException) {
+                    console.log(e)
+                    // TODO 12.08.18: Notify user that user retrieving failed
+                }
             }
         }
     }

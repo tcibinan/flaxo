@@ -48,7 +48,22 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
             "Basic " + btoa(credentials.username + ":" + credentials.password)
 
     override fun getUserCourses(credentials: Credentials, username: String): List<Course> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        try {
+            val request = XMLHttpRequest()
+            request.open("GET", "$baseUrl/course/all?nickname=$username", async = false)
+            request.setRequestHeader("Authorization", authorizationToken(credentials))
+            request.send()
+            if (request.status.toInt() == 200) {
+                return JSON.parse<Payload<Array<Course>>>(request.responseText)
+                        .payload
+                        ?.toList()
+                        ?: throw FlaxoHttpCallException("There is no courses in server response")
+            } else {
+                throw FlaxoHttpCallException(request.responseText)
+            }
+        } catch (e: Throwable) {
+            throw FlaxoHttpCallException("User courses retrieving failed.", e)
+        }
     }
 
     override fun createCourse(credentials: Credentials, courseParameters: CourseParameters): Course {
@@ -61,9 +76,10 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
             request.open("GET", "$baseUrl/settings/languages", async = false)
             request.send()
             if (request.status.toInt() == 200) {
-                return JSON.parse<Payload<Array<Language>>>(request.responseText)
+                return JSON.parse<Payload<Array<dynamic>>>(request.responseText)
                         .payload
                         ?.toList()
+                        ?.map { languageFromDynamic(it) }
                         ?: emptyList()
             } else {
                 throw FlaxoHttpCallException(request.responseText)
@@ -72,6 +88,12 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
             throw FlaxoHttpCallException("Available languages retrieving failed.", e)
         }
     }
+
+    // todo: Replace with kotlinx.serialization features
+    private fun languageFromDynamic(languageJson: dynamic) =
+            Language(name = languageJson.name,
+                     compatibleTestingLanguages = (languageJson.compatibleTestingLanguages as Array<String>).toList(),
+                     compatibleTestingFrameworks = (languageJson.compatibleTestingFrameworks as Array<String>).toList())
 
     override fun getCourseStatistics(credentials: Credentials, username: String, courseName: String): CourseStatistics {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
