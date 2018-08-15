@@ -97,6 +97,8 @@ class StatisticsController(private val dataService: DataService,
         val course = dataService.getCourse(courseName, user)
                 ?: return responseService.courseNotFound(ownerNickname, courseName)
 
-        return responseService.ok(course.tasks.views())
+        return responseService.ok(object {
+            val tasks = course.tasks.views()
+        })
     }
 }

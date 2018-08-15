@@ -10,14 +10,18 @@ import react.RComponent
 import react.RProps
 import react.dom.*
 
-fun RBuilder.navigationBar(user: User, onLogout: () -> Unit) = child(NavigationBar::class) {
-    attrs {
-        this.user = user
-        this.onLogout = onLogout
-    }
-}
+fun RBuilder.navigationBar(user: User, onLogout: () -> Unit, toCourses: () -> Unit) =
+        child(NavigationBar::class) {
+            attrs {
+                this.user = user
+                this.onLogout = onLogout
+                this.toCourses = toCourses
+            }
+        }
 
-class NavigationBarProps(var user: User, var onLogout: () -> Unit) : RProps
+class NavigationBarProps(var user: User,
+                         var toCourses: () -> Unit,
+                         var onLogout: () -> Unit) : RProps
 
 class NavigationBar(props: NavigationBarProps) : RComponent<NavigationBarProps, EmptyState>(props) {
 
@@ -28,7 +32,12 @@ class NavigationBar(props: NavigationBarProps) : RComponent<NavigationBarProps, 
 
     override fun RBuilder.render() {
         nav(classes = "navbar navbar-expand-sm navbar-light bg-light") {
-            span(classes = "navbar-brand mb-0 h1") { +"Flaxo" }
+            a(classes = "navbar-brand", href = "#") {
+                attrs {
+                    onClickFunction = { props.toCourses() }
+                }
+                +"Flaxo"
+            }
             button(classes = "navbar-toggler", type = ButtonType.button) {
                 attrs {
                     attributes["data-toggle"] = "collapse"
@@ -42,8 +51,16 @@ class NavigationBar(props: NavigationBarProps) : RComponent<NavigationBarProps, 
             div(classes = "collapse navbar-collapse") {
                 attrs { id = NAVIGATION_BAR_COLLAPSIBLE_ID }
                 ul(classes = "navbar-nav mr-auto") {
+                    li(classes = "nav-item active") {
+                        a(classes = "nav-link", href = "#courses") {
+                            attrs {
+                                onClickFunction = { props.toCourses() }
+                            }
+                            +"Courses"
+                        }
+                    }
                     li(classes = "nav-item dropdown") {
-                        a(classes = "nav-link dropdown-toggle") {
+                        a(classes = "nav-link dropdown-toggle", href = "#") {
                             attrs {
                                 id = NAVIGATION_BAR_SERVICES_DROPDOWN_ID
                                 role = "button"

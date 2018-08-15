@@ -1,4 +1,4 @@
 package org.flaxo.frontend.data
 
-class CourseState(val lifecycle: String,
+class CourseState(val lifecycle: CourseLifecycle,
                   val activatedServices: List<String>)

@@ -91,7 +91,7 @@ class CourseCreationModal(props: CourseCreationModalProps)
     }
 
     override fun RBuilder.render() {
-        button(classes = "btn btn-outline-primary", type = ButtonType.button) {
+        button(classes = "btn btn-outline-primary btn-block", type = ButtonType.button) {
             attrs {
                 attributes["data-toggle"] = "modal"
                 attributes["data-target"] = "#$COURSE_CREATION_MODAL_ID"

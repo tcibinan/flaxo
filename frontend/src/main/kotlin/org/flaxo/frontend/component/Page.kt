@@ -42,8 +42,7 @@ class Page: RComponent<EmptyProps, PageState>(EmptyProps()) {
         val user = state.user
         if (user != null) {
             div("page") {
-                navigationBar(user, ::onLogout)
-                courses(user)
+                courses(user, ::onLogout)
             }
         } else {
             div("page") {

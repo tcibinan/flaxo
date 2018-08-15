@@ -92,7 +92,7 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
 
     private fun courseStateFromDynamic(courseStateJson: dynamic): CourseState {
         return CourseState(
-                lifecycle = courseStateJson.lifecycle,
+                lifecycle = CourseLifecycle.valueOf(courseStateJson.lifecycle),
                 activatedServices = (courseStateJson.activatedServices as Array<String>).toList()
         )
     }
@@ -126,9 +126,89 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
                     compatibleTestingLanguages = (languageJson.compatibleTestingLanguages as Array<String>).toList(),
                     compatibleTestingFrameworks = (languageJson.compatibleTestingFrameworks as Array<String>).toList())
 
-    override fun getCourseStatistics(credentials: Credentials, username: String, courseName: String): CourseStatistics {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun getCourseStatistics(credentials: Credentials,
+                                     username: String,
+                                     courseName: String): CourseStatistics {
+        try {
+            val request = XMLHttpRequest()
+            request.open("GET", "$baseUrl/statistics?owner=$username&course=$courseName", async = false)
+            request.send()
+            if (request.status.toInt() == 200) {
+                return courseStatisticsFromDynamic(JSON.parse<Payload<dynamic>>(request.responseText).payload)
+            } else {
+                throw FlaxoHttpCallException(request.responseText)
+            }
+        } catch (e: Throwable) {
+            throw FlaxoHttpCallException("Course statistics retrieving failed.", e)
+        }
     }
+
+    private fun courseStatisticsFromDynamic(courseStatisticsJson: dynamic): CourseStatistics =
+            CourseStatistics(
+                    tasks = (courseStatisticsJson.tasks as Array<dynamic>).toList()
+                            .map { taskFromDynamic(it) }
+            )
+
+    private fun taskFromDynamic(taskJson: dynamic): Task =
+            Task(
+                    branch = taskJson.branch,
+                    deadline = nullableDateFromDynamic(taskJson.deadline),
+                    plagiarismReports = (taskJson.plagiarismReports as Array<dynamic>).toList()
+                            .map { plagiarismReportFromDynamic(it) },
+                    url = taskJson.url,
+                    solutions = (taskJson.solutions as Array<dynamic>).toList()
+                            .map { solutionFromDynamic(it) }
+            )
+
+    private fun solutionFromDynamic(solutionJson: dynamic): Solution =
+            Solution(
+                    task = solutionJson.task,
+                    student = solutionJson.student,
+                    score = solutionJson.score,
+                    commits = (solutionJson.commits as Array<dynamic>).toList()
+                            .map { commitFromDynamic(it) },
+                    buildReports = (solutionJson.buildReports as Array<dynamic>).toList()
+                            .map { buildReportFromDynamic(it) },
+                    codeStyleReports = (solutionJson.codeStyleReports as Array<dynamic>).toList()
+                            .map { codeStyleReportFromDynamic(it) }
+            )
+
+    private fun codeStyleReportFromDynamic(codeStyleReportJson: dynamic): CodeStyleReport =
+            CodeStyleReport(
+                    grade = codeStyleReportJson.grade,
+                    date = Date(codeStyleReportJson.date as String)
+            )
+
+    private fun buildReportFromDynamic(buildReportJson: dynamic): BuildReport =
+            BuildReport(
+                    succeed = buildReportJson.succeed,
+                    date = Date(buildReportJson.date as String)
+            )
+
+    private fun commitFromDynamic(commitJson: dynamic): Commit =
+            Commit(
+                    sha = commitJson.sha,
+                    date = nullableDateFromDynamic(commitJson.date)
+            )
+
+    private fun plagiarismReportFromDynamic(plagiarismReportJson: dynamic): PlagiarismReport =
+            PlagiarismReport(
+                    url = plagiarismReportJson.url,
+                    date = Date(plagiarismReportJson.date as String),
+                    matches = (plagiarismReportJson.matches as Array<dynamic>).toList()
+                            .map { plagiarismMatchFromDynamic(it) }
+            )
+
+    private fun plagiarismMatchFromDynamic(plagiarismMatchJson: dynamic): PlagiarismMatch =
+            PlagiarismMatch(
+                    url = plagiarismMatchJson.url,
+                    student1 = plagiarismMatchJson.student1,
+                    student2 = plagiarismMatchJson.student2,
+                    lines = plagiarismMatchJson.lines,
+                    percentage = plagiarismMatchJson.percentage
+            )
+
+    private fun nullableDateFromDynamic(dateString: String?): Date? = dateString?.let { Date(it) }
 
     override fun startCourse(credentials: Credentials, courseName: String) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.

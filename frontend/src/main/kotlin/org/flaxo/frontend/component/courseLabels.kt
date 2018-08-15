@@ -25,5 +25,5 @@ private fun RBuilder.techLabels(course: Course) =
 
 private fun RBuilder.statusLabel(course: Course) =
         span(classes = "course-label badge btn-primary") {
-            +course.state.lifecycle.toLowerCase()
+            +course.state.lifecycle.name.toLowerCase()
         }

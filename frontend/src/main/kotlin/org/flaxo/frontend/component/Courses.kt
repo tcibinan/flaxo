@@ -1,7 +1,9 @@
 import kotlinx.coroutines.experimental.launch
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.client.FlaxoClient
+import org.flaxo.frontend.component.course
 import org.flaxo.frontend.component.courseCard
+import org.flaxo.frontend.component.navigationBar
 import org.flaxo.frontend.credentials
 import org.flaxo.frontend.data.Course
 import org.flaxo.frontend.data.User
@@ -13,13 +15,15 @@ import react.RState
 import react.dom.div
 import react.dom.p
 
-fun RBuilder.courses(user: User) = child(Courses::class) {
+fun RBuilder.courses(user: User, onLogout: () -> Unit) = child(Courses::class) {
     attrs {
         this.user = user
+        this.onLogout = onLogout
     }
 }
 
-class CoursesProps(var user: User) : RProps
+class CoursesProps(var user: User, var onLogout: () -> Unit) : RProps
+
 class CoursesState(var courses: List<Course> = emptyList(),
                    var selectedCourse: Course? = null) : RState
 
@@ -36,8 +40,8 @@ class Courses(props: CoursesProps) : RComponent<CoursesProps, CoursesState>(prop
     override fun RBuilder.render() {
         val selectedCourse = state.selectedCourse
         if (selectedCourse == null) {
+            navigationBar(props.user, props.onLogout, ::deselectCourse)
             div(classes = "courses-list") {
-                courseCreationModal(onCourseCreation = ::updateCoursesList)
                 div(classes = "courses-list-container") {
                     state.courses
                             .takeIf { it.isNotEmpty() }
@@ -46,9 +50,11 @@ class Courses(props: CoursesProps) : RComponent<CoursesProps, CoursesState>(prop
                             }
                             ?: p { +"There are no courses yet." }
                 }
+                courseCreationModal(onCourseCreation = ::updateCoursesList)
             }
         } else {
-//            course(selectedCourse, onUpdate = ::updateCoursesList, onDelete = ::deselectCourse)
+            navigationBar(props.user, props.onLogout, ::deselectCourse)
+            course(selectedCourse, onUpdate = ::updateCoursesList, onDelete = ::deselectCourse)
         }
     }
 
@@ -72,7 +78,6 @@ class Courses(props: CoursesProps) : RComponent<CoursesProps, CoursesState>(prop
 
     private fun deselectCourse() {
         setState { selectedCourse = null }
-        updateCoursesList()
     }
 
     private fun selectCourse(course: Course) {
