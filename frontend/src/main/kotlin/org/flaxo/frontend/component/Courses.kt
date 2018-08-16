@@ -45,9 +45,7 @@ class Courses(props: CoursesProps) : RComponent<CoursesProps, CoursesState>(prop
                 div(classes = "courses-list-container") {
                     state.courses
                             .takeIf { it.isNotEmpty() }
-                            ?.forEach {
-                                courseCard(it, onSelect = ::selectCourse)
-                            }
+                            ?.forEach { courseCard(it, onSelect = ::selectCourse) }
                             ?: p { +"There are no courses yet." }
                 }
                 courseCreationModal(onCourseCreation = ::updateCoursesList)

@@ -1,7 +1,6 @@
 package org.flaxo.frontend.component
 
 import kotlinx.coroutines.experimental.launch
-import kotlinx.html.classes
 import kotlinx.html.id
 import kotlinx.html.role
 import org.flaxo.frontend.Container
@@ -27,8 +26,7 @@ fun RBuilder.courseStatistics(course: Course) =
         }
 
 class CourseStatisticsProps(var course: Course) : RProps
-class CourseStatisticsState(var activeTab: String,
-                            var courseStatistics: CourseStatistics?) : RState
+class CourseStatisticsState(var courseStatistics: CourseStatistics?) : RState
 
 class CourseStatistics(props: CourseStatisticsProps)
     : RComponent<CourseStatisticsProps, CourseStatisticsState>(props) {
@@ -49,7 +47,6 @@ class CourseStatistics(props: CourseStatisticsProps)
     init {
         flaxoClient = Container.flaxoClient
         state.apply {
-            activeTab = COURSE_SUMMARY_TAB_ID
             courseStatistics = null
         }
         launch {
@@ -74,13 +71,13 @@ class CourseStatistics(props: CourseStatisticsProps)
                     role = "tablist"
                 }
                 li("nav-item") {
-                    a(classes = "nav-link active", href = "#") {
+                    a(classes = "nav-link active", href = "#$COURSE_SUMMARY_CONTENT_ID") {
                         attrs {
                             id = COURSE_SUMMARY_TAB_ID
                             role = "tab"
                             attributes["data-toggle"] = "tab"
-                            attributes["aria-controls"] = id
-                            if (state.activeTab == id) classes += "active"
+                            attributes["aria-controls"] = COURSE_SUMMARY_CONTENT_ID
+                            attributes["aria-selected"] = "true"
                         }
                         +"Course summary"
                     }
@@ -89,13 +86,13 @@ class CourseStatistics(props: CourseStatisticsProps)
                         ?.sortedBy { it.branch }
                         ?.forEachIndexed { index, task ->
                             li("nav-item") {
-                                a(classes = "nav-link", href = "#") {
+                                a(classes = "nav-link", href = "#${TASK_CONTENT_ID_TEMPLATE + task.branch}") {
                                     attrs {
                                         id = TASK_TAB_ID_TEMPLATE + task.branch
                                         role = "tab"
                                         attributes["data-toggle"] = "tab"
-                                        attributes["aria-controls"] = id
-                                        if (state.activeTab == id) classes += "active"
+                                        attributes["aria-controls"] = TASK_CONTENT_ID_TEMPLATE + task.branch
+                                        attributes["aria-selected"] = "false"
                                     }
                                     +task.branch
                                 }
@@ -105,24 +102,26 @@ class CourseStatistics(props: CourseStatisticsProps)
         }
         div(classes = "tab-content") {
             attrs { id = COURSE_STATISTICS_CONTENT_ID }
-            div(classes = "tab-pane fade") {
+            div(classes = "tab-pane show active") {
                 attrs {
                     id = COURSE_SUMMARY_CONTENT_ID
                     role = "tabpanel"
                     attributes["aria-labelledby"] = COURSE_SUMMARY_TAB_ID
                 }
-//                courseSummary(props.course, state.courseStatistics)
+                state.courseStatistics?.also {
+                    courseSummary(props.course, it)
+                }
             }
             state.courseStatistics?.tasks
                     ?.sortedBy { it.branch }
                     ?.forEachIndexed { index, task ->
-                        div(classes = "tab-pane fade") {
+                        div(classes = "tab-pane") {
                             attrs {
                                 id = TASK_CONTENT_ID_TEMPLATE + task.branch
                                 role = "tabpanel"
                                 attributes["aria-labelledby"] = TASK_TAB_ID_TEMPLATE + task.branch
                             }
-//                            task(props.course, task)
+                            task(props.course, task)
                         }
                     }
 
