@@ -67,9 +67,9 @@ class CourseSummary(props: CourseSummaryProps) : RComponent<CourseSummaryProps, 
                                         .toList()
                                         .sortedBy { it.first }
                                         .takeIf { it.isNotEmpty() }
-                                        ?.forEachIndexed { studentIndex, (student, solutions) ->
+                                        ?.forEachIndexed { row, (student, solutions) ->
                                             tr {
-                                                th(scope = ThScope.row) { +(studentIndex + 1) }
+                                                th(scope = ThScope.row) { +((row + 1).toString()) }
                                                 td { +student }
                                                 props.courseStatistics.tasks
                                                         .map { it.branch }

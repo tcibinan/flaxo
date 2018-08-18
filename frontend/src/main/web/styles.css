@@ -54,6 +54,15 @@
     text-align: center;
 }
 
+.task-results .table td,
+.task-results .table th {
+    vertical-align: middle;
+}
+
+.report-cell {
+    text-align: center;
+}
+
 .report {
     display: flex;
     justify-content: center;
@@ -76,6 +85,7 @@
 
 .invalid-plagiarism-report {
     color: #c9302c;
+    font-weight: bold;
 }
 
 .plagiarism-marker {
@@ -83,8 +93,9 @@
 }
 
 .code-style-grade {
-    width: 30px;
-    height: 30px;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
     background-size: contain;
 }
 

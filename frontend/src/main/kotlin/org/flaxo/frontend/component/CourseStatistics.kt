@@ -84,7 +84,7 @@ class CourseStatistics(props: CourseStatisticsProps)
                 }
                 state.courseStatistics?.tasks
                         ?.sortedBy { it.branch }
-                        ?.forEachIndexed { index, task ->
+                        ?.forEach { task ->
                             li("nav-item") {
                                 a(classes = "nav-link", href = "#${TASK_CONTENT_ID_TEMPLATE + task.branch}") {
                                     attrs {
@@ -114,7 +114,7 @@ class CourseStatistics(props: CourseStatisticsProps)
             }
             state.courseStatistics?.tasks
                     ?.sortedBy { it.branch }
-                    ?.forEachIndexed { index, task ->
+                    ?.forEach { task ->
                         div(classes = "tab-pane") {
                             attrs {
                                 id = TASK_CONTENT_ID_TEMPLATE + task.branch

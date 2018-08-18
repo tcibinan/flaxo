@@ -13,7 +13,7 @@ interface FlaxoClient {
     fun deleteCourse(credentials: Credentials, courseName: String)
     fun analysePlagiarism(credentials: Credentials, courseName: String)
     fun syncCourse(credentials: Credentials, courseName: String)
-    fun updateRules(credentials: Credentials, courseName: String, task: String, deadline: String)
+    fun updateRules(credentials: Credentials, courseName: String, task: String, deadline: String?)
     fun addCodacyToken(credentials: Credentials, codacyToken: String)
     fun activateCodacy(credentials: Credentials, courseName: String)
     fun activateTravis(credentials: Credentials, courseName: String)

@@ -226,7 +226,7 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun updateRules(credentials: Credentials, courseName: String, task: String, deadline: String) {
+    override fun updateRules(credentials: Credentials, courseName: String, task: String, deadline: String?) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

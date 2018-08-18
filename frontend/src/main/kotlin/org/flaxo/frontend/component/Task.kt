@@ -57,9 +57,9 @@ class Task(props: TaskProps) : RComponent<TaskProps, EmptyState>(props) {
                     }
                     div(classes = "collapse") {
                         attrs { id = RULES_DROPDOWN_ID }
-//                        rules(props.course, props.task)
+                        rules(props.course, props.task)
                     }
-//                    taskStatistics(props.course, props.task)
+                    taskStatistics(props.course, props.task)
                 }
             }
         }
