@@ -45,6 +45,14 @@
     cursor: pointer;
 }
 
+a.github-profile {
+    color: inherit;
+}
+
+a.github-profile:hover {
+    text-decoration: none;
+}
+
 .task-results,
 .course-stats {
     margin-top: 15px;

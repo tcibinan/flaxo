@@ -12,12 +12,12 @@ private const val PLAGIARISM_THRESHOLD = 80
 fun RBuilder.plagiarismReport(task: Task, solution: Solution) {
     task.plagiarismReports
             .lastOrNull()
+            ?.takeIf { solution.commits.any() }
             ?.also { report ->
                 val matches = report.matches.filter { match -> solution.student in match.students }
                 val reportIsPositive = matches.all { it.percentage < PLAGIARISM_THRESHOLD }
                 val highestMatchPercentage = matches.map { it.percentage }.max()
 
-                //(0) 5 matches <= 50 %
                 if (matches.isNotEmpty()) {
                     span(classes = if (reportIsPositive) "valid-plagiarism-report" else "invalid-plagiarism-report") {
                         +"${matches.size}  "

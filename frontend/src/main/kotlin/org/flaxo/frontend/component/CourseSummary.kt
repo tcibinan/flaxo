@@ -4,6 +4,7 @@ import kotlinx.html.ThScope
 import kotlinx.html.js.onClickFunction
 import org.flaxo.frontend.data.Course
 import org.flaxo.frontend.data.CourseStatistics
+import org.flaxo.frontend.githubProfileUrl
 import react.RBuilder
 import react.RComponent
 import react.RProps
@@ -46,9 +47,9 @@ class CourseSummary(props: CourseSummaryProps) : RComponent<CourseSummaryProps, 
                         }
                         +"Save results"
                     }
-//                    courseStatisticsRefresh(props.course)
+                    courseStatisticsRefresh(props.course)
                     div(classes = "course-stats") {
-                        table(classes = "table table-sm") {
+                        table(classes = "table table-sm table-hover") {
                             thead {
                                 tr {
                                     th(scope = ThScope.col) { +"#" }
@@ -69,17 +70,28 @@ class CourseSummary(props: CourseSummaryProps) : RComponent<CourseSummaryProps, 
                                         .takeIf { it.isNotEmpty() }
                                         ?.forEachIndexed { row, (student, solutions) ->
                                             tr {
-                                                th(scope = ThScope.row) { +((row + 1).toString()) }
-                                                td { +student }
+                                                th(scope = ThScope.row) { +(row + 1).toString() }
+                                                td {
+                                                    a(classes = "github-profile", href = githubProfileUrl(student)) {
+                                                        +student
+                                                    }
+                                                }
                                                 props.courseStatistics.tasks
                                                         .map { it.branch }
                                                         .sorted()
                                                         .map { task -> solutions.find { it.task == task } }
                                                         .forEach { solution ->
-                                                            solution?.also { td { +(it.score ?: 0) } }
+                                                            solution?.also { td { +(it.score ?: 0).toString() } }
                                                                     ?: td {}
                                                         }
-                                                td {}
+                                                td {
+                                                    +solutions.map { it.score }
+                                                            .map { it ?: 0 }
+                                                            .map { it.toDouble() }
+                                                            .let { scores -> (scores.sum() / (scores.size * 100)) * 100 }
+                                                            .toInt()
+                                                            .toString()
+                                                }
                                             }
                                         }
                                         ?: td {

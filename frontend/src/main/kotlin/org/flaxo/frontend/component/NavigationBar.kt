@@ -4,6 +4,7 @@ import kotlinx.html.ButtonType
 import kotlinx.html.id
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.role
+import org.flaxo.frontend.component.services.GITHUB_MODAL_ID
 import org.flaxo.frontend.data.User
 import react.RBuilder
 import react.RComponent
@@ -74,9 +75,16 @@ class NavigationBar(props: NavigationBarProps) : RComponent<NavigationBarProps, 
                             attrs {
                                 attributes["aria-labelledby"] = NAVIGATION_BAR_SERVICES_DROPDOWN_ID
                             }
-                            // TODO 12.08.18: Add separate modal for each service
-                            a(classes = "dropdown-item") { +"Github:${props.user.isGithubAuthorized}" }
+                            a(classes = "dropdown-item") {
+                                attrs {
+                                    attributes["data-toggle"] = "modal"
+                                    attributes["data-target"] = "#$GITHUB_MODAL_ID"
+                                }
+                                +"Github:${props.user.isGithubAuthorized}"
+                            }
+                            // TODO 12.08.18: Add travis settings modal
                             a(classes = "dropdown-item") { +"Travis:${props.user.isTravisAuthorized}" }
+                            // TODO 12.08.18: Add codacy settings modal
                             a(classes = "dropdown-item") { +"Codacy:${props.user.isCodacyAuthorized}" }
                         }
                     }

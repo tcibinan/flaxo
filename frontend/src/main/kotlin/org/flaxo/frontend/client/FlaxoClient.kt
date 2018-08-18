@@ -18,4 +18,5 @@ interface FlaxoClient {
     fun activateCodacy(credentials: Credentials, courseName: String)
     fun activateTravis(credentials: Credentials, courseName: String)
     fun downloadStatistics(credentials: Credentials, courseName: String, format: String)
+    fun getGithubAuthData(): GithubAuthData
 }

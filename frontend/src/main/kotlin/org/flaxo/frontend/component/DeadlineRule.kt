@@ -56,8 +56,8 @@ class DeadlineRule(props: DeadlineRuleProps) : RComponent<DeadlineRuleProps, Emp
                         id = DEADLINE_RULE_HELP_ID
                     }
                     if (props.task.deadline != null) {
-                        +"All solutions received after that date will be fined. "
-                        +"Also you can "
+                        +"All solutions that will be received after the deadline will be fined. "
+                        +"Otherwise you can "
                         a(href = "#") {
                             +"remove the deadline."
                             attrs {
@@ -70,7 +70,8 @@ class DeadlineRule(props: DeadlineRuleProps) : RComponent<DeadlineRuleProps, Emp
                             }
                         }
                     } else {
-                        +"All solutions received after that date will be fined."
+                        +"You can specify a soft deadline for the task. "
+                        +"All solutions that will be received after the deadline will be fined."
                     }
                 }
             }

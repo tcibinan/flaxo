@@ -9,6 +9,7 @@ import org.flaxo.frontend.data.Solution
 import org.flaxo.frontend.data.Task
 import react.RBuilder
 import react.dom.button
+import react.dom.defaultValue
 import react.dom.div
 import react.dom.input
 import kotlin.js.Date
@@ -20,23 +21,27 @@ fun RBuilder.scoreInput(task: Task, solution: Solution) {
     val suggestedScore = suggestScore(buildReport, codeStyleReport, latestCommit, task.deadline).toString()
     val suggestedScoreAppendId = "suggestedScore${solution.task}${solution.student}"
 
-    div(classes = "input-group") {
+    div(classes = "input-group input-group-sm") {
         input(classes = "form-control", type = InputType.number) {
             attrs {
+                defaultValue = solution.score?.toString() ?: ""
                 attributes["aria-describedby"] = suggestedScoreAppendId
+                disabled = solution.commits.isEmpty()
             }
         }
-        div(classes = "input-group-append") {
-            button(classes = "btn btn-outline-info") {
-                // TODO 18.08.18: Activate bootstrap popovers support
-                attrs {
-                    id = suggestedScoreAppendId
-                    attributes["data-toggle"] = "popover"
-                    attributes["title"] = "Suggested score"
-                    attributes["data-content"] = "Student: ${solution.student}.\nScore: $suggestedScore"
-                    attributes["data-placement"] = "bottom"
+        if (solution.commits.isNotEmpty()) {
+            div(classes = "input-group-append") {
+                button(classes = "btn btn-outline-info") {
+                    // TODO 18.08.18: Activate bootstrap popovers support
+                    attrs {
+                        id = suggestedScoreAppendId
+                        attributes["data-toggle"] = "popover"
+                        attributes["title"] = "Suggested score"
+                        attributes["data-content"] = "Student: ${solution.student}.\nScore: $suggestedScore"
+                        attributes["data-placement"] = "bottom"
+                    }
+                    +suggestedScore
                 }
-                +suggestedScore
             }
         }
     }

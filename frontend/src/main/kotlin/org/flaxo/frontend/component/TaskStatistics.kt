@@ -7,11 +7,12 @@ import org.flaxo.frontend.component.report.deadlineReport
 import org.flaxo.frontend.component.report.plagiarismReport
 import org.flaxo.frontend.component.report.scoreInput
 import org.flaxo.frontend.data.Course
-import org.flaxo.frontend.data.Solution
 import org.flaxo.frontend.data.Task
+import org.flaxo.frontend.githubProfileUrl
 import react.RBuilder
 import react.RComponent
 import react.RProps
+import react.dom.a
 import react.dom.div
 import react.dom.table
 import react.dom.tbody
@@ -41,7 +42,7 @@ class TaskStatistics(props: TaskStatisticsProps) : RComponent<TaskStatisticsProp
                         th(scope = ThScope.col) { +"Student" }
                         th(scope = ThScope.col) { +"Build" }
                         th(scope = ThScope.col) { +"Code style" }
-                        th(scope = ThScope.col) { +"Plagiarism detection" }
+                        th(scope = ThScope.col) { +"Plagiarism" }
                         th(scope = ThScope.col) { +"Deadline" }
                         th(scope = ThScope.col) { +"Result" }
                     }
@@ -53,8 +54,21 @@ class TaskStatistics(props: TaskStatisticsProps) : RComponent<TaskStatisticsProp
                             .takeIf { it.isNotEmpty() }
                             ?.forEachIndexed { row, solution ->
                                 tr {
-                                    th(scope = ThScope.row) { +((row + 1).toString()) }
-                                    td { +solution.student }
+                                    if (solution.commits.isEmpty()) {
+                                        th(classes = "text-muted", scope = ThScope.row) { +((row + 1).toString()) }
+                                        td(classes = "text-muted") {
+                                            a(classes = "github-profile", href = githubProfileUrl(solution.student)) {
+                                                +solution.student
+                                            }
+                                        }
+                                    } else {
+                                        th(scope = ThScope.row) { +((row + 1).toString()) }
+                                        td {
+                                            a(classes = "github-profile", href = githubProfileUrl(solution.student)) {
+                                                +solution.student
+                                            }
+                                        }
+                                    }
                                     td(classes = "report-cell") {
                                         buildReport(solution)
                                     }

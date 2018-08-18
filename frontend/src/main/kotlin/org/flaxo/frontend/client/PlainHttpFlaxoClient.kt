@@ -15,9 +15,7 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
                     async = false)
             request.send(JSON.stringify(credentials))
             if (request.status.toInt() == 200) {
-                return JSON.parse<Payload<User>>(request.responseText)
-                        .payload
-                        ?: throw FlaxoHttpCallException("There is no flaxo user in server response")
+                return userFromDynamic(JSON.parse<Payload<dynamic>>(request.responseText).payload)
             } else {
                 throw FlaxoHttpCallException(request.responseText)
             }
@@ -33,9 +31,7 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
             request.setRequestHeader("Authorization", authorizationToken(credentials))
             request.send()
             if (request.status.toInt() == 200) {
-                return JSON.parse<Payload<User>>(request.responseText)
-                        .payload
-                        ?: throw FlaxoHttpCallException("There is no flaxo user in server response")
+                return userFromDynamic(JSON.parse<Payload<dynamic>>(request.responseText).payload)
             } else {
                 throw FlaxoHttpCallException(request.responseText)
             }
@@ -243,6 +239,10 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
     }
 
     override fun downloadStatistics(credentials: Credentials, courseName: String, format: String) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getGithubAuthData(): GithubAuthData {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

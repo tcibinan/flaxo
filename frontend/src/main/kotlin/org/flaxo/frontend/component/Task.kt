@@ -11,6 +11,7 @@ import react.dom.a
 import react.dom.button
 import react.dom.div
 import react.dom.h5
+import react.dom.hr
 
 fun RBuilder.task(course: Course, task: Task) = child(org.flaxo.frontend.component.Task::class) {
     attrs {
@@ -38,10 +39,6 @@ class Task(props: TaskProps) : RComponent<TaskProps, EmptyState>(props) {
                     props.task.plagiarismReports
                             .lastOrNull()
                             ?.also { a(classes = "card-link", href = it.url) { +"Plagiarism report" } }
-                            ?: a(classes = "card-link") {
-                                attrs { attributes["disabled"] = "true" }
-                                +"Plagiarism report"
-                            }
                     button(classes = "save-results-btn btn btn-outline-primary") {
                         attrs { onClickFunction = { saveResults() } }
                         +"Save results"
@@ -57,6 +54,7 @@ class Task(props: TaskProps) : RComponent<TaskProps, EmptyState>(props) {
                     }
                     div(classes = "collapse") {
                         attrs { id = RULES_DROPDOWN_ID }
+                        hr {}
                         rules(props.course, props.task)
                     }
                     taskStatistics(props.course, props.task)

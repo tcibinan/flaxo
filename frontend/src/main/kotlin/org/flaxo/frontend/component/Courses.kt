@@ -4,6 +4,7 @@ import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.frontend.component.course
 import org.flaxo.frontend.component.courseCard
 import org.flaxo.frontend.component.navigationBar
+import org.flaxo.frontend.component.services.githubModal
 import org.flaxo.frontend.credentials
 import org.flaxo.frontend.data.Course
 import org.flaxo.frontend.data.User
@@ -39,8 +40,8 @@ class Courses(props: CoursesProps) : RComponent<CoursesProps, CoursesState>(prop
 
     override fun RBuilder.render() {
         val selectedCourse = state.selectedCourse
+        navigationBar(props.user, props.onLogout, ::deselectCourse)
         if (selectedCourse == null) {
-            navigationBar(props.user, props.onLogout, ::deselectCourse)
             div(classes = "courses-list") {
                 div(classes = "courses-list-container") {
                     state.courses
@@ -51,9 +52,9 @@ class Courses(props: CoursesProps) : RComponent<CoursesProps, CoursesState>(prop
                 courseCreationModal(onCourseCreation = ::updateCoursesList)
             }
         } else {
-            navigationBar(props.user, props.onLogout, ::deselectCourse)
             course(selectedCourse, onUpdate = ::updateCoursesList, onDelete = ::deselectCourse)
         }
+        githubModal(props.user)
     }
 
     private fun updateCoursesList() {
