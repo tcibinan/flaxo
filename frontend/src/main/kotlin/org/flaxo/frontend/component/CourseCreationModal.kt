@@ -14,7 +14,6 @@ import kotlinx.html.role
 import kotlinx.html.tabIndex
 import org.flaxo.frontend.component.label
 import org.flaxo.frontend.credentials
-import org.flaxo.frontend.data.CourseParameters
 import org.flaxo.frontend.wrapper.NotificationManager
 import org.w3c.dom.HTMLSelectElement
 import react.RBuilder
@@ -31,6 +30,7 @@ import react.dom.option
 import react.dom.select
 import react.dom.small
 import react.dom.span
+import kotlin.browser.document
 
 fun RBuilder.courseCreationModal(onCourseCreation: () -> Unit) = child(CourseCreationModal::class) {
     attrs {
@@ -39,12 +39,9 @@ fun RBuilder.courseCreationModal(onCourseCreation: () -> Unit) = child(CourseCre
 }
 
 class CourseCreationModalProps(var onCourseCreation: () -> Unit) : RProps
-class CourseCreationModalState(var courseName: String? = null,
-                               var courseDescription: String? = null,
-                               var language: String? = null,
+class CourseCreationModalState(var language: String? = null,
                                var testingLanguage: String? = null,
                                var testingFramework: String? = null,
-                               var numberOfTasks: Int? = null,
                                var flaxoLanguages: List<Language> = emptyList()) : RState
 
 class CourseCreationModal(props: CourseCreationModalProps)
@@ -161,8 +158,19 @@ class CourseCreationModal(props: CourseCreationModalProps)
     private fun createCourse() {
         credentials?.also {
             try {
-                // TODO 12.08.18: Create actual course parameters object
-                flaxoClient.createCourse(it, CourseParameters())
+                val courseName = valueByInputId(COURSE_NAME_INPUT_ID) ?: ""
+                val description = valueByInputId(COURSE_NAME_INPUT_ID)
+                val language = valueBySelectId(LANGUAGE_SELECT_ID) ?: ""
+                val testingLanguage = valueBySelectId(TESTING_LANGUAGE_SELECT_ID) ?: ""
+                val testingFramework = valueBySelectId(TESTING_FRAMEWORK_SELECT_ID) ?: ""
+                val numberOfTasks = valueByInputId(NUMBER_OF_TASKS_INPUT_ID)?.toInt() ?: 0
+                flaxoClient.createCourse(it,
+                        courseName = courseName,
+                        description = description,
+                        language = language,
+                        testingLanguage = testingLanguage,
+                        testingFramework = testingFramework,
+                        numberOfTasks = numberOfTasks)
                 props.onCourseCreation()
                 NotificationManager.success("Course has been created.")
             } catch (e: Exception) {
@@ -172,6 +180,14 @@ class CourseCreationModal(props: CourseCreationModalProps)
         }
     }
 
+    private fun valueBySelectId(selectId: String): String? = document.getElementById(selectId)
+            ?.let { it as? HTMLSelectElement }
+            ?.value
+
+    private fun valueByInputId(inputId: String): String? = document.getElementById(inputId)
+            ?.let { it as? HTMLInputElement }
+            ?.value
+
     private fun RBuilder.courseNameInput() {
         div("form-group") {
             label("Course name", COURSE_NAME_INPUT_ID)
@@ -180,10 +196,6 @@ class CourseCreationModal(props: CourseCreationModalProps)
                     id = COURSE_NAME_INPUT_ID
                     classes = setOf("form-control")
                     type = InputType.text
-                    onChangeFunction = { event ->
-                        val target = event.target as HTMLInputElement
-                        setState { courseName = target.value }
-                    }
                     attributes["aria-describedby"] = COURSE_NAME_INPUT_HELP_ID
                 }
             }
@@ -205,10 +217,6 @@ class CourseCreationModal(props: CourseCreationModalProps)
                     id = COURSE_DESCRIPTION_INPUT_ID
                     classes = setOf("form-control")
                     type = InputType.text
-                    onChangeFunction = { event ->
-                        val target = event.target as HTMLInputElement
-                        setState { courseDescription = target.value }
-                    }
                     attributes["aria-describedby"] = COURSE_DESCRIPTION_INPUT_HELP_ID
                 }
             }
@@ -304,10 +312,6 @@ class CourseCreationModal(props: CourseCreationModalProps)
                 attrs {
                     id = TESTING_FRAMEWORK_SELECT_ID
                     classes = setOf("form-control")
-                    onChangeFunction = { event ->
-                        val target = event.target as HTMLSelectElement
-                        setState { testingFramework = target.value }
-                    }
                     attributes["defaultValue"] = state.testingFramework ?: ""
                     attributes["aria-describedby"] = TESTING_FRAMEWORK_SELECT_HELP_ID
                 }
@@ -335,10 +339,6 @@ class CourseCreationModal(props: CourseCreationModalProps)
                     id = NUMBER_OF_TASKS_INPUT_ID
                     classes = setOf("form-control")
                     type = InputType.number
-                    onChangeFunction = { event ->
-                        val target = event.target as HTMLInputElement
-                        setState { numberOfTasks = target.value.toInt() }
-                    }
                     attributes["aria-describedby"] = NUMBER_OF_TASKS_INPUT_HELP_ID
                 }
             }

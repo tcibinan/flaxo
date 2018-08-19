@@ -86,9 +86,11 @@ class TaskStatistics(props: TaskStatisticsProps) : RComponent<TaskStatisticsProp
                                     }
                                 }
                             }
-                            ?: td {
-                                attrs { colSpan = "7" }
-                                +"There are no students on the course yet."
+                            ?: tr {
+                                td {
+                                    attrs { colSpan = "7" }
+                                    +"There are no students on the course yet."
+                                }
                             }
                 }
 

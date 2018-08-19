@@ -38,10 +38,8 @@ class StatisticsController(private val dataService: DataService,
     @GetMapping("/download")
     @PreAuthorize("hasAuthority('USER')")
     @Transactional(readOnly = true)
-    fun downloadStatistics(@RequestParam
-                           courseName: String,
-                           @RequestParam
-                           format: String,
+    fun downloadStatistics(@RequestParam courseName: String,
+                           @RequestParam format: String,
                            principal: Principal,
                            request: HttpServletRequest,
                            response: HttpServletResponse

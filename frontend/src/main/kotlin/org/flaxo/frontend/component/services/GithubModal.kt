@@ -7,6 +7,7 @@ import kotlinx.html.js.onClickFunction
 import kotlinx.html.role
 import kotlinx.html.tabIndex
 import org.flaxo.frontend.Container
+import org.flaxo.frontend.credentials
 import org.flaxo.frontend.data.User
 import org.flaxo.frontend.githubProfileUrl
 import org.flaxo.frontend.wrapper.NotificationManager
@@ -89,12 +90,12 @@ fun RBuilder.githubModal(user: User) =
 
 private fun authWithGithub() {
     try {
-        val githubAuthData = Container.flaxoClient.getGithubAuthData()
-
-        val params = URLSearchParams()
-        githubAuthData.requestParams.forEach { (key, value) -> params.append(key, value) }
-
-        window.location.assign(githubAuthData.redirectUrl + "?" + params.toString())
+        credentials?.also {
+            val githubAuthData = Container.flaxoClient.getGithubAuthData(it)
+            val params = URLSearchParams()
+            githubAuthData.requestParams.forEach { (key, value) -> params.append(key, value) }
+            window.location.assign(githubAuthData.redirectUrl + "?" + params.toString())
+        }
     } catch (e: Exception) {
         console.log(e)
         NotificationManager.error("Error occurred while trying to authenticate with github.")

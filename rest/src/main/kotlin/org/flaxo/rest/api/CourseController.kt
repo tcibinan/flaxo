@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ExecutionException
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
@@ -297,7 +296,7 @@ class CourseController(private val dataService: DataService,
         logger.info("Changing course ${user.nickname}/$courseName status to running " +
                 "with activated services: $activatedServices")
 
-        dataService.updateCourse(course.copy(
+        val activatedCourse = dataService.updateCourse(course.copy(
                 state = course.state.copy(
                         lifecycle = CourseLifecycle.RUNNING,
                         activatedServices = activatedServices
@@ -306,7 +305,7 @@ class CourseController(private val dataService: DataService,
 
         logger.info("Course ${user.nickname}/$courseName has been successfully composed")
 
-        return responseService.ok()
+        return responseService.ok(activatedCourse.view())
     }
 
     /**
