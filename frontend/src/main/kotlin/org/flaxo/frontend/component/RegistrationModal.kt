@@ -14,6 +14,7 @@ import org.flaxo.frontend.Container
 import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.frontend.client.FlaxoHttpCallException
 import org.flaxo.frontend.data.Credentials
+import org.flaxo.frontend.wrapper.NotificationManager
 import org.w3c.dom.HTMLInputElement
 import react.RBuilder
 import react.RComponent
@@ -172,10 +173,10 @@ class RegistrationModal(props: RegistrationModalProps)
         try {
             val user = flaxoClient.registerUser(credentials)
             props.onLogin(username, password, user)
-            // TODO 12.08.18: Notify user that registration has finished successfully
+            NotificationManager.success("User $username has been registered.")
         } catch (e: FlaxoHttpCallException) {
             console.log(e)
-            // TODO 12.08.18: Notify user that registration has failed
+            NotificationManager.error("Error occurred while registering $username user.")
         }
     }
 }

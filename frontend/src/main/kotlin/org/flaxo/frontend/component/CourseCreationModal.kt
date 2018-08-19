@@ -15,6 +15,7 @@ import kotlinx.html.tabIndex
 import org.flaxo.frontend.component.label
 import org.flaxo.frontend.credentials
 import org.flaxo.frontend.data.CourseParameters
+import org.flaxo.frontend.wrapper.NotificationManager
 import org.w3c.dom.HTMLSelectElement
 import react.RBuilder
 import react.RComponent
@@ -163,9 +164,10 @@ class CourseCreationModal(props: CourseCreationModalProps)
                 // TODO 12.08.18: Create actual course parameters object
                 flaxoClient.createCourse(it, CourseParameters())
                 props.onCourseCreation()
-                // TODO 12.08.18: Notify user that course creation has finished successfully
-            } catch (e: Throwable) {
-                // TODO 12.08.18: Notify user that course creation has failed
+                NotificationManager.success("Course has been created.")
+            } catch (e: Exception) {
+                console.log(e)
+                NotificationManager.success("Error occurred while creation course.")
             }
         }
     }
@@ -243,14 +245,10 @@ class CourseCreationModal(props: CourseCreationModalProps)
                                     ?: "not found"
                         }
                     }
+                    attributes["defaultValue"] = state.language ?: ""
                     attributes["aria-describedby"] = LANGUAGE_SELECT_HELP_ID
                 }
-                state.flaxoLanguages.forEach {
-                    option {
-                        attrs.selected = it.name == state.language
-                        +it.name
-                    }
-                }
+                state.flaxoLanguages.forEach { option { +it.name } }
             }
             small {
                 attrs {
@@ -280,18 +278,14 @@ class CourseCreationModal(props: CourseCreationModalProps)
                                     ?: "not found"
                         }
                     }
+                    attributes["defaultValue"] = state.testingLanguage ?: ""
                     attributes["aria-describedby"] = TESTING_LANGUAGE_SELECT_HELP_ID
                 }
 
                 state.flaxoLanguages
                         .find { it.name == state.language }
                         ?.compatibleTestingLanguages
-                        ?.forEach {
-                            option {
-                                attrs.selected = it == state.testingLanguage
-                                +it
-                            }
-                        }
+                        ?.forEach { option { +it } }
             }
             small {
                 attrs {
@@ -314,18 +308,14 @@ class CourseCreationModal(props: CourseCreationModalProps)
                         val target = event.target as HTMLSelectElement
                         setState { testingFramework = target.value }
                     }
+                    attributes["defaultValue"] = state.testingFramework ?: ""
                     attributes["aria-describedby"] = TESTING_FRAMEWORK_SELECT_HELP_ID
                 }
 
                 state.flaxoLanguages
                         .find { it.name == state.testingLanguage }
                         ?.compatibleTestingFrameworks
-                        ?.forEach {
-                            option {
-                                attrs.selected = it == state.testingFramework
-                                +it
-                            }
-                        }
+                        ?.forEach { option { +it } }
             }
             small {
                 attrs {

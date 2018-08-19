@@ -9,6 +9,7 @@ import kotlinx.html.tabIndex
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.data.User
 import org.flaxo.frontend.githubProfileUrl
+import org.flaxo.frontend.wrapper.NotificationManager
 import org.w3c.dom.url.URLSearchParams
 import react.RBuilder
 import react.dom.a
@@ -96,6 +97,6 @@ private fun authWithGithub() {
         window.location.assign(githubAuthData.redirectUrl + "?" + params.toString())
     } catch (e: Exception) {
         console.log(e)
-        // TODO 18.08.18: notify user that github auth failed
+        NotificationManager.error("Error occurred while trying to authenticate with github.")
     }
 }

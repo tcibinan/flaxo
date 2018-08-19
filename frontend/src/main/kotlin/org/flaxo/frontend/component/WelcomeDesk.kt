@@ -23,7 +23,7 @@ class WelcomeDesk : RComponent<WelcomeDeskProps, EmptyState>() {
                 +("Flaxo tests and assess students solutions for you. " +
                         "It can even search for plagiarism. And it is completely free.")
             }
-            p("lead") {
+            div("lead") {
                 registrationModal(props.onLogin)
                 +" "
                 authenticationModal(props.onLogin)

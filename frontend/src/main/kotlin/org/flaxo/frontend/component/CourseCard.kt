@@ -2,6 +2,8 @@ package org.flaxo.frontend.component
 
 import kotlinx.html.js.onClickFunction
 import org.flaxo.frontend.data.Course
+import org.flaxo.frontend.wrapper.NotificationManager
+//import org.flaxo.frontend.wrapper.NotificationManager
 import react.RBuilder
 import react.dom.div
 import react.dom.h5

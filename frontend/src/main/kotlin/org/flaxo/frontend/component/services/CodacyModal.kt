@@ -10,6 +10,7 @@ import org.flaxo.frontend.Container
 import org.flaxo.frontend.component.label
 import org.flaxo.frontend.credentials
 import org.flaxo.frontend.data.User
+import org.flaxo.frontend.wrapper.NotificationManager
 import org.w3c.dom.HTMLInputElement
 import react.RBuilder
 import react.dom.a
@@ -81,7 +82,10 @@ fun RBuilder.codacyModal(user: User) =
                             }
                             button(classes = "btn btn-primary") {
                                 attrs {
-                                    onClickFunction = { updateCodacyToken() }
+                                    onClickFunction = { event ->
+                                        event.preventDefault()
+                                        updateCodacyToken()
+                                    }
                                 }
                                 +"Update codacy token"
                             }
@@ -107,10 +111,10 @@ fun updateCodacyToken() {
     credentials?.also {
         try {
             Container.flaxoClient.addCodacyToken(it, codacyToken)
-            // TODO 19.08.18: Notify user that codacy token has been added
+            NotificationManager.success("Codacy token was added to your account")
         } catch (e: Exception) {
             console.log(e)
-            // TODO 19.08.18: Notify user that codacy token addition failed
+            NotificationManager.error("Error occurred while adding codacy token")
         }
     }
 }

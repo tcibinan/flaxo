@@ -10,12 +10,14 @@ import react.*
 import react.dom.div
 import org.flaxo.frontend.wrapper.Cookies
 import org.flaxo.frontend.data.User
+import org.flaxo.frontend.wrapper.NotificationContainer
+import org.flaxo.frontend.wrapper.NotificationManager
 
-class PageState(var user: User? = null): RState
+class PageState(var user: User? = null) : RState
 
-fun RBuilder.rootPage() = child(Page::class) {}
+fun RBuilder.page() = child(Page::class) {}
 
-class Page: RComponent<EmptyProps, PageState>(EmptyProps()) {
+class Page : RComponent<EmptyProps, PageState>() {
 
     private companion object {
         const val USERNAME_COOKIE: String = "username"
@@ -33,7 +35,7 @@ class Page: RComponent<EmptyProps, PageState>(EmptyProps()) {
                     setState { this.user = user }
                 } catch (e: FlaxoHttpCallException) {
                     console.log(e)
-                    // TODO 12.08.18: Notify user that user retrieving failed
+                    NotificationManager.error("Error occurred while retrieving ${it.username} user.")
                 }
             }
         }

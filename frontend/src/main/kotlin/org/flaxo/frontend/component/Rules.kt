@@ -6,6 +6,7 @@ import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.frontend.credentials
 import org.flaxo.frontend.data.Course
 import org.flaxo.frontend.data.Task
+import org.flaxo.frontend.wrapper.NotificationManager
 import react.RBuilder
 import react.RComponent
 import react.RProps
@@ -55,10 +56,10 @@ class Rules(props: RulesProps) : RComponent<RulesProps, RulesState>(props) {
             try {
                 flaxoClient.updateRules(credentials, props.course.name, props.task.branch,
                         state.deadline?.toDateString())
-                // TODO 18.08.18: Notify user that rules was updated
+                NotificationManager.success("Task rules has been updated.")
             } catch (e: Exception) {
                 console.log(e)
-                // TODO 18.08.18: Notify user that rules wasn't updated
+                NotificationManager.success("Error occurred while updating tasks rules.")
             }
         }
     }

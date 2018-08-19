@@ -8,6 +8,7 @@ import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.frontend.credentials
 import org.flaxo.frontend.data.Course
 import org.flaxo.frontend.data.CourseLifecycle
+import org.flaxo.frontend.wrapper.NotificationManager
 import react.RBuilder
 import react.RComponent
 import react.RProps
@@ -71,10 +72,10 @@ class Course(props: CourseProps) : RComponent<CourseProps, EmptyState>(props) {
                 try {
                     flaxoClient.startCourse(it, props.course.name)
                     props.onUpdate()
-                    // TODO 15.08.18: notify user that course has started
+                    NotificationManager.success("Course ${props.course.name} has been started.")
                 } catch (e: Exception) {
                     console.log(e)
-                    // TODO 15.08.18: notify user that course creation has failed
+                    NotificationManager.error("Error occurred while trying to start ${props.course.name} course.")
                 }
             }
         }
@@ -85,10 +86,12 @@ class Course(props: CourseProps) : RComponent<CourseProps, EmptyState>(props) {
             credentials?.also {
                 try {
                     flaxoClient.analysePlagiarism(it, props.course.name)
-                    // TODO 15.08.18: notify user that course plagiarism analysis has been scheduled successfully
+                    NotificationManager.success("Plagiarism analysis for course ${props.course.name} " +
+                            "has been started.")
                 } catch (e: Exception) {
                     console.log(e)
-                    // TODO 15.08.18: notify user that course plagiarism analysis scheduling has failed
+                    NotificationManager.error("Error occurred while starting plagiarism analysis " +
+                            "for ${props.course.name} course.")
                 }
             }
         }

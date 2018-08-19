@@ -10,6 +10,7 @@ import org.flaxo.frontend.component.services.travisModal
 import org.flaxo.frontend.credentials
 import org.flaxo.frontend.data.Course
 import org.flaxo.frontend.data.User
+import org.flaxo.frontend.wrapper.NotificationManager
 import react.setState
 import react.RBuilder
 import react.RComponent
@@ -73,8 +74,8 @@ class Courses(props: CoursesProps) : RComponent<CoursesProps, CoursesState>(prop
                     this.courses = courses
                 }
             } catch (e: Throwable) {
-                // TODO 12.08.18: notify that courses list updating has failed
                 console.log(e)
+                NotificationManager.error("Error occurred while retrieving courses list.")
             }
         }
     }

@@ -7,10 +7,10 @@ import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.frontend.credentials
 import org.flaxo.frontend.data.Course
 import org.flaxo.frontend.data.CourseLifecycle
+import org.flaxo.frontend.wrapper.NotificationManager
 import react.RBuilder
 import react.RComponent
 import react.RProps
-import react.RState
 import react.dom.a
 import react.dom.button
 import react.dom.div
@@ -22,11 +22,8 @@ fun RBuilder.serviceActivationMenu(course: Course) = child(ServiceActivationMenu
 }
 
 class ServiceActivationMenuProps(var course: Course) : RProps
-
-class ServiceActivationMenuState(var services: Set<String>) : RState
-
 class ServiceActivationMenu(props: ServiceActivationMenuProps)
-    : RComponent<ServiceActivationMenuProps, ServiceActivationMenuState>(props) {
+    : RComponent<ServiceActivationMenuProps, EmptyState>(props) {
 
     private companion object {
         val SERVICE_ACTIVATION_DROPDOWN_ID = "serviceActivationDropdown"
@@ -73,75 +70,28 @@ class ServiceActivationMenu(props: ServiceActivationMenuProps)
                 }
             }
         }
-        /*
-            <div className="course-control">
-                <ButtonDropdown isOpen={this.state.show} toggle={this.toggle}>
-                    <DropdownToggle outline caret color="primary"
-                                    disabled={
-                                        this.props.course.state.lifecycle !== 'RUNNING'
-                                        || this.state.services
-                                            .every(service =>
-                                                this.props.course.state.activatedServices.includes(service)
-                                            )
-                                            ? 'disabled'
-                                            : ''
-                                    }
-                    >
-                        Activate service
-                    </DropdownToggle>
-                    <DropdownMenu>
-                        <DropdownItem
-                            disabled={
-                                this.props
-                                    .course
-                                    .state
-                                    .activatedServices
-                                    .includes('CODACY')
-                                    ? 'disabled'
-                                    : ''
-                            }
-                            onClick={this.activateCodacy}
-                        >
-                            codacy
-                        </DropdownItem>
-                        <DropdownItem
-                            disabled={
-                                this.props
-                                    .course
-                                    .state
-                                    .activatedServices
-                                    .includes('TRAVIS')
-                                    ? 'disabled'
-                                    : ''
-                            }
-                            onClick={this.activateTravis}
-                        >
-                            travis
-                        </DropdownItem>
-                    </DropdownMenu>
-                </ButtonDropdown>
-            </div>
-         */
     }
 
-    fun activateTravis() {
+    private fun activateTravis() {
         credentials?.also {
             try {
                 flaxoClient.activateTravis(it, props.course.name)
-                // TODO 15.08.18: notify user that travis activation has finished successfully
+                NotificationManager.success("Travis activation has been finished.")
             } catch (e: Exception) {
-                // TODO 15.08.18: notify user that travis activation has failed
+                console.log(e)
+                NotificationManager.success("Error occurred during travis activation.")
             }
         }
     }
 
-    fun activateCodacy() {
+    private fun activateCodacy() {
         credentials?.also {
             try {
                 flaxoClient.activateCodacy(it, props.course.name)
-                // TODO 15.08.18: notify user that codacy activation has finished successfully
+                NotificationManager.success("Codacy activation has been finished.")
             } catch (e: Exception) {
-                // TODO 15.08.18: notify user that codacy activation has failed
+                console.log(e)
+                NotificationManager.success("Error occurred during codacy activation.")
             }
         }
     }

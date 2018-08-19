@@ -7,6 +7,7 @@ import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.frontend.credentials
 import org.flaxo.frontend.data.Course
 import org.flaxo.frontend.data.CourseLifecycle
+import org.flaxo.frontend.wrapper.NotificationManager
 import react.RBuilder
 import react.RComponent
 import react.RProps
@@ -73,6 +74,7 @@ class CourseStatisticsDownloadMenu(props: CourseStatisticsDownloadMenuProps)
     private fun downloadAs(format: String) {
         credentials?.also {
             try {
+                // TODO 19.08.18: Implement statistics downloading
                 /*
                 val data = flaxoClient.downloadStatistics(it, props.course.name, format)
 
@@ -86,7 +88,7 @@ class CourseStatisticsDownloadMenu(props: CourseStatisticsDownloadMenuProps)
                  */
             } catch (e: Exception) {
                 console.log(e)
-                // TODO 15.08.18: notify user that statistics downloading failed
+                NotificationManager.error("Error occurred while downloading ${props.course.name} course statistics.")
             }
 
         }
