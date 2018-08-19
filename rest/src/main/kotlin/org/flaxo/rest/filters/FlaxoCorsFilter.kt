@@ -11,12 +11,14 @@ class FlaxoCorsFilter : OncePerRequestFilter() {
 
     @Throws(ServletException::class, IOException::class)
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
-        response.setHeader("Access-Control-Allow-Origin", "*")
-        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-        response.setHeader("Access-Control-Max-Age", "3600")
-        response.setHeader("Access-Control-Allow-Headers", "authorization, content-type, xsrf-token")
-        response.addHeader("Access-Control-Expose-Headers", "xsrf-token")
-        if ("OPTIONS" == request.getMethod()) {
+        response.apply {
+            setHeader("Access-Control-Allow-Origin", "*")
+            setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+            setHeader("Access-Control-Max-Age", "3600")
+            setHeader("Access-Control-Allow-Headers", "authorization, content-type, xsrf-token")
+            addHeader("Access-Control-Expose-Headers", "xsrf-token")
+        }
+        if ("OPTIONS" == request.method) {
             response.status = HttpServletResponse.SC_OK
         } else {
             filterChain.doFilter(request, response)

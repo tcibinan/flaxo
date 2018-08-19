@@ -44,7 +44,7 @@ class Rules(props: RulesProps) : RComponent<RulesProps, RulesState>(props) {
             button(classes = "btn btn-primary") {
                 attrs {
                     onClickFunction = { submitRulesChanges() }
-                    disabled = state.deadline != props.task.deadline
+                    disabled = state.deadline == props.task.deadline
                 }
                 +"Update rules"
             }
@@ -55,11 +55,11 @@ class Rules(props: RulesProps) : RComponent<RulesProps, RulesState>(props) {
         credentials?.also { credentials ->
             try {
                 flaxoClient.updateRules(credentials, props.course.name, props.task.branch,
-                        state.deadline?.toDateString())
+                        state.deadline?.toISOString()?.substring(0, 10))
                 NotificationManager.success("Task rules has been updated.")
             } catch (e: Exception) {
                 console.log(e)
-                NotificationManager.success("Error occurred while updating tasks rules.")
+                NotificationManager.error("Error occurred while updating tasks rules.")
             }
         }
     }

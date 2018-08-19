@@ -1,7 +1,9 @@
 // todo: Replace with kotlinx.serialization features
 package org.flaxo.frontend.data
 
+import kotlinext.js.Object.getOwnPropertyNames
 import kotlin.js.Date
+import kotlin.js.Json
 
 fun languageFromDynamic(languageJson: dynamic) =
         Language(name = languageJson.name,
@@ -109,5 +111,16 @@ fun nullableDateFromDynamic(dateString: String?): Date? = dateString?.let { Date
 fun githubAuthDataFromDynamic(githubAuthDataJson: dynamic): GithubAuthData =
         GithubAuthData(
                 redirectUrl = githubAuthDataJson.redirectUrl,
-                requestParams = githubAuthDataJson.requestParams
+                requestParams = mapFromDynamic(githubAuthDataJson.requestParams)
         )
+
+@Suppress("UNCHECKED_CAST_TO_EXTERNAL_INTERFACE")
+fun mapFromDynamic(mapJson: dynamic): Map<String, String> {
+    return (mapJson as? Json)
+            ?.let {
+                getOwnPropertyNames(it)
+                        .map { propertyName -> propertyName to it[propertyName] as String }
+                        .toMap()
+            }
+            ?: emptyMap()
+}

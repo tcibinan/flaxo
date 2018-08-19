@@ -94,24 +94,25 @@ class CourseSummary(props: CourseSummaryProps) : RComponent<CourseSummaryProps, 
                                                 }
                                             }
                                         }
-                                        ?: td {
-                                            attrs {
-                                                colSpan = (props.courseStatistics.tasks.size + 2).toString()
+                                        ?: tr {
+                                            td {
+                                                attrs {
+                                                    colSpan = (props.courseStatistics.tasks.size + 2).toString()
+                                                }
+                                                +"There are no students on the course yet."
                                             }
-                                            +"There are no students on the course yet."
                                         }
                             }
-
                         }
                     }
+
                 }
             }
         }
     }
+}
 
-    private fun saveResults() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
+private fun saveResults() {
+    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 }
 

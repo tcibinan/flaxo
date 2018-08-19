@@ -1,5 +1,6 @@
 package org.flaxo.frontend.component
 
+import kotlinx.html.classes
 import kotlinx.html.id
 import kotlinx.html.js.onClickFunction
 import org.flaxo.frontend.Container
@@ -47,23 +48,33 @@ class ServiceActivationMenu(props: ServiceActivationMenuProps)
                         attributes["aria-haspopup"] = "true"
                         attributes["aria-expanded"] = "false"
                         disabled = props.course.state.lifecycle != CourseLifecycle.RUNNING
-                                || props.course.state.activatedServices.all { it in integratedServices }
+                                && props.course.state.activatedServices.all { it in integratedServices }
                     }
                     +"Activate service"
                 }
                 div(classes = "dropdown-menu") {
                     attrs { attributes["aria-labelledby"] = SERVICE_ACTIVATION_DROPDOWN_ID }
-                    a(classes = "dropdown-item") {
+                    a(classes = "dropdown-item", href = "#") {
                         attrs {
-                            onClickFunction = { activateTravis() }
-                            attributes["disabled"] = ("TRAVIS" in props.course.state.activatedServices).toString()
+                            when ("TRAVIS") {
+                                in props.course.state.activatedServices -> classes = setOf("dropdown-item", "disabled")
+                                else -> {
+                                    classes = setOf("dropdown-item")
+                                    onClickFunction = { activateTravis() }
+                                }
+                            }
                         }
                         +"Travis"
                     }
-                    a(classes = "dropdown-item") {
+                    a(classes = "dropdown-item", href = "#") {
                         attrs {
-                            onClickFunction = { activateCodacy() }
-                            attributes["disabled"] = ("CODACY" in props.course.state.activatedServices).toString()
+                            when ("CODACY") {
+                                in props.course.state.activatedServices -> classes = setOf("dropdown-item", "disabled")
+                                else -> {
+                                    classes = setOf("dropdown-item")
+                                    onClickFunction = { activateCodacy() }
+                                }
+                            }
                         }
                         +"Codacy"
                     }
@@ -79,7 +90,7 @@ class ServiceActivationMenu(props: ServiceActivationMenuProps)
                 NotificationManager.success("Travis activation has been finished.")
             } catch (e: Exception) {
                 console.log(e)
-                NotificationManager.success("Error occurred during travis activation.")
+                NotificationManager.error("Error occurred during travis activation.")
             }
         }
     }
@@ -91,7 +102,7 @@ class ServiceActivationMenu(props: ServiceActivationMenuProps)
                 NotificationManager.success("Codacy activation has been finished.")
             } catch (e: Exception) {
                 console.log(e)
-                NotificationManager.success("Error occurred during codacy activation.")
+                NotificationManager.error("Error occurred during codacy activation.")
             }
         }
     }

@@ -8,12 +8,15 @@ import org.flaxo.frontend.credentials
 import org.flaxo.frontend.data.Course
 import org.flaxo.frontend.data.CourseLifecycle
 import org.flaxo.frontend.wrapper.NotificationManager
+import org.w3c.dom.url.URL.Companion.createObjectURL
+import org.w3c.files.Blob
 import react.RBuilder
 import react.RComponent
 import react.RProps
 import react.dom.a
 import react.dom.button
 import react.dom.div
+import kotlin.browser.document
 
 
 fun RBuilder.courseStatisticsDownloadMenu(course: Course) = child(CourseStatisticsDownloadMenu::class) {
@@ -74,18 +77,13 @@ class CourseStatisticsDownloadMenu(props: CourseStatisticsDownloadMenuProps)
     private fun downloadAs(format: String) {
         credentials?.also {
             try {
-                // TODO 19.08.18: Implement statistics downloading
-                /*
                 val data = flaxoClient.downloadStatistics(it, props.course.name, format)
-
-                TODO 15.08.18: Transform from js code:
-                const url = window.URL.createObjectURL(new Blob([data]));
-                const link = document.createElement('a');
-                link.href = url;
-                link.setAttribute('download', `${this.props.course.name}-statistics.${format}`);
-                document.body.appendChild(link);
-                link.click();
-                 */
+                val url = createObjectURL(Blob(arrayOf(data)))
+                val link = document.createElement("a").asDynamic()
+                link.href = url
+                link.setAttribute("download", "${props.course.name}-statistics.$format")
+                document.body?.appendChild(link)
+                link.click()
             } catch (e: Exception) {
                 console.log(e)
                 NotificationManager.error("Error occurred while downloading ${props.course.name} course statistics.")

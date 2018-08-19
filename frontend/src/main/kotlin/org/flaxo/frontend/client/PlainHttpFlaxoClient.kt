@@ -9,8 +9,7 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
     override fun registerUser(credentials: Credentials): User {
         try {
             val request = post("/user/register",
-                    parameters = mapOf("nickname" to credentials.username, "password" to credentials.password),
-                    body = credentials)
+                    parameters = mapOf("nickname" to credentials.username, "password" to credentials.password))
             if (request.status.toInt() == 200) {
                 return userFromDynamic(JSON.parse<Payload<dynamic>>(request.responseText).payload)
             } else {
@@ -165,7 +164,7 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
                              task: String,
                              deadline: String?) {
         try {
-            val request = post("/course/sync",
+            val request = post("/task/update/rules",
                     parameters = mapOf("courseName" to courseName, "taskBranch" to task, "deadline" to deadline),
                     credentials = credentials)
             if (request.status.toInt() != 200) {
@@ -191,7 +190,7 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
 
     override fun activateCodacy(credentials: Credentials, courseName: String) {
         try {
-            val request = post("/activate/codacy",
+            val request = post("/course/activate/codacy",
                     parameters = mapOf("courseName" to courseName),
                     credentials = credentials)
             if (request.status.toInt() != 200) {
@@ -204,7 +203,7 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
 
     override fun activateTravis(credentials: Credentials, courseName: String) {
         try {
-            val request = post("/activate/travis",
+            val request = post("/course/activate/travis",
                     parameters = mapOf("courseName" to courseName),
                     credentials = credentials)
             if (request.status.toInt() != 200) {
@@ -217,7 +216,7 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
 
     override fun downloadStatistics(credentials: Credentials, courseName: String, format: String): dynamic {
         try {
-            val request = post("/statistics/download",
+            val request = get("/statistics/download",
                     parameters = mapOf("courseName" to courseName, "format" to format),
                     credentials = credentials)
             if (request.status.toInt() == 200) {
@@ -270,7 +269,9 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
         if (parameters.isEmpty()) {
             open(httpMethod, "$baseUrl$apiMethod", async = false)
         } else {
-            val parametersString = parameters.map { (key, value) -> "$key=$value" }.joinToString("&")
+            val parametersString = parameters.filterValues { it != null }
+                    .map { (key, value) -> "$key=$value" }
+                    .joinToString("&")
             open(httpMethod, "$baseUrl$apiMethod?$parametersString", async = false)
         }
         if (credentials != null) {
