@@ -4,6 +4,16 @@
     top: 0;
 }
 
+.services-list .pending-service {
+    display: flex;
+    align-items: center;
+}
+
+.pending-service .pending-service-label {
+    color: #ffe400;
+    margin-left: auto;
+}
+
 .course-label {
     margin-left: 5px;
     color: white;

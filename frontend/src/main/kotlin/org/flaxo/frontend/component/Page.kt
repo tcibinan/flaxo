@@ -29,7 +29,8 @@ class Page: RComponent<EmptyProps, PageState>(EmptyProps()) {
         launch {
             credentials?.also {
                 try {
-                    setState { user = flaxoClient.getSelf(it) }
+                    val user = flaxoClient.getSelf(it)
+                    setState { this.user = user }
                 } catch (e: FlaxoHttpCallException) {
                     console.log(e)
                     // TODO 12.08.18: Notify user that user retrieving failed

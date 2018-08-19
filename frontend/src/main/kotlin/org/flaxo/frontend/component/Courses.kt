@@ -4,7 +4,9 @@ import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.frontend.component.course
 import org.flaxo.frontend.component.courseCard
 import org.flaxo.frontend.component.navigationBar
+import org.flaxo.frontend.component.services.codacyModal
 import org.flaxo.frontend.component.services.githubModal
+import org.flaxo.frontend.component.services.travisModal
 import org.flaxo.frontend.credentials
 import org.flaxo.frontend.data.Course
 import org.flaxo.frontend.data.User
@@ -55,6 +57,8 @@ class Courses(props: CoursesProps) : RComponent<CoursesProps, CoursesState>(prop
             course(selectedCourse, onUpdate = ::updateCoursesList, onDelete = ::deselectCourse)
         }
         githubModal(props.user)
+        travisModal(props.user)
+        codacyModal(props.user)
     }
 
     private fun updateCoursesList() {

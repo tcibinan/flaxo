@@ -1,10 +1,13 @@
 package org.flaxo.frontend.component
 
 import kotlinx.html.ButtonType
+import kotlinx.html.classes
 import kotlinx.html.id
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.role
+import org.flaxo.frontend.component.services.CODACY_MODAL_ID
 import org.flaxo.frontend.component.services.GITHUB_MODAL_ID
+import org.flaxo.frontend.component.services.TRAVIS_MODAL_ID
 import org.flaxo.frontend.data.User
 import react.RBuilder
 import react.RComponent
@@ -71,21 +74,42 @@ class NavigationBar(props: NavigationBarProps) : RComponent<NavigationBarProps, 
                             }
                             +"Services"
                         }
-                        div(classes = "dropdown-menu") {
+                        div(classes = "dropdown-menu services-list") {
                             attrs {
                                 attributes["aria-labelledby"] = NAVIGATION_BAR_SERVICES_DROPDOWN_ID
                             }
-                            a(classes = "dropdown-item") {
+                            a(href = "#") {
                                 attrs {
+                                    classes = if (props.user.isGithubAuthorized) setOf("dropdown-item")
+                                    else setOf("dropdown-item", "pending-service")
                                     attributes["data-toggle"] = "modal"
                                     attributes["data-target"] = "#$GITHUB_MODAL_ID"
                                 }
-                                +"Github:${props.user.isGithubAuthorized}"
+                                span { +"Github" }
+                                if (!props.user.isGithubAuthorized) {
+                                    i(classes = "material-icons pending-service-label") { +"radio_button_unchecked" }
+                                }
                             }
-                            // TODO 12.08.18: Add travis settings modal
-                            a(classes = "dropdown-item") { +"Travis:${props.user.isTravisAuthorized}" }
-                            // TODO 12.08.18: Add codacy settings modal
-                            a(classes = "dropdown-item") { +"Codacy:${props.user.isCodacyAuthorized}" }
+                            a(href = "#") {
+                                attrs {
+                                    classes = setOf("dropdown-item")
+                                    attributes["data-toggle"] = "modal"
+                                    attributes["data-target"] = "#$TRAVIS_MODAL_ID"
+                                }
+                                span { +"Travis" }
+                            }
+                            a(href = "#") {
+                                attrs {
+                                    classes = if (props.user.isCodacyAuthorized) setOf("dropdown-item")
+                                    else setOf("dropdown-item", "pending-service")
+                                    attributes["data-toggle"] = "modal"
+                                    attributes["data-target"] = "#$CODACY_MODAL_ID"
+                                }
+                                span { +"Codacy" }
+                                if (!props.user.isCodacyAuthorized) {
+                                    i(classes = "material-icons pending-service-label") { +"radio_button_unchecked" }
+                                }
+                            }
                         }
                     }
                 }
