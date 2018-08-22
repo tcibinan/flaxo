@@ -17,7 +17,7 @@ buildscript {
 
 apply plugin: 'kotlin-platform-js'
 apply plugin: 'org.jetbrains.kotlin.frontend'
-//apply plugin: 'kotlin-dce-js'
+apply plugin: 'kotlin-dce-js'
 
 repositories {
     mavenCentral()

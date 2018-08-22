@@ -47,20 +47,20 @@ class CourseCreationModalState(var language: String? = null,
 class CourseCreationModal(props: CourseCreationModalProps)
     : RComponent<CourseCreationModalProps, CourseCreationModalState>(props) {
 
-    private companion object {
+    companion object {
         const val COURSE_CREATION_MODAL_ID = "courseCreationModal"
-        const val COURSE_NAME_INPUT_ID = "courseNameInput"
-        const val COURSE_NAME_INPUT_HELP_ID = "courseNameInputHelp"
-        const val COURSE_DESCRIPTION_INPUT_ID = "courseDescriptionInput"
-        const val COURSE_DESCRIPTION_INPUT_HELP_ID = "courseDescriptionInputHelp"
-        const val LANGUAGE_SELECT_ID = "languageSelect"
-        const val LANGUAGE_SELECT_HELP_ID = "languageInputHelp"
-        const val TESTING_LANGUAGE_SELECT_ID = "testingLanguageSelect"
-        const val TESTING_LANGUAGE_SELECT_HELP_ID = "testingLanguageSelectHelp"
-        const val TESTING_FRAMEWORK_SELECT_ID = "testingFrameworkSelect"
-        const val TESTING_FRAMEWORK_SELECT_HELP_ID = "testingFrameworkSelectHelp"
-        const val NUMBER_OF_TASKS_INPUT_ID = "numberOfTasksInput"
-        const val NUMBER_OF_TASKS_INPUT_HELP_ID = "numberOfTasksInputHelp"
+        private const val COURSE_NAME_INPUT_ID = "courseNameInput"
+        private const val COURSE_NAME_INPUT_HELP_ID = "courseNameInputHelp"
+        private const val COURSE_DESCRIPTION_INPUT_ID = "courseDescriptionInput"
+        private const val COURSE_DESCRIPTION_INPUT_HELP_ID = "courseDescriptionInputHelp"
+        private const val LANGUAGE_SELECT_ID = "languageSelect"
+        private const val LANGUAGE_SELECT_HELP_ID = "languageInputHelp"
+        private const val TESTING_LANGUAGE_SELECT_ID = "testingLanguageSelect"
+        private const val TESTING_LANGUAGE_SELECT_HELP_ID = "testingLanguageSelectHelp"
+        private const val TESTING_FRAMEWORK_SELECT_ID = "testingFrameworkSelect"
+        private const val TESTING_FRAMEWORK_SELECT_HELP_ID = "testingFrameworkSelectHelp"
+        private const val NUMBER_OF_TASKS_INPUT_ID = "numberOfTasksInput"
+        private const val NUMBER_OF_TASKS_INPUT_HELP_ID = "numberOfTasksInputHelp"
     }
 
     private val flaxoClient: FlaxoClient
@@ -89,13 +89,6 @@ class CourseCreationModal(props: CourseCreationModalProps)
     }
 
     override fun RBuilder.render() {
-        button(classes = "btn btn-outline-primary btn-block", type = ButtonType.button) {
-            attrs {
-                attributes["data-toggle"] = "modal"
-                attributes["data-target"] = "#$COURSE_CREATION_MODAL_ID"
-            }
-            +"Create course"
-        }
         div("modal fade") {
             attrs {
                 id = COURSE_CREATION_MODAL_ID

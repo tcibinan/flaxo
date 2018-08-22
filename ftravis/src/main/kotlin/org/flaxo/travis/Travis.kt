@@ -1,6 +1,6 @@
 package org.flaxo.travis
 
-import io.vavr.control.Either
+import arrow.core.Either
 import okhttp3.ResponseBody
 
 /**

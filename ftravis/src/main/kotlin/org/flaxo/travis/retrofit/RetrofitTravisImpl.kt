@@ -1,6 +1,7 @@
 package org.flaxo.travis.retrofit
 
-import io.vavr.control.Either
+import arrow.core.Either
+import arrow.core.orNull
 import okhttp3.ResponseBody
 import org.flaxo.travis.Travis
 import org.flaxo.travis.TravisBuild
@@ -66,28 +67,25 @@ class RetrofitTravisImpl(private val travisClient: TravisClient,
                     )
                     .call()
                     .map { prevBuilds ->
-                        prevBuilds.takeUnless { it.pagination.last }
-                                ?.takeIf { it.pagination.next?.offset != null }
-                                ?.let {
-                                    val nextPageOffset = prevBuilds.pagination.next?.offset ?: 0
-                                    getBuildsRecursive(userName, repositoryName, eventType, nextPageOffset)
-                                            .takeIf { it.isRight }
-                                            ?.let { prevBuilds.builds + it.get() }
-                                }
-                                ?: prevBuilds.builds
+                        if (!prevBuilds.pagination.last && prevBuilds.pagination.next?.offset != null) {
+                            val nextPageOffset = prevBuilds.pagination.next?.offset ?: 0
+                            getBuildsRecursive(userName, repositoryName, eventType, nextPageOffset)
+                                    .map { prevBuilds.builds + it }
+                                    .orNull()
+                                    .orEmpty()
+                        } else {
+                            prevBuilds.builds
+                        }
                     }
 
     private fun authorization() = "token $travisToken"
 
-    private fun repositorySlug(userName: String,
-                               repositoryName: String
-    ) =
-            "$userName/$repositoryName"
+    private fun repositorySlug(userName: String, repositoryName: String) = "$userName/$repositoryName"
 
     private fun <T> Call<T>.call(): Either<ResponseBody, T> =
             execute().run {
-                if (isSuccessful) Either.right(body())
-                else Either.left(errorBody())
+                if (isSuccessful) Either.right(body()!!)
+                else Either.left(errorBody()!!)
             }
 
     private fun <T> Call<T>.callUnit(): ResponseBody? =

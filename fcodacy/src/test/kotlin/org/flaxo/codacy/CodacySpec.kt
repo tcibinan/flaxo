@@ -1,5 +1,6 @@
 package org.flaxo.codacy
 
+import arrow.core.orNull
 import org.amshove.kluent.shouldBeNull
 import org.amshove.kluent.shouldBeTrue
 import org.amshove.kluent.shouldEqual
@@ -40,11 +41,11 @@ object CodacySpec : SubjectSpek<Codacy>({
             val response = subject.commitDetails(projectName, commitUUID)
 
             it("should successfully returns result") {
-                response.isRight.shouldBeTrue()
+                response.isRight().shouldBeTrue()
             }
 
             it("should contain commit grade") {
-                response.get().commit.grade shouldEqual grade
+                response.orNull()?.commit?.grade shouldEqual grade
             }
         }
 

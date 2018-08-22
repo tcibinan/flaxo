@@ -1,6 +1,7 @@
 package org.flaxo.rest.api
 
-import io.vavr.kotlin.Try
+import arrow.core.Try
+import arrow.core.getOrElse
 import org.apache.logging.log4j.LogManager
 import org.flaxo.core.stringStackTrace
 import org.flaxo.model.CourseLifecycle
@@ -284,12 +285,11 @@ class CourseController(private val dataService: DataService,
                 .mapNotNull { (serviceType, service) ->
                     Try { service.activate(course) }
                             .map { serviceType }
-                            .onFailure {
-                                logger.info("$serviceType activation went bad for ${user.nickname}/$courseName course due to: " +
-                                        it.stringStackTrace()
-                                )
+                            .getOrElse {
+                                logger.info("$serviceType activation went bad for ${user.nickname}/$courseName " +
+                                        "course due to: ${it.stringStackTrace()}")
+                                null
                             }
-                            .orNull
                 }
                 .toSet()
 
@@ -439,9 +439,9 @@ class CourseController(private val dataService: DataService,
 
         Try {
             CompletableFuture.allOf(*submittedTasks).get()
-        }.onFailure { e ->
+        }.getOrElse { e ->
             logger.error("Moss plagiarism analysis went bad for some of the tasks: ${e.stringStackTrace()}")
-        }.get()
+        }
 
         val scheduledTasksNames: List<String> =
                 mossTasks.map { it.taskName }

@@ -14,23 +14,20 @@ class CmdExecutor private constructor(private val dir: File?) {
                 within().execute(command, *args)
     }
 
-    fun execute(command: String, vararg args: String): List<String> {
-        return perform(dir, command, *args)
-    }
+    fun execute(command: String, vararg args: String): List<String> = perform(dir, command, *args)
 
-    private fun perform(dir: File?, command: String, vararg args: String): List<String> {
-        return completed(ProcessBuilder(command, *args).directory(dir).start())
-    }
+    private fun perform(dir: File?, command: String, vararg args: String): List<String> =
+            ProcessBuilder(command, *args)
+                    .apply {
+                        redirectErrorStream()
+                        directory(dir)
+                    }
+                    .start()
+                    .waitForCompletion()
 
-    private fun completed(process: Process): List<String> {
-        return when (process.waitFor()) {
-            0 -> process.inputStream.toList()
-            else -> throw CommandLineException(
-                    process.errorStream.toList()
-                            .joinToString("\n", "\n\n")
-            )
-        }
-    }
+    private fun Process.waitForCompletion(): List<String> =
+            if (waitFor() == 0) inputStream.toList()
+            else throw CommandLineException(inputStream.toList().joinToString("\n", "\n\n"))
 
     private fun InputStream.toList() =
             bufferedReader().useLines { it.toList() }

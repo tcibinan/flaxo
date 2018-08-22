@@ -40,7 +40,6 @@ object GradleEnvironmentBuildingSpec : Spek({
                         data(language, testingLanguage, testingFramework, expected = Unit)
                     }
                     .toTypedArray()
-
     val travis: EnvironmentSupplier = mock {
         on { withLanguage(any()) }.thenReturn(it)
         on { withTestingLanguage(any()) }.thenReturn(it)

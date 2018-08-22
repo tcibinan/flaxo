@@ -1,5 +1,7 @@
 package org.flaxo.rest.service.travis
 
+import arrow.core.getOrHandle
+import arrow.core.orNull
 import org.apache.logging.log4j.LogManager
 import org.flaxo.cmd.CmdExecutor
 import org.flaxo.core.of
@@ -103,8 +105,8 @@ open class SimpleTravisService(private val client: TravisClient,
 
         repeatUntil("Travis repository appears after synchronization") {
             travis.getRepository(githubId, course.name)
-                    .getOrElseThrow { errorBody ->
-                        TravisException("Travis user retrieving failed for ${user.nickname}" +
+                    .getOrHandle { errorBody ->
+                        throw TravisException("Travis user retrieving failed for ${user.nickname}" +
                                 " due to: ${errorBody.string()}")
                     }
                     .let { true }
@@ -113,8 +115,8 @@ open class SimpleTravisService(private val client: TravisClient,
         logger.info("Activating travis repository of the course ${user.nickname}/${course.name}")
 
         travis.activate(githubId, course.name)
-                .getOrElseThrow { errorBody ->
-                    TravisException("Travis activation of $githubId/${course.name} " +
+                .getOrHandle { errorBody ->
+                    throw TravisException("Travis activation of $githubId/${course.name} " +
                             "repository went bad due to: ${errorBody.string()}")
                 }
     }
@@ -133,8 +135,8 @@ open class SimpleTravisService(private val client: TravisClient,
 
                     travis(it)
                             .deactivate(githubId, course.name)
-                            .getOrElseThrow { errorBody ->
-                                TravisException("Travis deactivation of $githubId/${course.name}" +
+                            .getOrHandle { errorBody ->
+                                throw TravisException("Travis deactivation of $githubId/${course.name}" +
                                         "repository went bad due to: ${errorBody.string()}")
                             }
 
@@ -181,10 +183,10 @@ open class SimpleTravisService(private val client: TravisClient,
 
         val travisBuilds = travis
                 .getBuilds(githubId, course.name, eventType = TravisBuildType.PULL_REQUEST)
-                .peekLeft { errorBody ->
+                .mapLeft { errorBody ->
                     logger.info("Travis builds retrieving failed due to: " + errorBody.string())
                 }
-                .orNull
+                .orNull()
 
         course.tasks
                 .takeIf { travisBuilds != null }.orEmpty()
@@ -248,12 +250,11 @@ open class SimpleTravisService(private val client: TravisClient,
 
     private fun retrieveTravisUser(travis: Travis,
                                    user: User
-    ): TravisUser =
-            travis.getUser()
-                    .getOrElseThrow { errorBody ->
-                        TravisException("Travis user retrieving failed for ${user.nickname}" +
-                                " due to: ${errorBody.string()}")
-                    }
+    ): TravisUser = travis.getUser()
+            .getOrHandle { errorBody ->
+                throw TravisException("Travis user retrieving failed for ${user.nickname}" +
+                        " due to: ${errorBody.string()}")
+            }
 
 }
 

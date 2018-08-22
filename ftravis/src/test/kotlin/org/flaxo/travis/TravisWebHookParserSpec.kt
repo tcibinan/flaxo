@@ -1,6 +1,7 @@
 package org.flaxo.travis
 
-import io.vavr.kotlin.Try
+import arrow.core.Try
+import arrow.core.getOrElse
 import org.amshove.kluent.shouldBeInstanceOf
 import org.amshove.kluent.shouldBeNull
 import org.amshove.kluent.shouldBeTrue
@@ -79,11 +80,11 @@ object TravisWebHookParserSpec : Spek({
         val build = Try { parseTravisWebHook(nonPullRequestWebHookBody.reader()) }
 
         it("should not fail with absence of pull_request_number field in raw travis web hook") {
-            build.isSuccess.shouldBeTrue()
+            build.isSuccess().shouldBeTrue()
         }
 
-        it("should return on unknown web hook type") {
-            build.get().shouldBeNull()
+        it("should return unknown web hook type") {
+            build.map { it.shouldBeNull() }
         }
     }
 

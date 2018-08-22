@@ -15,7 +15,7 @@ import org.jetbrains.spek.subject.SubjectSpek
 import retrofit2.Call
 import retrofit2.Response
 
-object RetrofitTravisSpec: SubjectSpek<Travis>({
+object RetrofitTravisSpec : SubjectSpek<Travis>({
 
     val githubUsername = "githubUsername"
     val travisToken = "travisToken"
@@ -52,7 +52,7 @@ object RetrofitTravisSpec: SubjectSpek<Travis>({
             val eitherRepository = subject.getRepository(githubUsername, nonExistingRepositoryName)
 
             it("should throw return errorBody") {
-                eitherRepository.isLeft.shouldBeTrue()
+                eitherRepository.isLeft().shouldBeTrue()
             }
         }
 
@@ -60,31 +60,29 @@ object RetrofitTravisSpec: SubjectSpek<Travis>({
             val eitherRepository = subject.getRepository(githubUsername, repositoryName)
 
             it("should return travis repository instance") {
-                eitherRepository.getOrElseThrow { errorBody ->
-                    throw TravisException(errorBody.string())
-                }
+                eitherRepository.mapLeft { errorBody -> throw TravisException(errorBody.string()) }
             }
         }
 
         on("deactivating a repository") {
             val repository = subject.deactivate(githubUsername, repositoryName)
-                    .getOrElseThrow { errorBody ->
-                        TravisException("Travis repository wasn't received due to: ${errorBody.string()}")
+                    .mapLeft { errorBody ->
+                        throw TravisException("Travis repository wasn't received due to: ${errorBody.string()}")
                     }
 
             it("should set repository to inactive status") {
-                repository.active.shouldBeFalse()
+                repository.map { it.active.shouldBeFalse() }
             }
         }
 
         on("activating a repository") {
             val repository = subject.activate(githubUsername, repositoryName)
-                    .getOrElseThrow { errorBody ->
-                        TravisException("Travis user wasn't received due to: ${errorBody.string()}")
+                    .mapLeft { errorBody ->
+                        throw TravisException("Travis user wasn't received due to: ${errorBody.string()}")
                     }
 
             it("should set repository to active status") {
-                repository.active.shouldBeTrue()
+                repository.map { it.active.shouldBeTrue() }
             }
         }
     }

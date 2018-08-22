@@ -1,4 +1,5 @@
 import kotlinx.coroutines.experimental.launch
+import kotlinx.html.ButtonType
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.frontend.component.course
@@ -16,6 +17,7 @@ import react.RBuilder
 import react.RComponent
 import react.RProps
 import react.RState
+import react.dom.button
 import react.dom.div
 import react.dom.p
 
@@ -52,7 +54,14 @@ class Courses(props: CoursesProps) : RComponent<CoursesProps, CoursesState>(prop
                             ?.forEach { courseCard(it, onSelect = ::selectCourse) }
                             ?: p { +"There are no courses yet." }
                 }
-                courseCreationModal(onCourseCreation = ::updateCoursesList)
+                button(classes = "btn btn-outline-primary btn-block", type = ButtonType.button) {
+                    attrs {
+                        attributes["data-toggle"] = "modal"
+                        attributes["data-target"] = "#${CourseCreationModal.COURSE_CREATION_MODAL_ID}"
+                        disabled = !props.user.isGithubAuthorized
+                    }
+                    +"Create course"
+                }
             }
         } else {
             course(selectedCourse, onUpdate = ::updateCoursesList, onDelete = ::deselectCourse)
@@ -60,6 +69,7 @@ class Courses(props: CoursesProps) : RComponent<CoursesProps, CoursesState>(prop
         githubModal(props.user)
         travisModal(props.user)
         codacyModal(props.user)
+        courseCreationModal(onCourseCreation = ::updateCoursesList)
     }
 
     private fun updateCoursesList() {
