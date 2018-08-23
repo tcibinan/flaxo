@@ -39,11 +39,11 @@ class UserController(private val dataService: DataService,
         logger.info("Trying to register user $nickname")
 
         return try {
-            dataService.addUser(nickname, password)
+            val user = dataService.addUser(nickname, password)
 
             logger.info("User $nickname was registered successfully")
 
-            responseService.ok()
+            responseService.ok(user.view())
         } catch (e: EntityAlreadyExistsException) {
             logger.info("Trying to create user with $nickname nickname that is already registered")
 

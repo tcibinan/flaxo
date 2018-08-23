@@ -1,7 +1,7 @@
 package org.flaxo.travis.jtravis
 
+import arrow.core.Either
 import fr.inria.jtravis.JTravis
-import io.vavr.control.Either
 import okhttp3.ResponseBody
 import org.flaxo.travis.Travis
 import org.flaxo.travis.TravisBuild
@@ -14,7 +14,7 @@ import org.flaxo.travis.TravisUser
  */
 class JTravisImpl : Travis {
 
-    val jTravis by lazy { JTravis.Builder().build() }
+    private val jTravis: JTravis by lazy { JTravis.Builder().build() }
 
     override fun getUser(): Either<ResponseBody, TravisUser> {
         TODO("not implemented")
@@ -23,12 +23,11 @@ class JTravisImpl : Travis {
     override fun getRepository(userName: String,
                                repositoryName: String
     ): Either<ResponseBody, TravisRepository> =
-            jTravis.repository()
-                    .fromSlug("$userName/$repositoryName")
+            jTravis.repository().fromSlug("$userName/$repositoryName")
                     .map { JTravisRepository(it) }
-                    .map { Either.right<ResponseBody, TravisRepository>(it) }
-                    .orElseGet { Either.left(ResponseBody.create(null, "repository not found")) }
-
+                    .orElse(null)
+                    ?.let { Either.right(it) }
+                    ?: Either.left(ResponseBody.create(null, "repository not found"))
 
     override fun activate(userName: String,
                           repositoryName: String

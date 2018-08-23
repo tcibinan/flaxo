@@ -128,203 +128,205 @@ module.exports = SetupEndpoint({
             requests: [{
                 method: 'GET',
                 response: {
-                    payload: [
-                        {
-                            branch: 'task1',
-                            url: 'https://github.com/flaxo-developer/JavaCourse/tree/task1',
-                            deadline: '2018-05-10T15:00:00.000',
-                            plagiarismReports: [
-                                {
-                                    url: 'http://analysis.example.url1',
-                                    date: '2018-04-10T10:00:00.000',
-                                    matches: []
-                                },
-                                {
-                                    url: 'http://analysis.example.url2',
-                                    date: '2018-04-10T15:00:00.000',
-                                    matches: [
-                                        {
-                                            url: 'http://analysis.example.url/match1',
-                                            student1: 'student1',
-                                            student2: 'student5',
-                                            lines: 800,
-                                            percentage: 85
-                                        },
-                                        {
-                                            url: 'http://analysis.example.url/match1',
-                                            student1: 'student2',
-                                            student2: 'student5',
-                                            lines: 200,
-                                            percentage: 22
-                                        }
-                                    ]
-                                }
-                            ],
-                            solutions: [
-                                {
-                                    task: 'task1',
-                                    student: 'student1',
-                                    score: 80,
-                                    commits: [
-                                        {
-                                            sha: 'task1student1sha1',
-                                            date: '2018-04-10T10:00:00.000'
-                                        },
-                                        {
-                                            sha: 'task1student1sha2',
-                                            date: '2018-04-10T15:00:00.000'
-                                        }
-                                    ],
-                                    buildReports: [
-                                        {
-                                            succeed: true,
-                                            date: '2018-04-10T10:00:00.000'
-                                        },
-                                        {
-                                            succeed: true,
-                                            date: '2018-04-10T15:00:00.000'
-                                        }
-                                    ],
-                                    codeStyleReports: [
-                                        {
-                                            grade: 'E',
-                                            date: '2018-04-10T10:00:00.000'
-                                        },
-                                        {
-                                            grade: 'B',
-                                            date: '2018-04-10T15:00:00.000'
-                                        }
-                                    ]
-                                },
-                                {
-                                    task: 'task1',
-                                    student: 'student2',
-                                    score: null,
-                                    commits: [
-                                        {
-                                            sha: 'task1student2sha1',
-                                            date: '2018-04-10T15:00:00.000'
-                                        }
-                                    ],
-                                    buildReports: [
-                                        {
-                                            succeed: true,
-                                            date: '2018-04-10T15:00:00.000'
-                                        }
-                                    ],
-                                    codeStyleReports: [
-                                        {
-                                            grade: 'A',
-                                            date: '2018-04-10T15:00:00.000'
-                                        }
-                                    ]
-                                },
-                                {
-                                    task: 'task1',
-                                    student: 'student3',
-                                    score: 75,
-                                    commits: [
-                                        {
-                                            sha: 'task1student3sha1',
-                                            date: '2018-04-10T15:00:00.000'
-                                        }
-                                    ],
-                                    buildReports: [
-                                        {
-                                            succeed: false,
-                                            date: '2018-04-10T15:00:00.000'
-                                        }
-                                    ],
-                                    codeStyleReports: [
-                                        {
-                                            grade: 'B',
-                                            date: '2018-04-10T15:00:00.000'
-                                        }
-                                    ]
-                                },
-                                {
-                                    task: 'task1',
-                                    student: 'student4',
-                                    score: null,
-                                    commits: [],
-                                    buildReports: [],
-                                    codeStyleReports: []
-                                },
-                                {
-                                    task: 'task1',
-                                    student: 'student5',
-                                    score: 70,
-                                    date: '2018-05-30T15:00:00.000',
-                                    commits: [
-                                        {
-                                            sha: 'task1student5sha1',
-                                            date: '2018-05-30T15:00:00.000'
-                                        }
-                                    ],
-                                    buildReports: [
-                                        {
-                                            succeed: true,
-                                            date: '2018-04-10T15:00:00.000'
-                                        }
-                                    ],
-                                    codeStyleReports: [
-                                        {
-                                            grade: 'C',
-                                            date: '2018-04-10T15:00:00.000'
-                                        }
-                                    ]
-                                }
-                            ]
-                        },
-                        {
-                            branch: 'task2',
-                            url: 'https://github.com/flaxo-developer/JavaCourse/tree/task2',
-                            deadline: null,
-                            plagiarismReport: [],
-                            solutions: [
-                                {
-                                    task: 'task2',
-                                    student: 'student1',
-                                    score: null,
-                                    commits: [],
-                                    buildReports: [],
-                                    codeStyleReports: []
-                                },
-                                {
-                                    task: 'task2',
-                                    student: 'student2',
-                                    score: null,
-                                    commits: [],
-                                    buildReports: [],
-                                    codeStyleReports: []
-                                },
-                                {
-                                    task: 'task2',
-                                    student: 'student3',
-                                    score: null,
-                                    commits: [],
-                                    buildReports: [],
-                                    codeStyleReports: []
-                                },
-                                {
-                                    task: 'task2',
-                                    student: 'student4',
-                                    score: null,
-                                    commits: [],
-                                    buildReports: [],
-                                    codeStyleReports: []
-                                },
-                                {
-                                    task: 'task2',
-                                    student: 'student5',
-                                    score: null,
-                                    commits: [],
-                                    buildReports: [],
-                                    codeStyleReports: []
-                                }
-                            ]
-                        }
-                    ]
+                    payload: {
+                        tasks: [
+                            {
+                                branch: 'task1',
+                                url: 'https://github.com/flaxo-developer/JavaCourse/tree/task1',
+                                deadline: '2018-05-10T15:00:00.000',
+                                plagiarismReports: [
+                                    {
+                                        url: 'http://analysis.example.url1',
+                                        date: '2018-04-10T10:00:00.000',
+                                        matches: []
+                                    },
+                                    {
+                                        url: 'http://analysis.example.url2',
+                                        date: '2018-04-10T15:00:00.000',
+                                        matches: [
+                                            {
+                                                url: 'http://analysis.example.url/match1',
+                                                student1: 'student1',
+                                                student2: 'student5',
+                                                lines: 800,
+                                                percentage: 85
+                                            },
+                                            {
+                                                url: 'http://analysis.example.url/match1',
+                                                student1: 'student2',
+                                                student2: 'student5',
+                                                lines: 200,
+                                                percentage: 22
+                                            }
+                                        ]
+                                    }
+                                ],
+                                solutions: [
+                                    {
+                                        task: 'task1',
+                                        student: 'student1',
+                                        score: 80,
+                                        commits: [
+                                            {
+                                                sha: 'task1student1sha1',
+                                                date: '2018-04-10T10:00:00.000'
+                                            },
+                                            {
+                                                sha: 'task1student1sha2',
+                                                date: '2018-04-10T15:00:00.000'
+                                            }
+                                        ],
+                                        buildReports: [
+                                            {
+                                                succeed: true,
+                                                date: '2018-04-10T10:00:00.000'
+                                            },
+                                            {
+                                                succeed: true,
+                                                date: '2018-04-10T15:00:00.000'
+                                            }
+                                        ],
+                                        codeStyleReports: [
+                                            {
+                                                grade: 'E',
+                                                date: '2018-04-10T10:00:00.000'
+                                            },
+                                            {
+                                                grade: 'B',
+                                                date: '2018-04-10T15:00:00.000'
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        task: 'task1',
+                                        student: 'student2',
+                                        score: null,
+                                        commits: [
+                                            {
+                                                sha: 'task1student2sha1',
+                                                date: '2018-04-10T15:00:00.000'
+                                            }
+                                        ],
+                                        buildReports: [
+                                            {
+                                                succeed: true,
+                                                date: '2018-04-10T15:00:00.000'
+                                            }
+                                        ],
+                                        codeStyleReports: [
+                                            {
+                                                grade: 'A',
+                                                date: '2018-04-10T15:00:00.000'
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        task: 'task1',
+                                        student: 'student3',
+                                        score: 75,
+                                        commits: [
+                                            {
+                                                sha: 'task1student3sha1',
+                                                date: '2018-04-10T15:00:00.000'
+                                            }
+                                        ],
+                                        buildReports: [
+                                            {
+                                                succeed: false,
+                                                date: '2018-04-10T15:00:00.000'
+                                            }
+                                        ],
+                                        codeStyleReports: [
+                                            {
+                                                grade: 'B',
+                                                date: '2018-04-10T15:00:00.000'
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        task: 'task1',
+                                        student: 'student4',
+                                        score: null,
+                                        commits: [],
+                                        buildReports: [],
+                                        codeStyleReports: []
+                                    },
+                                    {
+                                        task: 'task1',
+                                        student: 'student5',
+                                        score: 70,
+                                        date: '2018-05-30T15:00:00.000',
+                                        commits: [
+                                            {
+                                                sha: 'task1student5sha1',
+                                                date: '2018-05-30T15:00:00.000'
+                                            }
+                                        ],
+                                        buildReports: [
+                                            {
+                                                succeed: true,
+                                                date: '2018-04-10T15:00:00.000'
+                                            }
+                                        ],
+                                        codeStyleReports: [
+                                            {
+                                                grade: 'C',
+                                                date: '2018-04-10T15:00:00.000'
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                branch: 'task2',
+                                url: 'https://github.com/flaxo-developer/JavaCourse/tree/task2',
+                                deadline: null,
+                                plagiarismReports: [],
+                                solutions: [
+                                    {
+                                        task: 'task2',
+                                        student: 'student1',
+                                        score: null,
+                                        commits: [],
+                                        buildReports: [],
+                                        codeStyleReports: []
+                                    },
+                                    {
+                                        task: 'task2',
+                                        student: 'student2',
+                                        score: null,
+                                        commits: [],
+                                        buildReports: [],
+                                        codeStyleReports: []
+                                    },
+                                    {
+                                        task: 'task2',
+                                        student: 'student3',
+                                        score: null,
+                                        commits: [],
+                                        buildReports: [],
+                                        codeStyleReports: []
+                                    },
+                                    {
+                                        task: 'task2',
+                                        student: 'student4',
+                                        score: null,
+                                        commits: [],
+                                        buildReports: [],
+                                        codeStyleReports: []
+                                    },
+                                    {
+                                        task: 'task2',
+                                        student: 'student5',
+                                        score: null,
+                                        commits: [],
+                                        buildReports: [],
+                                        codeStyleReports: []
+                                    }
+                                ]
+                            }
+                        ]
+                    }
                 }
             }]
         },

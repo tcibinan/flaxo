@@ -1,6 +1,8 @@
 package org.flaxo.rest.service.codacy
 
-import io.vavr.kotlin.Try
+import arrow.core.Try
+import arrow.core.getOrElse
+import arrow.core.getOrHandle
 import org.apache.logging.log4j.LogManager
 import org.flaxo.codacy.Codacy
 import org.flaxo.codacy.CodacyClient
@@ -117,14 +119,16 @@ open class SimpleCodacyService(private val client: CodacyClient,
                                 Try {
                                     codacy
                                             .commitDetails(course.name, commit.sha)
-                                            .getOrElseThrow { errorBody ->
-                                                CodacyException("Codacy commit details retrieving failed due to: " +
-                                                        errorBody.string())
+                                            .getOrHandle { errorBody ->
+                                                throw CodacyException("Codacy commit details retrieving failed " +
+                                                        "due to: ${errorBody.string()})")
                                             }
                                             .commit
-                                }.onFailure {
-                                    logger.error("Codacy commit details retrieving failed due to: ${it.stringStackTrace()}")
-                                }.orNull
+                                }.getOrElse {
+                                    logger.error("Codacy commit details retrieving failed " +
+                                            "due to: ${it.stringStackTrace()}")
+                                    null
+                                }
                             }
                             ?.let { codacyCommit ->
                                 val latestGrade = solution.codeStyleReports
@@ -132,7 +136,7 @@ open class SimpleCodacyService(private val client: CodacyClient,
                                         ?.grade
                                         ?: "No grade"
 
-                                codacyCommit.takeIf { it.grade != latestGrade }
+                                if (codacyCommit.grade != latestGrade) codacyCommit else null
                             }
                             ?.also { codacyCommit ->
                                 logger.info(

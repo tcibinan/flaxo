@@ -61,10 +61,10 @@ class GithubController(private val responseService: ResponseService,
         synchronized(states) {
             states[principal.name] = state
         }
-
+        // TODO 19.08.18: Replace with GithubAuthData object from common module
         return responseService.ok(object {
-            val redirect = "$githubAuthUrl/authorize"
-            val params = mapOf(
+            val redirectUrl = "$githubAuthUrl/authorize"
+            val requestParams = mapOf(
                     "client_id" to clientId,
                     "scope" to listOf("delete_repo", "repo").joinToString(separator = " "),
                     "state" to state

@@ -103,7 +103,7 @@ To run the app. The application will be at [http://localhost:8080/](http://local
 
 Prerequisites:
 - Github OAuth App - **required**
-- [webpack](https://webpack.js.org/guides/getting-started/) installed - **required**
+- [node.js + npm](https://nodejs.org/en/download/) installed - **required**
 - [ruby](https://www.ruby-lang.org/en/documentation/installation/) installed - **required**
 - [travis cli client](https://github.com/travis-ci/travis.rb#installation) installed - **required**
 - 3 Github accounts
@@ -139,11 +139,9 @@ Hints:
 - Codacy access token could be generated in [codacy account settings](https://app.codacy.com/account/apiTokens).
 - Moss user id can be received through mailing registration or it can be found in several github gists.
 
-#### Webpack
+#### npm
 
-Client-side uses webpack for building bundles. It is necessary to have webpack installed locally.
-*Notice:* `node_modules` folder should lies right in the root folder of the `client` module. 
-**todo:** Extract `node_modules` folder location into application settings.
+Node.js npm should be installed to build flaxo's frontend.
 
 #### Travis integration
 
@@ -168,33 +166,29 @@ and a list of possible travis cli commands should be listed.
 - Github
 - Travis CI
 - Codacy
-- [Moss](https://theory.stanford.edu/~aiken/moss/) plagiarism detecting system
+- [Moss](https://theory.stanford.edu/~aiken/moss/) plagiarism detection system
 
 ### Back-end technologies
 
 - Kotlin
 - Gradle
+- Spring
 - Spek
-- Spring Boot, Spring Data, Spring Security
-- Retrofit2 http client
-- and even more: h2 database, Kohsuke Github api, Vavr, mockito-kotlin, moji, jsoup, commons-collections4, ...
 
 ### Front-end technologies
 
-- Javascript (ECMAScript 6)
+- Kotlin
 - Webpack
 - React
-- Reactstrap
-- axios
-- js-cookie
-- Immutable.js
+- Bootstrap
 
 ## TODO-list
 
+- Activate integration tests running on travis CI.
 - Add xls format for course statistics downloading.
 - Build docker images of the flaxo system.
 - Append test coverage to flaxo travis analysis.
-- Rewrite front-end using Redux framework.
+- Use using Redux framework in frontend.
 
 ## Credits
 

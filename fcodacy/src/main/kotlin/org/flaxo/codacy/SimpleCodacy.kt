@@ -1,6 +1,6 @@
 package org.flaxo.codacy
 
-import io.vavr.control.Either
+import arrow.core.Either
 import okhttp3.ResponseBody
 import org.flaxo.codacy.request.ProjectRequest
 import org.flaxo.codacy.response.CommitDetailsResponse
@@ -31,8 +31,8 @@ class SimpleCodacy(private val username: String,
 
     private fun <T> Call<T>.call(): Either<ResponseBody, T> =
             execute().run {
-                if (isSuccessful) Either.right(body())
-                else Either.left(errorBody())
+                if (isSuccessful) Either.Right(body()!!)
+                else Either.left(errorBody()!!)
             }
 
     private fun <T> Call<T>.callIgnoredBody(): ResponseBody? =

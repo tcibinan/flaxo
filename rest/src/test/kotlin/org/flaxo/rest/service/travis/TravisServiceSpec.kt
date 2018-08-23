@@ -1,7 +1,9 @@
 package org.flaxo.rest.service.travis
 
+import arrow.core.Either
+import arrow.core.Try
 import com.nhaarman.mockito_kotlin.mock
-import io.vavr.kotlin.Try
+import org.amshove.kluent.shouldNotBeBlank
 import org.flaxo.model.DataService
 import org.flaxo.rest.service.git.GitService
 import org.flaxo.travis.retrofit.TravisClient
@@ -9,7 +11,6 @@ import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.subject.SubjectSpek
-import kotlin.test.assertFalse
 
 object TravisServiceSpec : SubjectSpek<TravisService>({
 
@@ -25,18 +26,18 @@ object TravisServiceSpec : SubjectSpek<TravisService>({
     describe("travis service") {
         on("getting travis token") {
 
-            val result = Try {
+            val result: Either<Throwable, String> = Try {
                 subject.retrieveTravisToken(githubUsername, githubToken)
-            }
+            }.toEither()
 
             it("should finish with zero code") {
-                assert(result.isSuccess) {
-                    "Travis token retrieving failed due to: ${result.cause.message}"
+                result.mapLeft {
+                    throw AssertionError("Travis token retrieving failed due to: ${it.message}")
                 }
             }
 
             it("should return non-empty travis token") {
-                assertFalse { result.get().isBlank() }
+                result.map { it.shouldNotBeBlank() }
             }
         }
     }

@@ -5,7 +5,6 @@ import org.flaxo.core.env.EnvironmentFile
 import org.flaxo.core.env.Environment
 import org.flaxo.core.env.SimpleEnvironmentFile
 import org.flaxo.core.env.SimpleEnvironment
-import io.vavr.kotlin.Try
 import java.io.File
 import java.util.*
 
@@ -32,24 +31,24 @@ class GradleWrappers private constructor(files: Set<EnvironmentFile>)
             val dir = createTempDir("wrappers-generating-${Random().nextInt()}")
                     .also { it.deleteOnExit() }
 
-            return Try(generateWrappers(dir, gradleBuild, gradleSettings))
-                    .onFailure {
-                        dir.deleteRecursively()
-                        throw GradleWrappersException(it)
-                    }
-                    .get()
+            try {
+                return generateWrappers(dir, gradleBuild, gradleSettings)
+            } catch (e: Exception) {
+                dir.deleteRecursively()
+                throw GradleWrappersException(e)
+            }
         }
 
         private fun generateWrappers(dir: File,
                                      gradleBuild: EnvironmentFile,
                                      gradleSettings: EnvironmentFile
-        ): () -> GradleWrappers = {
+        ): GradleWrappers {
             File(dir, gradleBuild.fileName).fillWith(gradleBuild.content)
             File(dir, gradleSettings.fileName).fillWith(gradleSettings.content)
 
             GradleCmdExecutor.within(dir).wrapper()
 
-            GradleWrappers(setOf(
+            return GradleWrappers(setOf(
                     "gradlew".loadFrom(dir),
                     "gradlew.bat".loadFrom(dir),
                     "gradle/wrapper/gradle-wrapper.jar".loadBinaryFrom(dir),

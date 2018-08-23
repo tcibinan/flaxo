@@ -1,8 +1,10 @@
 package org.flaxo.rest
 
 import org.flaxo.model.DataService
+import org.flaxo.rest.filters.FlaxoCorsFilter
 import org.flaxo.rest.service.data.UserDetailsServiceImpl
 import org.flaxo.rest.service.data.WebSecurityConfigurerImpl
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer
@@ -32,6 +34,9 @@ class SecurityConfiguration {
             passwordEncoder: PasswordEncoder
     ): WebSecurityConfigurer<WebSecurity> =
             WebSecurityConfigurerImpl(userDetailsService, passwordEncoder)
+
+    @Bean
+    fun corsFilter() = FlaxoCorsFilter()
 
 }
 
