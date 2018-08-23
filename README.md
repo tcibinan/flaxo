@@ -184,6 +184,7 @@ and a list of possible travis cli commands should be listed.
 
 ## TODO-list
 
+- Activate integration tests running on travis CI.
 - Add xls format for course statistics downloading.
 - Build docker images of the flaxo system.
 - Append test coverage to flaxo travis analysis.

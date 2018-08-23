@@ -175,7 +175,7 @@ open class SimpleTravisService(private val client: TravisClient,
 
         logger.info("Retrieving open pull requests for ${user.nickname}/${course.name} course")
 
-        val openPullRequests = gitService.with(githubToken)
+        val openedPullRequests = gitService.with(githubToken)
                 .getRepository(course.name)
                 .getOpenPullRequests()
 
@@ -193,13 +193,13 @@ open class SimpleTravisService(private val client: TravisClient,
                 .flatMap { it.solutions }
                 .filter { it.commits.isNotEmpty() }
                 .forEach { solution ->
-                    val pullRequest = openPullRequests
+                    val pullRequest = openedPullRequests
                             .filter { it.authorId == solution.student.nickname }
                             .firstOrNull { it.baseBranch == solution.task.branch }
                             ?: throw GithubException("Pull request solution of ${solution.student.nickname}/${solution.task.branch} student " +
                                     "for ${user.nickname}/${course.name} course was not found")
 
-                    travisBuilds
+                    travisBuilds!!
                             .filter { it.commitSha == pullRequest.mergeCommitSha }
                             .filter {
                                 it.buildStatus in setOf(

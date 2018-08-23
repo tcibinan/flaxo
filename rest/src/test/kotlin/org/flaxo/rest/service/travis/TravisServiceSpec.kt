@@ -3,7 +3,7 @@ package org.flaxo.rest.service.travis
 import arrow.core.Either
 import arrow.core.Try
 import com.nhaarman.mockito_kotlin.mock
-import org.amshove.kluent.shouldBeBlank
+import org.amshove.kluent.shouldNotBeBlank
 import org.flaxo.model.DataService
 import org.flaxo.rest.service.git.GitService
 import org.flaxo.travis.retrofit.TravisClient
@@ -37,7 +37,7 @@ object TravisServiceSpec : SubjectSpek<TravisService>({
             }
 
             it("should return non-empty travis token") {
-                result.map { it.shouldBeBlank() }
+                result.map { it.shouldNotBeBlank() }
             }
         }
     }
