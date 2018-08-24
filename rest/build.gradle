@@ -17,11 +17,11 @@ dependencies {
     compile project(":fcodacy")
 
     // spring dependencies
-    compile "org.springframework.boot:spring-boot-starter-web:2.0.0.RELEASE"
-    compile "org.springframework.boot:spring-boot-starter-data-jpa:2.0.0.RELEASE"
-    compile "org.springframework.boot:spring-boot-autoconfigure:2.0.0.RELEASE"
-    compile "org.springframework.boot:spring-boot-starter-security:2.0.0.RELEASE"
-    testCompile "org.springframework.boot:spring-boot-starter-test:2.0.0.RELEASE"
+    compile "org.springframework.boot:spring-boot-starter-web:$spring_boot_version"
+    compile "org.springframework.boot:spring-boot-starter-data-jpa:$spring_boot_version"
+    compile "org.springframework.boot:spring-boot-autoconfigure:$spring_boot_version"
+    compile "org.springframework.boot:spring-boot-starter-security:$spring_boot_version"
+    testCompile "org.springframework.boot:spring-boot-starter-test:$spring_boot_version"
 
     // for post requests - could be replaced with git module in the future
     compile "org.apache.httpcomponents:fluent-hc:4.5.3"
