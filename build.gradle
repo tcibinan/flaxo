@@ -18,8 +18,8 @@ plugins {
     id "org.springframework.boot" version "2.0.4.RELEASE" apply false
 }
 
-configure(subprojects.findAll { it.name != 'frontend' }) {
-    apply plugin: 'kotlin'
+configure(subprojects.findAll { it.name != 'frontend' && it.name != 'common' && it.name != 'common-js' && it.name != 'common-jvm'}) {
+    apply plugin: 'kotlin-platform-jvm'
 
     repositories {
         mavenCentral()

@@ -1,6 +1,6 @@
 package org.flaxo.frontend.component
 
-import org.flaxo.frontend.data.Course
+import org.flaxo.common.Course
 import react.RBuilder
 import react.dom.div
 import react.dom.span

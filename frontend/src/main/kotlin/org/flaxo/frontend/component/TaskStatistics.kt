@@ -6,9 +6,9 @@ import org.flaxo.frontend.component.report.codeStyleReport
 import org.flaxo.frontend.component.report.deadlineReport
 import org.flaxo.frontend.component.report.plagiarismReport
 import org.flaxo.frontend.component.report.scoreInput
-import org.flaxo.frontend.data.Course
-import org.flaxo.frontend.data.Task
-import org.flaxo.frontend.githubPullRequestUrl
+import org.flaxo.common.Course
+import org.flaxo.common.Task
+import org.flaxo.frontend.github.githubPullRequestUrl
 import react.RBuilder
 import react.RComponent
 import react.RProps

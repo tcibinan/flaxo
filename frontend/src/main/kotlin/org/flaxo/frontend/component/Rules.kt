@@ -4,8 +4,9 @@ import kotlinx.html.js.onClickFunction
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.frontend.credentials
-import org.flaxo.frontend.data.Course
-import org.flaxo.frontend.data.Task
+import org.flaxo.common.Course
+import org.flaxo.common.DateTime
+import org.flaxo.common.Task
 import org.flaxo.frontend.wrapper.NotificationManager
 import react.RBuilder
 import react.RComponent
@@ -14,7 +15,6 @@ import react.RState
 import react.dom.button
 import react.dom.div
 import react.setState
-import kotlin.js.Date
 
 
 fun RBuilder.rules(course: Course, task: Task) = child(Rules::class) {
@@ -27,7 +27,7 @@ fun RBuilder.rules(course: Course, task: Task) = child(Rules::class) {
 class RulesProps(var course: Course,
                  var task: Task) : RProps
 
-class RulesState(var deadline: Date?) : RState
+class RulesState(var deadline: DateTime?) : RState
 
 class Rules(props: RulesProps) : RComponent<RulesProps, RulesState>(props) {
 
@@ -55,7 +55,7 @@ class Rules(props: RulesProps) : RComponent<RulesProps, RulesState>(props) {
         credentials?.also { credentials ->
             try {
                 flaxoClient.updateRules(credentials, props.course.name, props.task.branch,
-                        state.deadline?.toISOString()?.substring(0, 10))
+                        state.deadline?.toDateTimeString())
                 NotificationManager.success("Task rules has been updated.")
             } catch (e: Exception) {
                 console.log(e)

@@ -1,11 +1,24 @@
 // todo: Replace with kotlinx.serialization features
-package org.flaxo.frontend.data
+package org.flaxo.common.interop
 
-import kotlinext.js.Object.getOwnPropertyNames
-import kotlin.js.Date
+import org.flaxo.common.BuildReport
+import org.flaxo.common.CodeStyleReport
+import org.flaxo.common.Commit
+import org.flaxo.common.Course
+import org.flaxo.common.CourseLifecycle
+import org.flaxo.common.CourseState
+import org.flaxo.common.CourseStatistics
+import org.flaxo.common.DateTime
+import org.flaxo.common.GithubAuthData
+import org.flaxo.common.Language
+import org.flaxo.common.PlagiarismMatch
+import org.flaxo.common.PlagiarismReport
+import org.flaxo.common.Solution
+import org.flaxo.common.Task
+import org.flaxo.common.User
 import kotlin.js.Json
 
-fun languageFromDynamic(languageJson: dynamic) =
+fun languageFromDynamic(languageJson: dynamic): Language =
         Language(name = languageJson.name,
                 compatibleTestingLanguages = (languageJson.compatibleTestingLanguages as Array<String>).toList(),
                 compatibleTestingFrameworks = (languageJson.compatibleTestingFrameworks as Array<String>).toList())
@@ -18,7 +31,7 @@ fun courseFromDynamic(courseJson: dynamic): Course =
                 testingLanguage = courseJson.testingLanguage,
                 testingFramework = courseJson.testingFramework,
                 description = courseJson.description,
-                createdDate = Date(courseJson.createdDate as String),
+                createdDate = DateTime.fromDateTimeString(courseJson.createdDate as String),
                 tasks = (courseJson.tasks as Array<String>).toList(),
                 students = (courseJson.students as Array<String>).toList(),
                 url = courseJson.url,
@@ -74,13 +87,13 @@ fun solutionFromDynamic(solutionJson: dynamic): Solution =
 fun codeStyleReportFromDynamic(codeStyleReportJson: dynamic): CodeStyleReport =
         CodeStyleReport(
                 grade = codeStyleReportJson.grade,
-                date = Date(codeStyleReportJson.date as String)
+                date = DateTime.fromDateTimeString(codeStyleReportJson.date as String)
         )
 
 fun buildReportFromDynamic(buildReportJson: dynamic): BuildReport =
         BuildReport(
                 succeed = buildReportJson.succeed,
-                date = Date(buildReportJson.date as String)
+                date = DateTime.fromDateTimeString(buildReportJson.date as String)
         )
 
 fun commitFromDynamic(commitJson: dynamic): Commit =
@@ -93,7 +106,7 @@ fun commitFromDynamic(commitJson: dynamic): Commit =
 fun plagiarismReportFromDynamic(plagiarismReportJson: dynamic): PlagiarismReport =
         PlagiarismReport(
                 url = plagiarismReportJson.url,
-                date = Date(plagiarismReportJson.date as String),
+                date = DateTime.fromDateTimeString(plagiarismReportJson.date as String),
                 matches = (plagiarismReportJson.matches as Array<dynamic>).toList()
                         .map { plagiarismMatchFromDynamic(it) }
         )
@@ -107,7 +120,7 @@ fun plagiarismMatchFromDynamic(plagiarismMatchJson: dynamic): PlagiarismMatch =
                 percentage = plagiarismMatchJson.percentage
         )
 
-fun nullableDateFromDynamic(dateString: String?): Date? = dateString?.let { Date(it) }
+fun nullableDateFromDynamic(dateString: String?): DateTime? = dateString?.let { DateTime.fromDateTimeString(it) }
 
 fun githubAuthDataFromDynamic(githubAuthDataJson: dynamic): GithubAuthData =
         GithubAuthData(
@@ -119,9 +132,13 @@ fun githubAuthDataFromDynamic(githubAuthDataJson: dynamic): GithubAuthData =
 fun mapFromDynamic(mapJson: dynamic): Map<String, String> {
     return (mapJson as? Json)
             ?.let {
-                getOwnPropertyNames(it)
+                Object.getOwnPropertyNames(it)
                         .map { propertyName -> propertyName to it[propertyName] as String }
                         .toMap()
             }
             ?: emptyMap()
+}
+
+internal external object Object {
+    fun getOwnPropertyNames(obj: Any): Array<String>
 }

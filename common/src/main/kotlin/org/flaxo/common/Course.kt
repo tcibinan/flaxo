@@ -1,10 +1,8 @@
-package org.flaxo.frontend.data
-
-import kotlin.js.Date
+package org.flaxo.common
 
 class Course(val name: String,
              val description: String?,
-             val createdDate: Date,
+             val createdDate: DateTime,
              val language: String,
              val testingLanguage: String,
              val testingFramework: String,
@@ -12,4 +10,5 @@ class Course(val name: String,
              val state: CourseState,
              val user: User,
              val students: List<String>,
-             val tasks: List<String>)
+             val tasks: List<String>
+)

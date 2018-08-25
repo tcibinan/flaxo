@@ -1,8 +1,8 @@
 package org.flaxo.frontend.component.report
 
-import org.flaxo.frontend.data.PlagiarismMatch
-import org.flaxo.frontend.data.Solution
-import org.flaxo.frontend.data.Task
+import org.flaxo.common.PlagiarismMatch
+import org.flaxo.common.Solution
+import org.flaxo.common.Task
 import react.RBuilder
 import react.dom.i
 import react.dom.span

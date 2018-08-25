@@ -1,0 +1,17 @@
+apply plugin: 'kotlin-platform-js'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    expectedBy project(":common")
+    compile "org.jetbrains.kotlin:kotlin-stdlib-js:1.2.60"
+}
+
+compileKotlin2Js {
+    kotlinOptions.metaInfo = true
+    kotlinOptions.outputFile = "$project.buildDir.path/js/${project.name}.js"
+    kotlinOptions.moduleKind = 'commonjs'
+    kotlinOptions.main = "call"
+}

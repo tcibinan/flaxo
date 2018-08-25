@@ -4,7 +4,8 @@ import kotlinx.html.InputType
 import kotlinx.html.id
 import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
-import org.flaxo.frontend.data.Task
+import org.flaxo.common.DateTime
+import org.flaxo.common.Task
 import org.w3c.dom.HTMLInputElement
 import react.RBuilder
 import react.RComponent
@@ -15,9 +16,8 @@ import react.dom.div
 import react.dom.input
 import react.dom.small
 import kotlin.browser.document
-import kotlin.js.Date
 
-fun RBuilder.deadlineRule(task: Task, onDeadlineChange: (Date?) -> Unit) =
+fun RBuilder.deadlineRule(task: Task, onDeadlineChange: (DateTime?) -> Unit) =
         child(DeadlineRule::class) {
             attrs {
                 this.task = task
@@ -26,7 +26,7 @@ fun RBuilder.deadlineRule(task: Task, onDeadlineChange: (Date?) -> Unit) =
         }
 
 class DeadlineRuleProps(var task: Task,
-                        var onDeadlineChange: (Date?) -> Unit) : RProps
+                        var onDeadlineChange: (DateTime?) -> Unit) : RProps
 
 class DeadlineRule(props: DeadlineRuleProps) : RComponent<DeadlineRuleProps, EmptyState>(props) {
 
@@ -43,10 +43,10 @@ class DeadlineRule(props: DeadlineRuleProps) : RComponent<DeadlineRuleProps, Emp
                 input(classes = "form-control", type = InputType.date) {
                     attrs {
                         id = DEADLINE_RULE_INPUT_ID
-                        defaultValue = props.task.deadline?.toISOString()?.substring(0, 10) ?: ""
+                        defaultValue = props.task.deadline?.toDateString() ?: ""
                         onChangeFunction = { event ->
                             val target = event.target as HTMLInputElement
-                            props.onDeadlineChange(Date(target.value))
+                            props.onDeadlineChange(DateTime.fromDateTimeString(target.value))
                         }
                         attributes["aria-describedby"] = DEADLINE_RULE_HELP_ID
                     }

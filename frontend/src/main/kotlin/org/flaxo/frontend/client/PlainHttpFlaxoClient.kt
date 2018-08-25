@@ -1,6 +1,12 @@
 package org.flaxo.frontend.client
 
-import org.flaxo.frontend.data.*
+import org.flaxo.common.*
+import org.flaxo.frontend.Credentials
+import org.flaxo.common.interop.courseFromDynamic
+import org.flaxo.common.interop.courseStatisticsFromDynamic
+import org.flaxo.common.interop.githubAuthDataFromDynamic
+import org.flaxo.common.interop.languageFromDynamic
+import org.flaxo.common.interop.userFromDynamic
 import org.flaxo.frontend.wrapper.btoa
 import org.w3c.xhr.XMLHttpRequest
 

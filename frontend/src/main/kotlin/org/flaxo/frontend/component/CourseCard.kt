@@ -1,9 +1,7 @@
 package org.flaxo.frontend.component
 
 import kotlinx.html.js.onClickFunction
-import org.flaxo.frontend.data.Course
-import org.flaxo.frontend.wrapper.NotificationManager
-//import org.flaxo.frontend.wrapper.NotificationManager
+import org.flaxo.common.Course
 import react.RBuilder
 import react.dom.div
 import react.dom.h5
@@ -31,7 +29,7 @@ fun RBuilder.courseCard(course: Course, onSelect: (Course) -> Unit) = section(cl
             }
             p(classes = "card-text") {
                 small(classes = "text-muted") {
-                    +"Created at ${course.createdDate.toDateString()}"
+                    +"Created at ${course.createdDate.toHumanReadableString()}"
                 }
             }
         }

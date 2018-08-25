@@ -9,7 +9,7 @@ import kotlinx.html.tabIndex
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.component.label
 import org.flaxo.frontend.credentials
-import org.flaxo.frontend.data.User
+import org.flaxo.common.User
 import org.flaxo.frontend.wrapper.NotificationManager
 import org.w3c.dom.HTMLInputElement
 import react.RBuilder

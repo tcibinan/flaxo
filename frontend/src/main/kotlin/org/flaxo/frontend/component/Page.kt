@@ -9,8 +9,7 @@ import org.flaxo.frontend.credentials
 import react.*
 import react.dom.div
 import org.flaxo.frontend.wrapper.Cookies
-import org.flaxo.frontend.data.User
-import org.flaxo.frontend.wrapper.NotificationContainer
+import org.flaxo.common.User
 import org.flaxo.frontend.wrapper.NotificationManager
 
 class PageState(var user: User? = null) : RState

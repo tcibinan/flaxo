@@ -1,3 +1,3 @@
-package org.flaxo.frontend.data
+package org.flaxo.common
 
 class TestingFramework(val name: String)

@@ -1,4 +1,4 @@
-package org.flaxo.frontend.data
+package org.flaxo.common
 
 enum class CourseLifecycle {
     INIT, RUNNING

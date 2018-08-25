@@ -9,8 +9,8 @@ import org.flaxo.frontend.component.services.codacyModal
 import org.flaxo.frontend.component.services.githubModal
 import org.flaxo.frontend.component.services.travisModal
 import org.flaxo.frontend.credentials
-import org.flaxo.frontend.data.Course
-import org.flaxo.frontend.data.User
+import org.flaxo.common.Course
+import org.flaxo.common.User
 import org.flaxo.frontend.wrapper.NotificationManager
 import react.setState
 import react.RBuilder

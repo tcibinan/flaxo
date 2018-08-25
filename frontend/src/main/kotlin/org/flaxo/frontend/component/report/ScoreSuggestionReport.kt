@@ -4,11 +4,12 @@ import kotlinx.html.InputType
 import kotlinx.html.id
 import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
-import org.flaxo.frontend.data.BuildReport
-import org.flaxo.frontend.data.CodeStyleReport
-import org.flaxo.frontend.data.Commit
-import org.flaxo.frontend.data.Solution
-import org.flaxo.frontend.data.Task
+import org.flaxo.common.BuildReport
+import org.flaxo.common.CodeStyleReport
+import org.flaxo.common.Commit
+import org.flaxo.common.DateTime
+import org.flaxo.common.Solution
+import org.flaxo.common.Task
 import org.w3c.dom.HTMLInputElement
 import react.RBuilder
 import react.dom.button
@@ -16,7 +17,6 @@ import react.dom.defaultValue
 import react.dom.div
 import react.dom.input
 import kotlin.browser.document
-import kotlin.js.Date
 
 fun RBuilder.scoreInput(task: Task,
                         solution: Solution,
@@ -66,7 +66,7 @@ fun RBuilder.scoreInput(task: Task,
 fun suggestScore(buildReport: BuildReport?,
                  codeStyleReport: CodeStyleReport?,
                  latestCommit: Commit?,
-                 deadline: Date?
+                 deadline: DateTime?
 ): Int {
     if (latestCommit == null
             || buildReport == null

@@ -3,7 +3,7 @@ import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.client.FlaxoClient
-import org.flaxo.frontend.data.Language
+import org.flaxo.common.Language
 import org.w3c.dom.HTMLInputElement
 import kotlinx.html.ButtonType
 import kotlinx.html.InputType

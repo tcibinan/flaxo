@@ -2,9 +2,9 @@ package org.flaxo.frontend.component
 
 import kotlinx.html.ThScope
 import kotlinx.html.js.onClickFunction
-import org.flaxo.frontend.data.Course
-import org.flaxo.frontend.data.CourseStatistics
-import org.flaxo.frontend.githubProfileUrl
+import org.flaxo.common.Course
+import org.flaxo.common.CourseStatistics
+import org.flaxo.frontend.github.githubProfileUrl
 import react.RBuilder
 import react.RComponent
 import react.RProps

@@ -5,7 +5,7 @@ import kotlinx.html.InputType
 import kotlinx.html.classes
 import kotlinx.html.hidden
 import kotlinx.html.id
-import org.flaxo.frontend.data.User
+import org.flaxo.common.User
 import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.role
@@ -13,7 +13,7 @@ import kotlinx.html.tabIndex
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.frontend.client.FlaxoHttpCallException
-import org.flaxo.frontend.data.Credentials
+import org.flaxo.frontend.Credentials
 import org.flaxo.frontend.wrapper.NotificationManager
 import org.w3c.dom.HTMLInputElement
 import react.RBuilder

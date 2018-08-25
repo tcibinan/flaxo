@@ -5,8 +5,8 @@ import kotlinx.html.js.onClickFunction
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.frontend.credentials
-import org.flaxo.frontend.data.Course
-import org.flaxo.frontend.data.CourseLifecycle
+import org.flaxo.common.Course
+import org.flaxo.common.CourseLifecycle
 import org.flaxo.frontend.wrapper.NotificationManager
 import org.w3c.dom.url.URL.Companion.createObjectURL
 import org.w3c.files.Blob

@@ -3,10 +3,9 @@ package org.flaxo.frontend.component.services
 import kotlinx.html.ButtonType
 import kotlinx.html.hidden
 import kotlinx.html.id
-import kotlinx.html.js.onClickFunction
 import kotlinx.html.role
 import kotlinx.html.tabIndex
-import org.flaxo.frontend.data.User
+import org.flaxo.common.User
 import react.RBuilder
 import react.dom.a
 import react.dom.b

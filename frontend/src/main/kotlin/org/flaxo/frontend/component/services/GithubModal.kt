@@ -8,8 +8,8 @@ import kotlinx.html.role
 import kotlinx.html.tabIndex
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.credentials
-import org.flaxo.frontend.data.User
-import org.flaxo.frontend.githubProfileUrl
+import org.flaxo.common.User
+import org.flaxo.frontend.github.githubProfileUrl
 import org.flaxo.frontend.wrapper.NotificationManager
 import org.w3c.dom.url.URLSearchParams
 import react.RBuilder

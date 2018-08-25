@@ -8,7 +8,7 @@ import kotlinx.html.role
 import org.flaxo.frontend.component.services.CODACY_MODAL_ID
 import org.flaxo.frontend.component.services.GITHUB_MODAL_ID
 import org.flaxo.frontend.component.services.TRAVIS_MODAL_ID
-import org.flaxo.frontend.data.User
+import org.flaxo.common.User
 import react.RBuilder
 import react.RComponent
 import react.RProps

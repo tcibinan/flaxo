@@ -1,6 +1,11 @@
 package org.flaxo.frontend.client
 
-import org.flaxo.frontend.data.*
+import org.flaxo.common.Course
+import org.flaxo.common.CourseStatistics
+import org.flaxo.common.GithubAuthData
+import org.flaxo.common.Language
+import org.flaxo.common.User
+import org.flaxo.frontend.Credentials
 
 interface FlaxoClient {
 
