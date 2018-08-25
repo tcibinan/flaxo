@@ -2,28 +2,43 @@ package org.flaxo.frontend.component.report
 
 import kotlinx.html.InputType
 import kotlinx.html.id
+import kotlinx.html.js.onChangeFunction
+import kotlinx.html.js.onClickFunction
 import org.flaxo.frontend.data.BuildReport
 import org.flaxo.frontend.data.CodeStyleReport
 import org.flaxo.frontend.data.Commit
 import org.flaxo.frontend.data.Solution
 import org.flaxo.frontend.data.Task
+import org.w3c.dom.HTMLInputElement
 import react.RBuilder
 import react.dom.button
 import react.dom.defaultValue
 import react.dom.div
 import react.dom.input
+import kotlin.browser.document
 import kotlin.js.Date
 
-fun RBuilder.scoreInput(task: Task, solution: Solution) {
+fun RBuilder.scoreInput(task: Task,
+                        solution: Solution,
+                        onStudentScoreUpdate: (String, Int) -> Unit
+) {
     val buildReport = solution.buildReports.lastOrNull()
     val codeStyleReport = solution.codeStyleReports.lastOrNull()
     val latestCommit = solution.commits.lastOrNull()
-    val suggestedScore = suggestScore(buildReport, codeStyleReport, latestCommit, task.deadline).toString()
+    val suggestedScore = suggestScore(buildReport, codeStyleReport, latestCommit, task.deadline)
+    val scoreInputId = "scoreInput${solution.task}${solution.student}"
     val suggestedScoreAppendId = "suggestedScore${solution.task}${solution.student}"
 
     div(classes = "input-group input-group-sm") {
         input(classes = "form-control", type = InputType.number) {
             attrs {
+                id = scoreInputId
+                onChangeFunction = { event ->
+                    val target = event.target as HTMLInputElement
+                    onStudentScoreUpdate(solution.student, target.value.toIntOrNull() ?: 0)
+                }
+                min = "0"
+                max = "100"
                 defaultValue = solution.score?.toString() ?: ""
                 attributes["aria-describedby"] = suggestedScoreAppendId
                 disabled = solution.commits.isEmpty()
@@ -32,15 +47,16 @@ fun RBuilder.scoreInput(task: Task, solution: Solution) {
         if (solution.commits.isNotEmpty()) {
             div(classes = "input-group-append") {
                 button(classes = "btn btn-outline-info") {
-                    // TODO 18.08.18: Activate bootstrap popovers support
                     attrs {
                         id = suggestedScoreAppendId
-                        attributes["data-toggle"] = "popover"
-                        attributes["title"] = "Suggested score"
-                        attributes["data-content"] = "Student: ${solution.student}.\nScore: $suggestedScore"
-                        attributes["data-placement"] = "bottom"
+                        onClickFunction = { _ ->
+                            document.getElementById(scoreInputId)
+                                    ?.let { it as? HTMLInputElement }
+                                    ?.value = suggestedScore.toString()
+                            onStudentScoreUpdate(solution.student, suggestedScore)
+                        }
                     }
-                    +suggestedScore
+                    +suggestedScore.toString()
                 }
             }
         }

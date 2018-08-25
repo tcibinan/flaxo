@@ -21,15 +21,21 @@ import react.dom.th
 import react.dom.thead
 import react.dom.tr
 
-fun RBuilder.taskStatistics(course: Course, task: Task) = child(TaskStatistics::class) {
+fun RBuilder.taskStatistics(course: Course,
+                            task: Task,
+                            onStudentScoreUpdate: (String, Int) -> Unit
+) = child(TaskStatistics::class) {
     attrs {
         this.course = course
         this.task = task
+        this.onStudentScoreUpdate = onStudentScoreUpdate
     }
 }
 
 class TaskStatisticsProps(var course: Course,
-                          var task: Task) : RProps
+                          var task: Task,
+                          var onStudentScoreUpdate: (String, Int) -> Unit
+) : RProps
 
 class TaskStatistics(props: TaskStatisticsProps) : RComponent<TaskStatisticsProps, EmptyState>(props) {
 
@@ -85,7 +91,8 @@ class TaskStatistics(props: TaskStatisticsProps) : RComponent<TaskStatisticsProp
                                         deadlineReport(props.task, solution)
                                     }
                                     td(classes = "report-cell") {
-                                        scoreInput(props.task, solution)
+                                        scoreInput(props.task, solution,
+                                                onStudentScoreUpdate=props.onStudentScoreUpdate)
                                     }
                                 }
                             }

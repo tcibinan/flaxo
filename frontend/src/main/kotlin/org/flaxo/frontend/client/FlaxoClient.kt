@@ -33,6 +33,8 @@ interface FlaxoClient {
 
     fun updateRules(credentials: Credentials, courseName: String, task: String, deadline: String?)
 
+    fun updateScores(credentials: Credentials, courseName: String, task: String, scores: Map<String, Int>)
+
     fun addCodacyToken(credentials: Credentials, codacyToken: String)
 
     fun activateCodacy(credentials: Credentials, courseName: String)

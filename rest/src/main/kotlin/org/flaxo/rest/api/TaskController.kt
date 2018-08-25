@@ -1,17 +1,13 @@
 package org.flaxo.rest.api
 
 import org.apache.logging.log4j.LogManager
-import org.flaxo.core.language.Language
 import org.flaxo.model.DataService
-import org.flaxo.rest.service.codacy.CodacyService
-import org.flaxo.rest.service.moss.MossService
 import org.flaxo.rest.service.response.ResponseService
-import org.flaxo.rest.service.travis.TravisService
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -79,10 +75,10 @@ class TaskController(private val dataService: DataService,
     @Transactional
     fun updateScores(@RequestParam courseName: String,
                      @RequestParam taskBranch: String,
-                     @RequestParam scores: Map<String, Int>,
+                     @RequestBody scores: Map<String, Int>,
                      principal: Principal
     ): ResponseEntity<Any> {
-        logger.info("Updating scores for ${principal.name}/$courseName/$taskBranch task")
+        logger.info("Updating scores for ${principal.name}/$courseName/$taskBranch task: $scores")
 
         val user = dataService.getUser(principal.name)
                 ?: return responseService.userNotFound(principal.name)
@@ -95,9 +91,11 @@ class TaskController(private val dataService: DataService,
                 ?: return responseService.taskNotFound(principal.name, courseName, taskBranch)
 
         task.solutions
-                .filter { it.student.nickname in scores }
-                .filterNot { it.score != scores.get(it.student.nickname) }
-                .map { it.copy(score = scores.get(it.student.nickname)) }
+                .map { it to scores[it.student.nickname] }
+                .filter { (_, updatedScore) -> updatedScore != null }
+                .filter { (_, updatedScore) -> updatedScore in 0..100 }
+                .filter { (solution, updatedScore) -> solution.score != updatedScore }
+                .map { (solution, updatedScore) -> solution.copy(score = updatedScore) }
                 .forEach { dataService.updateSolution(it) }
 
         return responseService.ok()

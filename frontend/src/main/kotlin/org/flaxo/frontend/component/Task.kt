@@ -2,11 +2,15 @@ package org.flaxo.frontend.component
 
 import kotlinx.html.id
 import kotlinx.html.js.onClickFunction
+import org.flaxo.frontend.Container
+import org.flaxo.frontend.credentials
 import org.flaxo.frontend.data.Course
 import org.flaxo.frontend.data.Task
+import org.flaxo.frontend.wrapper.NotificationManager
 import react.RBuilder
 import react.RComponent
 import react.RProps
+import react.RState
 import react.dom.a
 import react.dom.button
 import react.dom.div
@@ -23,11 +27,17 @@ fun RBuilder.task(course: Course, task: Task) = child(org.flaxo.frontend.compone
 class TaskProps(var course: Course,
                 var task: Task) : RProps
 
-class Task(props: TaskProps) : RComponent<TaskProps, EmptyState>(props) {
+class TaskState(var scores: MutableMap<String, Int>) : RState
+
+class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
 
     private companion object {
         // TODO 16.08.18: Id can be non-unique between tabs
         val RULES_DROPDOWN_ID = "taskRulesDropdown"
+    }
+
+    init {
+        state.scores = mutableMapOf()
     }
 
     override fun RBuilder.render() {
@@ -57,14 +67,29 @@ class Task(props: TaskProps) : RComponent<TaskProps, EmptyState>(props) {
                         hr {}
                         rules(props.course, props.task)
                     }
-                    taskStatistics(props.course, props.task)
+                    taskStatistics(props.course, props.task, onStudentScoreUpdate=::updateStudentScore)
                 }
             }
         }
     }
 
     private fun saveResults() {
-        //todo: Implement results aggregation and saving
+        credentials?.also { credentials ->
+            try {
+                Container.flaxoClient.updateScores(credentials,
+                        courseName = props.course.name,
+                        task = props.task.branch,
+                        scores = state.scores)
+                NotificationManager.success("Task results were saved")
+            } catch (e: Exception) {
+                console.log(e)
+                NotificationManager.error("Error occurred while saving task results")
+            }
+        }
+    }
+
+    private fun updateStudentScore(student: String, score: Int) {
+        state.scores[student] = score
     }
 
 }

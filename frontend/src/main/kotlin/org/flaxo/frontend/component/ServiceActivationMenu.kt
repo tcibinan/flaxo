@@ -48,7 +48,7 @@ class ServiceActivationMenu(props: ServiceActivationMenuProps)
                         attributes["aria-haspopup"] = "true"
                         attributes["aria-expanded"] = "false"
                         disabled = props.course.state.lifecycle != CourseLifecycle.RUNNING
-                                && props.course.state.activatedServices.all { it in integratedServices }
+                                || props.course.state.activatedServices.all { it in integratedServices }
                     }
                     +"Activate service"
                 }

@@ -162,16 +162,40 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
     override fun updateRules(credentials: Credentials,
                              courseName: String,
                              task: String,
-                             deadline: String?) {
+                             deadline: String?
+    ) {
         try {
             val request = post("/task/update/rules",
-                    parameters = mapOf("courseName" to courseName, "taskBranch" to task, "deadline" to deadline),
+                    parameters = mapOf("courseName" to courseName,
+                            "taskBranch" to task,
+                            "deadline" to deadline),
                     credentials = credentials)
             if (request.status.toInt() != 200) {
                 throw FlaxoHttpCallException(request.responseText)
             }
         } catch (e: Throwable) {
             throw FlaxoHttpCallException("Task rules updating failed.", e)
+        }
+    }
+
+    override fun updateScores(credentials: Credentials,
+                              courseName: String,
+                              task: String,
+                              scores: Map<String, Int>
+    ) {
+        try {
+            val request = post("/task/update/scores",
+                    parameters = mapOf("courseName" to courseName,
+                            "taskBranch" to task),
+                    body = scores.map { (a, b) -> "\"$a\": $b" }
+                            .joinToString(", ", "{", "}")
+                            .let { JSON.parse<Map<String, Int>>(it) },
+                    credentials = credentials)
+            if (request.status.toInt() != 200) {
+                throw FlaxoHttpCallException(request.responseText)
+            }
+        } catch (e: Throwable) {
+            throw FlaxoHttpCallException("Task scores updating failed.", e)
         }
     }
 
@@ -277,9 +301,12 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
         if (credentials != null) {
             setRequestHeader("Authorization", authorizationToken(credentials))
         }
-        body?.let { JSON.stringify(it) }
-                ?.also { send(it) }
-                ?: send()
+        if (body != null) {
+            setRequestHeader("Content-Type", "application/json")
+            send(JSON.stringify(body))
+        } else {
+            send()
+        }
     }
 
     private fun authorizationToken(credentials: Credentials) =
