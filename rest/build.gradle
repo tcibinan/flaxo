@@ -35,5 +35,3 @@ dependencies {
     // simple http client
     testCompile "khttp:khttp:0.1.0"
 }
-
-bootRun.dependsOn ":frontend:webpack-run"

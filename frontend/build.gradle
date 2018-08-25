@@ -67,3 +67,26 @@ kotlin {
         coroutines "enable"
     }
 }
+
+task assembleFrontend(type: Copy) {
+    dependsOn "webpack-bundle"
+
+    ext.webDir = "$projectDir/src/main/web"
+    ext.webpackBundleDir = "$projectDir/build/bundle"
+    ext.productionServerDir = "$projectDir/build/dist"
+
+    inputs.dir(webDir)
+    inputs.dir(webpackBundleDir)
+    outputs.dir(productionServerDir)
+
+    from webDir
+    from webpackBundleDir
+    into productionServerDir
+}
+
+task runFrontend(type: Exec) {
+    ext.port = 8088
+    dependsOn assembleFrontend
+    workingDir "$projectDir/build/dist"
+    commandLine "python", "-m", "SimpleHTTPServer", port
+}
