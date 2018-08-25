@@ -10,6 +10,7 @@ import org.kohsuke.github.GHPullRequest as KohsukeGithubPullRequest
  */
 class GithubPullRequest : PullRequest {
 
+    override val id: Int
     override val baseBranch: String
     override val lastCommitSha: String
     override val mergeCommitSha: String?
@@ -19,6 +20,7 @@ class GithubPullRequest : PullRequest {
     override val isOpened: Boolean
 
     constructor(pullRequestEventPayload: KohsukeGithubEventPayload.PullRequest) {
+        this.id = pullRequestEventPayload.number
         this.baseBranch = pullRequestEventPayload.pullRequest.base.ref
         this.lastCommitSha = pullRequestEventPayload.pullRequest.lastCommit()
         this.mergeCommitSha = pullRequestEventPayload.pullRequest.mergeCommitSha
@@ -29,6 +31,7 @@ class GithubPullRequest : PullRequest {
     }
 
     constructor(pullRequest: KohsukeGithubPullRequest) {
+        this.id = pullRequest.number
         this.baseBranch = pullRequest.base.ref
         this.lastCommitSha = pullRequest.lastCommit()
         this.mergeCommitSha = pullRequest.mergeCommitSha

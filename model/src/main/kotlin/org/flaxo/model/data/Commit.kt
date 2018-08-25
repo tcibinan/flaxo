@@ -20,6 +20,8 @@ class Commit(
         @GeneratedValue
         override val id: Long = -1,
 
+        val pullRequestId: Int? = null,
+
         val date: LocalDateTime? = null,
 
         val sha: String = "",
@@ -31,6 +33,7 @@ class Commit(
 
     override fun view() = let { commit ->
         object {
+            val pullRequestId = commit.pullRequestId
             val sha = commit.sha
             val date = commit.date
         }

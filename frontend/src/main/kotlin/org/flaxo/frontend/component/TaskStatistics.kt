@@ -8,7 +8,7 @@ import org.flaxo.frontend.component.report.plagiarismReport
 import org.flaxo.frontend.component.report.scoreInput
 import org.flaxo.frontend.data.Course
 import org.flaxo.frontend.data.Task
-import org.flaxo.frontend.githubProfileUrl
+import org.flaxo.frontend.githubPullRequestUrl
 import react.RBuilder
 import react.RComponent
 import react.RProps
@@ -50,6 +50,7 @@ class TaskStatistics(props: TaskStatisticsProps) : RComponent<TaskStatisticsProp
                 tbody {
                     props.course
                             .students
+                            .sorted()
                             .mapNotNull { student -> props.task.solutions.find { it.student == student } }
                             .takeIf { it.isNotEmpty() }
                             ?.forEachIndexed { row, solution ->
@@ -57,14 +58,16 @@ class TaskStatistics(props: TaskStatisticsProps) : RComponent<TaskStatisticsProp
                                     if (solution.commits.isEmpty()) {
                                         th(classes = "text-muted", scope = ThScope.row) { +((row + 1).toString()) }
                                         td(classes = "text-muted") {
-                                            a(classes = "github-profile", href = githubProfileUrl(solution.student)) {
+                                            a(classes = "github-profile",
+                                                    href = githubPullRequestUrl(props.course, solution)) {
                                                 +solution.student
                                             }
                                         }
                                     } else {
                                         th(scope = ThScope.row) { +((row + 1).toString()) }
                                         td {
-                                            a(classes = "github-profile", href = githubProfileUrl(solution.student)) {
+                                            a(classes = "github-profile",
+                                                    href = githubPullRequestUrl(props.course, solution)) {
                                                 +solution.student
                                             }
                                         }

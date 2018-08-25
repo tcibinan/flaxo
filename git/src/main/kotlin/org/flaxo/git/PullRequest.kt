@@ -6,6 +6,11 @@ package org.flaxo.git
 interface PullRequest : GitPayload {
 
     /**
+     * Pull request id. It should be unique for a single git repository.
+     */
+    val id: Int
+
+    /**
      * Newest pull request commit sha.
      */
     val lastCommitSha: String

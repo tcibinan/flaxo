@@ -154,10 +154,10 @@ class GithubController(private val responseService: ResponseService,
 
                 student.solutions
                         .find { it.task.branch == hook.baseBranch }
-                        ?.also {
+                        ?.also { solution ->
                             logger.info("Add ${hook.lastCommitSha} commit to ${student.nickname} student solution " +
                                     "for course ${user.nickname}/${course.name}.")
-                            dataService.addCommit(it, hook.lastCommitSha)
+                            dataService.addCommit(solution, hook.id, hook.lastCommitSha)
                         }
             }
             else -> {

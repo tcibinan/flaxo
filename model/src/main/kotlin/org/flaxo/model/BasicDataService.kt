@@ -297,12 +297,14 @@ open class BasicDataService(private val userRepository: UserRepository,
 
     @Transactional
     override fun addCommit(solution: Solution,
+                           pullRequestId: Int,
                            commitSha: String
     ): Commit =
             commitRepository
                     .save(Commit(
                             solution = solution,
                             date = LocalDateTime.now(),
+                            pullRequestId = pullRequestId,
                             sha = commitSha
                     ))
                     .also {

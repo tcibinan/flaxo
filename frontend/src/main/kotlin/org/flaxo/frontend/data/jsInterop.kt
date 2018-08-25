@@ -86,6 +86,7 @@ fun buildReportFromDynamic(buildReportJson: dynamic): BuildReport =
 fun commitFromDynamic(commitJson: dynamic): Commit =
         Commit(
                 sha = commitJson.sha,
+                pullRequestId = commitJson.pullRequestId,
                 date = nullableDateFromDynamic(commitJson.date)
         )
 

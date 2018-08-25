@@ -189,9 +189,10 @@ interface DataService {
     ): CodeStyleReport
 
     /**
-     * Adds commit by its [commitSha] to [solution].
+     * Adds commit by its [pullRequestId] and [commitSha] to [solution].
      */
     fun addCommit(solution: Solution,
+                  pullRequestId: Int,
                   commitSha: String
     ): Commit
 
