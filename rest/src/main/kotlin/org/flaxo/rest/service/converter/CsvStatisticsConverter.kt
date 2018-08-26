@@ -12,15 +12,17 @@ object CsvStatisticsConverter : StatisticsConverter {
         val csvBuilder = StringBuilder()
 
         csvBuilder.append("student").append(delimiter)
-        statistics.keys.sorted()
-                .fold(StringJoiner(delimiter)) { joiner, task -> joiner.add(task) }
-                .also { csvBuilder.append(it).append(delimiter) }
+        statistics.keys
+                .takeIf { it.isNotEmpty() }
+                ?.sorted()
+                ?.fold(StringJoiner(delimiter)) { joiner, task -> joiner.add(task) }
+                ?.also { csvBuilder.append(it).append(delimiter) }
         csvBuilder.append("score").append("\n")
 
         val studentsStatistics: Map<String, List<Int>> =
                 statistics
-                        .flatMap { (task, studentScore) ->
-                            studentScore.map { (student, score) -> Triple(task, student, score) }
+                        .flatMap { (task, studentScores) ->
+                            studentScores.map { (student, score) -> Triple(task, student, score) }
                         }
                         .sortedBy { it.first }
                         .groupingBy { it.second }

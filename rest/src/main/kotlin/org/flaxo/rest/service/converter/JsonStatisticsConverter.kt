@@ -11,8 +11,18 @@ object JsonStatisticsConverter : StatisticsConverter {
 
     private val objectMapper by lazy { ObjectMapper() }
 
-    override fun convert(statistics: Map<String, Map<String, Int>>): String =
-            // TODO: 01/06/18 Add course summary score to output file
-            objectMapper.writeValueAsString(statistics)
+    override fun convert(statistics: Map<String, Map<String, Int>>): String {
+        val studentSummaryScores: Map<String, Int> = statistics.values
+                .flatMap { map -> map.toList() }
+                .groupingBy { it.first }
+                .aggregate<Pair<String, Int>, String, Int> { _, summaryScore, (_, score), _ ->
+                    summaryScore?.plus(score) ?: score
+                }
+                .mapValues { it.value / statistics.values.size }
+
+        return statistics
+                .plus("score" to studentSummaryScores)
+                .let { objectMapper.writeValueAsString(it) }
+    }
 
 }
