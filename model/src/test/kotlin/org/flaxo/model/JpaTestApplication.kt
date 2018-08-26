@@ -31,7 +31,7 @@ class JpaTestApplication {
                     codeStyleReportRepository: CodeStyleReportRepository,
                     plagiarismReportRepository: PlagiarismReportRepository,
                     commitRepository: CommitRepository
-    ): DataService = BasicDataService(
+    ): DataManager = PlainDataManager(
             userRepository,
             credentialsRepository,
             courseRepository,

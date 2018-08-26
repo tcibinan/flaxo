@@ -18,7 +18,6 @@ import react.dom.button
 import react.dom.div
 import kotlin.browser.document
 
-
 fun RBuilder.courseStatisticsDownloadMenu(course: Course) = child(CourseStatisticsDownloadMenu::class) {
     attrs {
         this.course = course
@@ -34,10 +33,10 @@ class CourseStatisticsDownloadMenu(props: CourseStatisticsDownloadMenuProps)
         val DOWNLOAD_AS_DROPDOWN_ID = "downloadAsDropdown"
     }
 
-    private val flaxoClient: FlaxoClient
+    private val supportedFormats: List<String>
 
     init {
-        flaxoClient = Container.flaxoClient
+        supportedFormats = listOf("json", "csv", "tsv")
     }
 
     override fun RBuilder.render() {
@@ -57,17 +56,11 @@ class CourseStatisticsDownloadMenu(props: CourseStatisticsDownloadMenuProps)
                 }
                 div(classes = "dropdown-menu") {
                     attrs { attributes["aria-labelledby"] = DOWNLOAD_AS_DROPDOWN_ID }
-                    a(classes = "dropdown-item", href = "#") {
-                        attrs { onClickFunction = { downloadAs("json") } }
-                        +"json"
-                    }
-                    a(classes = "dropdown-item", href = "#") {
-                        attrs { onClickFunction = { downloadAs("csv") } }
-                        +"csv"
-                    }
-                    a(classes = "dropdown-item disabled", href = "#") {
-                        attrs { onClickFunction = { downloadAs("xls") } }
-                        +"xls"
+                    supportedFormats.forEach { format ->
+                        a(classes = "dropdown-item", href = "#") {
+                            attrs { onClickFunction = { downloadAs(format) } }
+                            +format
+                        }
                     }
                 }
             }
@@ -77,7 +70,7 @@ class CourseStatisticsDownloadMenu(props: CourseStatisticsDownloadMenuProps)
     private fun downloadAs(format: String) {
         credentials?.also {
             try {
-                val data = flaxoClient.downloadStatistics(it, props.course.name, format)
+                val data = Container.flaxoClient.downloadStatistics(it, props.course.name, format)
                 val url = createObjectURL(Blob(arrayOf(data)))
                 val link = document.createElement("a").asDynamic()
                 link.href = url

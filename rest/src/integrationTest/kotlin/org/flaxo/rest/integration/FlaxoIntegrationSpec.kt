@@ -62,7 +62,7 @@ object FlaxoIntegrationSpec : Spek({
 
     val context = SpringApplication.run(Application::class.java)
     val codacyService = context.getBean<CodacyService>()
-    val dataService = context.getBean<DataService>("dataService")
+    val dataService = context.getBean<DataService>("dataManager")
     val principal: () -> Principal = {
         val user = dataService.getUser(username)
                 ?: throw ModelException("User not found")

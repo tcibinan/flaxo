@@ -10,14 +10,15 @@ import org.flaxo.core.language.JavaLang
 import org.flaxo.core.language.KotlinLang
 import org.flaxo.core.language.Language
 import org.flaxo.gradle.GradleBuildTool
-import org.flaxo.rest.service.CourseValidation
-import org.flaxo.rest.service.codacy.CodacyService
-import org.flaxo.rest.service.converter.CsvStatisticsConverter
-import org.flaxo.rest.service.converter.JsonStatisticsConverter
-import org.flaxo.rest.service.converter.StatisticsConverter
-import org.flaxo.rest.service.environment.RepositoryEnvironmentService
-import org.flaxo.rest.service.environment.SimpleRepositoryEnvironmentService
-import org.flaxo.rest.service.travis.TravisService
+import org.flaxo.rest.manager.ValidationManager
+import org.flaxo.rest.manager.codacy.CodacyManager
+import org.flaxo.rest.manager.statistics.CsvStatisticsManager
+import org.flaxo.rest.manager.statistics.JsonStatisticsManager
+import org.flaxo.rest.manager.statistics.StatisticsManager
+import org.flaxo.rest.manager.environment.EnvironmentManager
+import org.flaxo.rest.manager.environment.SimpleEnvironmentManager
+import org.flaxo.rest.manager.statistics.TsvStatisticsManager
+import org.flaxo.rest.manager.travis.TravisManager
 import org.flaxo.travis.env.SimpleTravisEnvironmentSupplier
 import org.flaxo.travis.env.TravisEnvironmentSupplier
 import org.springframework.beans.factory.annotation.Value
@@ -58,25 +59,26 @@ class CoreConfiguration {
     fun repositoryEnvironmentService(supportedLanguages: Map<String, Language>,
                                      supportedTestingFrameworks: Map<String, TestingFramework>,
                                      defaultBuildTools: Map<Language, BuildTool>
-    ): RepositoryEnvironmentService =
-            SimpleRepositoryEnvironmentService(
+    ): EnvironmentManager =
+            SimpleEnvironmentManager(
                     supportedLanguages,
                     supportedTestingFrameworks,
                     defaultBuildTools
             )
 
     @Bean
-    fun statisticsConverters(): Map<String, StatisticsConverter> = mapOf(
-            "json" to JsonStatisticsConverter,
-            "csv" to CsvStatisticsConverter
+    fun statisticsConverters(): Map<String, StatisticsManager> = mapOf(
+            "json" to JsonStatisticsManager(),
+            "csv" to CsvStatisticsManager(),
+            "tsv" to TsvStatisticsManager()
     )
 
     @Bean
-    fun courseValidations(codacyService: CodacyService,
-                          travisService: TravisService
-    ): Map<ExternalService, CourseValidation> = mapOf(
-            ExternalService.CODACY to codacyService,
-            ExternalService.TRAVIS to travisService
+    fun courseValidations(codacyManager: CodacyManager,
+                          travisManager: TravisManager
+    ): Map<ExternalService, ValidationManager> = mapOf(
+            ExternalService.CODACY to codacyManager,
+            ExternalService.TRAVIS to travisManager
     )
 
     private fun <TYPE : NamedEntity> namedMap(vararg namedEntity: TYPE): Map<String, TYPE> =

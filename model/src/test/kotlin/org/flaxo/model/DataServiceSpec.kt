@@ -22,7 +22,7 @@ import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.support.DefaultTransactionDefinition
 import org.springframework.transaction.TransactionStatus
 
-class DataServiceSpec : SubjectSpek<DataService>({
+class DataServiceSpec : SubjectSpek<DataManager>({
     val nickname = "nickname"
     val password = "password"
     val githubId = "githubId"
@@ -45,7 +45,7 @@ class DataServiceSpec : SubjectSpek<DataService>({
     val context = AnnotationConfigApplicationContext(JpaTestApplication::class.java)
     val transactionManager = context.getBean(PlatformTransactionManager::class.java)
 
-    subject { context.getBean(DataService::class.java) }
+    subject { context.getBean(DataManager::class.java) }
 
     describe("data service") {
 

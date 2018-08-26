@@ -1,15 +1,15 @@
 package org.flaxo.rest.api
 
-import org.flaxo.model.DataService
-import org.flaxo.rest.service.git.GitService
-import org.flaxo.rest.service.travis.TravisService
+import org.flaxo.model.DataManager
+import org.flaxo.rest.manager.github.GithubManager
+import org.flaxo.rest.manager.travis.TravisManager
 import org.flaxo.travis.TravisException
 import org.flaxo.travis.TravisBuildStatus
 import org.flaxo.travis.TravisBuild
 import org.flaxo.travis.TravisPullRequestBuild
 import org.apache.logging.log4j.LogManager
 import org.flaxo.common.ExternalService
-import org.flaxo.rest.service.response.ResponseService
+import org.flaxo.rest.manager.response.ResponseManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -28,10 +28,10 @@ import javax.servlet.http.HttpServletRequest
  */
 @RestController
 @RequestMapping("/rest/travis")
-class TravisController @Autowired constructor(private val travisService: TravisService,
-                                              private val dataService: DataService,
-                                              private val gitService: GitService,
-                                              private val responseService: ResponseService
+class TravisController @Autowired constructor(private val travisManager: TravisManager,
+                                              private val dataManager: DataManager,
+                                              private val githubManager: GithubManager,
+                                              private val responseManager: ResponseManager
 ) {
 
     private val logger = LogManager.getLogger(TravisController::class.java)
@@ -47,18 +47,18 @@ class TravisController @Autowired constructor(private val travisService: TravisS
     ): ResponseEntity<Any> {
         logger.info("Putting travis token for ${principal.name} user")
 
-        val user = dataService.getUser(principal.name)
-                ?: return responseService.userNotFound(principal.name)
+        val user = dataManager.getUser(principal.name)
+                ?: return responseManager.userNotFound(principal.name)
 
         if (token.isBlank()) {
             logger.error("Given travis token for ${principal.name} is invalid")
-            return responseService.bad("Given travis token is invalid")
+            return responseManager.bad("Given travis token is invalid")
         }
 
-        dataService.addToken(user.nickname, ExternalService.TRAVIS, token)
+        dataManager.addToken(user.nickname, ExternalService.TRAVIS, token)
 
         logger.info("Travis token was added for ${principal.name}")
-        return responseService.ok()
+        return responseManager.ok()
     }
 
     /**
@@ -68,23 +68,23 @@ class TravisController @Autowired constructor(private val travisService: TravisS
     @Transactional
     fun travisWebHook(request: HttpServletRequest) {
         val payload: Reader = request.getParameter("payload").reader()
-        val hook: TravisBuild = travisService.parsePayload(payload)
+        val hook: TravisBuild = travisManager.parsePayload(payload)
                 ?: throw UnsupportedOperationException("Unsupported travis web hook type")
 
         when (hook) {
             is TravisPullRequestBuild -> {
-                val user = dataService.getUserByGithubId(hook.repositoryOwner)
+                val user = dataManager.getUserByGithubId(hook.repositoryOwner)
                         ?: throw TravisException("User with the required nickname ${hook.repositoryOwner} wasn't found.")
 
                 val githubCredentials = user.credentials.githubToken
                         ?: throw TravisException("User ${user.nickname} doesn't have github credentials " +
                                 "to get pull request information.")
 
-                val course = dataService.getCourse(hook.repositoryName, user)
+                val course = dataManager.getCourse(hook.repositoryName, user)
                         ?: throw TravisException("Course with name ${hook.repositoryName} wasn't found " +
                                 "for user ${user.nickname}.")
 
-                val pullRequest = gitService.with(githubCredentials)
+                val pullRequest = githubManager.with(githubCredentials)
                         .getRepository(course.name)
                         .getPullRequest(hook.pullRequestNumber)
 
@@ -103,9 +103,9 @@ class TravisController @Autowired constructor(private val travisService: TravisS
                         logger.info("Travis pull request successful build web hook received " +
                                 "for ${hook.repositoryOwner}/${hook.repositoryName}.")
 
-                        val buildReport = dataService.addBuildReport(solution, succeed = true)
+                        val buildReport = dataManager.addBuildReport(solution, succeed = true)
 
-                        dataService.updateSolution(solution.copy(
+                        dataManager.updateSolution(solution.copy(
                                 buildReports = solution.buildReports.plus(buildReport)
                         ))
                     }
@@ -113,9 +113,9 @@ class TravisController @Autowired constructor(private val travisService: TravisS
                         logger.info("Travis pull request failed build web hook received " +
                                 "for ${hook.repositoryOwner}/${hook.repositoryName}.")
 
-                        val buildReport = dataService.addBuildReport(solution, succeed = false)
+                        val buildReport = dataManager.addBuildReport(solution, succeed = false)
 
-                        dataService.updateSolution(solution.copy(
+                        dataManager.updateSolution(solution.copy(
                                 buildReports = solution.buildReports.plus(buildReport)
                         ))
                     }

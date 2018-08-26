@@ -1,10 +1,9 @@
 package org.flaxo.rest
 
-import org.flaxo.model.DataService
+import org.flaxo.model.DataManager
 import org.flaxo.rest.filters.FlaxoCorsFilter
-import org.flaxo.rest.service.data.UserDetailsServiceImpl
-import org.flaxo.rest.service.data.WebSecurityConfigurerImpl
-import org.springframework.beans.factory.annotation.Value
+import org.flaxo.rest.manager.data.UserDetailsServiceImpl
+import org.flaxo.rest.manager.data.WebSecurityConfigurerImpl
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer
@@ -22,8 +21,8 @@ import org.springframework.security.crypto.password.PasswordEncoder
 class SecurityConfiguration {
 
     @Bean
-    fun userDetailsService(dataService: DataService): UserDetailsService =
-            UserDetailsServiceImpl(dataService)
+    fun userDetailsService(dataManager: DataManager): UserDetailsService =
+            UserDetailsServiceImpl(dataManager)
 
     @Bean
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()

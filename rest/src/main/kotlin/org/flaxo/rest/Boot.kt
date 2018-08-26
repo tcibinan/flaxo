@@ -1,7 +1,7 @@
 package org.flaxo.rest
 
-import org.springframework.boot.SpringApplication
+import org.springframework.boot.runApplication
 
 fun main(args: Array<String>) {
-    SpringApplication.run(org.flaxo.rest.Application::class.java, *args)
+    runApplication<Application>()
 }

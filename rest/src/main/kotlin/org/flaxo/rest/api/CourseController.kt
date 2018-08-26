@@ -6,20 +6,20 @@ import org.apache.logging.log4j.LogManager
 import org.flaxo.common.CourseLifecycle
 import org.flaxo.common.ExternalService
 import org.flaxo.core.stringStackTrace
-import org.flaxo.model.DataService
+import org.flaxo.model.DataManager
 import org.flaxo.model.data.Course
 import org.flaxo.model.data.PlagiarismMatch
 import org.flaxo.model.data.Task
 import org.flaxo.model.data.views
 import org.flaxo.moss.MossException
-import org.flaxo.rest.service.CourseValidation
-import org.flaxo.rest.service.codacy.CodacyService
-import org.flaxo.rest.service.environment.RepositoryEnvironmentService
-import org.flaxo.rest.service.git.GitService
-import org.flaxo.rest.service.moss.MossService
-import org.flaxo.rest.service.moss.MossTask
-import org.flaxo.rest.service.response.ResponseService
-import org.flaxo.rest.service.travis.TravisService
+import org.flaxo.rest.manager.ValidationManager
+import org.flaxo.rest.manager.codacy.CodacyManager
+import org.flaxo.rest.manager.environment.EnvironmentManager
+import org.flaxo.rest.manager.github.GithubManager
+import org.flaxo.rest.manager.moss.MossManager
+import org.flaxo.rest.manager.moss.MossTask
+import org.flaxo.rest.manager.response.ResponseManager
+import org.flaxo.rest.manager.travis.TravisManager
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.transaction.annotation.Transactional
@@ -39,14 +39,14 @@ import java.util.concurrent.Executors
  */
 @RestController
 @RequestMapping("/rest/course")
-class CourseController(private val dataService: DataService,
-                       private val responseService: ResponseService,
-                       private val environmentService: RepositoryEnvironmentService,
-                       private val travisService: TravisService,
-                       private val codacyService: CodacyService,
-                       private val gitService: GitService,
-                       private val mossService: MossService,
-                       private val courseValidations: Map<ExternalService, CourseValidation>
+class CourseController(private val dataManager: DataManager,
+                       private val responseManager: ResponseManager,
+                       private val environmentManager: EnvironmentManager,
+                       private val travisManager: TravisManager,
+                       private val codacyManager: CodacyManager,
+                       private val githubManager: GithubManager,
+                       private val mossManager: MossManager,
+                       private val courseValidations: Map<ExternalService, ValidationManager>
 ) {
 
     private val tasksPrefix = "task-"
@@ -66,16 +66,16 @@ class CourseController(private val dataService: DataService,
     ): ResponseEntity<Any> {
         logger.info("Trying to import course ${principal.name}/$repositoryName from an existing repository")
 
-        val user = dataService.getUser(principal.name)
-                ?: return responseService.userNotFound(principal.name)
+        val user = dataManager.getUser(principal.name)
+                ?: return responseManager.userNotFound(principal.name)
 
         val githubId = user.githubId
-                ?: return responseService.githubIdNotFound(user.nickname)
+                ?: return responseManager.githubIdNotFound(user.nickname)
 
         val githubToken = user.credentials.githubToken
-                ?: return responseService.githubTokenNotFound(user.nickname)
+                ?: return responseManager.githubTokenNotFound(user.nickname)
 
-        gitService.with(githubToken)
+        githubManager.with(githubToken)
                 .getRepository(repositoryName)
                 .takeIf { it.exists() }
                 ?.also { repository ->
@@ -84,7 +84,7 @@ class CourseController(private val dataService: DataService,
                             .map { it.name }
                             .filter { it.startsWith(tasksPrefix) }
                             .also { tasksNames ->
-                                dataService.createCourse(
+                                dataManager.createCourse(
                                         repositoryName,
                                         description,
                                         language,
@@ -95,9 +95,9 @@ class CourseController(private val dataService: DataService,
                                 )
                             }
                 }
-                ?: return responseService.bad("Github repository $githubId/$repositoryName")
+                ?: return responseManager.bad("Github repository $githubId/$repositoryName")
 
-        return responseService.ok("Course ${user.nickname}/$repositoryName was created")
+        return responseManager.ok("Course ${user.nickname}/$repositoryName was created")
     }
 
     /**
@@ -124,16 +124,16 @@ class CourseController(private val dataService: DataService,
     ): ResponseEntity<Any> {
         logger.info("Trying to create course ${principal.name}/$courseName")
 
-        val user = dataService.getUser(principal.name)
-                ?: return responseService.userNotFound(principal.name)
+        val user = dataManager.getUser(principal.name)
+                ?: return responseManager.userNotFound(principal.name)
 
         val githubToken = user.credentials.githubToken
-                ?: return responseService.githubTokenNotFound(principal.name)
+                ?: return responseManager.githubTokenNotFound(principal.name)
 
         logger.info("Producing course ${principal.name}/$courseName " +
                 "environment: $language, $testingLanguage, $testingFramework")
 
-        val environment = environmentService.produceEnvironment(
+        val environment = environmentManager.produceEnvironment(
                 language,
                 testingLanguage,
                 testingFramework
@@ -141,7 +141,7 @@ class CourseController(private val dataService: DataService,
 
         logger.info("Creating git repository for course ${principal.name}/$courseName")
 
-        gitService.with(githubToken)
+        githubManager.with(githubToken)
                 .also {
                     it.createRepository(courseName).also {
                         it.createBranch("prerequisites")
@@ -155,7 +155,7 @@ class CourseController(private val dataService: DataService,
 
         logger.info("Creating course ${principal.name}/$courseName in database")
 
-        val course = dataService.createCourse(
+        val course = dataManager.createCourse(
                 courseName = courseName,
                 description = description,
                 language = language,
@@ -168,7 +168,7 @@ class CourseController(private val dataService: DataService,
 
         logger.info("Course ${principal.name}/${course.name} has been successfully created")
 
-        return responseService.ok(course.view())
+        return responseManager.ok(course.view())
     }
 
     /**
@@ -182,13 +182,13 @@ class CourseController(private val dataService: DataService,
     fun course(@RequestParam courseName: String,
                principal: Principal
     ): ResponseEntity<Any> {
-        val user = dataService.getUser(principal.name)
-                ?: return responseService.userNotFound(principal.name)
+        val user = dataManager.getUser(principal.name)
+                ?: return responseManager.userNotFound(principal.name)
 
-        val course = dataService.getCourse(courseName, user)
-                ?: return responseService.courseNotFound(principal.name, courseName)
+        val course = dataManager.getCourse(courseName, user)
+                ?: return responseManager.courseNotFound(principal.name, courseName)
 
-        return responseService.ok(course.view())
+        return responseManager.ok(course.view())
     }
 
     /**
@@ -203,9 +203,9 @@ class CourseController(private val dataService: DataService,
                    principal: Principal
     ): ResponseEntity<Any> =
             if (principal.name == nickname) {
-                responseService.ok(dataService.getCourses(nickname).views())
+                responseManager.ok(dataManager.getCourses(nickname).views())
             } else {
-                responseService.forbidden()
+                responseManager.forbidden()
             }
 
     /**
@@ -221,14 +221,14 @@ class CourseController(private val dataService: DataService,
     ): ResponseEntity<Any> {
         logger.info("Trying to delete course ${principal.name}/$courseName")
 
-        val user = dataService.getUser(principal.name)
-                ?: return responseService.userNotFound(principal.name)
+        val user = dataManager.getUser(principal.name)
+                ?: return responseManager.userNotFound(principal.name)
 
-        val course = dataService.getCourse(courseName, user)
-                ?: return responseService.courseNotFound(principal.name, courseName)
+        val course = dataManager.getCourse(courseName, user)
+                ?: return responseManager.courseNotFound(principal.name, courseName)
 
         val githubToken = user.credentials.githubToken
-                ?: return responseService.githubTokenNotFound(principal.name)
+                ?: return responseManager.githubTokenNotFound(principal.name)
 
         logger.info("Deactivating validations for ${principal.name}/$courseName course")
 
@@ -239,17 +239,17 @@ class CourseController(private val dataService: DataService,
 
         logger.info("Deleting course ${principal.name}/$courseName from the database")
 
-        dataService.deleteCourse(courseName, user)
+        dataManager.deleteCourse(courseName, user)
 
         logger.info("Deleting course ${principal.name}/$courseName git repository")
 
-        gitService.with(githubToken)
+        githubManager.with(githubToken)
                 .getRepository(courseName)
                 .delete()
 
         logger.info("Course ${principal.name}/$courseName has been successfully deleted")
 
-        return responseService.ok()
+        return responseManager.ok()
     }
 
     /**
@@ -271,15 +271,15 @@ class CourseController(private val dataService: DataService,
     ): ResponseEntity<Any> {
         logger.info("Trying to compose course ${principal.name}/$courseName")
 
-        val user = dataService.getUser(principal.name)
+        val user = dataManager.getUser(principal.name)
                 ?.also {
-                    it.credentials.githubToken ?: return responseService.githubTokenNotFound(it.nickname)
-                    it.githubId ?: return responseService.githubIdNotFound(it.nickname)
+                    it.credentials.githubToken ?: return responseManager.githubTokenNotFound(it.nickname)
+                    it.githubId ?: return responseManager.githubIdNotFound(it.nickname)
                 }
-                ?: return responseService.userNotFound(principal.name)
+                ?: return responseManager.userNotFound(principal.name)
 
-        val course = dataService.getCourse(courseName, user)
-                ?: return responseService.courseNotFound(principal.name, courseName)
+        val course = dataManager.getCourse(courseName, user)
+                ?: return responseManager.courseNotFound(principal.name, courseName)
 
         val activatedServices = courseValidations
                 .mapNotNull { (serviceType, service) ->
@@ -296,7 +296,7 @@ class CourseController(private val dataService: DataService,
         logger.info("Changing course ${user.nickname}/$courseName status to running " +
                 "with activated services: $activatedServices")
 
-        val activatedCourse = dataService.updateCourse(course.copy(
+        val activatedCourse = dataManager.updateCourse(course.copy(
                 state = course.state.copy(
                         lifecycle = CourseLifecycle.RUNNING,
                         activatedServices = activatedServices
@@ -305,7 +305,7 @@ class CourseController(private val dataService: DataService,
 
         logger.info("Course ${user.nickname}/$courseName has been successfully composed")
 
-        return responseService.ok(activatedCourse.view())
+        return responseManager.ok(activatedCourse.view())
     }
 
     /**
@@ -323,23 +323,23 @@ class CourseController(private val dataService: DataService,
     ): ResponseEntity<Any> {
         logger.info("Trying to activate codacy for course ${principal.name}/$courseName")
 
-        val user = dataService.getUser(principal.name)
-                ?: return responseService.userNotFound(principal.name)
+        val user = dataManager.getUser(principal.name)
+                ?: return responseManager.userNotFound(principal.name)
 
-        val course = dataService.getCourse(courseName, user)
-                ?: return responseService.courseNotFound(principal.name, courseName)
+        val course = dataManager.getCourse(courseName, user)
+                ?: return responseManager.courseNotFound(principal.name, courseName)
 
         if (course.state.lifecycle != CourseLifecycle.RUNNING)
-            return responseService.bad("Course ${principal.name}/$courseName is not started yet")
+            return responseManager.bad("Course ${principal.name}/$courseName is not started yet")
 
         course.state
                 .activatedServices
                 .takeUnless { it.contains(ExternalService.CODACY) }
                 ?.let {
                     try {
-                        codacyService.activate(course)
+                        codacyManager.activate(course)
 
-                        return dataService
+                        return dataManager
                                 .updateCourse(course.copy(
                                         state =
                                         course.state.copy(
@@ -347,13 +347,13 @@ class CourseController(private val dataService: DataService,
                                                 course.state.activatedServices + ExternalService.CODACY
                                         )
                                 ))
-                                .let { responseService.ok(it.view()) }
+                                .let { responseManager.ok(it.view()) }
                     } catch (e: Exception) {
                         logger.info("Codacy activation failed due to: $e")
-                        return responseService.bad(e.toString())
+                        return responseManager.bad(e.toString())
                     }
                 }
-                ?: return responseService.bad("Codacy is already integrated with " +
+                ?: return responseManager.bad("Codacy is already integrated with " +
                         "${principal.name}/$courseName course")
     }
 
@@ -372,23 +372,23 @@ class CourseController(private val dataService: DataService,
     ): ResponseEntity<Any> {
         logger.info("Trying to activate travis for course ${principal.name}/$courseName")
 
-        val user = dataService.getUser(principal.name)
-                ?: return responseService.userNotFound(principal.name)
+        val user = dataManager.getUser(principal.name)
+                ?: return responseManager.userNotFound(principal.name)
 
-        val course = dataService.getCourse(courseName, user)
-                ?: return responseService.courseNotFound(principal.name, courseName)
+        val course = dataManager.getCourse(courseName, user)
+                ?: return responseManager.courseNotFound(principal.name, courseName)
 
         if (course.state.lifecycle != CourseLifecycle.RUNNING)
-            return responseService.bad("Course ${principal.name}/$courseName is not started yet")
+            return responseManager.bad("Course ${principal.name}/$courseName is not started yet")
 
         course.state
                 .activatedServices
                 .takeUnless { it.contains(ExternalService.TRAVIS) }
                 ?.let {
                     try {
-                        travisService.activate(course)
+                        travisManager.activate(course)
 
-                        return dataService
+                        return dataManager
                                 .updateCourse(course.copy(
                                         state =
                                         course.state.copy(
@@ -396,13 +396,13 @@ class CourseController(private val dataService: DataService,
                                                 course.state.activatedServices + ExternalService.TRAVIS
                                         )
                                 ))
-                                .let { responseService.ok(it.view()) }
+                                .let { responseManager.ok(it.view()) }
                     } catch (e: Exception) {
                         logger.info("Travis activation failed due to: $e")
-                        return responseService.bad(e.toString())
+                        return responseManager.bad(e.toString())
                     }
                 }
-                ?: return responseService.bad("Travis is already integrated with " +
+                ?: return responseManager.bad("Travis is already integrated with " +
                         "${principal.name}/$courseName course")
     }
 
@@ -419,15 +419,15 @@ class CourseController(private val dataService: DataService,
     ): ResponseEntity<Any> {
         logger.info("Trying to start plagiarism analysis for ${principal.name}/$courseName")
 
-        val user = dataService.getUser(principal.name)
-                ?: return responseService.userNotFound(principal.name)
+        val user = dataManager.getUser(principal.name)
+                ?: return responseManager.userNotFound(principal.name)
 
-        val course = dataService.getCourse(courseName, user)
-                ?: return responseService.courseNotFound(principal.name, courseName)
+        val course = dataManager.getCourse(courseName, user)
+                ?: return responseManager.courseNotFound(principal.name, courseName)
 
         logger.info("Extracting moss tasks for ${user.nickname}/$courseName")
 
-        val mossTasks: List<MossTask> = mossService.extractMossTasks(course)
+        val mossTasks: List<MossTask> = mossManager.extractMossTasks(course)
 
         logger.info("${mossTasks.size} moss tasks were extracted for ${user.nickname}/$courseName")
 
@@ -447,7 +447,7 @@ class CourseController(private val dataService: DataService,
                 mossTasks.map { it.taskName }
                         .map { it.split("/").last() }
 
-        return responseService.ok("Plagiarism analysis has finished for tasks: $scheduledTasksNames")
+        return responseManager.ok("Plagiarism analysis has finished for tasks: $scheduledTasksNames")
     }
 
     private fun submitMossTasksExecution(mossTasks: List<MossTask>,
@@ -469,7 +469,7 @@ class CourseController(private val dataService: DataService,
                 "and ${mossTask.solutions.size} solutions files")
 
         val mossResult =
-                mossService.client(course.language)
+                mossManager.client(course.language)
                         .base(mossTask.base)
                         .solutions(mossTask.solutions)
                         .analyse()
@@ -477,7 +477,7 @@ class CourseController(private val dataService: DataService,
         logger.info("Moss task analysis ${mossTask.taskName} has finished successfully and " +
                 "is available by ${mossResult.url}")
 
-        val plagiarismReport = dataService.addPlagiarismReport(
+        val plagiarismReport = dataManager.addPlagiarismReport(
                 task = task,
                 url = mossResult.url.toString(),
                 matches = mossResult.matches().map {
@@ -491,7 +491,7 @@ class CourseController(private val dataService: DataService,
                 }
         )
 
-        dataService.updateTask(task.copy(
+        dataManager.updateTask(task.copy(
                 plagiarismReports = task.plagiarismReports.plus(plagiarismReport)
         ))
     }
@@ -506,21 +506,21 @@ class CourseController(private val dataService: DataService,
     ): ResponseEntity<Any> {
         logger.info("Syncing ${principal.name} $courseName course validations")
 
-        val user = dataService.getUser(principal.name)
-                ?: return responseService.userNotFound(principal.name)
+        val user = dataManager.getUser(principal.name)
+                ?: return responseManager.userNotFound(principal.name)
 
-        val course = dataService.getCourse(courseName, user)
-                ?: return responseService.courseNotFound(principal.name, courseName)
+        val course = dataManager.getCourse(courseName, user)
+                ?: return responseManager.courseNotFound(principal.name, courseName)
 
         course.takeIf { it.state.lifecycle == CourseLifecycle.RUNNING }
                 ?.state
                 ?.activatedServices
                 ?.mapNotNull { courseValidations[it] }
                 ?.forEach { it.refresh(course) }
-                ?: return responseService.bad("Course ${user.nickname}/${course.name} " +
+                ?: return responseManager.bad("Course ${user.nickname}/${course.name} " +
                         "is not running to be synchronized")
 
-        return responseService.ok("Course validations are synchronized")
+        return responseManager.ok("Course validations are synchronized")
     }
 
 }

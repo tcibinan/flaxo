@@ -1,8 +1,8 @@
 package org.flaxo.rest.api
 
 import org.apache.logging.log4j.LogManager
-import org.flaxo.model.DataService
-import org.flaxo.rest.service.response.ResponseService
+import org.flaxo.model.DataManager
+import org.flaxo.rest.manager.response.ResponseManager
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.transaction.annotation.Transactional
@@ -21,8 +21,8 @@ import java.time.LocalTime
  */
 @RestController
 @RequestMapping("/rest/task")
-class TaskController(private val dataService: DataService,
-                     private val responseService: ResponseService
+class TaskController(private val dataManager: DataManager,
+                     private val responseManager: ResponseManager
 ) {
 
     private val logger = LogManager.getLogger(TaskController::class.java)
@@ -44,23 +44,23 @@ class TaskController(private val dataService: DataService,
     ): ResponseEntity<Any> {
         logger.info("Updating rules of ${principal.name}/$courseName/$taskBranch task")
 
-        val user = dataService.getUser(principal.name)
-                ?: return responseService.userNotFound(principal.name)
+        val user = dataManager.getUser(principal.name)
+                ?: return responseManager.userNotFound(principal.name)
 
-        val course = dataService.getCourse(courseName, user)
-                ?: return responseService.courseNotFound(principal.name, courseName)
+        val course = dataManager.getCourse(courseName, user)
+                ?: return responseManager.courseNotFound(principal.name, courseName)
 
         val task = course.tasks
                 .find { it.branch == taskBranch }
-                ?: return responseService.taskNotFound(principal.name, courseName, taskBranch)
+                ?: return responseManager.taskNotFound(principal.name, courseName, taskBranch)
 
         return deadline
                 ?.let { LocalDate.parse(it) }
                 ?.let { LocalDateTime.of(it, LocalTime.MAX) }
                 ?.takeIf { it != task.deadline }
-                ?.let { dataService.updateTask(task.copy(deadline = it)) }
-                ?.let { responseService.ok(it.view()) }
-                ?: responseService.ok(task.view())
+                ?.let { dataManager.updateTask(task.copy(deadline = it)) }
+                ?.let { responseManager.ok(it.view()) }
+                ?: responseManager.ok(task.view())
     }
 
     /**
@@ -80,15 +80,15 @@ class TaskController(private val dataService: DataService,
     ): ResponseEntity<Any> {
         logger.info("Updating scores for ${principal.name}/$courseName/$taskBranch task: $scores")
 
-        val user = dataService.getUser(principal.name)
-                ?: return responseService.userNotFound(principal.name)
+        val user = dataManager.getUser(principal.name)
+                ?: return responseManager.userNotFound(principal.name)
 
-        val course = dataService.getCourse(courseName, user)
-                ?: return responseService.courseNotFound(principal.name, courseName)
+        val course = dataManager.getCourse(courseName, user)
+                ?: return responseManager.courseNotFound(principal.name, courseName)
 
         val task = course.tasks
                 .find { it.branch == taskBranch }
-                ?: return responseService.taskNotFound(principal.name, courseName, taskBranch)
+                ?: return responseManager.taskNotFound(principal.name, courseName, taskBranch)
 
         task.solutions
                 .map { it to scores[it.student.nickname] }
@@ -96,8 +96,8 @@ class TaskController(private val dataService: DataService,
                 .filter { (_, updatedScore) -> updatedScore in 0..100 }
                 .filter { (solution, updatedScore) -> solution.score != updatedScore }
                 .map { (solution, updatedScore) -> solution.copy(score = updatedScore) }
-                .forEach { dataService.updateSolution(it) }
+                .forEach { dataManager.updateSolution(it) }
 
-        return responseService.ok()
+        return responseManager.ok()
     }
 }

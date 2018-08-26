@@ -1,23 +1,23 @@
 package org.flaxo.rest
 
 import org.flaxo.core.language.Language
-import org.flaxo.rest.service.git.GitService
-import org.flaxo.rest.service.moss.MossService
-import org.flaxo.rest.service.moss.SimpleMossService
+import org.flaxo.rest.manager.github.GithubManager
+import org.flaxo.rest.manager.moss.MossManager
+import org.flaxo.rest.manager.moss.SimpleMossManager
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 /**
- * Moss services configuration.
+ * Moss configuration.
  */
 @Configuration
 class MossConfiguration {
 
     @Bean
-    fun mossService(@Value("\${MOSS_USER_ID}") userId: String,
-                    gitService: GitService,
+    fun mossManager(@Value("\${MOSS_USER_ID}") userId: String,
+                    githubManager: GithubManager,
                     supportedLanguages: Map<String, Language>
-    ): MossService =
-            SimpleMossService(userId, gitService, supportedLanguages)
+    ): MossManager =
+            SimpleMossManager(userId, githubManager, supportedLanguages)
 }

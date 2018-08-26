@@ -1,9 +1,9 @@
 package org.flaxo.rest
 
-import org.flaxo.rest.service.message.MessageService
-import org.flaxo.rest.service.message.NaiveMessageService
-import org.flaxo.rest.service.response.ResponseService
-import org.flaxo.rest.service.response.SimpleResponseService
+import org.flaxo.rest.manager.message.MessageManager
+import org.flaxo.rest.manager.message.SimpleMessageManager
+import org.flaxo.rest.manager.response.ResponseManager
+import org.flaxo.rest.manager.response.SimpleResponseManager
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.MessageSource
@@ -23,9 +23,9 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 class Application {
 
     @Bean
-    fun messageService(messageSource: MessageSource): MessageService = NaiveMessageService(messageSource)
+    fun messageService(messageSource: MessageSource): MessageManager = SimpleMessageManager(messageSource)
 
     @Bean
-    fun responseService(): ResponseService = SimpleResponseService()
+    fun responseService(): ResponseManager = SimpleResponseManager()
 
 }

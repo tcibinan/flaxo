@@ -2,10 +2,10 @@ package org.flaxo.rest.api
 
 import org.apache.logging.log4j.LogManager
 import org.flaxo.model.CourseStatisticsView
-import org.flaxo.model.DataService
+import org.flaxo.model.DataManager
 import org.flaxo.model.data.views
-import org.flaxo.rest.service.converter.StatisticsConverter
-import org.flaxo.rest.service.response.ResponseService
+import org.flaxo.rest.manager.statistics.StatisticsManager
+import org.flaxo.rest.manager.response.ResponseManager
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
@@ -25,9 +25,9 @@ import javax.servlet.http.HttpServletResponse
  */
 @RestController
 @RequestMapping("/rest/statistics")
-class StatisticsController(private val dataService: DataService,
-                           private val responseService: ResponseService,
-                           private val statisticsConverters: Map<String, StatisticsConverter>
+class StatisticsController(private val dataManager: DataManager,
+                           private val responseManager: ResponseManager,
+                           private val statisticsManager: Map<String, StatisticsManager>
 ) {
 
     private val logger = LogManager.getLogger(StatisticsController::class.java)
@@ -47,14 +47,14 @@ class StatisticsController(private val dataService: DataService,
     ): ResponseEntity<Any> {
         logger.info("Collecting statistics of ${principal.name}/$courseName for download in $format format")
 
-        val user = dataService.getUser(principal.name)
-                ?: return responseService.userNotFound(principal.name)
+        val user = dataManager.getUser(principal.name)
+                ?: return responseManager.userNotFound(principal.name)
 
-        val course = dataService.getCourse(courseName, user)
-                ?: return responseService.courseNotFound(principal.name, courseName)
+        val course = dataManager.getCourse(courseName, user)
+                ?: return responseManager.courseNotFound(principal.name, courseName)
 
-        val statisticsConverter = statisticsConverters[format]
-                ?: return responseService.bad("Given $format format is not supported")
+        val statisticsConverter = statisticsManager[format]
+                ?: return responseManager.bad("Given $format format is not supported")
 
         return course.tasks
                 .map { it.branch to it.solutions }
@@ -90,12 +90,12 @@ class StatisticsController(private val dataService: DataService,
     ): ResponseEntity<Any> {
         logger.info("Aggregating course $ownerNickname/$courseName statistics")
 
-        val user = dataService.getUser(ownerNickname)
-                ?: return responseService.userNotFound(ownerNickname)
+        val user = dataManager.getUser(ownerNickname)
+                ?: return responseManager.userNotFound(ownerNickname)
 
-        val course = dataService.getCourse(courseName, user)
-                ?: return responseService.courseNotFound(ownerNickname, courseName)
+        val course = dataManager.getCourse(courseName, user)
+                ?: return responseManager.courseNotFound(ownerNickname, courseName)
 
-        return responseService.ok(CourseStatisticsView(course.tasks.views()))
+        return responseManager.ok(CourseStatisticsView(course.tasks.views()))
     }
 }

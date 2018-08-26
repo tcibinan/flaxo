@@ -2,8 +2,8 @@ package org.flaxo.rest.api
 
 import org.apache.logging.log4j.LogManager
 import org.flaxo.common.ExternalService
-import org.flaxo.model.DataService
-import org.flaxo.rest.service.response.ResponseService
+import org.flaxo.model.DataManager
+import org.flaxo.rest.manager.response.ResponseManager
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.transaction.annotation.Transactional
@@ -14,12 +14,12 @@ import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
 
 /**
- * Codacy integration configuration.
+ * Codacy controller.
  */
 @RestController
 @RequestMapping("/rest/codacy")
-class CodacyController(private val dataService: DataService,
-                       private val responseService: ResponseService
+class CodacyController(private val dataManager: DataManager,
+                       private val responseManager: ResponseManager
 ) {
 
     private val logger = LogManager.getLogger(CodacyController::class.java)
@@ -35,17 +35,17 @@ class CodacyController(private val dataService: DataService,
     ): ResponseEntity<Any> {
         logger.info("Putting codacy token for ${principal.name}")
 
-        val user = dataService.getUser(principal.name)
-                ?: return responseService.userNotFound(principal.name)
+        val user = dataManager.getUser(principal.name)
+                ?: return responseManager.userNotFound(principal.name)
 
         if (token.isBlank()) {
             logger.error("Given codacy token for ${principal.name} is invalid")
-            return responseService.bad("Given codacy token is invalid")
+            return responseManager.bad("Given codacy token is invalid")
         }
 
-        dataService.addToken(user.nickname, ExternalService.CODACY, token)
+        dataManager.addToken(user.nickname, ExternalService.CODACY, token)
 
         logger.info("Codacy token was added for ${principal.name}")
-        return responseService.ok()
+        return responseManager.ok()
     }
 }

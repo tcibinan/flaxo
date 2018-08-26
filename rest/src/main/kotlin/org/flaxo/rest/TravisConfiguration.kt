@@ -4,10 +4,10 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import org.flaxo.model.DataService
-import org.flaxo.rest.service.git.GitService
-import org.flaxo.rest.service.travis.TravisService
-import org.flaxo.rest.service.travis.SimpleTravisService
+import org.flaxo.model.DataManager
+import org.flaxo.rest.manager.github.GithubManager
+import org.flaxo.rest.manager.travis.TravisManager
+import org.flaxo.rest.manager.travis.SimpleTravisManager
 import org.flaxo.travis.retrofit.TravisClient
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -37,8 +37,8 @@ class TravisConfiguration {
 
     @Bean
     fun travisService(travisClient: TravisClient,
-                      dataService: DataService,
-                      gitService: GitService
-    ): TravisService =
-            SimpleTravisService(travisClient, dataService, gitService)
+                      dataManager: DataManager,
+                      githubManager: GithubManager
+    ): TravisManager =
+            SimpleTravisManager(travisClient, dataManager, githubManager)
 }

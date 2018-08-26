@@ -1,16 +1,16 @@
 package org.flaxo.rest
 
 import org.flaxo.codacy.CodacyClient
-import org.flaxo.model.DataService
-import org.flaxo.rest.service.codacy.CodacyService
-import org.flaxo.rest.service.codacy.SimpleCodacyService
+import org.flaxo.model.DataManager
+import org.flaxo.rest.manager.codacy.CodacyManager
+import org.flaxo.rest.manager.codacy.SimpleCodacyManager
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
 
 /**
- * Codacy services configuration.
+ * Codacy configuration.
  */
 @Configuration
 class CodacyConfiguration {
@@ -28,9 +28,7 @@ class CodacyConfiguration {
                     .create(CodacyClient::class.java)
 
     @Bean
-    fun codacyService(codacyClient: CodacyClient,
-                      dataService: DataService
-    ): CodacyService =
-            SimpleCodacyService(codacyClient, dataService)
+    fun codacyService(codacyClient: CodacyClient, dataService: DataManager): CodacyManager =
+            SimpleCodacyManager(codacyClient, dataService)
 
 }

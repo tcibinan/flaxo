@@ -3,14 +3,15 @@ package org.flaxo.rest.api
 import org.flaxo.git.GitPayload
 import org.flaxo.git.PullRequest
 import org.flaxo.github.GithubException
-import org.flaxo.model.DataService
-import org.flaxo.rest.service.git.GitService
-import org.flaxo.rest.service.response.ResponseService
+import org.flaxo.model.DataManager
+import org.flaxo.rest.manager.github.GithubManager
+import org.flaxo.rest.manager.response.ResponseManager
 import org.apache.commons.collections4.map.PassiveExpiringMap
 import org.apache.http.client.fluent.Form
 import org.apache.http.client.fluent.Request
 import org.apache.logging.log4j.LogManager
 import org.flaxo.common.ExternalService
+import org.flaxo.common.GithubAuthData
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.transaction.annotation.Transactional
@@ -33,9 +34,9 @@ import javax.servlet.http.HttpServletResponse
  */
 @RestController
 @RequestMapping("/rest/github")
-class GithubController(private val responseService: ResponseService,
-                       private val dataService: DataService,
-                       private val gitService: GitService,
+class GithubController(private val responseManager: ResponseManager,
+                       private val dataManager: DataManager,
+                       private val githubManager: GithubManager,
                        @Value("\${GITHUB_ID}")
                        private val clientId: String,
                        @Value("\${GITHUB_SECRET}")
@@ -58,18 +59,16 @@ class GithubController(private val responseService: ResponseService,
     fun githubAuth(principal: Principal): Any {
         val state = Random().nextInt().toString()
 
-        synchronized(states) {
-            states[principal.name] = state
-        }
-        // TODO 19.08.18: Replace with GithubAuthData object from common module
-        return responseService.ok(object {
-            val redirectUrl = "$githubAuthUrl/authorize"
-            val requestParams = mapOf(
-                    "client_id" to clientId,
-                    "scope" to listOf("delete_repo", "repo").joinToString(separator = " "),
-                    "state" to state
-            )
-        })
+        synchronized(states) { states[principal.name] = state }
+
+        return responseManager.ok(GithubAuthData(
+                redirectUrl = "$githubAuthUrl/authorize",
+                requestParams = mapOf(
+                        "client_id" to clientId,
+                        "scope" to listOf("delete_repo", "repo").joinToString(separator = " "),
+                        "state" to state
+                )
+        ))
     }
 
     /**
@@ -113,10 +112,10 @@ class GithubController(private val responseService: ResponseService,
                     .also { states.remove(it) }
         }
 
-        val githubId = gitService.with(accessToken).nickname()
+        val githubId = githubManager.with(accessToken).nickname()
 
-        dataService.addGithubId(nickname, githubId)
-        dataService.addToken(nickname, ExternalService.GITHUB, accessToken)
+        dataManager.addGithubId(nickname, githubId)
+        dataManager.addToken(nickname, ExternalService.GITHUB, accessToken)
 
         response.sendRedirect("/")
     }
@@ -133,22 +132,22 @@ class GithubController(private val responseService: ResponseService,
                         .toList()
                         .map { it.toLowerCase() to listOf(request.getHeader(it)) }
                         .toMap()
-        val hook: GitPayload? = gitService.parsePayload(payloadReader, headers)
+        val hook: GitPayload? = githubManager.parsePayload(payloadReader, headers)
 
         when (hook) {
             is PullRequest -> {
                 logger.info("Github pull request web hook received from ${hook.authorId} " +
                         "to ${hook.receiverId}/${hook.receiverRepositoryName}.")
 
-                val user = dataService.getUserByGithubId(hook.receiverId)
+                val user = dataManager.getUserByGithubId(hook.receiverId)
                         ?: throw GithubException("User with githubId ${hook.receiverId} wasn't found in database.")
 
-                val course = dataService.getCourse(hook.receiverRepositoryName, user)
+                val course = dataManager.getCourse(hook.receiverRepositoryName, user)
                         ?: throw GithubException("Course ${hook.receiverRepositoryName} wasn't found for user ${user.nickname}.")
 
                 val student = course.students
                         .find { it.nickname == hook.authorId }
-                        ?: dataService.addStudent(hook.authorId, course).also {
+                        ?: dataManager.addStudent(hook.authorId, course).also {
                             logger.info("Student ${it.nickname} was initialised for course ${user.nickname}/${course.name}.")
                         }
 
@@ -157,7 +156,7 @@ class GithubController(private val responseService: ResponseService,
                         ?.also { solution ->
                             logger.info("Add ${hook.lastCommitSha} commit to ${student.nickname} student solution " +
                                     "for course ${user.nickname}/${course.name}.")
-                            dataService.addCommit(solution, hook.id, hook.lastCommitSha)
+                            dataManager.addCommit(solution, hook.id, hook.lastCommitSha)
                         }
             }
             else -> {

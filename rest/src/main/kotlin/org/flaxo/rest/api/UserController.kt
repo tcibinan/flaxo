@@ -1,8 +1,8 @@
 package org.flaxo.rest.api
 
-import org.flaxo.model.DataService
+import org.flaxo.model.DataManager
 import org.flaxo.model.EntityAlreadyExistsException
-import org.flaxo.rest.service.response.ResponseService
+import org.flaxo.rest.manager.response.ResponseManager
 import org.apache.logging.log4j.LogManager
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -19,8 +19,8 @@ import java.security.Principal
  */
 @RestController
 @RequestMapping("/rest/user")
-class UserController(private val dataService: DataService,
-                     private val responseService: ResponseService
+class UserController(private val dataManager: DataManager,
+                     private val responseManager: ResponseManager
 ) {
 
     private val logger = LogManager.getLogger(UserController::class.java)
@@ -39,15 +39,15 @@ class UserController(private val dataService: DataService,
         logger.info("Trying to register user $nickname")
 
         return try {
-            val user = dataService.addUser(nickname, password)
+            val user = dataManager.addUser(nickname, password)
 
             logger.info("User $nickname was registered successfully")
 
-            responseService.ok(user.view())
+            responseManager.ok(user.view())
         } catch (e: EntityAlreadyExistsException) {
             logger.info("Trying to create user with $nickname nickname that is already registered")
 
-            responseService.bad("User $nickname already exists")
+            responseManager.bad("User $nickname already exists")
         }
     }
 
@@ -60,10 +60,10 @@ class UserController(private val dataService: DataService,
     fun user(principal: Principal): Any {
         logger.info("Trying to retrieve user ${principal.name}")
 
-        val user = dataService.getUser(principal.name)
-                ?: return responseService.userNotFound(principal.name)
+        val user = dataManager.getUser(principal.name)
+                ?: return responseManager.userNotFound(principal.name)
 
-        return responseService.ok(user.view())
+        return responseManager.ok(user.view())
     }
 
 }
