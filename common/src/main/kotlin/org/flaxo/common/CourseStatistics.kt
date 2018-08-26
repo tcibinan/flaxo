@@ -1,3 +1,11 @@
 package org.flaxo.common
 
-class CourseStatistics(val tasks: List<Task>)
+/**
+ * Course statistics.
+ */
+class CourseStatistics(
+        /**
+         * Task statistics.
+         */
+        val tasks: List<Task>
+)

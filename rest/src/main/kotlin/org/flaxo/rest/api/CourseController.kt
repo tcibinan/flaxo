@@ -3,10 +3,10 @@ package org.flaxo.rest.api
 import arrow.core.Try
 import arrow.core.getOrElse
 import org.apache.logging.log4j.LogManager
+import org.flaxo.common.CourseLifecycle
+import org.flaxo.common.ExternalService
 import org.flaxo.core.stringStackTrace
-import org.flaxo.model.CourseLifecycle
 import org.flaxo.model.DataService
-import org.flaxo.model.IntegratedService
 import org.flaxo.model.data.Course
 import org.flaxo.model.data.PlagiarismMatch
 import org.flaxo.model.data.Task
@@ -46,7 +46,7 @@ class CourseController(private val dataService: DataService,
                        private val codacyService: CodacyService,
                        private val gitService: GitService,
                        private val mossService: MossService,
-                       private val courseValidations: Map<IntegratedService, CourseValidation>
+                       private val courseValidations: Map<ExternalService, CourseValidation>
 ) {
 
     private val tasksPrefix = "task-"
@@ -334,7 +334,7 @@ class CourseController(private val dataService: DataService,
 
         course.state
                 .activatedServices
-                .takeUnless { it.contains(IntegratedService.CODACY) }
+                .takeUnless { it.contains(ExternalService.CODACY) }
                 ?.let {
                     try {
                         codacyService.activate(course)
@@ -344,7 +344,7 @@ class CourseController(private val dataService: DataService,
                                         state =
                                         course.state.copy(
                                                 activatedServices =
-                                                course.state.activatedServices + IntegratedService.CODACY
+                                                course.state.activatedServices + ExternalService.CODACY
                                         )
                                 ))
                                 .let { responseService.ok(it.view()) }
@@ -383,7 +383,7 @@ class CourseController(private val dataService: DataService,
 
         course.state
                 .activatedServices
-                .takeUnless { it.contains(IntegratedService.TRAVIS) }
+                .takeUnless { it.contains(ExternalService.TRAVIS) }
                 ?.let {
                     try {
                         travisService.activate(course)
@@ -393,7 +393,7 @@ class CourseController(private val dataService: DataService,
                                         state =
                                         course.state.copy(
                                                 activatedServices =
-                                                course.state.activatedServices + IntegratedService.TRAVIS
+                                                course.state.activatedServices + ExternalService.TRAVIS
                                         )
                                 ))
                                 .let { responseService.ok(it.view()) }

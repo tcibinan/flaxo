@@ -1,6 +1,21 @@
 package org.flaxo.common
 
-class Language(val name: String,
-               val compatibleTestingLanguages: List<String>,
-               val compatibleTestingFrameworks: List<String>
+/**
+ * Programming language.
+ */
+class Language(
+        /**
+         * Language name.
+         */
+        val name: String,
+
+        /**
+         * List of compatible testing language names.
+         */
+        val compatibleTestingLanguages: List<String>,
+
+        /**
+         * List of compatible testing framework names.
+         */
+        val compatibleTestingFrameworks: List<String>
 )

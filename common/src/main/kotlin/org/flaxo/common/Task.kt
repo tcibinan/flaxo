@@ -1,8 +1,33 @@
 package org.flaxo.common
 
-class Task(val branch: String,
-           val deadline: DateTime?,
-           val url: String,
-           val plagiarismReports: List<PlagiarismReport>,
-           val solutions: List<Solution>
+/**
+ * Course task.
+ *
+ * Each task is associated with a git branch.
+ */
+class Task(
+        /**
+         * Associated git branch name.
+         */
+        val branch: String,
+
+        /**
+         * Task deadline.
+         */
+        val deadline: DateTime?,
+
+        /**
+         * Git branch url.
+         */
+        val url: String,
+
+        /**
+         * Course plagiarism reports.
+         */
+        val plagiarismReports: List<PlagiarismReport>,
+
+        /**
+         * Task solutions.
+         */
+        val solutions: List<Solution>
 )

@@ -1,5 +1,7 @@
 package org.flaxo.model.data
 
+import org.flaxo.common.DateTime
+import org.flaxo.model.CourseView
 import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.CascadeType
@@ -49,29 +51,27 @@ data class Course(
         @OneToMany(mappedBy = "course", orphanRemoval = true)
         val tasks: Set<Task> = mutableSetOf()
 
-) : Identifiable, Viewable {
+) : Identifiable, Viewable<CourseView> {
 
-    override fun view(): Any = let { course ->
-        object {
-            val name = course.name
-            val description = course.description
-            val createdDate = course.createdDate
-            val language = course.language
-            val testingLanguage = course.testingLanguage
-            val testingFramework = course.testingFramework
-            val state = course.state.view()
-            val user = course.user.view()
-            val url = course.url
-            val students = course.students.map { it.nickname }
-            val tasks = course.tasks.map { it.branch }
-        }
-    }
+    override fun view(): CourseView = CourseView(
+            name = name,
+            description = description,
+            createdDate = DateTime(createdDate),
+            language = language,
+            testingLanguage = testingLanguage,
+            testingFramework = testingFramework,
+            state = state.view(),
+            user = user.view(),
+            url = url,
+            students = students.map { it.nickname },
+            tasks = tasks.map { it.branch }
+    )
 
-    override fun toString(): String = "${this::class.simpleName}(id=$id)"
+    override fun toString() = "${this::class.simpleName}(id=$id)"
 
     override fun hashCode() = Objects.hash(id)
 
-    override fun equals(other: Any?): Boolean =
+    override fun equals(other: Any?) =
             this::class.isInstance(other)
                     && (other as Identifiable).id == id
 }

@@ -4,13 +4,13 @@ import org.flaxo.git.GitPayload
 import org.flaxo.git.PullRequest
 import org.flaxo.github.GithubException
 import org.flaxo.model.DataService
-import org.flaxo.model.IntegratedService
 import org.flaxo.rest.service.git.GitService
 import org.flaxo.rest.service.response.ResponseService
 import org.apache.commons.collections4.map.PassiveExpiringMap
 import org.apache.http.client.fluent.Form
 import org.apache.http.client.fluent.Request
 import org.apache.logging.log4j.LogManager
+import org.flaxo.common.ExternalService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.transaction.annotation.Transactional
@@ -116,7 +116,7 @@ class GithubController(private val responseService: ResponseService,
         val githubId = gitService.with(accessToken).nickname()
 
         dataService.addGithubId(nickname, githubId)
-        dataService.addToken(nickname, IntegratedService.GITHUB, accessToken)
+        dataService.addToken(nickname, ExternalService.GITHUB, accessToken)
 
         response.sendRedirect("/")
     }

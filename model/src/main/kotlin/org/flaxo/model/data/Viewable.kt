@@ -1,19 +1,17 @@
 package org.flaxo.model.data
 
 /**
- * Interface describing a data object that can be displayed as a simple json.
+ * Data object that can be transformed to an instance of [VIEW] class.
  */
-interface Viewable {
+interface Viewable<VIEW> {
 
     /**
      * Returns view of the current data object.
      */
-    fun view(): Any = object {
-        val info: String = "View is not specified for ${this::class.simpleName} data object"
-    }
+    fun view(): VIEW
 }
 
 /**
- * Returns views of the collection elements.
+ * Returns views of the data objects collection.
  */
-fun Collection<Viewable>.views(): List<Any> = map { it.view() }
+fun <VIEW> Collection<Viewable<VIEW>>.views(): List<VIEW> = map { it.view() }

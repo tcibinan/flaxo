@@ -1,5 +1,6 @@
 package org.flaxo.rest.service.response
 
+import org.flaxo.common.Payload
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 
@@ -50,5 +51,4 @@ class SimpleResponseService : ResponseService {
             body?.let { ResponseEntity<Any>(Payload(body), httpStatus) }
                     ?: ResponseEntity(httpStatus)
 
-    private data class Payload(val payload: Any)
 }

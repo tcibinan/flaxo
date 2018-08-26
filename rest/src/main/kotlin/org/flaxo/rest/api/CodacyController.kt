@@ -1,9 +1,8 @@
 package org.flaxo.rest.api
 
 import org.apache.logging.log4j.LogManager
+import org.flaxo.common.ExternalService
 import org.flaxo.model.DataService
-import org.flaxo.model.IntegratedService
-import org.flaxo.rest.service.codacy.CodacyService
 import org.flaxo.rest.service.response.ResponseService
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -44,7 +43,7 @@ class CodacyController(private val dataService: DataService,
             return responseService.bad("Given codacy token is invalid")
         }
 
-        dataService.addToken(user.nickname, IntegratedService.CODACY, token)
+        dataService.addToken(user.nickname, ExternalService.CODACY, token)
 
         logger.info("Codacy token was added for ${principal.name}")
         return responseService.ok()

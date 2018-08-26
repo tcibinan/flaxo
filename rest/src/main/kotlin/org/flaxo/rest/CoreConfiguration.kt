@@ -1,5 +1,6 @@
 package org.flaxo.rest
 
+import org.flaxo.common.ExternalService
 import org.flaxo.core.NamedEntity
 import org.flaxo.core.build.BuildTool
 import org.flaxo.core.framework.JUnitTestingFramework
@@ -9,7 +10,6 @@ import org.flaxo.core.language.JavaLang
 import org.flaxo.core.language.KotlinLang
 import org.flaxo.core.language.Language
 import org.flaxo.gradle.GradleBuildTool
-import org.flaxo.model.IntegratedService
 import org.flaxo.rest.service.CourseValidation
 import org.flaxo.rest.service.codacy.CodacyService
 import org.flaxo.rest.service.converter.CsvStatisticsConverter
@@ -74,9 +74,9 @@ class CoreConfiguration {
     @Bean
     fun courseValidations(codacyService: CodacyService,
                           travisService: TravisService
-    ): Map<IntegratedService, CourseValidation> = mapOf(
-            IntegratedService.CODACY to codacyService,
-            IntegratedService.TRAVIS to travisService
+    ): Map<ExternalService, CourseValidation> = mapOf(
+            ExternalService.CODACY to codacyService,
+            ExternalService.TRAVIS to travisService
     )
 
     private fun <TYPE : NamedEntity> namedMap(vararg namedEntity: TYPE): Map<String, TYPE> =

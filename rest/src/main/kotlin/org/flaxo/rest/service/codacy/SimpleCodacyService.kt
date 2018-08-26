@@ -8,10 +8,11 @@ import org.flaxo.codacy.Codacy
 import org.flaxo.codacy.CodacyClient
 import org.flaxo.codacy.CodacyException
 import org.flaxo.codacy.SimpleCodacy
+import org.flaxo.common.CodeStyleGrade
+import org.flaxo.common.ExternalService
 import org.flaxo.core.repeatUntil
 import org.flaxo.core.stringStackTrace
 import org.flaxo.model.DataService
-import org.flaxo.model.IntegratedService
 import org.flaxo.model.ModelException
 import org.flaxo.model.data.Course
 import org.springframework.transaction.annotation.Propagation
@@ -87,7 +88,7 @@ open class SimpleCodacyService(private val client: CodacyClient,
 
                     dataService.updateCourse(course.copy(
                             state = course.state.copy(
-                                    activatedServices = course.state.activatedServices - IntegratedService.CODACY
+                                    activatedServices = course.state.activatedServices - ExternalService.CODACY
                             )
                     ))
                 }
@@ -146,7 +147,7 @@ open class SimpleCodacyService(private val client: CodacyClient,
                                 )
                                 dataService.addCodeStyleReport(
                                         solution,
-                                        codeStyleGrade = codacyCommit.grade
+                                        codeStyleGrade = CodeStyleGrade.valueOf(codacyCommit.grade)
                                 )
                             }
                 }

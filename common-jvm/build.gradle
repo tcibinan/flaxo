@@ -1,0 +1,14 @@
+apply plugin: 'kotlin-platform-jvm'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    expectedBy project(":common")
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.2.60"
+
+    // Json
+    compile 'com.fasterxml.jackson.module:jackson-module-kotlin:2.9.4.1'
+    compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.4'
+}

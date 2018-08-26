@@ -27,11 +27,11 @@ data class Credentials(
 
 ) : Identifiable {
 
-    override fun toString(): String = "${this::class.simpleName}(id=$id)"
+    override fun toString() = "${this::class.simpleName}(id=$id)"
 
     override fun hashCode() = Objects.hash(id)
 
-    override fun equals(other: Any?): Boolean =
+    override fun equals(other: Any?) =
             this::class.isInstance(other)
                     && (other as Identifiable).id == id
 }

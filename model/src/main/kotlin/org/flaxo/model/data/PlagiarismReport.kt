@@ -1,5 +1,7 @@
 package org.flaxo.model.data
 
+import org.flaxo.common.DateTime
+import org.flaxo.model.PlagiarismReportView
 import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.CascadeType
@@ -32,21 +34,19 @@ data class PlagiarismReport(
         @OneToMany(cascade = [CascadeType.ALL])
         val matches: List<PlagiarismMatch> = mutableListOf()
 
-) : Identifiable, Report, Viewable {
+) : Identifiable, Report, Viewable<PlagiarismReportView> {
 
-    override fun view(): Any = let { report ->
-        object {
-            val url = report.url
-            val date = report.date
-            val matches = report.matches.views()
-        }
-    }
+    override fun view(): PlagiarismReportView = PlagiarismReportView(
+            url = url,
+            date = DateTime(date),
+            matches = matches.views()
+    )
 
-    override fun toString(): String = "${this::class.simpleName}(id=$id)"
+    override fun toString() = "${this::class.simpleName}(id=$id)"
 
     override fun hashCode() = Objects.hash(id)
 
-    override fun equals(other: Any?): Boolean =
+    override fun equals(other: Any?) =
             this::class.isInstance(other)
                     && (other as Identifiable).id == id
 }

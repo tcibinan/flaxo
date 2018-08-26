@@ -4,6 +4,7 @@ plugins {
 }
 
 dependencies {
+    compile project(":common-jvm")
     compile "org.springframework.data:spring-data-jpa:$spring_data_version"
     compile "org.hibernate:hibernate-core:$hibernate_version"
     compile "com.fasterxml.jackson.core:jackson-annotations:$jackson_version"

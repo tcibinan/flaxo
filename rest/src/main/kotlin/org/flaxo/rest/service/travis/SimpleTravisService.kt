@@ -4,11 +4,11 @@ import arrow.core.getOrHandle
 import arrow.core.orNull
 import org.apache.logging.log4j.LogManager
 import org.flaxo.cmd.CmdExecutor
+import org.flaxo.common.ExternalService
 import org.flaxo.core.of
 import org.flaxo.core.repeatUntil
 import org.flaxo.github.GithubException
 import org.flaxo.model.DataService
-import org.flaxo.model.IntegratedService
 import org.flaxo.model.ModelException
 import org.flaxo.model.data.Course
 import org.flaxo.model.data.User
@@ -71,7 +71,7 @@ open class SimpleTravisService(private val client: TravisClient,
                 ?: retrieveTravisToken(githubId, githubToken)
                         .also {
                             logger.info("Adding newely retrieved travis token to ${user.nickname} user")
-                            dataService.addToken(user.nickname, IntegratedService.TRAVIS, it)
+                            dataService.addToken(user.nickname, ExternalService.TRAVIS, it)
                             // sleep is necessary because after travis token retrieving
                             // travis synchronisation is scheduled on travis-ci.org.
                             Thread.sleep(10 of TimeUnit.SECONDS)
@@ -148,7 +148,7 @@ open class SimpleTravisService(private val client: TravisClient,
 
                     dataService.updateCourse(course.copy(
                             state = course.state.copy(
-                                    activatedServices = course.state.activatedServices - IntegratedService.TRAVIS
+                                    activatedServices = course.state.activatedServices - ExternalService.TRAVIS
                             )
                     ))
                 }

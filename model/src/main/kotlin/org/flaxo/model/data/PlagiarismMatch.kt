@@ -1,5 +1,6 @@
 package org.flaxo.model.data
 
+import org.flaxo.model.PlagiarismMatchView
 import java.util.*
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
@@ -27,23 +28,21 @@ data class PlagiarismMatch(
 
         val percentage: Int = 0
 
-) : Identifiable, Viewable {
+) : Identifiable, Viewable<PlagiarismMatchView> {
 
-    override fun view(): Any = let { match ->
-        object {
-            val url: String = match.url
-            val student1: String = match.student1
-            val student2: String = match.student2
-            val lines: Int = match.lines
-            val percentage: Int = match.percentage
-        }
-    }
+    override fun view(): PlagiarismMatchView = PlagiarismMatchView(
+            url = url,
+            student1 = student1,
+            student2 = student2,
+            lines = lines,
+            percentage = percentage
+    )
 
-    override fun toString(): String = "${this::class.simpleName}(id=$id)"
+    override fun toString() = "${this::class.simpleName}(id=$id)"
 
     override fun hashCode() = Objects.hash(id)
 
-    override fun equals(other: Any?): Boolean =
+    override fun equals(other: Any?) =
             this::class.isInstance(other)
                     && (other as Identifiable).id == id
 }

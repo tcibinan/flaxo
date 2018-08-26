@@ -6,6 +6,7 @@ import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
 import org.flaxo.common.BuildReport
 import org.flaxo.common.CodeStyleReport
+import org.flaxo.common.CodeStyleGrade
 import org.flaxo.common.Commit
 import org.flaxo.common.DateTime
 import org.flaxo.common.Solution
@@ -71,23 +72,23 @@ fun suggestScore(buildReport: BuildReport?,
     if (latestCommit == null
             || buildReport == null
             || !buildReport.succeed) return 0
-    val codeStyleGrade = codeStyleReport?.grade
-            ?.let { grade -> CodeStyleGrade.values().find { it.name == grade } }
-            ?: CodeStyleGrade.NONE
+    val codeStyleGradeScore = codeStyleReport?.grade
+            ?.let { codeStyleGradeScore(it) }
+            ?: 0
     val deadlinePassed = deadline
             ?.let { (latestCommit.date ?: it) < it }
             ?: true
-    return 60 + 5 * codeStyleGrade.score + 10 * deadlinePassed.toInt()
+    return 60 + 5 * codeStyleGradeScore + 10 * deadlinePassed.toInt()
 }
 
 private fun Boolean.toInt(): Int = if (this) 1 else 0
 
-enum class CodeStyleGrade(val score: Int) {
-    A(6),
-    B(5),
-    C(4),
-    D(3),
-    E(2),
-    F(1),
-    NONE(0)
+fun codeStyleGradeScore(grade: CodeStyleGrade): Int = when (grade) {
+    CodeStyleGrade.A -> 6
+    CodeStyleGrade.B -> 5
+    CodeStyleGrade.C -> 4
+    CodeStyleGrade.D -> 3
+    CodeStyleGrade.E -> 2
+    CodeStyleGrade.F -> 1
+    else -> 0
 }

@@ -1,6 +1,7 @@
 package org.flaxo.rest.api
 
 import org.apache.logging.log4j.LogManager
+import org.flaxo.model.CourseStatisticsView
 import org.flaxo.model.DataService
 import org.flaxo.model.data.views
 import org.flaxo.rest.service.converter.StatisticsConverter
@@ -95,8 +96,6 @@ class StatisticsController(private val dataService: DataService,
         val course = dataService.getCourse(courseName, user)
                 ?: return responseService.courseNotFound(ownerNickname, courseName)
 
-        return responseService.ok(object {
-            val tasks = course.tasks.views()
-        })
+        return responseService.ok(CourseStatisticsView(course.tasks.views()))
     }
 }

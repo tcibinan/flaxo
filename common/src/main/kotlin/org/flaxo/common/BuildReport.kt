@@ -1,5 +1,16 @@
 package org.flaxo.common
 
-class BuildReport(val succeed: Boolean,
-                  val date: DateTime
+/**
+ * Solution build report.
+ */
+class BuildReport(
+        /**
+         * Specifies if the build report was succeed.
+         */
+        val succeed: Boolean,
+
+        /**
+         * Build report creation date time.
+         */
+        val date: DateTime
 )

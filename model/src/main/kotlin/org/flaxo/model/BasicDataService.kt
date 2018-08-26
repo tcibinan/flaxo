@@ -1,5 +1,7 @@
 package org.flaxo.model
 
+import org.flaxo.common.CodeStyleGrade
+import org.flaxo.common.ExternalService
 import org.flaxo.model.dao.BuildReportRepository
 import org.flaxo.model.dao.CodeStyleReportRepository
 import org.flaxo.model.dao.CommitRepository
@@ -43,13 +45,12 @@ open class BasicDataService(private val userRepository: UserRepository,
     @Transactional
     override fun addUser(nickname: String,
                          password: String
-    ): User {
-        if (userRepository.findByNickname(nickname) != null)
-            throw EntityAlreadyExistsException("User $nickname")
-
-        return userRepository
-                .save(User(nickname = nickname, credentials = Credentials(password = password)))
-    }
+    ): User = userRepository.findByNickname(nickname)
+            ?.also { throw EntityAlreadyExistsException("User $nickname") }
+            ?: userRepository.save(User(
+                    nickname = nickname,
+                    credentials = Credentials(password = password)
+            ))
 
     @Transactional(readOnly = true)
     override fun getUser(nickname: String): User? =
@@ -61,10 +62,9 @@ open class BasicDataService(private val userRepository: UserRepository,
 
     @Transactional
     override fun deleteUser(username: String) {
-        val user = getUser(username)
+        getUser(username)
+                ?.also { userRepository.delete(it) }
                 ?: throw ModelException("User $username not found")
-
-        userRepository.delete(user)
     }
 
     @Transactional
@@ -76,20 +76,15 @@ open class BasicDataService(private val userRepository: UserRepository,
                               tasksPrefix: String,
                               numberOfTasks: Int,
                               owner: User
-    ): Course =
-            (1..numberOfTasks)
-                    .map { taskNumber -> "$tasksPrefix$taskNumber" }
-                    .let { tasksNames ->
-                        createCourse(
-                                courseName,
-                                description,
-                                language,
-                                testingLanguage,
-                                testingFramework,
-                                tasksNames,
-                                owner
-                        )
-                    }
+    ): Course = createCourse(
+            courseName = courseName,
+            description = description,
+            language = language,
+            testingLanguage = testingLanguage,
+            testingFramework = testingFramework,
+            tasksNames = (1..numberOfTasks).map { taskNumber -> "$tasksPrefix$taskNumber" },
+            owner = owner
+    )
 
     override fun createCourse(courseName: String,
                               description: String?,
@@ -100,9 +95,7 @@ open class BasicDataService(private val userRepository: UserRepository,
                               owner: User
     ): Course {
         getCourse(courseName, owner)
-                ?.also {
-                    throw EntityAlreadyExistsException("Course $owner/$courseName")
-                }
+                ?.also { throw EntityAlreadyExistsException("Course $owner/$courseName") }
 
         val course = courseRepository
                 .save(Course(
@@ -117,7 +110,7 @@ open class BasicDataService(private val userRepository: UserRepository,
                         user = owner
                 ))
 
-        return tasksNames
+        val tasks = tasksNames
                 .map { branchName ->
                     taskRepository
                             .save(Task(
@@ -126,9 +119,7 @@ open class BasicDataService(private val userRepository: UserRepository,
                                     course = course
                             ))
                 }
-                .let { tasks ->
-                    updateCourse(course.copy(tasks = course.tasks.plus(tasks)))
-                }
+        return updateCourse(course.copy(tasks = course.tasks.plus(tasks)))
     }
 
     @Transactional
@@ -141,29 +132,22 @@ open class BasicDataService(private val userRepository: UserRepository,
     }
 
     @Transactional
-    override fun updateCourse(updatedCourse: Course): Course =
-            courseRepository.save(updatedCourse)
+    override fun updateCourse(updatedCourse: Course): Course = courseRepository.save(updatedCourse)
 
     @Transactional(readOnly = true)
-    override fun getCourse(name: String,
-                           owner: User
-    ): Course? =
-            courseRepository.findByNameAndUser(name, owner)
+    override fun getCourse(name: String, owner: User): Course? = courseRepository.findByNameAndUser(name, owner)
 
     @Transactional(readOnly = true)
-    override fun getCourses(userNickname: String): Set<Course> {
-        val user = getUser(userNickname)
-                ?: userNotFound(userNickname)
-
-        return courseRepository.findByUser(user)
-    }
+    override fun getCourses(userNickname: String): Set<Course> =
+            getUser(userNickname)
+                    ?.let { courseRepository.findByUser(it) }
+                    ?: userNotFound(userNickname)
 
     @Transactional
     override fun addStudent(nickname: String,
                             course: Course
     ): Student {
-        val student =
-                studentRepository.save(Student(nickname = nickname, course = course))
+        val student = studentRepository.save(Student(nickname = nickname, course = course))
 
         return taskRepository
                 .findAllByCourse(course)
@@ -177,42 +161,31 @@ open class BasicDataService(private val userRepository: UserRepository,
     }
 
     @Transactional(readOnly = true)
-    override fun getStudents(course: Course): Set<Student> =
-            studentRepository.findByCourse(course)
+    override fun getStudents(course: Course): Set<Student> = studentRepository.findByCourse(course)
 
     @Transactional(readOnly = true)
-    override fun getSolutions(student: Student): Set<Solution> =
-            solutionRepository.findByStudent(student)
+    override fun getSolutions(student: Student): Set<Solution> = solutionRepository.findByStudent(student)
 
     @Transactional(readOnly = true)
-    override fun getSolutions(task: Task): Set<Solution> =
-            solutionRepository.findByTask(task)
+    override fun getSolutions(task: Task): Set<Solution> = solutionRepository.findByTask(task)
 
     @Transactional(readOnly = true)
-    override fun getTasks(course: Course): Set<Task> =
-            taskRepository.findAllByCourse(course)
+    override fun getTasks(course: Course): Set<Task> = taskRepository.findAllByCourse(course)
 
     @Transactional
     override fun addToken(userNickname: String,
-                          service: IntegratedService,
+                          service: ExternalService,
                           accessToken: String
-    ): User =
-            getUser(userNickname)
-                    ?.apply {
-                        credentials
-                                .withServiceToken(service, accessToken)
-                                .also { credentialsRepository.save(it) }
-                    }
-                    ?: userNotFound(userNickname)
+    ): User = getUser(userNickname)
+            ?.also { user -> credentialsRepository.save(user.credentials.withServiceToken(service, accessToken)) }
+            ?: userNotFound(userNickname)
 
-    private fun Credentials.withServiceToken(service: IntegratedService,
+    private fun Credentials.withServiceToken(service: ExternalService,
                                              accessToken: String
-    ): Credentials = run {
-        when (service) {
-            IntegratedService.GITHUB -> copy(githubToken = accessToken)
-            IntegratedService.TRAVIS -> copy(travisToken = accessToken)
-            IntegratedService.CODACY -> copy(codacyToken = accessToken)
-        }
+    ): Credentials = when (service) {
+        ExternalService.GITHUB -> copy(githubToken = accessToken)
+        ExternalService.TRAVIS -> copy(travisToken = accessToken)
+        ExternalService.CODACY -> copy(codacyToken = accessToken)
     }
 
     @Transactional
@@ -220,9 +193,7 @@ open class BasicDataService(private val userRepository: UserRepository,
                              githubId: String
     ): User {
         userRepository.findByGithubId(githubId)
-                ?.also {
-                    throw ModelException("User with $githubId github id already exists")
-                }
+                ?.also { throw ModelException("User with $githubId github id already exists") }
 
         val user: User = getUser(userNickname)
                 ?: userNotFound(userNickname)
@@ -235,12 +206,10 @@ open class BasicDataService(private val userRepository: UserRepository,
     }
 
     @Transactional
-    override fun updateSolution(updatedSolution: Solution): Solution =
-            solutionRepository.save(updatedSolution)
+    override fun updateSolution(updatedSolution: Solution): Solution = solutionRepository.save(updatedSolution)
 
     @Transactional
-    override fun updateTask(updatedTask: Task): Task =
-            taskRepository.save(updatedTask)
+    override fun updateTask(updatedTask: Task): Task = taskRepository.save(updatedTask)
 
     @Transactional
     override fun addBuildReport(solution: Solution,
@@ -261,7 +230,7 @@ open class BasicDataService(private val userRepository: UserRepository,
 
     @Transactional
     override fun addCodeStyleReport(solution: Solution,
-                                    codeStyleGrade: String,
+                                    codeStyleGrade: CodeStyleGrade,
                                     date: LocalDateTime
     ): CodeStyleReport =
             codeStyleReportRepository

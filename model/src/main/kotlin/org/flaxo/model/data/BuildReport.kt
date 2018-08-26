@@ -1,5 +1,7 @@
 package org.flaxo.model.data
 
+import org.flaxo.common.DateTime
+import org.flaxo.model.BuildReportView
 import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.Entity
@@ -27,20 +29,18 @@ data class BuildReport(
 
         val succeed: Boolean = false
 
-) : Identifiable, Report, Viewable {
+) : Identifiable, Report, Viewable<BuildReportView> {
 
-    override fun view(): Any = let { report ->
-        object {
-            val succeed = report.succeed
-            val date = report.date
-        }
-    }
+    override fun view(): BuildReportView = BuildReportView(
+            date = DateTime(date),
+            succeed = succeed
+    )
 
-    override fun toString(): String = "${this::class.simpleName}(id=$id)"
+    override fun toString() = "${this::class.simpleName}(id=$id)"
 
     override fun hashCode() = Objects.hash(id)
 
-    override fun equals(other: Any?): Boolean =
+    override fun equals(other: Any?) =
             this::class.isInstance(other)
                     && (other as Identifiable).id == id
 

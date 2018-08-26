@@ -9,6 +9,9 @@ import org.amshove.kluent.shouldEqual
 import org.amshove.kluent.shouldNotBeNull
 import org.amshove.kluent.shouldStartWith
 import org.amshove.kluent.shouldThrow
+import org.flaxo.common.CodeStyleGrade
+import org.flaxo.common.CourseLifecycle
+import org.flaxo.common.ExternalService
 import org.flaxo.model.data.PlagiarismMatch
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
@@ -37,7 +40,7 @@ class DataServiceSpec : SubjectSpek<DataService>({
     val anotherStudent = "anotherStudent"
     val plagiarismUrl = "plagiarismUrl"
     val buildSucceed = true
-    val codeStyleGrade = "B"
+    val codeStyleGrade = CodeStyleGrade.B
 
     val context = AnnotationConfigApplicationContext(JpaTestApplication::class.java)
     val transactionManager = context.getBean(PlatformTransactionManager::class.java)
@@ -85,9 +88,9 @@ class DataServiceSpec : SubjectSpek<DataService>({
         }
 
         on("addition tokens to a user") {
-            subject.addToken(nickname, IntegratedService.CODACY, codacyToken)
-            subject.addToken(nickname, IntegratedService.TRAVIS, travisToken)
-            subject.addToken(nickname, IntegratedService.GITHUB, githubToken)
+            subject.addToken(nickname, ExternalService.CODACY, codacyToken)
+            subject.addToken(nickname, ExternalService.TRAVIS, travisToken)
+            subject.addToken(nickname, ExternalService.GITHUB, githubToken)
 
             it("should add all tokens to a user credentials") {
                 val user = subject.getUser(nickname)
@@ -233,8 +236,8 @@ class DataServiceSpec : SubjectSpek<DataService>({
                             state = course.state.copy(
                                     lifecycle = CourseLifecycle.RUNNING,
                                     activatedServices = setOf(
-                                            IntegratedService.GITHUB,
-                                            IntegratedService.TRAVIS
+                                            ExternalService.GITHUB,
+                                            ExternalService.TRAVIS
                                     )
                             )
                     )
@@ -246,11 +249,11 @@ class DataServiceSpec : SubjectSpek<DataService>({
 
             it("should change its state activated services") {
                 updatedCourse.state.activatedServices shouldContainAll listOf(
-                        IntegratedService.GITHUB,
-                        IntegratedService.TRAVIS
+                        ExternalService.GITHUB,
+                        ExternalService.TRAVIS
                 )
                 updatedCourse.state.activatedServices shouldContainNone listOf(
-                        IntegratedService.CODACY
+                        ExternalService.CODACY
                 )
             }
         }

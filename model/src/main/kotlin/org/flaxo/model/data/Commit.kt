@@ -1,5 +1,7 @@
 package org.flaxo.model.data
 
+import org.flaxo.common.DateTime
+import org.flaxo.model.CommitView
 import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.Entity
@@ -29,21 +31,19 @@ class Commit(
         @ManyToOne(optional = false, fetch = FetchType.LAZY)
         val solution: Solution = Solution()
 
-) : Identifiable, Viewable {
+) : Identifiable, Viewable<CommitView> {
 
-    override fun view() = let { commit ->
-        object {
-            val pullRequestId = commit.pullRequestId
-            val sha = commit.sha
-            val date = commit.date
-        }
-    }
+    override fun view(): CommitView = CommitView(
+            sha = sha,
+            pullRequestId = pullRequestId,
+            date = date?.let { DateTime(date) }
+    )
 
-    override fun toString(): String = "${this::class.simpleName}(id=$id)"
+    override fun toString() = "${this::class.simpleName}(id=$id)"
 
     override fun hashCode() = Objects.hash(id)
 
-    override fun equals(other: Any?): Boolean =
+    override fun equals(other: Any?) =
             this::class.isInstance(other)
                     && (other as Identifiable).id == id
 }

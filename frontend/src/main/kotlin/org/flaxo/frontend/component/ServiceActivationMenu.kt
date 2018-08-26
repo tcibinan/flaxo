@@ -8,6 +8,7 @@ import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.frontend.credentials
 import org.flaxo.common.Course
 import org.flaxo.common.CourseLifecycle
+import org.flaxo.common.ExternalService
 import org.flaxo.frontend.wrapper.NotificationManager
 import react.RBuilder
 import react.RComponent
@@ -31,11 +32,11 @@ class ServiceActivationMenu(props: ServiceActivationMenuProps)
     }
 
     private val flaxoClient: FlaxoClient
-    private val integratedServices: Set<String>
+    private val availableValidations: Set<ExternalService>
 
     init {
         flaxoClient = Container.flaxoClient
-        integratedServices = setOf("TRAVIS", "CODACY")
+        availableValidations = setOf(ExternalService.TRAVIS, ExternalService.CODACY)
     }
 
     override fun RBuilder.render() {
@@ -48,7 +49,7 @@ class ServiceActivationMenu(props: ServiceActivationMenuProps)
                         attributes["aria-haspopup"] = "true"
                         attributes["aria-expanded"] = "false"
                         disabled = props.course.state.lifecycle != CourseLifecycle.RUNNING
-                                || props.course.state.activatedServices.all { it in integratedServices }
+                                || props.course.state.activatedServices.all { it in availableValidations }
                     }
                     +"Activate service"
                 }
@@ -56,7 +57,7 @@ class ServiceActivationMenu(props: ServiceActivationMenuProps)
                     attrs { attributes["aria-labelledby"] = SERVICE_ACTIVATION_DROPDOWN_ID }
                     a(classes = "dropdown-item", href = "#") {
                         attrs {
-                            when ("TRAVIS") {
+                            when (ExternalService.TRAVIS) {
                                 in props.course.state.activatedServices -> classes = setOf("dropdown-item", "disabled")
                                 else -> {
                                     classes = setOf("dropdown-item")
@@ -68,7 +69,7 @@ class ServiceActivationMenu(props: ServiceActivationMenuProps)
                     }
                     a(classes = "dropdown-item", href = "#") {
                         attrs {
-                            when ("CODACY") {
+                            when (ExternalService.CODACY) {
                                 in props.course.state.activatedServices -> classes = setOf("dropdown-item", "disabled")
                                 else -> {
                                     classes = setOf("dropdown-item")

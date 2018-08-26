@@ -8,7 +8,7 @@ import org.flaxo.travis.TravisBuildStatus
 import org.flaxo.travis.TravisBuild
 import org.flaxo.travis.TravisPullRequestBuild
 import org.apache.logging.log4j.LogManager
-import org.flaxo.model.IntegratedService
+import org.flaxo.common.ExternalService
 import org.flaxo.rest.service.response.ResponseService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -55,7 +55,7 @@ class TravisController @Autowired constructor(private val travisService: TravisS
             return responseService.bad("Given travis token is invalid")
         }
 
-        dataService.addToken(user.nickname, IntegratedService.TRAVIS, token)
+        dataService.addToken(user.nickname, ExternalService.TRAVIS, token)
 
         logger.info("Travis token was added for ${principal.name}")
         return responseService.ok()

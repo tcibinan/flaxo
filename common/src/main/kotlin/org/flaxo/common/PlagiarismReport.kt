@@ -1,6 +1,21 @@
 package org.flaxo.common
 
-class PlagiarismReport(val url: String,
-                       val date: DateTime,
-                       val matches: List<PlagiarismMatch>
+/**
+ * Plagiarism report.
+ */
+class PlagiarismReport(
+        /**
+         * Plagiarism report source url.
+         */
+        val url: String,
+
+        /**
+         * Plagiarism report creation date time.
+         */
+        val date: DateTime,
+
+        /**
+         * Plagiarism report matches.
+         */
+        val matches: List<PlagiarismMatch>
 )

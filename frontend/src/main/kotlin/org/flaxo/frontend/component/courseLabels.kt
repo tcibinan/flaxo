@@ -15,6 +15,7 @@ fun RBuilder.courseLabels(course: Course) = div {
 
 private fun RBuilder.servicesLabels(course: Course) =
         course.state.activatedServices
+                .map { it.name }
                 .map { it.toLowerCase() }
                 .forEach { span(classes = "course-label badge badge-warning") { +it } }
 

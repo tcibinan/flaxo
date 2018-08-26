@@ -1,5 +1,7 @@
 package org.flaxo.model.data
 
+import org.flaxo.common.DateTime
+import org.flaxo.model.TaskView
 import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.Entity
@@ -36,23 +38,21 @@ data class Task(
         @OneToMany(mappedBy = "task", orphanRemoval = true)
         val solutions: Set<Solution> = mutableSetOf()
 
-) : Identifiable, Viewable {
+) : Identifiable, Viewable<TaskView> {
 
-    override fun view(): Any = let { task ->
-        object {
-            val branch = task.branch
-            val url = task.url
-            val deadline = task.deadline
-            val plagiarismReports = task.plagiarismReports.views()
-            val solutions = task.solutions.views()
-        }
-    }
+    override fun view(): TaskView = TaskView(
+            branch = branch,
+            url = url,
+            deadline = deadline?.let { DateTime(it) },
+            plagiarismReports = plagiarismReports.views(),
+            solutions = solutions.views()
+    )
 
-    override fun toString(): String = "${this::class.simpleName}(id=$id)"
+    override fun toString() = "${this::class.simpleName}(id=$id)"
 
     override fun hashCode() = Objects.hash(id)
 
-    override fun equals(other: Any?): Boolean =
+    override fun equals(other: Any?) =
             this::class.isInstance(other)
                     && (other as Identifiable).id == id
 }

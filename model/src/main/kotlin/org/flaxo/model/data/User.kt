@@ -1,6 +1,7 @@
 package org.flaxo.model.data
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import org.flaxo.model.UserView
 import java.util.*
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
@@ -35,23 +36,21 @@ data class User(
         @JsonIgnoreProperties
         val credentials: Credentials = Credentials()
 
-) : Identifiable, Viewable {
+) : Identifiable, Viewable<UserView> {
 
-    override fun view(): Any = let { user ->
-        object {
-            val githubId = user.githubId
-            val nickname = user.nickname
-            val isGithubAuthorized = user.credentials.githubToken != null
-            val isTravisAuthorized = user.credentials.travisToken != null
-            val isCodacyAuthorized = user.credentials.codacyToken != null
-        }
-    }
+    override fun view(): UserView = UserView(
+            githubId = githubId,
+            nickname = nickname,
+            isGithubAuthorized = credentials.githubToken != null,
+            isTravisAuthorized = credentials.travisToken != null,
+            isCodacyAuthorized = credentials.codacyToken != null
+    )
 
-    override fun toString(): String = "${this::class.simpleName}(id=$id)"
+    override fun toString() = "${this::class.simpleName}(id=$id)"
 
     override fun hashCode() = Objects.hash(id)
 
-    override fun equals(other: Any?): Boolean =
+    override fun equals(other: Any?) =
             this::class.isInstance(other)
                     && (other as Identifiable).id == id
 }

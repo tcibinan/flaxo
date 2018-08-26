@@ -1,5 +1,8 @@
 package org.flaxo.model.data
 
+import org.flaxo.common.CodeStyleGrade
+import org.flaxo.common.DateTime
+import org.flaxo.model.CodeStyleReportView
 import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.Entity
@@ -25,16 +28,14 @@ data class CodeStyleReport(
         @ManyToOne(optional = false, fetch = FetchType.LAZY)
         val solution: Solution = Solution(),
 
-        val grade: String = "F"
+        val grade: CodeStyleGrade = CodeStyleGrade.F
 
-) : Identifiable, Report, Viewable {
+) : Identifiable, Report, Viewable<CodeStyleReportView> {
 
-    override fun view(): Any = let { report ->
-        object {
-            val grade = report.grade
-            val date = report.date
-        }
-    }
+    override fun view(): CodeStyleReportView = CodeStyleReportView(
+            date = DateTime(date),
+            grade = grade
+    )
 
     override fun toString(): String = "${this::class.simpleName}(id=$id)"
 

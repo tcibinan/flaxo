@@ -3,12 +3,14 @@ package org.flaxo.common.interop
 
 import org.flaxo.common.BuildReport
 import org.flaxo.common.CodeStyleReport
+import org.flaxo.common.CodeStyleGrade
 import org.flaxo.common.Commit
 import org.flaxo.common.Course
 import org.flaxo.common.CourseLifecycle
 import org.flaxo.common.CourseState
 import org.flaxo.common.CourseStatistics
 import org.flaxo.common.DateTime
+import org.flaxo.common.ExternalService
 import org.flaxo.common.GithubAuthData
 import org.flaxo.common.Language
 import org.flaxo.common.PlagiarismMatch
@@ -51,6 +53,7 @@ fun courseStateFromDynamic(courseStateJson: dynamic): CourseState {
     return CourseState(
             lifecycle = CourseLifecycle.valueOf(courseStateJson.lifecycle),
             activatedServices = (courseStateJson.activatedServices as Array<String>).toList()
+                    .map { ExternalService.valueOf(it) }
     )
 }
 
@@ -86,7 +89,7 @@ fun solutionFromDynamic(solutionJson: dynamic): Solution =
 
 fun codeStyleReportFromDynamic(codeStyleReportJson: dynamic): CodeStyleReport =
         CodeStyleReport(
-                grade = codeStyleReportJson.grade,
+                grade = CodeStyleGrade.valueOf(codeStyleReportJson.grade),
                 date = DateTime.fromDateTimeString(codeStyleReportJson.date as String)
         )
 

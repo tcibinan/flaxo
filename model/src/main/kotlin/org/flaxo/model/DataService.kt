@@ -1,5 +1,7 @@
 package org.flaxo.model
 
+import org.flaxo.common.CodeStyleGrade
+import org.flaxo.common.ExternalService
 import org.flaxo.model.data.BuildReport
 import org.flaxo.model.data.CodeStyleReport
 import org.flaxo.model.data.Commit
@@ -145,7 +147,7 @@ interface DataService {
      * @param accessToken the access token itself.
      */
     fun addToken(userNickname: String,
-                 service: IntegratedService,
+                 service: ExternalService,
                  accessToken: String
     ): User
 
@@ -184,7 +186,7 @@ interface DataService {
      * Adds new code style report.
      */
     fun addCodeStyleReport(solution: Solution,
-                           codeStyleGrade: String,
+                           codeStyleGrade: CodeStyleGrade,
                            date: LocalDateTime = LocalDateTime.now()
     ): CodeStyleReport
 

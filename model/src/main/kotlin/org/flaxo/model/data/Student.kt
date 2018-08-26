@@ -28,19 +28,15 @@ data class Student(
         @OneToMany(mappedBy = "student", orphanRemoval = true)
         val solutions: Set<Solution> = mutableSetOf()
 
-) : Identifiable, Viewable {
+) : Identifiable, Viewable<String> {
 
-    override fun view(): Any = let { student ->
-        object {
-            val name = student.nickname
-        }
-    }
+    override fun view(): String = nickname
 
-    override fun toString(): String = "${this::class.simpleName}(id=$id)"
+    override fun toString() = "${this::class.simpleName}(id=$id)"
 
     override fun hashCode() = Objects.hash(id)
 
-    override fun equals(other: Any?): Boolean =
+    override fun equals(other: Any?) =
             this::class.isInstance(other)
                     && (other as Identifiable).id == id
 }

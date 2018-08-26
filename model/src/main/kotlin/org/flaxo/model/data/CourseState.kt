@@ -1,7 +1,8 @@
 package org.flaxo.model.data
 
-import org.flaxo.model.CourseLifecycle
-import org.flaxo.model.IntegratedService
+import org.flaxo.common.CourseLifecycle
+import org.flaxo.common.ExternalService
+import org.flaxo.model.CourseStateView
 import java.util.*
 import javax.persistence.ElementCollection
 import javax.persistence.Entity
@@ -24,22 +25,20 @@ data class CourseState(
         val lifecycle: CourseLifecycle = CourseLifecycle.INIT,
 
         @ElementCollection(fetch = FetchType.EAGER)
-        val activatedServices: Set<IntegratedService> = mutableSetOf()
+        val activatedServices: Set<ExternalService> = mutableSetOf()
 
-) : Identifiable, Viewable {
+) : Identifiable, Viewable<CourseStateView> {
 
-    override fun view(): Any = let { state ->
-        object {
-            val lifecycle = state.lifecycle
-            val activatedServices = state.activatedServices
-        }
-    }
+    override fun view(): CourseStateView = CourseStateView(
+            lifecycle = lifecycle,
+            activatedServices = activatedServices.toList()
+    )
 
-    override fun toString(): String = "${this::class.simpleName}(id=$id)"
+    override fun toString() = "${this::class.simpleName}(id=$id)"
 
     override fun hashCode() = Objects.hash(id)
 
-    override fun equals(other: Any?): Boolean =
+    override fun equals(other: Any?) =
             this::class.isInstance(other)
                     && (other as Identifiable).id == id
 }
