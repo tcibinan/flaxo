@@ -1,12 +1,8 @@
 package org.flaxo.gradle
 
-import org.flaxo.core.UnsupportedDependencyException
-import org.flaxo.core.UnsupportedPluginException
-import org.flaxo.core.build.BuildTool
-import org.flaxo.core.build.Dependency
-import org.flaxo.core.build.Plugin
+import org.flaxo.core.NamedEntity
 import org.flaxo.core.env.Environment
-import org.flaxo.core.env.EnvironmentFile
+import org.flaxo.core.env.file.EnvironmentFile
 import org.flaxo.core.env.EnvironmentSupplier
 import org.flaxo.core.framework.JUnitTestingFramework
 import org.flaxo.core.framework.SpekTestingFramework
@@ -15,16 +11,45 @@ import org.flaxo.core.language.JavaLang
 import org.flaxo.core.language.KotlinLang
 import org.flaxo.core.language.Language
 
-data class GradleBuildTool(private val travis: EnvironmentSupplier,
-                           private val dependencies: Set<GradleDependency> = emptySet(),
-                           private val plugins: Set<GradlePlugin> = emptySet(),
-                           private val repositories: Set<GradleRepository> = setOf(mavenCentral(), jcenter())
-) : BuildTool {
+data class GradleBuildTool internal constructor(
+        private val travis: EnvironmentSupplier,
+        private val dependencies: Set<GradleDependency>,
+        private val plugins: Set<GradlePlugin>,
+        private val repositories: Set<GradleRepository>
+) : NamedEntity, EnvironmentSupplier {
+
+    constructor(travis: EnvironmentSupplier) : this(
+            travis = travis,
+            dependencies = emptySet(),
+            plugins = emptySet(),
+            repositories = setOf(mavenCentral(), jcenter())
+    )
 
     override val name = "gradle"
 
-    override fun withLanguage(language: Language): GradleBuildTool =
+    override fun with(language: Language?,
+                      testingLanguage: Language?,
+                      testingFramework: TestingFramework?
+    ): EnvironmentSupplier =
+            withLanguage(language)
+                    .withTestingLanguage(testingLanguage)
+                    .withTestingFramework(testingFramework)
+                    .copy(travis = travis.with(language, testingLanguage, testingFramework))
+
+    override fun environment(): Environment =
+            gradleWrappers() +
+                    gradleBuild() +
+                    gradleSettings() +
+                    travis.environment()
+
+    private fun gradleSettings(): EnvironmentFile = GradleSettingsFile(plugins)
+
+    private fun gradleBuild(): EnvironmentFile = GradleBuildFile(plugins, repositories, dependencies)
+
+    private fun withLanguage(language: Language?): GradleBuildTool =
             when (language) {
+                null -> this
+
                 JavaLang ->
                     addPlugin(javaPlugin())
 
@@ -33,10 +58,12 @@ data class GradleBuildTool(private val travis: EnvironmentSupplier,
                             .addDependency(kotlinJreDependency())
 
                 else -> throw UnsupportedLanguageException(language)
-            }.copy(travis = travis.withLanguage(language))
+            }
 
-    override fun withTestingLanguage(testingLanguage: Language): GradleBuildTool =
+    private fun withTestingLanguage(testingLanguage: Language?): GradleBuildTool =
             when (testingLanguage) {
+                null -> this
+
                 JavaLang ->
                     addPlugin(junitPlatformPlugin())
 
@@ -47,10 +74,12 @@ data class GradleBuildTool(private val travis: EnvironmentSupplier,
                             .addDependency(kotlinTestDependency())
 
                 else -> throw UnsupportedLanguageException(testingLanguage)
-            }.copy(travis = travis.withTestingLanguage(testingLanguage))
+            }
 
-    override fun withTestingFramework(testingFramework: TestingFramework): GradleBuildTool =
+    private fun withTestingFramework(testingFramework: TestingFramework?): GradleBuildTool =
             when (testingFramework) {
+                null -> this
+
                 SpekTestingFramework ->
                     addPlugin(junitPlatformPlugin())
                             .addDependency(spekApiDependency())
@@ -64,38 +93,13 @@ data class GradleBuildTool(private val travis: EnvironmentSupplier,
                             .addDependency(jupiterEngineDependency())
 
                 else -> throw UnsupportedFrameworkException(testingFramework)
-            }.copy(travis = travis.withTestingFramework(testingFramework))
-
-    override fun addDependency(dependency: Dependency): GradleBuildTool =
-            when (dependency) {
-                is GradleDependency -> copy(
-                        dependencies = dependencies + dependency,
-                        repositories = repositories + dependency.repositories
-                )
-                else -> throw UnsupportedDependencyException(dependency, this)
             }
 
-    override fun addPlugin(plugin: Plugin): GradleBuildTool =
-            when (plugin) {
-                is GradlePlugin -> copy(plugins = plugins + plugin)
-                else -> throw UnsupportedPluginException(plugin, this)
-            }
+    internal fun addDependency(dependency: GradleDependency): GradleBuildTool = copy(
+            dependencies = dependencies + dependency,
+            repositories = repositories + dependency.repositories
+    )
 
-    override fun getEnvironment(): Environment =
-            gradleEnvironment() + travis.getEnvironment()
-
-    private fun gradleEnvironment(): Environment {
-        val gradleBuild = produceGradleBuild()
-        val gradleSettings = produceGradleSettings()
-        return GradleWrappers.default()
-                .plus(gradleBuild)
-                .plus(gradleSettings)
-    }
-
-    private fun produceGradleSettings(): EnvironmentFile =
-            GradleSettingsFile.with(plugins)
-
-    private fun produceGradleBuild(): EnvironmentFile =
-            GradleBuildFile.with(plugins, repositories, dependencies)
+    internal fun addPlugin(plugin: GradlePlugin): GradleBuildTool = copy(plugins = plugins + plugin)
 
 }

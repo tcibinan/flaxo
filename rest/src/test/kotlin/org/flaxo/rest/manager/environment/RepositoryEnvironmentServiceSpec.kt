@@ -1,7 +1,6 @@
 package org.flaxo.rest.manager.environment
 
 import org.amshove.kluent.shouldThrow
-import org.flaxo.core.build.BuildTool
 import org.flaxo.core.framework.JUnitTestingFramework
 import org.flaxo.core.framework.SpekTestingFramework
 import org.flaxo.core.framework.TestingFramework
@@ -34,7 +33,7 @@ object RepositoryEnvironmentServiceSpec : SubjectSpek<EnvironmentManager>({
     )
     val travisEnvironmentSupplier: TravisEnvironmentSupplier =
             SimpleTravisEnvironmentSupplier(travisWebHookUrl = "travisWebHookUrl")
-    val defaultBuildTools: Map<Language, BuildTool> = mapOf(
+    val defaultBuildTools: Map<Language, GradleBuildTool> = mapOf(
             JavaLang to GradleBuildTool(travisEnvironmentSupplier),
             KotlinLang to GradleBuildTool(travisEnvironmentSupplier)
     )

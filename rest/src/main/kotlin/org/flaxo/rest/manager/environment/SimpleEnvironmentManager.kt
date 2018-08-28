@@ -1,7 +1,7 @@
 package org.flaxo.rest.manager.environment
 
-import org.flaxo.core.build.BuildTool
 import org.flaxo.core.env.Environment
+import org.flaxo.core.env.EnvironmentSupplier
 import org.flaxo.core.framework.TestingFramework
 import org.flaxo.core.language.Language
 import org.flaxo.rest.manager.IncompatibleLanguageException
@@ -16,7 +16,7 @@ import org.flaxo.rest.manager.UnsupportedTestingFrameworkException
 class SimpleEnvironmentManager(
         private val languages: Map<String, Language>,
         private val testingFrameworks: Map<String, TestingFramework>,
-        private val defaultBuildTools: Map<Language, BuildTool>
+        private val defaultBuildTools: Map<Language, EnvironmentSupplier>
 ) : EnvironmentManager {
 
     override fun produceEnvironment(language: String,
@@ -43,7 +43,7 @@ class SimpleEnvironmentManager(
 
         return buildTool
                 .with(language, testingLanguage, testingFramework)
-                .getEnvironment()
+                .environment()
     }
 
     private infix fun TestingFramework.shouldSuit(testingLanguage: Language) {

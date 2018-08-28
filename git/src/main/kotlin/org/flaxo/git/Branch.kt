@@ -1,6 +1,6 @@
 package org.flaxo.git
 
-import org.flaxo.core.env.EnvironmentFile
+import org.flaxo.core.env.file.EnvironmentFile
 import java.nio.file.Path
 
 /**

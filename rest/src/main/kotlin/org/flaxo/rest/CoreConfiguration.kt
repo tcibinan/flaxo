@@ -2,7 +2,7 @@ package org.flaxo.rest
 
 import org.flaxo.common.ExternalService
 import org.flaxo.core.NamedEntity
-import org.flaxo.core.build.BuildTool
+import org.flaxo.core.env.EnvironmentSupplier
 import org.flaxo.core.framework.JUnitTestingFramework
 import org.flaxo.core.framework.SpekTestingFramework
 import org.flaxo.core.framework.TestingFramework
@@ -49,8 +49,9 @@ class CoreConfiguration {
             SimpleTravisEnvironmentSupplier(travisWebHookUrl = travisWebHookUrl)
 
     @Bean
-    fun defaultBuildTools(travisEnvironmentSupplier: TravisEnvironmentSupplier): Map<Language, BuildTool> =
-            mapOf<Language, BuildTool>(
+    fun defaultEnvironmentSupplier(travisEnvironmentSupplier: TravisEnvironmentSupplier
+    ): Map<Language, EnvironmentSupplier> =
+            mapOf(
                     JavaLang to GradleBuildTool(travisEnvironmentSupplier),
                     KotlinLang to GradleBuildTool(travisEnvironmentSupplier)
             )
@@ -58,7 +59,7 @@ class CoreConfiguration {
     @Bean
     fun repositoryEnvironmentService(supportedLanguages: Map<String, Language>,
                                      supportedTestingFrameworks: Map<String, TestingFramework>,
-                                     defaultBuildTools: Map<Language, BuildTool>
+                                     defaultBuildTools: Map<Language, EnvironmentSupplier>
     ): EnvironmentManager =
             SimpleEnvironmentManager(
                     supportedLanguages,

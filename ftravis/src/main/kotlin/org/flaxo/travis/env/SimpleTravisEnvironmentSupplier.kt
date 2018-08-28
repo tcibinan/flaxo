@@ -1,10 +1,10 @@
 package org.flaxo.travis.env
 
 import org.flaxo.core.env.Environment
-import org.flaxo.core.env.EnvironmentFile
+import org.flaxo.core.env.file.EnvironmentFile
 import org.flaxo.core.env.EnvironmentSupplier
 import org.flaxo.core.env.SimpleEnvironment
-import org.flaxo.core.env.SimpleEnvironmentFile
+import org.flaxo.core.env.file.StringEnvironmentFile
 import org.flaxo.core.framework.TestingFramework
 import org.flaxo.core.language.JavaLang
 import org.flaxo.core.language.KotlinLang
@@ -25,19 +25,39 @@ data class SimpleTravisEnvironmentSupplier(private val language: Language? = nul
 
     private val jvmLanguages = setOf(JavaLang, KotlinLang)
 
-    override fun withLanguage(language: Language): EnvironmentSupplier =
-            if (language in jvmLanguages) copy(language = language)
-            else throw UnsupportedLanguageException(language)
+    override fun with(language: Language?,
+                      testingLanguage: Language?,
+                      testingFramework: TestingFramework?
+    ): EnvironmentSupplier =
+            withLanguage(language)
+                    .withTestingLanguage(testingLanguage)
+                    .withTestingFramework(testingFramework)
 
-    override fun withTestingLanguage(testingLanguage: Language): EnvironmentSupplier =
-            if (testingLanguage in jvmLanguages) copy(testingLanguage = testingLanguage)
-            else throw UnsupportedLanguageException(testingLanguage)
+    private fun withLanguage(language: Language?): SimpleTravisEnvironmentSupplier =
+            language
+                    ?.let {
+                        if (language in jvmLanguages) copy(language = language)
+                        else throw UnsupportedLanguageException(language)
+                    }
+                    ?: this
+
+    private fun withTestingLanguage(testingLanguage: Language?): SimpleTravisEnvironmentSupplier =
+            testingLanguage
+                    ?.let {
+                        if (testingLanguage in jvmLanguages) copy(testingLanguage = testingLanguage)
+                        else throw UnsupportedLanguageException(testingLanguage)
+                    }
+                    ?: this
 
     // currently where is no validations for testing frameworks
-    override fun withTestingFramework(testingFramework: TestingFramework): EnvironmentSupplier =
-            copy(testingFramework = testingFramework)
+    private fun withTestingFramework(testingFramework: TestingFramework?): SimpleTravisEnvironmentSupplier =
+            testingFramework
+                    ?.let {
+                        copy(testingFramework = testingFramework)
+                    }
+                    ?: this
 
-    override fun getEnvironment(): Environment {
+    override fun environment(): Environment {
         language ?: throw TravisException("There is no language for travis environment")
         testingLanguage ?: throw TravisException("There is no testing language for travis environment")
         testingFramework ?: throw TravisException("There is no testing framework for travis environment")
@@ -46,7 +66,7 @@ data class SimpleTravisEnvironmentSupplier(private val language: Language? = nul
     }
 
     private fun travisYmlFile(): EnvironmentFile =
-            SimpleEnvironmentFile(".travis.yml",
+            StringEnvironmentFile(".travis.yml",
                     """
                         language: java
                         jdk:

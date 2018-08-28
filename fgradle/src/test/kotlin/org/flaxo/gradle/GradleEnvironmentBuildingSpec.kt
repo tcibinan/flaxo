@@ -3,22 +3,22 @@ package org.flaxo.gradle
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import org.flaxo.cmd.CmdExecutor
-import org.flaxo.core.env.Environment
 import org.flaxo.core.env.EnvironmentSupplier
 import org.flaxo.core.env.SimpleEnvironment
 import org.flaxo.core.framework.TestingFramework
 import org.flaxo.core.language.JavaLang
 import org.flaxo.core.language.KotlinLang
 import org.flaxo.core.language.Language
-import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.data_driven.Data3
 import org.jetbrains.spek.data_driven.data
 import org.jetbrains.spek.data_driven.on
-import java.io.File
+import org.jetbrains.spek.subject.SubjectSpek
+import java.nio.file.Files
+import java.nio.file.Path
 
-object GradleEnvironmentBuildingSpec : Spek({
+object GradleEnvironmentBuildingSpec : SubjectSpek<EnvironmentSupplier>({
 
     val gradleBuildFile = "build.gradle"
     val gradleSettingsFile = "settings.gradle"
@@ -41,17 +41,11 @@ object GradleEnvironmentBuildingSpec : Spek({
                     }
                     .toTypedArray()
     val travis: EnvironmentSupplier = mock {
-        on { withLanguage(any()) }.thenReturn(it)
-        on { withTestingLanguage(any()) }.thenReturn(it)
-        on { withTestingFramework(any()) }.thenReturn(it)
-        on { getEnvironment() }.thenReturn(SimpleEnvironment(emptySet()))
+        on { with(any(), any(), any()) }.thenReturn(it)
+        on { environment() }.thenReturn(SimpleEnvironment(emptySet()))
     }
-    val environmentSupplier: (Language, Language, TestingFramework) -> Environment =
-            { language, testingLanguage, testingFramework ->
-                GradleBuildTool(travis)
-                        .with(language, testingLanguage, testingFramework)
-                        .getEnvironment()
-            }
+
+    subject { GradleBuildTool(travis) }
 
     describe("gradle environment") {
         on("building supplied environment for %s, %s, %s", *instrumentsCombinations)
@@ -60,22 +54,25 @@ object GradleEnvironmentBuildingSpec : Spek({
           framework: TestingFramework,
           _: Unit ->
 
-            val environment = environmentSupplier(language, testingLanguage, framework)
+            val environment = subject.with(
+                    language = language,
+                    testingLanguage = testingLanguage,
+                    testingFramework = framework
+            ).environment()
 
-            val buildFile = environment.getFile(gradleBuildFile)
+            val buildFile = environment.file(gradleBuildFile)
                     ?: throw EnvironmentFileNotFound("$gradleBuildFile wasn't found in the environment")
 
-            val settingsFile = environment.getFile(gradleSettingsFile)
+            val settingsFile = environment.file(gradleSettingsFile)
                     ?: throw EnvironmentFileNotFound("$gradleSettingsFile wasn't found in the environment")
 
             it("should create buildable project") {
-                val tempDir = createTempDir("$language.$testingLanguage.$framework")
-                tempDir.deleteOnExit()
+                val tempDir: Path = Files.createTempDirectory("$language.$testingLanguage.$framework")
 
                 CmdExecutor.within(tempDir).execute("touch", gradleBuildFile)
-                File(tempDir, gradleBuildFile).fillWith(buildFile.content)
+                tempDir.resolve(gradleBuildFile).fillWith(buildFile.content)
                 CmdExecutor.within(tempDir).execute("touch", gradleSettingsFile)
-                File(tempDir, gradleSettingsFile).fillWith(settingsFile.content)
+                tempDir.resolve(gradleSettingsFile).fillWith(settingsFile.content)
                 GradleCmdExecutor.within(tempDir).build()
             }
         }

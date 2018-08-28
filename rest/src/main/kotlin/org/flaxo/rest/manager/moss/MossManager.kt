@@ -15,9 +15,9 @@ interface MossManager {
     fun client(language: String): Moss
 
     /**
-     * Extract moss analysis tasks from the given [course].
+     * Extract moss analysis submissions from the given [course].
      */
-    fun extractMossTasks(course: Course): List<MossTask>
+    fun extractSubmissions(course: Course): List<MossSubmission>
 
     /**
      * Retrieves analysis result by the given [mossResultUrl].

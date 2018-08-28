@@ -17,7 +17,7 @@ import org.flaxo.rest.manager.codacy.CodacyManager
 import org.flaxo.rest.manager.environment.EnvironmentManager
 import org.flaxo.rest.manager.github.GithubManager
 import org.flaxo.rest.manager.moss.MossManager
-import org.flaxo.rest.manager.moss.MossTask
+import org.flaxo.rest.manager.moss.MossSubmission
 import org.flaxo.rest.manager.response.ResponseManager
 import org.flaxo.rest.manager.travis.TravisManager
 import org.springframework.http.ResponseEntity
@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.nio.file.Files
 import java.security.Principal
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
@@ -142,15 +143,11 @@ class CourseController(private val dataManager: DataManager,
         logger.info("Creating git repository for course ${principal.name}/$courseName")
 
         githubManager.with(githubToken)
-                .also {
-                    it.createRepository(courseName).also {
-                        it.createBranch("prerequisites")
-                                .also { branch ->
-                                    environment.getFiles().forEach { branch.commit(it) }
-                                }
-                                .createSubBranches(numberOfTasks, tasksPrefix)
-                        it.addWebHook()
-                    }
+                .createRepository(courseName).apply {
+                    createBranch("prerequisites")
+                            .also { branch -> environment.files().forEach { branch.commit(it) } }
+                            .createSubBranches(numberOfTasks, tasksPrefix)
+                    addWebHook()
                 }
 
         logger.info("Creating course ${principal.name}/$courseName in database")
@@ -425,57 +422,55 @@ class CourseController(private val dataManager: DataManager,
         val course = dataManager.getCourse(courseName, user)
                 ?: return responseManager.courseNotFound(principal.name, courseName)
 
-        logger.info("Extracting moss tasks for ${user.nickname}/$courseName")
+        logger.info("Extracting moss submissions for ${user.nickname}/$courseName")
 
-        val mossTasks: List<MossTask> = mossManager.extractMossTasks(course)
+        val mossSubmissions: List<MossSubmission> = mossManager.extractSubmissions(course)
 
-        logger.info("${mossTasks.size} moss tasks were extracted for ${user.nickname}/$courseName")
+        logger.info("${mossSubmissions.size} moss tasks were extracted for ${user.nickname}/$courseName")
 
-        logger.info("Scheduling moss tasks to execute for ${user.nickname}/$courseName")
+        logger.info("Scheduling moss submissions for ${user.nickname}/$courseName")
 
-        val submittedTasks = submitMossTasksExecution(mossTasks, course)
+        val submittedTasks = submitMossTasksExecution(mossSubmissions, course)
 
         logger.info("Moss plagiarism analysis has been started for ${principal.name}/$courseName")
 
         Try {
             CompletableFuture.allOf(*submittedTasks).get()
         }.getOrElse { e ->
-            logger.error("Moss plagiarism analysis went bad for some of the tasks: ${e.stringStackTrace()}")
+            logger.error("Moss plagiarism analysis went bad for some of the submissions: ${e.stringStackTrace()}")
         }
 
-        val scheduledTasksNames: List<String> =
-                mossTasks.map { it.taskName }
-                        .map { it.split("/").last() }
+        val scheduledTasksNames = mossSubmissions.map { it.branch }
 
-        return responseManager.ok("Plagiarism analysis has finished for tasks: $scheduledTasksNames")
+        return responseManager.ok("Plagiarism analysis has finished for submissions: $scheduledTasksNames")
     }
 
-    private fun submitMossTasksExecution(mossTasks: List<MossTask>,
+    private fun submitMossTasksExecution(mossSubmissions: List<MossSubmission>,
                                          course: Course
     ): Array<CompletableFuture<Void>> = synchronized(executor) {
-        mossTasks.map { mossTask ->
+        mossSubmissions.map { mossTask ->
             CompletableFuture.runAsync(Runnable { analyseMossTask(mossTask, course, course.tasks) }, executor)
         }
     }.toTypedArray()
 
-    private fun analyseMossTask(mossTask: MossTask, course: Course, courseTasks: Set<Task>) {
-        val branch = mossTask.taskName.split("/").last()
+    private fun analyseMossTask(submission: MossSubmission, course: Course, courseTasks: Set<Task>) {
+        val branch = submission.branch
 
         val task = courseTasks.find { it.branch == branch }
-                ?: throw MossException("Moss task ${mossTask.taskName} aim course task $branch " +
-                        "wasn't found for course ${course.name}")
+                ?: throw MossException("Moss submission ${submission.id} " +
+                        "target task ${course.name}/$branch was not found ")
 
-        logger.info("Analysing ${mossTask.taskName} moss task for ${mossTask.base.size} bases files " +
-                "and ${mossTask.solutions.size} solutions files")
+        logger.info("Starting moss submission ${submission.id} for " +
+                "${submission.base.size} bases files " +
+                "and ${submission.solutions.size} solutions files")
 
         val mossResult =
                 mossManager.client(course.language)
-                        .base(mossTask.base)
-                        .solutions(mossTask.solutions)
+                        .base(submission.base)
+                        .solutions(submission.solutions)
                         .analyse()
 
-        logger.info("Moss task analysis ${mossTask.taskName} has finished successfully and " +
-                "is available by ${mossResult.url}")
+        logger.info("Moss submission ${submission.id} has finished successfully and is available by ${mossResult.url}")
 
         val plagiarismReport = dataManager.addPlagiarismReport(
                 task = task,
@@ -494,6 +489,11 @@ class CourseController(private val dataManager: DataManager,
         dataManager.updateTask(task.copy(
                 plagiarismReports = task.plagiarismReports.plus(plagiarismReport)
         ))
+
+        logger.info("Deleting moss submission ${submission.id} generated files.")
+
+        (submission.base + submission.solutions)
+                .forEach { Files.delete(it.localPath) }
     }
 
     /**

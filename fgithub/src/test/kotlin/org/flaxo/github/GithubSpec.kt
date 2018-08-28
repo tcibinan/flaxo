@@ -2,7 +2,7 @@ package org.flaxo.github
 
 import org.amshove.kluent.shouldContain
 import org.amshove.kluent.shouldEqual
-import org.flaxo.core.env.SimpleEnvironmentFile
+import org.flaxo.core.env.file.StringEnvironmentFile
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
@@ -45,7 +45,7 @@ object GithubSpec : SubjectSpek<Github>({
                     .find { it.name == mainBranchName }
                     ?: throw GithubException("Branch not found")
 
-            mainBranch.commit(SimpleEnvironmentFile(fileName, "file content"))
+            mainBranch.commit(StringEnvironmentFile(fileName, "file content"))
 
             it("should be loaded only in the targeted branch") {
                 repository.branches()

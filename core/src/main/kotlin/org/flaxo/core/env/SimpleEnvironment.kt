@@ -1,15 +1,17 @@
 package org.flaxo.core.env
 
+import org.flaxo.core.env.file.EnvironmentFile
+
 /**
  * Environment implementation class.
  */
-class SimpleEnvironment(private val files: Set<EnvironmentFile>) : Environment {
+open class SimpleEnvironment(private val files: Set<EnvironmentFile>) : Environment {
 
     override operator fun plus(environment: Environment): Environment =
-            SimpleEnvironment(getFiles() + environment.getFiles())
+            SimpleEnvironment(files() + environment.files())
 
     override operator fun plus(file: EnvironmentFile): Environment =
-            SimpleEnvironment(getFiles() + file)
+            SimpleEnvironment(files() + file)
 
-    override fun getFiles(): Set<EnvironmentFile> = files
+    override fun files(): Set<EnvironmentFile> = files
 }

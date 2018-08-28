@@ -3,11 +3,10 @@ package org.flaxo.gradle
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import org.amshove.kluent.shouldNotBeNull
-import org.flaxo.core.build.BuildTool
 import org.flaxo.core.env.Environment
 import org.flaxo.core.env.EnvironmentSupplier
 import org.flaxo.core.env.SimpleEnvironment
-import org.flaxo.core.env.SimpleEnvironmentFile
+import org.flaxo.core.env.file.StringEnvironmentFile
 import org.flaxo.core.framework.JUnitTestingFramework
 import org.flaxo.core.language.JavaLang
 import org.jetbrains.spek.api.dsl.describe
@@ -16,25 +15,23 @@ import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.subject.SubjectSpek
 import kotlin.test.assertTrue
 
-object GradleEnvironmentSpec : SubjectSpek<BuildTool>({
+object GradleEnvironmentSpec : SubjectSpek<GradleBuildTool>({
 
     val language = JavaLang
     val framework = JUnitTestingFramework
     val gradleFileName = "build.gradle"
     val travisFiles = setOf(
-            SimpleEnvironmentFile("travisfile1", "travisfile1content"),
-            SimpleEnvironmentFile("travisfile2", "travisfile1content")
+            StringEnvironmentFile("travisfile1", "travisfile1content"),
+            StringEnvironmentFile("travisfile2", "travisfile1content")
     )
     val travis: EnvironmentSupplier = mock {
-        on { withLanguage(any()) }.thenReturn(it)
-        on { withTestingLanguage(any()) }.thenReturn(it)
-        on { withTestingFramework(any()) }.thenReturn(it)
-        on { getEnvironment() }.thenReturn(SimpleEnvironment(travisFiles))
+        on { with(any(), any(), any()) }.thenReturn(it)
+        on { environment() }.thenReturn(SimpleEnvironment(travisFiles))
     }
     subject {
         GradleBuildTool(travis)
                 .with(JavaLang, JavaLang, JUnitTestingFramework)
-                as BuildTool
+                as GradleBuildTool
     }
 
     describe("gradle environment") {
@@ -42,7 +39,7 @@ object GradleEnvironmentSpec : SubjectSpek<BuildTool>({
         on("creating environment") {
             val environment =
                     subject.with(language, language, framework)
-                            .getEnvironment()
+                            .environment()
 
             it("should contain non blank $gradleFileName") {
                 assertTrue {
@@ -76,7 +73,7 @@ object GradleEnvironmentSpec : SubjectSpek<BuildTool>({
 
             it("should contain all files from travis environment supplier") {
                 travisFiles.forEach {
-                    environment.getFile(it.fileName).shouldNotBeNull()
+                    environment.file(it.fileName).shouldNotBeNull()
                 }
             }
         }
@@ -86,13 +83,13 @@ object GradleEnvironmentSpec : SubjectSpek<BuildTool>({
 class EnvironmentFileNotFound(message: String) : RuntimeException(message)
 
 private fun Environment.fileIsNotBlank(fileName: String): Boolean =
-        getFile(fileName)
+        file(fileName)
                 ?.content
                 ?.isNotBlank()
                 ?: throw EnvironmentFileNotFound("$fileName wasn't found in the environment")
 
 private fun Environment.binaryFileIsNotEmpty(fileName: String): Boolean =
-        getFile(fileName)
+        file(fileName)
                 ?.binaryContent
                 ?.isNotEmpty()
                 ?: throw EnvironmentFileNotFound("$fileName wasn't found in the environment")

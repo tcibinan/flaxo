@@ -1,7 +1,7 @@
 package org.flaxo.moss
 
-import org.flaxo.core.env.EnvironmentFile
 import it.zielke.moji.SocketClient
+import org.flaxo.core.env.file.LocalFile
 import org.jsoup.Jsoup
 
 /**
@@ -10,8 +10,8 @@ import org.jsoup.Jsoup
 class SimpleMoss(override val userId: String,
                  override val language: String,
                  private val client: SocketClient,
-                 private val bases: List<EnvironmentFile> = emptyList(),
-                 private val solutions: List<EnvironmentFile> = emptyList()
+                 private val bases: List<LocalFile> = emptyList(),
+                 private val solutions: List<LocalFile> = emptyList()
 ) : Moss {
 
     init {
@@ -19,10 +19,10 @@ class SimpleMoss(override val userId: String,
         client.language = language
     }
 
-    override fun base(bases: List<EnvironmentFile>): Moss =
+    override fun base(bases: List<LocalFile>): Moss =
             SimpleMoss(userId, language, client, bases, solutions)
 
-    override fun solutions(solutions: List<EnvironmentFile>): Moss =
+    override fun solutions(solutions: List<LocalFile>): Moss =
             SimpleMoss(userId, language, client, bases, solutions)
 
     override fun analyse(): MossResult {
@@ -41,17 +41,14 @@ class SimpleMoss(override val userId: String,
         return SimpleMossResult(client.resultURL) { url -> Jsoup.connect(url) }
     }
 
-    private fun loadBaseFile(file: EnvironmentFile) = loadFile(file, isBase = true)
+    private fun loadBaseFile(file: LocalFile): Unit = loadFile(file, isBase = true)
 
-    private fun loadFile(environmentFile: EnvironmentFile,
-                         isBase: Boolean = false) =
-            environmentFile.use {
-                try {
-                    client.uploadFile(it.file, isBase)
-                } catch (e: Exception) {
-                    throw MossException("Can't load ${if (isBase) "base" else "solutions"} " +
-                            "file ${it.fileName} to moss server", e)
-                }
+    private fun loadFile(file: LocalFile, isBase: Boolean = false): Unit =
+            try {
+                client.uploadFile(file.localPath.toFile(), isBase)
+            } catch (e: Exception) {
+                throw MossException("Can't load ${if (isBase) "base" else "solutions"} " +
+                        "file ${file.fileName} to moss server", e)
             }
 
 }

@@ -10,17 +10,15 @@ import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.subject.SubjectSpek
 import org.jsoup.Connection
 import org.jsoup.Jsoup
-import java.io.File
 import java.net.URL
+import java.nio.file.Files
+import java.nio.file.Paths
 
 object MossResultSpec : SubjectSpek<MossResult>({
 
     val mossResultsUrl = URL("http://test.url.com/results/2312432")
 
-    val mossAnswerHtml =
-            File("src/test/resources/moss-results.html")
-                    .readLines()
-                    .joinToString("\n")
+    val mossAnswerHtml = Files.readAllLines(Paths.get("src/test/resources/moss-results.html")).joinToString("\n")
 
     val connection: Connection = mock {
         on { get() }.thenReturn(Jsoup.parse(mossAnswerHtml))

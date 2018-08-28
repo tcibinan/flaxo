@@ -19,8 +19,8 @@ object TravisEnvironmentSpec : SubjectSpek<TravisEnvironmentSupplier>({
     describe("travis environment") {
 
         on("creating environment") {
-            val environment = subject.getEnvironment()
-            val travisYml = environment.getFile(".travis.yml")
+            val environment = subject.environment()
+            val travisYml = environment.file(".travis.yml")
 
             it("should contain .travis.yml") {
                 assertTrue { travisYml != null }

@@ -9,16 +9,16 @@ private const val jupiterVersion = "5.0.3"
 
 //repositories
 
-fun mavenCentral() = GradleRepository("mavenCentral()")
-fun jcenter() = GradleRepository("jcenter()")
-fun gradlePluginPortal() = GradleRepository("gradlePluginPortal()")
-fun jcenterBinTray() = GradleRepository("maven { url \"https://jcenter.bintray.com/\" }")
+internal fun mavenCentral() = GradleRepository("mavenCentral()")
+internal fun jcenter() = GradleRepository("jcenter()")
+internal fun gradlePluginPortal() = GradleRepository("gradlePluginPortal()")
+internal fun jcenterBinTray() = GradleRepository("maven { url \"https://jcenter.bintray.com/\" }")
 
 //plugins
 
-fun javaPlugin() = GradlePlugin("java")
+internal fun javaPlugin() = GradlePlugin("java")
 
-fun junitPlatformPlugin() =
+internal fun junitPlatformPlugin() =
         GradlePlugin(
                 "org.junit.platform.gradle.plugin",
                 junitVersion,
@@ -26,7 +26,7 @@ fun junitPlatformPlugin() =
                 junitPlatformPluginManagement()
         )
 
-fun kotlinGradleJvmPlugin() =
+internal fun kotlinGradleJvmPlugin() =
         GradlePlugin(
                 "org.jetbrains.kotlin.jvm",
                 kotlinVersion
@@ -34,7 +34,7 @@ fun kotlinGradleJvmPlugin() =
 
 //plugin management
 
-fun junitPlatformPluginManagement() =
+internal fun junitPlatformPluginManagement() =
         GradlePluginManagement(
                 "org.junit.platform.gradle.plugin",
                 GradleDependency(
@@ -47,7 +47,7 @@ fun junitPlatformPluginManagement() =
 
 //dependencies
 
-fun kotlinTestDependency() =
+internal fun kotlinTestDependency() =
         GradleDependency(
                 "org.jetbrains.kotlin",
                 "kotlin-test",
@@ -55,7 +55,7 @@ fun kotlinTestDependency() =
                 type = TEST_COMPILE
         )
 
-fun kotlinJreDependency(type: GradleDependencyType = COMPILE) =
+internal fun kotlinJreDependency(type: GradleDependencyType = COMPILE) =
         GradleDependency(
                 "org.jetbrains.kotlin",
                 "kotlin-stdlib-jre8",
@@ -63,7 +63,7 @@ fun kotlinJreDependency(type: GradleDependencyType = COMPILE) =
                 type = type
         )
 
-fun spekJunitRunnerDependency() =
+internal fun spekJunitRunnerDependency() =
         GradleDependency(
                 "org.jetbrains.spek",
                 "spek-junit-platform-engine",
@@ -71,7 +71,7 @@ fun spekJunitRunnerDependency() =
                 type = TEST_COMPILE
         )
 
-fun spekSubjectDependency() =
+internal fun spekSubjectDependency() =
         GradleDependency(
                 "org.jetbrains.spek",
                 "spek-subject-extension",
@@ -79,7 +79,7 @@ fun spekSubjectDependency() =
                 type = TEST_COMPILE
         )
 
-fun spekDataDrivenDependency() =
+internal fun spekDataDrivenDependency() =
         GradleDependency(
                 "org.jetbrains.spek",
                 "spek-data-driven-extension",
@@ -87,7 +87,7 @@ fun spekDataDrivenDependency() =
                 type = TEST_COMPILE
         )
 
-fun spekApiDependency() =
+internal fun spekApiDependency() =
         GradleDependency(
                 "org.jetbrains.spek",
                 "spek-api",
@@ -95,7 +95,7 @@ fun spekApiDependency() =
                 type = TEST_COMPILE
         )
 
-fun junitPlatformPluginDependency() =
+internal fun junitPlatformPluginDependency() =
         GradleDependency(
                 "org.junit.platform",
                 "junit-platform-gradle-plugin",
@@ -103,7 +103,7 @@ fun junitPlatformPluginDependency() =
                 type = CLASSPATH
         )
 
-fun jupiterApiDependency() =
+internal fun jupiterApiDependency() =
         GradleDependency(
                 "org.junit.jupiter",
                 "junit-jupiter-api",
@@ -111,7 +111,7 @@ fun jupiterApiDependency() =
                 type = TEST_COMPILE
         )
 
-fun jupiterEngineDependency() =
+internal fun jupiterEngineDependency() =
         GradleDependency(
                 "org.junit.jupiter",
                 "junit-jupiter-engine",

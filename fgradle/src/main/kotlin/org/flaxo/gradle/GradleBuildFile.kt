@@ -1,39 +1,34 @@
 package org.flaxo.gradle
 
-import org.flaxo.core.env.EnvironmentFile
+import org.flaxo.core.env.file.EnvironmentFile
 import java.nio.file.Path
 import java.nio.file.Paths
 
-class GradleBuildFile private constructor(override val content: String)
-    : EnvironmentFile {
+internal class GradleBuildFile(private val plugins: Set<GradlePlugin>,
+                               private val repositories: Set<GradleRepository>,
+                               private val dependencies: Set<GradleDependency>,
+                               override val path: Path = Paths.get("build.gradle")
+) : EnvironmentFile {
 
-    override val path: Path = Paths.get("build.gradle")
+    override val content: String by lazy {
+        gradle {
+            plugins {
+                plugins.forEach { plugin(it) }
+            }
 
-    companion object {
+            repositories {
+                repositories.forEach { repository(it) }
+            }
 
-        fun with(plugins: Set<GradlePlugin>,
-                 repositories: Set<GradleRepository>,
-                 dependencies: Set<GradleDependency>
-        ): GradleBuildFile {
-            val content =
-                    gradle {
-                        plugins {
-                            plugins.forEach {
-                                val versionSubstring = it.version?.let { "version \"$it\"" } ?: ""
-                                put("id \"${it.id}\" $versionSubstring")
-                            }
-                        }
-
-                        repositories {
-                            repositories.forEach { repository(it) }
-                        }
-
-                        dependencies {
-                            dependencies.forEach { dependency(it) }
-                        }
-                    }
-
-            return GradleBuildFile(content)
+            dependencies {
+                dependencies.forEach { dependency(it) }
+            }
         }
     }
+
+    private fun GradleDsl.plugin(plugin: GradlePlugin) {
+        val versionSubstring = plugin.version?.let { "version \"$it\"" } ?: ""
+        put("id \"${plugin.id}\" $versionSubstring")
+    }
+
 }

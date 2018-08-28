@@ -1,14 +1,13 @@
 package org.flaxo.gradle
 
-import org.flaxo.core.build.Dependency
+import org.flaxo.core.NamedEntity
 
-data class GradleDependency(
-        val group: String,
-        val id: String,
-        val version: String,
-        val repositories: Set<GradleRepository> = emptySet(),
-        val type: GradleDependencyType = GradleDependencyType.COMPILE
-) : Dependency {
+internal data class GradleDependency(val group: String,
+                                     val id: String,
+                                     val version: String,
+                                     val repositories: Set<GradleRepository> = emptySet(),
+                                     val type: GradleDependencyType = GradleDependencyType.COMPILE
+) : NamedEntity {
 
     override val name = "$group:$id:$version"
 

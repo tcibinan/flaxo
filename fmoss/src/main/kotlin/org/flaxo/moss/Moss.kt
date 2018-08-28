@@ -1,6 +1,6 @@
 package org.flaxo.moss
 
-import org.flaxo.core.env.EnvironmentFile
+import org.flaxo.core.env.file.LocalFile
 
 /**
  * Moss plagiarism detection analysis client interface.
@@ -21,10 +21,10 @@ interface Moss {
      * Create moss client with the files that was written
      * by the teacher itself in the original state.
      *
-     * @param bases Original task environment files.
-     * @return Moss client with the list of bases environment files.
+     * @param bases Original task local files.
+     * @return Moss client with the list of bases local files.
      */
-    fun base(bases: List<EnvironmentFile>): Moss
+    fun base(bases: List<LocalFile>): Moss
 
     /**
      * Create moss client with the files that was written
@@ -33,10 +33,10 @@ interface Moss {
      * Files for different students should have different root folder.
      * f.e. student1/SomeClass.java, student2/SomeClass.java.
      *
-     * @param solutions Student solutions environment files.
-     * @return Moss client with the list of solution environment files.
+     * @param solutions Student solutions local files.
+     * @return Moss client with the list of solution local files.
      */
-    fun solutions(solutions: List<EnvironmentFile>): Moss
+    fun solutions(solutions: List<LocalFile>): Moss
 
     /**
      * Start the moss plagiarism analysis.

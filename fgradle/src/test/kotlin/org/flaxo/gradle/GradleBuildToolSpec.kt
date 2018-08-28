@@ -5,8 +5,7 @@ import com.nhaarman.mockito_kotlin.mock
 import org.amshove.kluent.shouldContain
 import org.amshove.kluent.shouldContainSome
 import org.amshove.kluent.shouldEqual
-import org.flaxo.core.build.BuildTool
-import org.flaxo.core.env.EnvironmentFile
+import org.flaxo.core.env.file.EnvironmentFile
 import org.flaxo.core.env.EnvironmentSupplier
 import org.flaxo.core.env.SimpleEnvironment
 import org.flaxo.core.framework.JUnitTestingFramework
@@ -16,7 +15,7 @@ import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.subject.SubjectSpek
 
-object GradleBuildToolSpec : SubjectSpek<BuildTool>({
+object GradleBuildToolSpec : SubjectSpek<GradleBuildTool>({
 
     val firstPlugin = GradlePlugin("java")
     val secondPlugin = GradlePlugin("application")
@@ -25,16 +24,14 @@ object GradleBuildToolSpec : SubjectSpek<BuildTool>({
     val testingDependency = GradleDependency("t", "y", "u", type = GradleDependencyType.TEST_COMPILE)
     val compilingDependency = GradleDependency("t", "y", "u", type = GradleDependencyType.COMPILE)
     val travis: EnvironmentSupplier = mock {
-        on { withLanguage(any()) }.thenReturn(it)
-        on { withTestingLanguage(any()) }.thenReturn(it)
-        on { withTestingFramework(any()) }.thenReturn(it)
-        on { getEnvironment() }.thenReturn(SimpleEnvironment(emptySet()))
+        on { with(any(), any(), any()) }.thenReturn(it)
+        on { environment() }.thenReturn(SimpleEnvironment(emptySet()))
     }
 
     subject {
         GradleBuildTool(travis)
                 .with(JavaLang, JavaLang, JUnitTestingFramework)
-                as BuildTool
+                as GradleBuildTool
     }
 
     describe("Gradle build tool") {
@@ -43,8 +40,8 @@ object GradleBuildToolSpec : SubjectSpek<BuildTool>({
                     subject.addPlugin(firstPlugin)
                             .addPlugin(secondPlugin)
                             .addPlugin(secondPlugin)
-            val environment = buildTool.getEnvironment()
-            val buildGradle = environment.getFiles()
+            val environment = buildTool.environment()
+            val buildGradle = environment.files()
                     .find { it.fileName == "build.gradle" }
                     ?: throw GradleException("build.gradle wasn't found")
 
@@ -64,8 +61,8 @@ object GradleBuildToolSpec : SubjectSpek<BuildTool>({
                             .addDependency(firstDependency)
                             .addDependency(secondDependency)
                             .addDependency(secondDependency)
-            val environment = buildTool.getEnvironment()
-            val buildGradle = environment.getFiles()
+            val environment = buildTool.environment()
+            val buildGradle = environment.files()
                     .find { it.fileName == "build.gradle" }
                     ?: throw GradleException("build.gradle wasn't found")
 
@@ -83,8 +80,8 @@ object GradleBuildToolSpec : SubjectSpek<BuildTool>({
                     subject.addPlugin(javaPlugin())
                             .addDependency(testingDependency)
                             .addDependency(compilingDependency)
-            val environment = buildTool.getEnvironment()
-            val buildGradle = environment.getFiles()
+            val environment = buildTool.environment()
+            val buildGradle = environment.files()
                     .find { it.fileName == "build.gradle" }
                     ?: throw GradleException("build.gradle wasn't found")
 

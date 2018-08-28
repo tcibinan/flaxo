@@ -1,22 +1,27 @@
 package org.flaxo.core.env
 
+import org.flaxo.core.env.file.EnvironmentFile
+import java.nio.file.Paths
+
 /**
- * Repository environment interface.
+ * Repository environment.
  */
 interface Environment {
 
-    operator fun plus(environment: Environment): Environment
+    operator fun plus(environment: Environment): Environment =
+            throw UnsupportedOperationException("Environment.plus is not supported.")
 
-    operator fun plus(file: EnvironmentFile): Environment
-
-    /**
-     * Returns all files of the current environment.
-     */
-    fun getFiles(): Set<EnvironmentFile>
+    operator fun plus(file: EnvironmentFile): Environment =
+            throw UnsupportedOperationException("Environment.plus is not supported.")
 
     /**
-     * Returns file from the current environment by the given name.
+     * Returns all environment files.
      */
-    fun getFile(fileName: String): EnvironmentFile? =
-            getFiles().firstOrNull { it.path.toString() == fileName }
+    fun files(): Set<EnvironmentFile>
+
+    /**
+     * Returns file from the current environment by the given [path].
+     */
+    fun file(path: String): EnvironmentFile? =
+            files().firstOrNull { it.path == Paths.get(path) }
 }

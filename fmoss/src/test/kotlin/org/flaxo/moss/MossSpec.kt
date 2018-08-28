@@ -5,9 +5,9 @@ import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
-import org.flaxo.core.env.EnvironmentFile
-import org.flaxo.core.env.LocalEnvironmentFile
+import org.flaxo.core.env.file.SimpleLocalEnvironmentFile
 import it.zielke.moji.SocketClient
+import org.flaxo.core.env.file.LocalFile
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
@@ -20,13 +20,13 @@ object MossSpec : SubjectSpek<Moss>({
     val userId = "test_userid"
     val mossResultsUrl = URL("http://test.url.com/results/2312432")
 
-    val base: List<EnvironmentFile> = listOf(
-            LocalEnvironmentFile("src/test/resources/base/ClassName.java")
+    val base: List<LocalFile> = listOf(
+            SimpleLocalEnvironmentFile("src/test/resources/base/ClassName.java")
     )
-    val solutions: List<EnvironmentFile> = listOf(
-            LocalEnvironmentFile("src/test/resources/student1/ClassName.java"),
-            LocalEnvironmentFile("src/test/resources/student2/ClassName.java"),
-            LocalEnvironmentFile("src/test/resources/student3/ClassName.java")
+    val solutions: List<LocalFile> = listOf(
+            SimpleLocalEnvironmentFile("src/test/resources/student1/ClassName.java"),
+            SimpleLocalEnvironmentFile("src/test/resources/student2/ClassName.java"),
+            SimpleLocalEnvironmentFile("src/test/resources/student3/ClassName.java")
     )
     val client: SocketClient = mock {
         on { resultURL }.thenReturn(mossResultsUrl)

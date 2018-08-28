@@ -1,7 +1,5 @@
 package org.flaxo.git
 
-import org.flaxo.core.env.EnvironmentFile
-
 /**
  * Git service provider client.
  *

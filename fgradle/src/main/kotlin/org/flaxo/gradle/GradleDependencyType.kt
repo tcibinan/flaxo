@@ -1,8 +1,6 @@
 package org.flaxo.gradle
 
-enum class GradleDependencyType(
-        private val type: String
-) {
+internal enum class GradleDependencyType(private val type: String) {
     COMPILE("compile"),
     TEST_COMPILE("testCompile"),
     TEST_RUNTIME("testRuntime"),

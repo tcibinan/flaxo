@@ -1,6 +1,6 @@
 package org.flaxo.gradle
 
-import java.util.*
+import java.util.StringJoiner
 
 internal class GradleDsl(val joiner: StringJoiner = StringJoiner("\n"),
                          val nesting: Int = 0

@@ -1,19 +1,19 @@
 package org.flaxo.gradle
 
 import org.flaxo.cmd.CmdExecutor
-import java.io.File
+import java.nio.file.Path
+import java.nio.file.Paths
 
-class GradleCmdExecutor private constructor(private val dir: File?) {
+internal class GradleCmdExecutor private constructor(private val directory: Path?) {
+
     companion object {
-        fun within(dir: File? = null) = GradleCmdExecutor(dir)
+        fun within(directory: Path? = null) = GradleCmdExecutor(directory)
     }
 
     fun build() = performTask("build")
 
-    fun wrapper() = performTask("wrapper")
-
     private fun performTask(task: String, vararg args: String) =
-            CmdExecutor.within(dir)
-                    .execute(File("../gradlew").absolutePath, task, *args)
+            CmdExecutor.within(directory)
+                    .execute(Paths.get("../gradlew").toAbsolutePath().toString(), task, *args)
 
 }
