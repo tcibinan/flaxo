@@ -27,20 +27,17 @@ interface Codacy {
      *
      * @param projectName Name of the codacy project to create.
      * @param repositoryUrl Repository of the existing course.
-     * @return Null or error response body if something went bad during
-     * call to codacy api.
+     * @return Either unit or error body.
      */
     fun createProject(projectName: String,
                       repositoryUrl: String
-    ): ResponseBody?
+    ): Either<ResponseBody, Unit>
 
     /**
      * Deletes project from the codacy by [projectName].
      *
      * @param projectName Name of the codacy project to delete.
-     * @return Null or error response body if something went bad during
-     * call to codacy api.
+     * @return Either unit or error body.
      */
-    fun deleteProject(projectName: String
-    ): ResponseBody?
+    fun deleteProject(projectName: String): Either<ResponseBody, Unit>
 }

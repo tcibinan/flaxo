@@ -15,7 +15,7 @@ interface Travis {
      *
      * @return Either associated travis user or response body of the request to travis api.
      */
-    fun getUser(): Either<ResponseBody, TravisUser>
+    fun getSelf(): Either<ResponseBody, TravisUser>
 
     /**
      * Retrieves travis repository by [repositoryName].

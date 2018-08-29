@@ -247,7 +247,7 @@ open class SimpleTravisManager(private val client: TravisClient,
     }
 
     private fun retrieveTravisUser(travis: Travis, user: User): TravisUser =
-            travis.getUser().getOrHandle { errorBody ->
+            travis.getSelf().getOrHandle { errorBody ->
                 throw TravisException("Travis user retrieving failed for ${user.nickname}" +
                         " due to: ${errorBody.string()}")
             }

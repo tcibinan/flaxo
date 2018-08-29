@@ -50,14 +50,15 @@ open class SimpleCodacyManager(private val client: CodacyClient,
 
         repeatUntil("Codacy project created",
                 attemptsLimit = 5) {
-            val errorBody = codacy.createProject(
-                    course.name,
-                    "git://github.com/$githubId/${course.name}.git"
-            )
-
-            if (errorBody != null)
-                throw CodacyException("Codacy project was not created due to: ${errorBody.string()}")
-            else true
+            codacy
+                    .createProject(
+                            projectName = course.name,
+                            repositoryUrl = "git://github.com/$githubId/${course.name}.git"
+                    )
+                    .map { true }
+                    .getOrHandle { errorBody ->
+                        throw CodacyException("Codacy project was not created due to: ${errorBody.string()}")
+                    }
         }
     }
 
@@ -75,9 +76,9 @@ open class SimpleCodacyManager(private val client: CodacyClient,
 
                     codacy(githubId, it)
                             .deleteProject(course.name)
-                            ?.also { responseBody ->
+                            .getOrHandle { errorBody ->
                                 throw CodacyException("Codacy project $githubId/${course.name} " +
-                                        "deletion went bad due to: ${responseBody.string()}")
+                                        "deletion went bad due to: ${errorBody.string()}")
                             }
 
                     logger.info("Codacy deactivation for ${user.nickname}/${course.name} course " +

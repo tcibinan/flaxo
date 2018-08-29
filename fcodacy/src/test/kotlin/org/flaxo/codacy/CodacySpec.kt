@@ -1,7 +1,6 @@
 package org.flaxo.codacy
 
 import arrow.core.orNull
-import org.amshove.kluent.shouldBeNull
 import org.amshove.kluent.shouldBeTrue
 import org.amshove.kluent.shouldEqual
 import org.jetbrains.spek.api.dsl.describe
@@ -53,7 +52,7 @@ object CodacySpec : SubjectSpek<Codacy>({
             val response = subject.createProject(projectName, repositoryUrl)
 
             it("should not contain response body") {
-                response.shouldBeNull()
+                response.isRight().shouldBeTrue()
             }
         }
 
@@ -61,7 +60,7 @@ object CodacySpec : SubjectSpek<Codacy>({
             val response = subject.deleteProject(projectName)
 
             it("should not contain response body") {
-                response.shouldBeNull()
+                response.isRight().shouldBeTrue()
             }
         }
     }

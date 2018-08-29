@@ -19,13 +19,11 @@ class SimpleCodacy(private val username: String,
             client.commitDetails(username, projectName, commitId, codacyToken)
                     .call()
 
-    override fun createProject(projectName: String, repositoryUrl: String)
-            : ResponseBody? =
+    override fun createProject(projectName: String, repositoryUrl: String): Either<ResponseBody, Unit> =
             client.createPublicProject(ProjectRequest(projectName, repositoryUrl), codacyToken)
                     .callIgnoredBody()
 
-    override fun deleteProject(projectName: String)
-            : ResponseBody? =
+    override fun deleteProject(projectName: String): Either<ResponseBody, Unit> =
             client.deleteProject(username, projectName, codacyToken)
                     .callIgnoredBody()
 
@@ -35,9 +33,9 @@ class SimpleCodacy(private val username: String,
                 else Either.left(errorBody()!!)
             }
 
-    private fun <T> Call<T>.callIgnoredBody(): ResponseBody? =
+    private fun <T> Call<T>.callIgnoredBody(): Either<ResponseBody, Unit> =
             execute().run {
-                if (isSuccessful) null
-                else errorBody()
+                if (isSuccessful) Either.right(Unit)
+                else Either.left(errorBody()!!)
             }
 }

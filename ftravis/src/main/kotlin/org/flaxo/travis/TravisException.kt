@@ -1,11 +1,12 @@
 package org.flaxo.travis
 
+import org.flaxo.core.FlaxoException
 import org.flaxo.core.language.Language
 
 /**
  * Base travis exception.
  */
-open class TravisException(message: String) : Throwable(message)
+open class TravisException(message: String) : FlaxoException(message)
 
 /**
  * Travis environment supplier unsupported language exception.

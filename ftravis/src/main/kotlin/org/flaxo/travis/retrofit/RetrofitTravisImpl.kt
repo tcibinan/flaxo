@@ -17,7 +17,7 @@ class RetrofitTravisImpl(private val travisClient: TravisClient,
                          private val travisToken: String
 ) : Travis {
 
-    override fun getUser(): Either<ResponseBody, TravisUser> =
+    override fun getSelf(): Either<ResponseBody, TravisUser> =
             travisClient.getUser(authorization())
                     .call()
                     .map { RetrofitTravisUser(it) }

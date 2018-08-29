@@ -16,7 +16,7 @@ class JTravisImpl : Travis {
 
     private val jTravis: JTravis by lazy { JTravis.Builder().build() }
 
-    override fun getUser(): Either<ResponseBody, TravisUser> {
+    override fun getSelf(): Either<ResponseBody, TravisUser> {
         TODO("not implemented")
     }
 
