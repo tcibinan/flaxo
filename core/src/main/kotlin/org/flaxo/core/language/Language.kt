@@ -4,7 +4,7 @@ import org.flaxo.core.NamedEntity
 import org.flaxo.core.framework.TestingFramework
 
 /**
- * Flaxo language interface.
+ * Programming language.
  */
 interface Language : NamedEntity {
 
@@ -27,13 +27,11 @@ interface Language : NamedEntity {
      * Checks if the given [testingLanguage] can be used as testing language
      * for the current language.
      */
-    fun canBeTestedBy(testingLanguage: Language): Boolean =
-            testingLanguage == this || testingLanguage in compatibleTestingLanguages
+    fun canBeTestedBy(testingLanguage: Language): Boolean = testingLanguage in compatibleTestingLanguages
 
     /**
      * Checks if the given [testingFramework] can be used as testing framework
      * by the current language.
      */
-    fun worksWith(testingFramework: TestingFramework): Boolean =
-            testingFramework in compatibleTestingFrameworks
+    fun worksWith(testingFramework: TestingFramework): Boolean = testingFramework in compatibleTestingFrameworks
 }

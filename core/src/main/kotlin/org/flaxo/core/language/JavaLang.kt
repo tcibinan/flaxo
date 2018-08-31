@@ -3,7 +3,7 @@ package org.flaxo.core.language
 import org.flaxo.core.framework.JUnitTestingFramework
 
 /**
- * Java language object.
+ * Java language.
  */
 object JavaLang : AbstractLanguage("java",
         extensions = setOf("java"),

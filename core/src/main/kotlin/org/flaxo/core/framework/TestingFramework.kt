@@ -3,10 +3,9 @@ package org.flaxo.core.framework
 import org.flaxo.core.NamedEntity
 
 /**
- * Abstract testing framework class.
+ * Abstract testing framework.
  */
-abstract class TestingFramework(override val name: String)
-    : NamedEntity {
+abstract class TestingFramework(override val name: String) : NamedEntity {
 
     override fun toString() = name
 }
