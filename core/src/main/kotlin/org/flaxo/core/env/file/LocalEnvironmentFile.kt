@@ -4,11 +4,11 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 
-class SimpleLocalEnvironmentFile(override val path: Path) : LocalFile {
+class LocalEnvironmentFile(override val localPath: Path,
+                           override val path: Path = localPath
+) : LocalFile {
 
-    constructor(path: String) : this(Paths.get(path))
-
-    override val localPath: Path = path
+    constructor(localPath: String) : this(Paths.get(localPath))
 
     override val content: String by lazy(LazyThreadSafetyMode.NONE) {
         Files.readAllLines(localPath).joinToString("\n")

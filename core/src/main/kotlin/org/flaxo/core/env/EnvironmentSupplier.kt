@@ -4,7 +4,7 @@ import org.flaxo.core.framework.TestingFramework
 import org.flaxo.core.language.Language
 
 /**
- * Environment supplier interface.
+ * Environment supplier.
  */
 interface EnvironmentSupplier {
 
