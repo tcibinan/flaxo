@@ -1,4 +1,4 @@
-package org.flaxo.core.language
+package org.flaxo.core.lang
 
 import org.flaxo.core.framework.JUnitTestingFramework
 import org.flaxo.core.framework.SpekTestingFramework
@@ -8,6 +8,6 @@ import org.flaxo.core.framework.SpekTestingFramework
  */
 object KotlinLang : AbstractLanguage("kotlin",
         extensions = setOf("kt", "kts"),
-        compatibleTestingLanguages = emptySet(),
-        compatibleTestingFrameworks = setOf(JUnitTestingFramework, SpekTestingFramework)
+        testingLanguages = setOf(Itself),
+        testingFrameworks = setOf(JUnitTestingFramework, SpekTestingFramework)
 )

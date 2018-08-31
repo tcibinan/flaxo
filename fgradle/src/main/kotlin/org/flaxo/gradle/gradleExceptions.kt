@@ -2,7 +2,7 @@ package org.flaxo.gradle
 
 import org.flaxo.core.FlaxoException
 import org.flaxo.core.framework.TestingFramework
-import org.flaxo.core.language.Language
+import org.flaxo.core.lang.Language
 
 /**
  * Base gradle build tool exception.

@@ -1,4 +1,4 @@
-package org.flaxo.core.language
+package org.flaxo.core.lang
 
 import org.flaxo.core.NamedEntity
 import org.flaxo.core.framework.TestingFramework
@@ -27,11 +27,11 @@ interface Language : NamedEntity {
      * Checks if the given [testingLanguage] can be used as testing language
      * for the current language.
      */
-    fun canBeTestedBy(testingLanguage: Language): Boolean = testingLanguage in compatibleTestingLanguages
+    infix fun canBeTestedBy(testingLanguage: Language): Boolean = testingLanguage in compatibleTestingLanguages
 
     /**
      * Checks if the given [testingFramework] can be used as testing framework
      * by the current language.
      */
-    fun worksWith(testingFramework: TestingFramework): Boolean = testingFramework in compatibleTestingFrameworks
+    infix fun worksWith(testingFramework: TestingFramework): Boolean = testingFramework in compatibleTestingFrameworks
 }

@@ -1,6 +1,6 @@
 package org.flaxo.rest.api
 
-import org.flaxo.core.language.Language
+import org.flaxo.core.lang.Language
 import org.flaxo.model.LanguageView
 import org.flaxo.rest.manager.response.ResponseManager
 import org.springframework.http.ResponseEntity

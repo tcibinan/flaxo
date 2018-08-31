@@ -6,9 +6,9 @@ import org.flaxo.core.env.EnvironmentSupplier
 import org.flaxo.core.env.SimpleEnvironment
 import org.flaxo.core.env.file.StringEnvironmentFile
 import org.flaxo.core.framework.TestingFramework
-import org.flaxo.core.language.JavaLang
-import org.flaxo.core.language.KotlinLang
-import org.flaxo.core.language.Language
+import org.flaxo.core.lang.JavaLang
+import org.flaxo.core.lang.KotlinLang
+import org.flaxo.core.lang.Language
 import org.flaxo.travis.TravisException
 import org.flaxo.travis.UnsupportedLanguageException
 

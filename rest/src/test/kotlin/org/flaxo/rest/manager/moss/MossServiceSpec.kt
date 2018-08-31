@@ -5,8 +5,8 @@ import com.nhaarman.mockito_kotlin.mock
 import org.flaxo.core.env.file.EnvironmentFile
 import org.flaxo.core.env.file.LocalFile
 import org.flaxo.core.env.file.RemoteEnvironmentFile
-import org.flaxo.core.language.JavaLang
-import org.flaxo.core.language.Language
+import org.flaxo.core.lang.JavaLang
+import org.flaxo.core.lang.Language
 import org.flaxo.git.Branch
 import org.flaxo.git.Git
 import org.flaxo.git.Repository

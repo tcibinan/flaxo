@@ -1,4 +1,4 @@
-package org.flaxo.core.language
+package org.flaxo.core.lang
 
 import org.flaxo.core.framework.BashInputOutputTestingFramework
 
@@ -8,6 +8,6 @@ import org.flaxo.core.framework.BashInputOutputTestingFramework
 object BashLang : AbstractLanguage(
         name = "bash",
         extensions = setOf("sh", "bash"),
-        compatibleTestingLanguages = emptySet(),
-        compatibleTestingFrameworks = setOf(BashInputOutputTestingFramework)
+        testingLanguages = setOf(Itself),
+        testingFrameworks = setOf(BashInputOutputTestingFramework)
 )

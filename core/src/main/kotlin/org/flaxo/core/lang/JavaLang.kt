@@ -1,4 +1,4 @@
-package org.flaxo.core.language
+package org.flaxo.core.lang
 
 import org.flaxo.core.framework.JUnitTestingFramework
 
@@ -7,6 +7,6 @@ import org.flaxo.core.framework.JUnitTestingFramework
  */
 object JavaLang : AbstractLanguage("java",
         extensions = setOf("java"),
-        compatibleTestingLanguages = setOf(KotlinLang),
-        compatibleTestingFrameworks = setOf(JUnitTestingFramework)
+        testingLanguages = setOf(Itself, KotlinLang),
+        testingFrameworks = setOf(JUnitTestingFramework)
 )

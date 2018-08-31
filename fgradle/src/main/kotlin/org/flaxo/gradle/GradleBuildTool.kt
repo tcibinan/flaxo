@@ -7,9 +7,9 @@ import org.flaxo.core.env.EnvironmentSupplier
 import org.flaxo.core.framework.JUnitTestingFramework
 import org.flaxo.core.framework.SpekTestingFramework
 import org.flaxo.core.framework.TestingFramework
-import org.flaxo.core.language.JavaLang
-import org.flaxo.core.language.KotlinLang
-import org.flaxo.core.language.Language
+import org.flaxo.core.lang.JavaLang
+import org.flaxo.core.lang.KotlinLang
+import org.flaxo.core.lang.Language
 
 data class GradleBuildTool internal constructor(
         private val travis: EnvironmentSupplier,

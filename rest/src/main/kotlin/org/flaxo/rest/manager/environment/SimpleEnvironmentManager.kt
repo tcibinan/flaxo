@@ -3,7 +3,7 @@ package org.flaxo.rest.manager.environment
 import org.flaxo.core.env.Environment
 import org.flaxo.core.env.EnvironmentSupplier
 import org.flaxo.core.framework.TestingFramework
-import org.flaxo.core.language.Language
+import org.flaxo.core.lang.Language
 import org.flaxo.rest.manager.IncompatibleLanguageException
 import org.flaxo.rest.manager.IncompatibleTestingFrameworkException
 import org.flaxo.rest.manager.NoDefaultBuildToolException
@@ -47,12 +47,12 @@ class SimpleEnvironmentManager(
     }
 
     private infix fun TestingFramework.shouldSuit(testingLanguage: Language) {
-        testingLanguage.takeIf { it.worksWith(this) }
+        testingLanguage.takeIf { it worksWith this }
                 ?: throw IncompatibleTestingFrameworkException(this, testingLanguage)
     }
 
     private infix fun Language.shouldSuit(language: Language) {
-        language.takeIf { it.canBeTestedBy(this) }
+        language.takeIf { it canBeTestedBy this }
                 ?: throw IncompatibleLanguageException(language, this)
     }
 

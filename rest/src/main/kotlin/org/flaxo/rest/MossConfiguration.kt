@@ -1,6 +1,6 @@
 package org.flaxo.rest
 
-import org.flaxo.core.language.Language
+import org.flaxo.core.lang.Language
 import org.flaxo.rest.manager.github.GithubManager
 import org.flaxo.rest.manager.moss.MossManager
 import org.flaxo.rest.manager.moss.SimpleMossManager

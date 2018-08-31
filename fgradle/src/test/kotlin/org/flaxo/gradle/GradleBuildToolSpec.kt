@@ -9,7 +9,7 @@ import org.flaxo.core.env.file.EnvironmentFile
 import org.flaxo.core.env.EnvironmentSupplier
 import org.flaxo.core.env.SimpleEnvironment
 import org.flaxo.core.framework.JUnitTestingFramework
-import org.flaxo.core.language.JavaLang
+import org.flaxo.core.lang.JavaLang
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on

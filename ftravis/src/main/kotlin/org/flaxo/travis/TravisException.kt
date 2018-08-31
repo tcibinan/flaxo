@@ -1,7 +1,7 @@
 package org.flaxo.travis
 
 import org.flaxo.core.FlaxoException
-import org.flaxo.core.language.Language
+import org.flaxo.core.lang.Language
 
 /**
  * Base travis exception.

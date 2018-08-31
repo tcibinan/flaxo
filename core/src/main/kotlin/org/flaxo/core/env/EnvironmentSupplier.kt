@@ -1,7 +1,7 @@
 package org.flaxo.core.env
 
 import org.flaxo.core.framework.TestingFramework
-import org.flaxo.core.language.Language
+import org.flaxo.core.lang.Language
 
 /**
  * Environment supplier.
