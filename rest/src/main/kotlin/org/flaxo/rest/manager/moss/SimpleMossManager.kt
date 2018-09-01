@@ -22,7 +22,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 /**
- * Moss manager implementation.
+ * Moss manager.
  */
 class SimpleMossManager(private val userId: String,
                         private val githubManager: GithubManager,
@@ -58,8 +58,8 @@ class SimpleMossManager(private val userId: String,
                             solutions.flatMap { (student, branch) ->
                                 branchFiles(branch, language, submissionsDirectory, student)
                                         .also {
-                                            logger.info("Student $student solutions were aggregated as local files " +
-                                                    "for course ${user.nickname}/${course.name}")
+                                            logger.info("Student solution $student/${branch.name} was aggregated " +
+                                                    "as local files for course ${user.nickname}/${course.name}")
                                         }
                             }
                         }
@@ -98,12 +98,12 @@ class SimpleMossManager(private val userId: String,
 
     private fun branchFiles(branch: Branch,
                             language: Language,
-                            generatedLocalFiles: Path,
+                            localFilesDirectory: Path,
                             student: String
     ): List<LocalFile> =
             branch.files()
                     .filterBy(language)
-                    .map { it.toLocalFile(generatedLocalFiles.resolve(student)) }
+                    .map { it.toLocalFile(localFilesDirectory.resolve(branch.name).resolve(student)) }
 
     private fun onlySolvedTasks(student: Student): List<String> =
             student.solutions

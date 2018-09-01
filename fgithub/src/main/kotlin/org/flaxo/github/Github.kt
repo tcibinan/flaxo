@@ -3,18 +3,16 @@ package org.flaxo.github
 import org.flaxo.git.Git
 import org.flaxo.git.Repository
 import java.net.URL
-import org.kohsuke.github.GHEvent as KohsukeGithubEvent
-import org.kohsuke.github.GitHub as KohsukeGithub
 
 /**
  * Github client class.
  */
-class Github(private val githubClientProducer: () -> KohsukeGithub,
+class Github(githubClientProducer: () -> RawGithub,
              rawWebHookUrl: String
 ) : Git {
 
     val webHookUrl: URL = URL(rawWebHookUrl)
-    val client: KohsukeGithub by lazy { githubClientProducer() }
+    val client: RawGithub by lazy(githubClientProducer)
 
     override fun createRepository(repositoryName: String,
                                   private: Boolean

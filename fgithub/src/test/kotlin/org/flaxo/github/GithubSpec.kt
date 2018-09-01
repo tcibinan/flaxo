@@ -9,6 +9,7 @@ import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.subject.SubjectSpek
 import org.kohsuke.github.GitHub as KohsukeGithub
 
+// TODO 01.09.18: Move to an integration tests folder
 object GithubSpec : SubjectSpek<Github>({
 
     val credentials = System.getenv("GITHUB_USER1_TOKEN")

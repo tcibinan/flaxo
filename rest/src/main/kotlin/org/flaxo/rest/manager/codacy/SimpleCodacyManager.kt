@@ -62,7 +62,7 @@ open class SimpleCodacyManager(private val client: CodacyClient,
         }
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     override fun deactivate(course: Course) {
         val user = course.user
 
@@ -97,7 +97,7 @@ open class SimpleCodacyManager(private val client: CodacyClient,
                         "so no codacy project is deleted")
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     override fun refresh(course: Course) {
         val user = course.user
 

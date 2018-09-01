@@ -29,7 +29,7 @@ import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
 
 /**
- * Travis manager implementation.
+ * Travis manager.
  */
 open class SimpleTravisManager(private val client: TravisClient,
                                private val dataManager: DataManager,
@@ -119,7 +119,7 @@ open class SimpleTravisManager(private val client: TravisClient,
                 }
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     override fun deactivate(course: Course) {
         val user = course.user
 
@@ -154,7 +154,7 @@ open class SimpleTravisManager(private val client: TravisClient,
                         "so no travis repository is deactivated")
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     override fun refresh(course: Course) {
         val user = course.user
 
@@ -171,11 +171,11 @@ open class SimpleTravisManager(private val client: TravisClient,
 
         val travis = travis(travisToken)
 
-        logger.info("Retrieving open pull requests for ${user.nickname}/${course.name} course")
+        logger.info("Retrieving pull requests for ${user.nickname}/${course.name} course")
 
-        val openedPullRequests = githubManager.with(githubToken)
+        val pullRequests = githubManager.with(githubToken)
                 .getRepository(course.name)
-                .getOpenPullRequests()
+                .getPullRequests()
 
         logger.info("Retrieving travis builds for ${user.nickname}/${course.name} course")
 
@@ -191,14 +191,14 @@ open class SimpleTravisManager(private val client: TravisClient,
                 .flatMap { it.solutions }
                 .filter { it.commits.isNotEmpty() }
                 .forEach { solution ->
-                    val pullRequest = openedPullRequests
+                    val solutionPullRequest = pullRequests
                             .filter { it.authorId == solution.student.nickname }
                             .firstOrNull { it.baseBranch == solution.task.branch }
                             ?: throw GithubException("Pull request solution of ${solution.student.nickname}/${solution.task.branch} student " +
                                     "for ${user.nickname}/${course.name} course was not found")
 
                     travisBuilds!!
-                            .filter { it.commitSha == pullRequest.mergeCommitSha }
+                            .filter { it.commitSha == solutionPullRequest.mergeCommitSha }
                             .filter {
                                 it.buildStatus in setOf(
                                         TravisBuildStatus.SUCCEED,

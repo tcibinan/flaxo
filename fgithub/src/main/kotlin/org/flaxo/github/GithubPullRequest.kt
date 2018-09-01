@@ -1,9 +1,6 @@
 package org.flaxo.github
 
 import org.flaxo.git.PullRequest
-import org.kohsuke.github.GHEventPayload as KohsukeGithubEventPayload
-import org.kohsuke.github.GHIssueState as KohsukeGithubIssueState
-import org.kohsuke.github.GHPullRequest as KohsukeGithubPullRequest
 
 /**
  * Github pull request class.
@@ -19,7 +16,7 @@ class GithubPullRequest : PullRequest {
     override val receiverRepositoryName: String
     override val isOpened: Boolean
 
-    constructor(pullRequestEventPayload: KohsukeGithubEventPayload.PullRequest) {
+    constructor(pullRequestEventPayload: RawGithubEventPullRequestPayload) {
         this.id = pullRequestEventPayload.number
         this.baseBranch = pullRequestEventPayload.pullRequest.base.ref
         this.lastCommitSha = pullRequestEventPayload.pullRequest.lastCommit()
@@ -30,7 +27,7 @@ class GithubPullRequest : PullRequest {
         this.isOpened = pullRequestEventPayload.action == "opened"
     }
 
-    constructor(pullRequest: KohsukeGithubPullRequest) {
+    constructor(pullRequest: RawGithubPullRequest) {
         this.id = pullRequest.number
         this.baseBranch = pullRequest.base.ref
         this.lastCommitSha = pullRequest.lastCommit()
@@ -38,7 +35,7 @@ class GithubPullRequest : PullRequest {
         this.authorId = pullRequest.user.login
         this.receiverId = pullRequest.repository.owner.login
         this.receiverRepositoryName = pullRequest.repository.name
-        this.isOpened = pullRequest.state == KohsukeGithubIssueState.OPEN
+        this.isOpened = pullRequest.state == RawGithubIssueState.OPEN
     }
 
 }

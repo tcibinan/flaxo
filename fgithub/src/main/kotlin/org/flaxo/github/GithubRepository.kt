@@ -3,8 +3,6 @@ package org.flaxo.github
 import org.flaxo.git.Branch
 import org.flaxo.git.PullRequest
 import org.flaxo.git.Repository
-import org.kohsuke.github.GHEvent
-import org.kohsuke.github.GHIssueState
 import java.io.IOException
 
 data class GithubRepository(override val name: String,
@@ -13,12 +11,12 @@ data class GithubRepository(override val name: String,
 ) : Repository {
 
     override fun exists(): Boolean =
-        try {
-            client.repository(owner, name)
-            true
-        } catch (e: IOException) {
-            false
-        }
+            try {
+                client.repository(owner, name)
+                true
+            } catch (e: IOException) {
+                false
+            }
 
     private val client = github.client
 
@@ -48,7 +46,7 @@ data class GithubRepository(override val name: String,
 
     override fun addWebHook() {
         client.repository(owner, name)
-                .createWebHook(github.webHookUrl, listOf(GHEvent.PULL_REQUEST))
+                .createWebHook(github.webHookUrl, listOf(RawGithubEvent.PULL_REQUEST))
     }
 
     override fun getPullRequest(pullRequestNumber: Int): PullRequest =
@@ -60,7 +58,12 @@ data class GithubRepository(override val name: String,
 
     override fun getOpenPullRequests(): List<PullRequest> =
             client.repository(owner, name)
-                    .getPullRequests(GHIssueState.OPEN)
+                    .getPullRequests(RawGithubIssueState.OPEN)
+                    .map { GithubPullRequest(it) }
+
+    override fun getPullRequests(): List<PullRequest> =
+            client.repository(owner, name)
+                    .getPullRequests(RawGithubIssueState.ALL)
                     .map { GithubPullRequest(it) }
 
 }

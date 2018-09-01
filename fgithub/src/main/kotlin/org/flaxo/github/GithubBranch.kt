@@ -5,10 +5,8 @@ import org.flaxo.core.env.file.EnvironmentFile
 import org.flaxo.core.env.file.RemoteEnvironmentFile
 import org.flaxo.git.Branch
 import org.flaxo.git.Commit
-import org.kohsuke.github.GHContentUpdateResponse
 import java.nio.file.Path
 import java.nio.file.Paths
-import org.kohsuke.github.GitHub as KohsukeGithub
 
 /**
  * Github repository branch class.
@@ -18,7 +16,7 @@ class GithubBranch(override val name: String,
                    private val github: Github
 ) : Branch {
 
-    private val client: KohsukeGithub = github.client
+    private val client: RawGithub = github.client
 
     override fun commit(file: EnvironmentFile,
                         repositoryFilePath: Path,
@@ -32,7 +30,7 @@ class GithubBranch(override val name: String,
                               filePath: String,
                               branch: GithubBranch,
                               commitMessage: String
-    ): GHContentUpdateResponse {
+    ): RawGithubContentUpdateResponse {
         val repository = client.repository(branch.repository.owner, branch.repository.name)
         return when (file) {
             is ByteArrayEnvironmentFile ->
@@ -54,7 +52,7 @@ class GithubBranch(override val name: String,
                               filePath: String,
                               branch: GithubBranch,
                               commitMessage: String
-    ): GHContentUpdateResponse =
+    ): RawGithubContentUpdateResponse =
             client.repository(repository.owner, repository.name)
                     .getFileContent(filePath, branch.name)
                     .let {
