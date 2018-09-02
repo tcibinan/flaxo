@@ -57,8 +57,8 @@ kotlinFrontend {
     webpackBundle {
         bundleName = 'flaxo'
         contentPath = file('src/main/web')
-        mode = 'development'
-//        mode = 'production'
+//        mode = 'development'
+        mode = 'production'
     }
 }
 
@@ -85,7 +85,7 @@ task assembleFrontend(type: Copy) {
 }
 
 task runFrontend(type: Exec) {
-    ext.port = 80
+    ext.port = 8088
     dependsOn assembleFrontend
     workingDir "$projectDir/build/dist"
     commandLine "python", "-m", "SimpleHTTPServer", port

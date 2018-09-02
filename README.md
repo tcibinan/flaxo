@@ -6,13 +6,13 @@ Flaxo educational platform is a pragmatic way to organise, manage and report pro
 
 ## Principle
 
-The educational process in flaxo platform can be described in the five following steps.
+The educational process using flaxo platform can be described in five steps.
 
-1. Teacher creates a course with flaxo which is basically a simple git repository.
-2. Teacher fill the course tasks with tests that students are going to write implementations for.
+1. Tutor creates a course with flaxo which is basically a simple git repository.
+2. Tutor fill the course tasks with tests that students are going to write implementations for.
 3. Students solve the tasks and create pull requests.
 4. Flaxo make all the necessary arrangements to evaluate students solutions.
-5. Teacher receives well-formatted statistics of students progress.
+5. Tutor receives well-formatted statistics of students progress.
 
 ## Key features
 
@@ -29,18 +29,18 @@ Flaxo aggregates results for each course task using different metrics
 ![course-task-statistics](screenshots/course-task.png?raw=true)
 
 
-### Repository generation
+### Course generation
 
-You can create a repository from scratch just selecting languages and framework for testing.
+You can create a course from scratch just selecting languages and framework for testing.
 Flaxo knows how to build a gradle project with build-in wrappers so you don't have to waste 
 your time configuring project environment.
 
 ![course-creation-modal](screenshots/course-creation-modal.png?raw=true)
 
 
-### Statistics export in json, csv, xls
+### Statistics export in json, csv and tsv
 
-All courses statistics could be retrieved in one of supported formats: json, csv, xls. 
+All courses statistics could be retrieved in one of supported formats: json, csv and tsv. 
 Results can be retrieved using flaxo api as well.
 
 
@@ -59,29 +59,26 @@ You can create unlimited amount of courses for free. And it is as easy as it can
 The flaxo system is built to be open and expandable. There is no limitations from the flaxo itself. 
 Nevertheless CI vendors have lists of supported languages and tools. _See travis, moss, codacy limitations._
 
-Moreover the flaxo presents an easy way to generate courses from scratch using api or gui interface.
+### Course generation
+
+Flaxo introduces an easy way to generate courses from scratch using api or gui interface.
 User doesn't have to create a repository, generate boilerplate branches structure, 
 manage build tools, look for newest tools versions trying to find ones that work well with each other.
-You just click a few buttons or send a single http request and everything will be done in a few seconds.
+Just a few clicks or sending a single http request is enough to create educational course.
 
-The course can use different languages for the tasks themselves and the tests they are verified by. 
-Languages should be compatible to each other and testing framework should be compatible with a language 
-it is going to be used with.
+Course can have different languages for tasks and tests. But of course languages should be 
+compatible to each other in terms of Flaxo. Testing framework can be configured for each
+testing language as well.
 
-Currently the default build tool for all courses is gradle.
-
-### Languages
+#### Languages
 
 - Java 8
 - Kotlin 1.2
-- **todo:** Python
-- **todo:** R
 
-### Testing frameworks
+#### Testing frameworks
 
 - Junit5
 - Spek (Kotlin testing framework)
-- **todo:** Pytest
 
 ## Contributing
 
@@ -91,13 +88,21 @@ To build the app and run all tests.
 ./gradlew build
 ```
 
-To run the app. The application will be at [http://localhost:8080/](http://localhost:8080/).
-
+To run backend.
 ```bash
 ./gradlew bootRun
 ```
 
+To run frontend at 8088 port [http://localhost:8088](http://localhost:8088).
+```bash
+./gradlew runFrontend
+```
+
+
 ### Environment
+
+Everything described below was developed and tested only on linux-based systems 
+and may not work at all on windows.
 
 *All options which are not required are used only in integration tests.*
 
@@ -132,12 +137,22 @@ To run the application and integration tests you should set several system varia
 
 Hints:
 
-- Rest url is of type `http://host.url/rest`, f.i. `http://127.0.0.1/rest`.
 - Github id and secret are parameters of your Github OAuth App.
 - Github access tokens should have `repo`, `delete_repo` scopes. It can be generated in [github account developer settings](https://github.com/settings/tokens).
 - Travis access token could be retrieved from travis cli or it can be found in [travis profile](https://travis-ci.org/profile).
 - Codacy access token could be generated in [codacy account settings](https://app.codacy.com/account/apiTokens).
 - Moss user id can be received through mailing registration or it can be found in several github gists.
+
+#### Frontend temporary configuration
+
+Currently, `frontend/src/main/kotlin/org/flaxo/frontend/Configuration.kt` should be
+configured manually.
+
+```kotlin
+object Configuration {
+    const val SERVER_URL = "http://actual/rest/url"
+}
+```
 
 #### npm
 
@@ -161,7 +176,7 @@ and a list of possible travis cli commands should be listed.
 
 ## What's inside
 
-### Integrated services
+### Integrated external services
 
 - Github
 - Travis CI
@@ -181,14 +196,6 @@ and a list of possible travis cli commands should be listed.
 - Webpack
 - React
 - Bootstrap
-
-## TODO-list
-
-- Activate integration tests running on travis CI.
-- Add xls format for course statistics downloading.
-- Build docker images of the flaxo system.
-- Append test coverage to flaxo travis analysis.
-- Use using Redux framework in frontend.
 
 ## Credits
 
