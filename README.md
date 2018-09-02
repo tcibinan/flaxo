@@ -52,7 +52,7 @@ You can create unlimited amount of courses for free. And it is as easy as it can
 
 ## Courses examples
 
-[Java data structures course](https://github.com/tcibinan/data-structures-course) (rus lang)
+[Java data structures course](https://github.com/tcibinan/data-structures-course) (🇷🇺)
 
 ## Supported languages and tools
 
@@ -211,7 +211,7 @@ and a list of possible travis cli commands should be listed.
 }
 ```
 
-It will be great if you add flaxo badge to your course README.md.
+It will be great if you add flaxo badge [![from_flaxo with_♥](https://img.shields.io/badge/from_flaxo-with_♥-blue.svg)](https://github.com/tcibinan/flaxo) to your course README.md.
 
 ```markdown
 [![from_flaxo with_♥](https://img.shields.io/badge/from_flaxo-with_♥-blue.svg)](https://github.com/tcibinan/flaxo)
