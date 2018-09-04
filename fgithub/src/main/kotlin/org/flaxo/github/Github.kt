@@ -22,7 +22,7 @@ class Github(githubClientProducer: () -> RawGithub,
                 .create()
                 .also {
                     it.createContent(
-                            "# $repositoryName",
+                            "# $repositoryName\n${flaxoMarkdownBadge()}\n",
                             "Initial commit from flaxo with love ♥",
                             "README.md"
                     )
@@ -30,6 +30,10 @@ class Github(githubClientProducer: () -> RawGithub,
 
         return GithubRepository(repositoryName, nickname(), this)
     }
+
+    private fun flaxoMarkdownBadge() = "[![from_flaxo with_♥]" +
+            "(https://img.shields.io/badge/from_flaxo-with_♥-blue.svg)]" +
+            "(https://github.com/tcibinan/flaxo)"
 
     override fun forkRepository(ownerNickname: String,
                                 repositoryName: String
