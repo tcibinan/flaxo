@@ -14,4 +14,10 @@ class LocalEnvironmentFile(override val localPath: Path,
         Files.readAllLines(localPath).joinToString("\n")
     }
 
+    override fun toLocalFile(directory: Path): LocalFile {
+        val newLocalPath = directory.resolve(path)
+        Files.createDirectories(newLocalPath.parent)
+        Files.copy(localPath, newLocalPath)
+        return LocalEnvironmentFile(newLocalPath, path)
+    }
 }
