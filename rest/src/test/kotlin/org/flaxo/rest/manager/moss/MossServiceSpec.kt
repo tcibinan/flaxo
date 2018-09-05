@@ -42,7 +42,7 @@ object MossServiceSpec : SubjectSpek<MossManager>({
     val student2SolutionFile = "another/package/student2Solution.java"
     val branch1 = "branch1"
 
-    val supportedLanguages: Map<String, Language> = mapOf("java" to JavaLang)
+    val supportedLanguages: List<Language> = listOf(JavaLang)
     val solutionEntities1: Set<Solution> = setOf(
             Solution(
                     task = Task(branch = branch1),

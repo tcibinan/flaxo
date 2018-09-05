@@ -14,18 +14,18 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/rest/settings")
 class SettingsController(private val responseManager: ResponseManager,
-                         private val supportedLanguages: Map<String, Language>
+                         private val languages: List<Language>
 ) {
 
     /**
      * Returns a list of supported languages by flaxo.
      */
     @GetMapping("/languages")
-    fun supportedLanguages(): ResponseEntity<Any> =
-            supportedLanguages
-                    .map { (name, language) ->
+    fun languages(): ResponseEntity<Any> =
+            languages
+                    .map { language ->
                         LanguageView(
-                                name = name,
+                                name = language.name,
                                 compatibleTestingLanguages = language.compatibleTestingLanguages.map { it.name },
                                 compatibleTestingFrameworks = language.compatibleTestingFrameworks.map { it.name }
                         )

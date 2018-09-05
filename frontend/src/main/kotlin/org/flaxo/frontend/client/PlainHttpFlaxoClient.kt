@@ -8,6 +8,7 @@ import org.flaxo.common.interop.githubAuthDataFromDynamic
 import org.flaxo.common.interop.languageFromDynamic
 import org.flaxo.common.interop.userFromDynamic
 import org.flaxo.frontend.wrapper.btoa
+import org.flaxo.frontend.wrapper.encodeURIComponent
 import org.w3c.xhr.XMLHttpRequest
 
 class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
@@ -81,7 +82,7 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
                 throw FlaxoHttpCallException(request.responseText)
             }
         } catch (e: Throwable) {
-            throw FlaxoHttpCallException("Available languages retrieving failed.", e)
+            throw FlaxoHttpCallException("Course creation call failed.", e)
         }
     }
 
@@ -295,12 +296,19 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
                          parameters: Map<String, Any?>,
                          body: Any?,
                          credentials: Credentials?
+    ): XMLHttpRequest = escapedHttpCall(httpMethod, apiMethod, parameters, body, credentials)
+
+    private fun escapedHttpCall(httpMethod: String,
+                                apiMethod: String,
+                                parameters: Map<String, Any?>,
+                                body: Any?,
+                                credentials: Credentials?
     ) = XMLHttpRequest().apply {
         if (parameters.isEmpty()) {
             open(httpMethod, "$baseUrl$apiMethod", async = false)
         } else {
             val parametersString = parameters.filterValues { it != null }
-                    .map { (key, value) -> "$key=$value" }
+                    .map { (key, value) -> "$key=${encodeURIComponent(value.toString())}" }
                     .joinToString("&")
             open(httpMethod, "$baseUrl$apiMethod?$parametersString", async = false)
         }

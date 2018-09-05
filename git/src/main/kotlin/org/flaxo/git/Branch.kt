@@ -31,8 +31,7 @@ interface Branch {
      * @return Performed commit.
      */
     fun commit(file: EnvironmentFile,
-               repositoryFilePath: Path = file.path.fileName,
-               commitMessage: String = "feat: Add $repositoryFilePath"
+               commitMessage: String = "feat: Add ${file.path}"
     ): Commit
 
     /**
@@ -43,8 +42,7 @@ interface Branch {
      * @return Performed commit.
      */
     fun update(file: EnvironmentFile,
-               repositoryFilePath: Path = file.path.fileName,
-               commitMessage: String = "feat: Update $repositoryFilePath"
+               commitMessage: String = "feat: Update ${file.path}"
     ): Commit
 
     /**

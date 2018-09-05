@@ -74,7 +74,7 @@ class RegistrationModal(props: RegistrationModalProps)
                 div("modal-content") {
                     div("modal-header") {
                         h5("modal-title") {
-                            +"Modal title"
+                            +"Register"
                         }
                         button(classes = "close", type = ButtonType.button) {
                             attrs {

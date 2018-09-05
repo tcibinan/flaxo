@@ -8,6 +8,6 @@ import org.flaxo.core.framework.BashInputOutputTestingFramework
 object BashLang : AbstractLanguage(
         name = "bash",
         extensions = setOf("sh", "bash"),
-        testingLanguages = setOf(Itself),
+        testingLanguages = emptySet(),
         testingFrameworks = setOf(BashInputOutputTestingFramework)
 )

@@ -19,42 +19,38 @@ class GithubBranch(override val name: String,
     private val client: RawGithub = github.client
 
     override fun commit(file: EnvironmentFile,
-                        repositoryFilePath: Path,
                         commitMessage: String
     ): Commit {
-        val content = createContent(file, repositoryFilePath.toString(), this, commitMessage)
+        val content = createContent(file, this, commitMessage)
         return GithubCommit(content.commit.shA1, this, this.github)
     }
 
     private fun createContent(file: EnvironmentFile,
-                              filePath: String,
                               branch: GithubBranch,
                               commitMessage: String
     ): RawGithubContentUpdateResponse {
         val repository = client.repository(branch.repository.owner, branch.repository.name)
         return when (file) {
             is ByteArrayEnvironmentFile ->
-                repository.createContent(file.binaryContent, commitMessage, filePath, branch.name)
-            else -> repository.createContent(file.content, commitMessage, filePath, branch.name)
+                repository.createContent(file.binaryContent, commitMessage, file.path.toString(), branch.name)
+            else -> repository.createContent(file.content, commitMessage, file.path.toString(), branch.name)
         }
     }
 
     override fun update(file: EnvironmentFile,
-                        repositoryFilePath: Path,
                         commitMessage: String
     ): Commit = let { branch ->
-        updateContent(file, repositoryFilePath.toString(), branch, commitMessage).let {
+        updateContent(file, branch, commitMessage).let {
             GithubCommit(it.commit.shA1, branch, branch.github)
         }
     }
 
     private fun updateContent(file: EnvironmentFile,
-                              filePath: String,
                               branch: GithubBranch,
                               commitMessage: String
     ): RawGithubContentUpdateResponse =
             client.repository(repository.owner, repository.name)
-                    .getFileContent(filePath, branch.name)
+                    .getFileContent(file.path.toString(), branch.name)
                     .let {
                         when (file) {
                             is ByteArrayEnvironmentFile -> it.update(file.binaryContent, commitMessage, branch.name)

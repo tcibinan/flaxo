@@ -17,7 +17,7 @@ class MossConfiguration {
     @Bean
     fun mossManager(@Value("\${MOSS_USER_ID}") userId: String,
                     githubManager: GithubManager,
-                    supportedLanguages: Map<String, Language>
+                    languages: List<Language>
     ): MossManager =
-            SimpleMossManager(userId, githubManager, supportedLanguages)
+            SimpleMossManager(userId, githubManager, languages)
 }

@@ -3,12 +3,16 @@ package org.flaxo.rest
 import org.flaxo.common.ExternalService
 import org.flaxo.core.NamedEntity
 import org.flaxo.core.env.EnvironmentSupplier
+import org.flaxo.core.framework.BashInputOutputTestingFramework
 import org.flaxo.core.framework.JUnitTestingFramework
 import org.flaxo.core.framework.SpekTestingFramework
 import org.flaxo.core.framework.TestingFramework
+import org.flaxo.core.lang.BashLang
 import org.flaxo.core.lang.JavaLang
 import org.flaxo.core.lang.KotlinLang
+import org.flaxo.core.lang.`C++Lang`
 import org.flaxo.core.lang.Language
+import org.flaxo.cpp.CppEnvironmentSupplier
 import org.flaxo.gradle.GradleBuildTool
 import org.flaxo.rest.manager.ValidationManager
 import org.flaxo.rest.manager.codacy.CodacyManager
@@ -32,15 +36,18 @@ import org.springframework.context.annotation.Configuration
 class CoreConfiguration {
 
     @Bean
-    fun supportedLanguages() = namedMap(
+    fun languages(): List<Language> = listOf(
             JavaLang,
-            KotlinLang
+            KotlinLang,
+            `C++Lang`,
+            BashLang
     )
 
     @Bean
-    fun supportedTestingFrameworks() = namedMap(
+    fun testingFrameworks(): List<TestingFramework> = listOf(
             JUnitTestingFramework,
-            SpekTestingFramework
+            SpekTestingFramework,
+            BashInputOutputTestingFramework
     )
 
     @Bean
@@ -53,18 +60,19 @@ class CoreConfiguration {
     ): Map<Language, EnvironmentSupplier> =
             mapOf(
                     JavaLang to GradleBuildTool(travisEnvironmentSupplier),
-                    KotlinLang to GradleBuildTool(travisEnvironmentSupplier)
+                    KotlinLang to GradleBuildTool(travisEnvironmentSupplier),
+                    `C++Lang` to CppEnvironmentSupplier(`C++Lang`, BashLang, BashInputOutputTestingFramework)
             )
 
     @Bean
-    fun repositoryEnvironmentService(supportedLanguages: Map<String, Language>,
-                                     supportedTestingFrameworks: Map<String, TestingFramework>,
-                                     defaultBuildTools: Map<Language, EnvironmentSupplier>
+    fun repositoryEnvironmentService(languages: List<Language>,
+                                     testingFrameworks: List<TestingFramework>,
+                                     defaultEnvironmentSuppliers: Map<Language, EnvironmentSupplier>
     ): EnvironmentManager =
             SimpleEnvironmentManager(
-                    supportedLanguages,
-                    supportedTestingFrameworks,
-                    defaultBuildTools
+                    languages,
+                    testingFrameworks,
+                    defaultEnvironmentSuppliers
             )
 
     @Bean

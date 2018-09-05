@@ -73,7 +73,7 @@ class AuthenticationModal(props: AuthenticationModalProps)
                     div("modal-content") {
                         div("modal-header") {
                             h5("modal-title") {
-                                +"Modal title"
+                                +"Authorize"
                             }
                             button(classes = "close", type = ButtonType.button) {
                                 attrs {

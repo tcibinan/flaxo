@@ -15,6 +15,7 @@ dependencies {
     compile project(":cmd")
     compile project(":fmoss")
     compile project(":fcodacy")
+    compile project(":cpp")
 
     // spring dependencies
     compile "org.springframework.boot:spring-boot-starter-web:$spring_boot_version"

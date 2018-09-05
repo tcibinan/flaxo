@@ -71,15 +71,14 @@ class CourseCreationModal(props: CourseCreationModalProps)
         launch {
             flaxoClient.getAvailableLanguages().also { languages ->
                 setState {
+                    val defaultLanguage = languages.firstOrNull()
+                    val defaultTestingLanguage = defaultLanguage?.compatibleTestingLanguages?.firstOrNull()
+
                     flaxoLanguages = languages
-                    language = languages.firstOrNull()
-                            ?.name
-                            ?: "not found"
-                    testingLanguage = languages.firstOrNull()
-                            ?.compatibleTestingLanguages
-                            ?.firstOrNull()
-                            ?: "not found"
-                    testingFramework = languages.firstOrNull()
+                    language = defaultLanguage?.name ?: "not found"
+                    testingLanguage = defaultTestingLanguage ?: "not found"
+                    testingFramework = defaultTestingLanguage
+                            ?.let { testingLanguageName -> languages.find { it.name == testingLanguageName } }
                             ?.compatibleTestingFrameworks
                             ?.firstOrNull()
                             ?: "not found"
@@ -103,7 +102,7 @@ class CourseCreationModal(props: CourseCreationModalProps)
                 div("modal-content") {
                     div("modal-header") {
                         h5("modal-title") {
-                            +"Modal title"
+                            +"Create course"
                         }
                         button(classes = "close", type = ButtonType.button) {
                             attrs {
@@ -168,7 +167,7 @@ class CourseCreationModal(props: CourseCreationModalProps)
                 NotificationManager.success("Course has been created.")
             } catch (e: Exception) {
                 console.log(e)
-                NotificationManager.success("Error occurred while creation course.")
+                NotificationManager.error("Error occurred while course creation.")
             }
         }
     }
@@ -236,8 +235,12 @@ class CourseCreationModal(props: CourseCreationModalProps)
                             language = target.value
                             testingLanguage = state.flaxoLanguages
                                     .find { it.name == language }
-                                    ?.compatibleTestingLanguages
-                                    ?.firstOrNull()
+                                    ?.compatibleTestingLanguages.orEmpty()
+                                    .mapNotNull { testingLanguageName ->
+                                        state.flaxoLanguages.find { it.name == testingLanguageName }
+                                    }
+                                    .firstOrNull { it.compatibleTestingFrameworks.isNotEmpty() }
+                                    ?.name
                                     ?: "not found"
                             testingFramework = state.flaxoLanguages
                                     .find { it.name == testingLanguage }
@@ -249,7 +252,9 @@ class CourseCreationModal(props: CourseCreationModalProps)
                     attributes["defaultValue"] = state.language ?: ""
                     attributes["aria-describedby"] = LANGUAGE_SELECT_HELP_ID
                 }
-                state.flaxoLanguages.forEach { option { +it.name } }
+                state.flaxoLanguages
+                        .filter { it.compatibleTestingLanguages.isNotEmpty() }
+                        .forEach { option { +it.name } }
             }
             small {
                 attrs {
@@ -282,11 +287,12 @@ class CourseCreationModal(props: CourseCreationModalProps)
                     attributes["defaultValue"] = state.testingLanguage ?: ""
                     attributes["aria-describedby"] = TESTING_LANGUAGE_SELECT_HELP_ID
                 }
-
                 state.flaxoLanguages
                         .find { it.name == state.language }
-                        ?.compatibleTestingLanguages
-                        ?.forEach { option { +it } }
+                        ?.compatibleTestingLanguages.orEmpty()
+                        .mapNotNull { testingLanguageName -> state.flaxoLanguages.find { it.name == testingLanguageName } }
+                        .map { it.name }
+                        .forEach { option { +it } }
             }
             small {
                 attrs {

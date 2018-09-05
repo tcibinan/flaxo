@@ -23,14 +23,8 @@ object RepositoryEnvironmentServiceSpec : SubjectSpek<EnvironmentManager>({
     val firstTestingFramework = "junit"
     val secondTestingFramework = "spek"
 
-    val languages: Map<String, Language> = mapOf(
-            "java" to JavaLang,
-            "kotlin" to KotlinLang
-    )
-    val testingFrameworks: Map<String, TestingFramework> = mapOf(
-            "junit" to JUnitTestingFramework,
-            "spek" to SpekTestingFramework
-    )
+    val languages: List<Language> = listOf(JavaLang, KotlinLang)
+    val testingFrameworks: List<TestingFramework> = listOf(JUnitTestingFramework, SpekTestingFramework)
     val travisEnvironmentSupplier: TravisEnvironmentSupplier =
             SimpleTravisEnvironmentSupplier(travisWebHookUrl = "travisWebHookUrl")
     val defaultBuildTools: Map<Language, GradleBuildTool> = mapOf(

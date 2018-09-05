@@ -14,8 +14,8 @@ import org.flaxo.rest.manager.UnsupportedTestingFrameworkException
  * Environment manager implementation.
  */
 class SimpleEnvironmentManager(
-        private val languages: Map<String, Language>,
-        private val testingFrameworks: Map<String, TestingFramework>,
+        private val languages: List<Language>,
+        private val testingFrameworks: List<TestingFramework>,
         private val defaultBuildTools: Map<Language, EnvironmentSupplier>
 ) : EnvironmentManager {
 
@@ -23,11 +23,11 @@ class SimpleEnvironmentManager(
                                     testingLanguage: String,
                                     testingFramework: String
     ): Environment = produceEnvironment(
-            language = languages[language]
+            language = languages.find { it.name == language }
                     ?: throw UnsupportedLanguageException(language),
-            testingLanguage = languages[testingLanguage]
+            testingLanguage = languages.find { it.name == testingLanguage }
                     ?: throw UnsupportedLanguageException(testingLanguage),
-            testingFramework = testingFrameworks[testingFramework]
+            testingFramework = testingFrameworks.find { it.name == testingFramework }
                     ?: throw UnsupportedTestingFrameworkException(testingFramework)
     )
 

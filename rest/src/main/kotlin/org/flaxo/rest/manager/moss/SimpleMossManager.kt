@@ -26,7 +26,7 @@ import java.nio.file.Path
  */
 class SimpleMossManager(private val userId: String,
                         private val githubManager: GithubManager,
-                        private val supportedLanguages: Map<String, Language>
+                        private val languages: List<Language>
 ) : MossManager {
 
     private val logger = LogManager.getLogger(SimpleMossManager::class.java)
@@ -41,7 +41,7 @@ class SimpleMossManager(private val userId: String,
 
         val git = githubManager.with(githubToken)
 
-        val language = supportedLanguages[course.language]
+        val language = languages.find { it.name == course.language }
                 ?: throw UnsupportedLanguageException("Language ${course.language} is not supported for analysis yet.")
 
         logger.info("Aggregating course ${user.nickname}/${course.name} solutions as the local files")

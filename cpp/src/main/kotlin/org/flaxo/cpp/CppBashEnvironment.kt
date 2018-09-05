@@ -28,7 +28,7 @@ internal class CppBashEnvironment : Environment by SimpleEnvironment(
         )
 )
 
-private val bashEnvironmentDirectory = Paths.get("cpp/src/main/resources/bash_environment").toAbsolutePath()
+private val bashEnvironmentDirectory = Paths.get("../cpp/src/main/resources/bash_environment").toAbsolutePath()
 
 private fun file(path: String): EnvironmentFile =
         LocalEnvironmentFile(

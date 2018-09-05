@@ -1,3 +1,7 @@
+plugins {
+    id "org.junit.platform.gradle.plugin"
+}
+
 dependencies {
     compile project(':core')
     compile project(':cmd')
