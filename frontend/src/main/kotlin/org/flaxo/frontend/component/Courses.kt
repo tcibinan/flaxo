@@ -11,6 +11,7 @@ import org.flaxo.frontend.component.services.travisModal
 import org.flaxo.frontend.credentials
 import org.flaxo.common.Course
 import org.flaxo.common.User
+import org.flaxo.frontend.component.plagiarismModal
 import org.flaxo.frontend.wrapper.NotificationManager
 import react.setState
 import react.RBuilder
@@ -69,6 +70,7 @@ class Courses(props: CoursesProps) : RComponent<CoursesProps, CoursesState>(prop
         githubModal(props.user)
         travisModal(props.user)
         codacyModal(props.user)
+        plagiarismModal()
         courseCreationModal(onCourseCreation = ::updateCoursesList)
     }
 

@@ -69,7 +69,7 @@ kotlin {
 }
 
 task assembleFrontend(type: Copy) {
-    dependsOn "webpack-bundle"
+    dependsOn bundle
 
     ext.webDir = "$projectDir/src/main/web"
     ext.webpackBundleDir = "$projectDir/build/bundle"
@@ -85,6 +85,9 @@ task assembleFrontend(type: Copy) {
 }
 
 task runFrontend(type: Exec) {
+    dependsOn bundle
+    dependsOn assembleFrontend
+
     ext.port = 8088
     dependsOn assembleFrontend
     workingDir "$projectDir/build/dist"

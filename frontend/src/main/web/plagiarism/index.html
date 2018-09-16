@@ -1,4 +1,6 @@
 <!DOCTYPE html>
+<!-- Original d3 script by heybignick: -->
+<!-- https://bl.ocks.org/heybignick/3faf257bbbbc7743bb72310d03b86ee8 -->
 <meta charset="utf-8">
 <style>
 
@@ -48,7 +50,7 @@
     .threshold-range-monitor-container {
         position: fixed;
         left: 0;
-        bottom: 0;
+        top: 20px;
         font-size: 29px;
         font-weight: bold;
     }
@@ -67,8 +69,9 @@
 </div>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
-    // Original script by heybignick:
-    // https://bl.ocks.org/heybignick/3faf257bbbbc7743bb72310d03b86ee8
+    url = new URL(window.location.href);
+    var graph = JSON.parse(url.searchParams.get("graph"));
+
     var svg = d3.select("svg")
             .attr("preserveAspectRatio", "xMinYMin meet")
             .attr("viewBox", "0 0 600 400")
@@ -78,86 +81,85 @@
 
     var color = d3.scaleOrdinal(d3.schemeCategory20);
 
+    // var normLength = getMeanLinkLength(graph.links);
+    // var normLength = getMaxLinkLength(graph.links);
+    var normLength = 100;
     var simulation = d3.forceSimulation()
         .force("link", d3.forceLink().id(function (d) {
             return d.id;
         }).distance(function (d) {
-            return d.value * 10;
+            return (1 - d.value / normLength) * 200;
         }))
         .force("charge", d3.forceManyBody())
         .force("center", d3.forceCenter(width / 2, height / 2));
 
-    d3.json("students.json", function (error, graph) {
-        if (error) throw error;
+    var link = svg.append("g")
+        .attr("class", "links")
+        .selectAll("line")
+        .data(graph.links)
+        .enter().append("line")
+        .attr("stroke-width", function (d) {
+            var threshold = document.getElementById("plagiarismMatchThreshold").value;
+            return d.value > threshold
+                ? Math.pow(d.value, 1 / 4)
+                : 0;
+        });
 
-        var link = svg.append("g")
-            .attr("class", "links")
-            .selectAll("line")
-            .data(graph.links)
-            .enter().append("line")
-            .attr("stroke-width", function (d) {
-                var threshold = document.getElementById("plagiarismMatchThreshold").value;
-                return d.value > threshold
-                    ? Math.pow(d.value, 1 / 4)
-                    : 0;
+    var node = svg.append("g")
+        .attr("class", "nodes")
+        .selectAll("g")
+        .data(graph.nodes)
+        .enter().append("g")
+
+    var circles = node.append("circle")
+        .attr("r", 5)
+        .attr("fill", function (d) {
+            return color(d.group);
+        })
+        .call(d3.drag()
+            .on("start", dragstarted)
+            .on("drag", dragged)
+            .on("end", dragended));
+
+    var lables = node.append("text")
+        .text(function (d) {
+            return d.id;
+        })
+        .attr('x', 6)
+        .attr('y', 3);
+
+    node.append("title")
+        .text(function (d) {
+            return d.id;
+        });
+
+    simulation
+        .nodes(graph.nodes)
+        .on("tick", ticked);
+
+    simulation.force("link")
+        .links(graph.links);
+
+    function ticked() {
+        link
+            .attr("x1", function (d) {
+                return d.source.x;
+            })
+            .attr("y1", function (d) {
+                return d.source.y;
+            })
+            .attr("x2", function (d) {
+                return d.target.x;
+            })
+            .attr("y2", function (d) {
+                return d.target.y;
             });
 
-        var node = svg.append("g")
-            .attr("class", "nodes")
-            .selectAll("g")
-            .data(graph.nodes)
-            .enter().append("g")
-
-        var circles = node.append("circle")
-            .attr("r", 5)
-            .attr("fill", function (d) {
-                return color(d.group);
+        node
+            .attr("transform", function (d) {
+                return "translate(" + d.x + "," + d.y + ")";
             })
-            .call(d3.drag()
-                .on("start", dragstarted)
-                .on("drag", dragged)
-                .on("end", dragended));
-
-        var lables = node.append("text")
-            .text(function (d) {
-                return d.id;
-            })
-            .attr('x', 6)
-            .attr('y', 3);
-
-        node.append("title")
-            .text(function (d) {
-                return d.id;
-            });
-
-        simulation
-            .nodes(graph.nodes)
-            .on("tick", ticked);
-
-        simulation.force("link")
-            .links(graph.links);
-
-        function ticked() {
-            link
-                .attr("x1", function (d) {
-                    return d.source.x;
-                })
-                .attr("y1", function (d) {
-                    return d.source.y;
-                })
-                .attr("x2", function (d) {
-                    return d.target.x;
-                })
-                .attr("y2", function (d) {
-                    return d.target.y;
-                });
-
-            node
-                .attr("transform", function (d) {
-                    return "translate(" + d.x + "," + d.y + ")";
-                })
-        }
-    });
+    }
 
     function dragstarted(d) {
         if (!d3.event.active) simulation.alphaTarget(0.3).restart();
@@ -187,6 +189,24 @@
                     ? Math.pow(d.value, 1 / 4)
                     : 0;
             });
+    }
+
+    function getMeanLinkLength(links) {
+        var valuesSum = 0;
+        for (var i = 0; i < links.length; i++) {
+            valuesSum += links[i].value;
+        }
+        return valuesSum / links.length;
+    }
+
+    function getMaxLinkLength(links) {
+        max = 0;
+        for (var i = 0; i < links.length; i++) {
+            if (links[i].value > max) {
+                max = links[i].value;
+            }
+        }
+        return max;
     }
 
 </script>

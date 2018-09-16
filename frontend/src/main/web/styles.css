@@ -106,8 +106,18 @@ a.github-profile:hover {
     font-weight: bold;
 }
 
+.valid-plagiarism-report,
+.invalid-plagiarism-report {
+    cursor: pointer;
+}
+
 .plagiarism-marker {
     vertical-align: middle;
+}
+
+.plagiarism-modal .modal-body {
+    display: flex;
+    flex-direction: column;
 }
 
 .code-style-grade {
