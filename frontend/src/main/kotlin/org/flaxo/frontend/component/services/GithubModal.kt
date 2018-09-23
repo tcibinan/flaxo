@@ -12,6 +12,7 @@ import org.flaxo.frontend.credentials
 import org.flaxo.common.User
 import org.flaxo.frontend.github.githubProfileUrl
 import org.flaxo.frontend.Notifications
+import org.flaxo.frontend.client.FlaxoHttpException
 import org.w3c.dom.url.URLSearchParams
 import react.RBuilder
 import react.dom.a
@@ -97,8 +98,8 @@ private suspend fun authWithGithub() {
             githubAuthData.requestParams.forEach { (key, value) -> params.append(key, value) }
             window.location.assign(githubAuthData.redirectUrl + "?" + params.toString())
         }
-    } catch (e: Exception) {
+    } catch (e: FlaxoHttpException) {
         console.log(e)
-        Notifications.error("Error occurred while trying to authenticate with github.")
+        Notifications.error("Error occurred while trying to authenticate with github.", e)
     }
 }

@@ -8,6 +8,7 @@ import org.flaxo.frontend.credentials
 import org.flaxo.common.Course
 import org.flaxo.common.CourseLifecycle
 import org.flaxo.frontend.Notifications
+import org.flaxo.frontend.client.FlaxoHttpException
 import org.w3c.dom.url.URL.Companion.createObjectURL
 import org.w3c.files.Blob
 import react.RBuilder
@@ -77,9 +78,9 @@ class CourseStatisticsDownloadMenu(props: CourseStatisticsDownloadMenuProps)
                 link.setAttribute("download", "${props.course.name}-statistics.$format")
                 document.body?.appendChild(link)
                 link.click()
-            } catch (e: Exception) {
+            } catch (e: FlaxoHttpException) {
                 console.log(e)
-                Notifications.error("Error occurred while downloading ${props.course.name} course statistics.")
+                Notifications.error("Error occurred while downloading ${props.course.name} course statistics.", e)
             }
 
         }

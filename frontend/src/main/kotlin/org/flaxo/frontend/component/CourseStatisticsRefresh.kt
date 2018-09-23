@@ -7,6 +7,7 @@ import org.flaxo.frontend.credentials
 import org.flaxo.common.Course
 import org.flaxo.common.CourseLifecycle
 import org.flaxo.frontend.Notifications
+import org.flaxo.frontend.client.FlaxoHttpException
 import react.RBuilder
 import react.dom.button
 import react.dom.i
@@ -28,9 +29,9 @@ private suspend fun synchronizeCourseStatistics(course: Course) {
             Notifications.info("Course statistics refreshing was initiated.")
             Container.flaxoClient.syncCourse(it, course.name)
             Notifications.success("Course statistics synchronization has been finished.")
-        } catch (e: Exception) {
+        } catch (e: FlaxoHttpException) {
             console.log(e)
-            Notifications.error("Error occurred during ${course.name} course statistics synchronization.")
+            Notifications.error("Error occurred during ${course.name} course statistics synchronization.", e)
         }
     }
 }

@@ -16,6 +16,7 @@ import kotlinx.html.role
 import kotlinx.html.tabIndex
 import org.flaxo.frontend.credentials
 import org.flaxo.frontend.Notifications
+import org.flaxo.frontend.client.FlaxoHttpException
 import org.w3c.dom.HTMLSelectElement
 import react.RBuilder
 import react.RComponent
@@ -167,9 +168,9 @@ class CourseCreationModal(props: CourseCreationModalProps)
                         numberOfTasks = numberOfTasks)
                 props.onCourseCreation()
                 Notifications.success("Course has been created.")
-            } catch (e: Exception) {
+            } catch (e: FlaxoHttpException) {
                 console.log(e)
-                Notifications.error("Error occurred while course creation.")
+                Notifications.error("Error occurred while course creation.", e)
             }
         }
     }

@@ -15,52 +15,43 @@ import org.w3c.xhr.XMLHttpRequest
 
 class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
 
-    override suspend fun registerUser(credentials: Credentials): User {
-        try {
-            val request = post("/user/register",
-                    parameters = mapOf("nickname" to credentials.username, "password" to credentials.password))
-                    .await()
-            if (request.status.toInt() == 200) {
-                return userFromDynamic(JSON.parse<Payload<dynamic>>(request.responseText).payload)
-            } else {
-                throw FlaxoHttpCallException(request.responseText)
+    override suspend fun registerUser(credentials: Credentials): User =
+            handleErrors("User registering failed.") {
+                val request = post("/user/register",
+                        parameters = mapOf("nickname" to credentials.username, "password" to credentials.password)
+                ).await()
+                if (request.status.toInt() == 200) {
+                    return userFromDynamic(JSON.parse<Payload<dynamic>>(request.responseText).payload)
+                } else {
+                    onError(request)
+                }
             }
-        } catch (e: Throwable) {
-            throw FlaxoHttpCallException("User registering failed.", e)
-        }
-    }
 
-    override suspend fun getSelf(credentials: Credentials): User {
-        try {
-            val request = get("/user", credentials = credentials)
-                    .await()
-            if (request.status.toInt() == 200) {
-                return userFromDynamic(JSON.parse<Payload<dynamic>>(request.responseText).payload)
-            } else {
-                throw FlaxoHttpCallException(request.responseText)
+    override suspend fun getSelf(credentials: Credentials): User =
+            handleErrors("Current user retrieving failed.") {
+                val request = get("/user", credentials = credentials).await()
+                if (request.status.toInt() == 200) {
+                    return userFromDynamic(JSON.parse<Payload<dynamic>>(request.responseText).payload)
+                } else {
+                    onError(request)
+                }
             }
-        } catch (e: Throwable) {
-            throw FlaxoHttpCallException("Current user retrieving failed.", e)
-        }
-    }
 
-    override suspend fun getUserCourses(credentials: Credentials, username: String): List<Course> {
-        try {
-            val request = get("/course/all",
-                    parameters = mapOf("nickname" to username),
-                    credentials = credentials)
-                    .await()
-            if (request.status.toInt() == 200) {
-                return JSON.parse<Payload<Array<dynamic>>>(request.responseText)
-                        .payload
-                        ?.toList()
-                        ?.map { courseFromDynamic(it) }
-                        ?: throw FlaxoHttpCallException("There is no courses in server response")
-            } else {
-                throw FlaxoHttpCallException(request.responseText)
-            }
-        } catch (e: Throwable) {
-            throw FlaxoHttpCallException("User courses retrieving failed.", e)
+    override suspend fun getUserCourses(credentials: Credentials,
+                                        username: String
+    ): List<Course> = handleErrors("User courses retrieving failed.") {
+        val request = get("/course/all",
+                parameters = mapOf("nickname" to username),
+                credentials = credentials
+        ).await()
+        if (request.status.toInt() == 200) {
+            return JSON.parse<Payload<Array<dynamic>>>(request.responseText)
+                    .payload
+                    ?.toList()
+                    ?.map { courseFromDynamic(it) }
+                    ?: throw FlaxoHttpException("There is no courses in server response")
+        } else {
+            onError(request)
         }
     }
 
@@ -71,77 +62,63 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
                                       testingLanguage: String,
                                       testingFramework: String,
                                       numberOfTasks: Int
-    ): Course {
-        try {
-            val request = post("/course/create",
-                    parameters = mapOf("courseName" to courseName,
-                            "description" to description,
-                            "language" to language,
-                            "testingLanguage" to testingLanguage,
-                            "testingFramework" to testingFramework,
-                            "numberOfTasks" to numberOfTasks),
-                    credentials = credentials)
-                    .await()
-            if (request.status.toInt() == 200) {
-                return courseFromDynamic(JSON.parse<Payload<dynamic>>(request.responseText).payload)
-            } else {
-                throw FlaxoHttpCallException(request.responseText)
-            }
-        } catch (e: Throwable) {
-            throw FlaxoHttpCallException("Course creation call failed.", e)
+    ): Course = handleErrors("Course creation handleErrors failed.") {
+        val request = post("/course/create",
+                parameters = mapOf("courseName" to courseName,
+                        "description" to description,
+                        "language" to language,
+                        "testingLanguage" to testingLanguage,
+                        "testingFramework" to testingFramework,
+                        "numberOfTasks" to numberOfTasks),
+                credentials = credentials
+        ).await()
+        if (request.status.toInt() == 200) {
+            return courseFromDynamic(JSON.parse<Payload<dynamic>>(request.responseText).payload)
+        } else {
+            onError(request)
         }
     }
 
-    override suspend fun getAvailableLanguages(): List<Language> {
-        try {
-            val request = get("/settings/languages")
-                    .await()
-            if (request.status.toInt() == 200) {
-                return JSON.parse<Payload<Array<dynamic>>>(request.responseText)
-                        .payload
-                        ?.toList()
-                        ?.map { languageFromDynamic(it) }
-                        ?: emptyList()
-            } else {
-                throw FlaxoHttpCallException(request.responseText)
+    override suspend fun getAvailableLanguages(): List<Language> =
+            handleErrors("Available languages retrieving failed.") {
+                val request = get("/settings/languages").await()
+                if (request.status.toInt() == 200) {
+                    return JSON.parse<Payload<Array<dynamic>>>(request.responseText)
+                            .payload
+                            ?.toList()
+                            ?.map { languageFromDynamic(it) }
+                            ?: emptyList()
+                } else {
+                    onError(request)
+                }
             }
-        } catch (e: Throwable) {
-            throw FlaxoHttpCallException("Available languages retrieving failed.", e)
-        }
-    }
 
     override suspend fun getCourseStatistics(credentials: Credentials,
                                              username: String,
                                              courseName: String
-    ): CourseStatistics {
-        try {
-            val request = get("/statistics",
-                    parameters = mapOf("owner" to username, "course" to courseName),
-                    credentials = credentials)
-                    .await()
-            if (request.status.toInt() == 200) {
-                return courseStatisticsFromDynamic(JSON.parse<Payload<dynamic>>(request.responseText).payload)
-            } else {
-                throw FlaxoHttpCallException(request.responseText)
-            }
-        } catch (e: Throwable) {
-            throw FlaxoHttpCallException("Course statistics retrieving failed.", e)
+    ): CourseStatistics = handleErrors("Course statistics retrieving failed.") {
+        val request = get("/statistics",
+                parameters = mapOf("owner" to username, "course" to courseName),
+                credentials = credentials
+        ).await()
+        if (request.status.toInt() == 200) {
+            return courseStatisticsFromDynamic(JSON.parse<Payload<dynamic>>(request.responseText).payload)
+        } else {
+            onError(request)
         }
     }
 
-    override suspend fun startCourse(credentials: Credentials, courseName: String): Course {
-        try {
-            val request = post("/course/activate",
-                    parameters = mapOf("courseName" to courseName),
-                    credentials = credentials)
-                    .await()
-            if (request.status.toInt() == 200) {
-                return courseFromDynamic(JSON.parse<Payload<dynamic>>(request.responseText).payload)
-            } else {
-                throw FlaxoHttpCallException(request.responseText)
-            }
-        } catch (e: Throwable) {
-            throw FlaxoHttpCallException("Course starting failed.", e)
+    override suspend fun startCourse(credentials: Credentials,
+                                     courseName: String
+    ): Course = handleErrors("Course starting failed.") {
+        val request = post("/course/activate",
+                parameters = mapOf("courseName" to courseName),
+                credentials = credentials
+        ).await()
+        if (request.status.toInt() == 200) {
+            return courseFromDynamic(JSON.parse<Payload<dynamic>>(request.responseText).payload)
+        } else {
+            onError(request)
         }
     }
 
@@ -149,31 +126,27 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override suspend fun analysePlagiarism(credentials: Credentials, courseName: String) {
-        try {
-            val request = post("/course/analyse/plagiarism",
-                    parameters = mapOf("courseName" to courseName),
-                    credentials = credentials)
-                    .await()
-            if (request.status.toInt() != 200) {
-                throw FlaxoHttpCallException(request.responseText)
-            }
-        } catch (e: Throwable) {
-            throw FlaxoHttpCallException("Plagiarism analysis scheduling failed.", e)
+    override suspend fun analysePlagiarism(credentials: Credentials,
+                                           courseName: String
+    ) = handleErrors("Plagiarism analysis scheduling failed.") {
+        val request = post("/course/analyse/plagiarism",
+                parameters = mapOf("courseName" to courseName),
+                credentials = credentials
+        ).await()
+        if (request.status.toInt() != 200) {
+            onError(request)
         }
     }
 
-    override suspend fun syncCourse(credentials: Credentials, courseName: String) {
-        try {
-            val request = post("/course/sync",
-                    parameters = mapOf("courseName" to courseName),
-                    credentials = credentials)
-                    .await()
-            if (request.status.toInt() != 200) {
-                throw FlaxoHttpCallException(request.responseText)
-            }
-        } catch (e: Throwable) {
-            throw FlaxoHttpCallException("Course synchronization failed.", e)
+    override suspend fun syncCourse(credentials: Credentials,
+                                    courseName: String
+    ) = handleErrors("Course synchronization failed.") {
+        val request = post("/course/sync",
+                parameters = mapOf("courseName" to courseName),
+                credentials = credentials
+        ).await()
+        if (request.status.toInt() != 200) {
+            onError(request)
         }
     }
 
@@ -181,19 +154,15 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
                                      courseName: String,
                                      task: String,
                                      deadline: String?
-    ) {
-        try {
-            val request = post("/task/update/rules",
-                    parameters = mapOf("courseName" to courseName,
-                            "taskBranch" to task,
-                            "deadline" to deadline),
-                    credentials = credentials)
-                    .await()
-            if (request.status.toInt() != 200) {
-                throw FlaxoHttpCallException(request.responseText)
-            }
-        } catch (e: Throwable) {
-            throw FlaxoHttpCallException("Task rules updating failed.", e)
+    ) = handleErrors("Task rules updating failed.") {
+        val request = post("/task/update/rules",
+                parameters = mapOf("courseName" to courseName,
+                        "taskBranch" to task,
+                        "deadline" to deadline),
+                credentials = credentials
+        ).await()
+        if (request.status.toInt() != 200) {
+            onError(request)
         }
     }
 
@@ -201,94 +170,98 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
                                       courseName: String,
                                       task: String,
                                       scores: Map<String, Int>
-    ) {
-        try {
-            val request = post("/task/update/scores",
-                    parameters = mapOf("courseName" to courseName,
-                            "taskBranch" to task),
-                    body = scores.map { (a, b) -> "\"$a\": $b" }
-                            .joinToString(", ", "{", "}")
-                            .let { JSON.parse<Map<String, Int>>(it) },
-                    credentials = credentials)
-                    .await()
-            if (request.status.toInt() != 200) {
-                throw FlaxoHttpCallException(request.responseText)
-            }
-        } catch (e: Throwable) {
-            throw FlaxoHttpCallException("Task scores updating failed.", e)
+    ) = handleErrors("Task scores updating failed.") {
+        val request = post("/task/update/scores",
+                parameters = mapOf("courseName" to courseName,
+                        "taskBranch" to task),
+                body = scores.map { (a, b) -> "\"$a\": $b" }
+                        .joinToString(", ", "{", "}")
+                        .let { JSON.parse<Map<String, Int>>(it) },
+                credentials = credentials
+        ).await()
+        if (request.status.toInt() != 200) {
+            onError(request)
         }
     }
 
-    override suspend fun addCodacyToken(credentials: Credentials, codacyToken: String) {
-        try {
-            val request = put("/codacy/token",
-                    parameters = mapOf("token" to codacyToken),
-                    credentials = credentials)
-                    .await()
-            if (request.status.toInt() != 200) {
-                throw FlaxoHttpCallException(request.responseText)
-            }
-        } catch (e: Throwable) {
-            throw FlaxoHttpCallException("Codacy token addition failed.", e)
+    override suspend fun addCodacyToken(credentials: Credentials,
+                                        codacyToken: String
+    ) = handleErrors("Codacy token addition failed.") {
+        val request = put("/codacy/token",
+                parameters = mapOf("token" to codacyToken),
+                credentials = credentials
+        ).await()
+        if (request.status.toInt() != 200) {
+            onError(request)
         }
     }
 
-    override suspend fun activateCodacy(credentials: Credentials, courseName: String) {
-        try {
-            val request = post("/course/activate/codacy",
-                    parameters = mapOf("courseName" to courseName),
-                    credentials = credentials)
-                    .await()
-            if (request.status.toInt() != 200) {
-                throw FlaxoHttpCallException(request.responseText)
-            }
-        } catch (e: Throwable) {
-            throw FlaxoHttpCallException("Activating codacy for course failed.", e)
+    override suspend fun activateCodacy(credentials: Credentials,
+                                        courseName: String
+    ) = handleErrors("Activating codacy for course failed.") {
+        val request = post("/course/activate/codacy",
+                parameters = mapOf("courseName" to courseName),
+                credentials = credentials
+        ).await()
+        if (request.status.toInt() != 200) {
+            onError(request)
         }
     }
 
-    override suspend fun activateTravis(credentials: Credentials, courseName: String) {
-        try {
-            val request = post("/course/activate/travis",
-                    parameters = mapOf("courseName" to courseName),
-                    credentials = credentials)
-                    .await()
-            if (request.status.toInt() != 200) {
-                throw FlaxoHttpCallException(request.responseText)
-            }
-        } catch (e: Throwable) {
-            throw FlaxoHttpCallException("Activating travis for course failed.", e)
+    override suspend fun activateTravis(credentials: Credentials,
+                                        courseName: String
+    ) = handleErrors("Activating travis for course failed.") {
+        val request = post("/course/activate/travis",
+                parameters = mapOf("courseName" to courseName),
+                credentials = credentials
+        ).await()
+        if (request.status.toInt() != 200) {
+            onError(request)
         }
     }
 
-    override suspend fun downloadStatistics(credentials: Credentials, courseName: String, format: String): dynamic {
-        try {
-            val request = get("/statistics/download",
-                    parameters = mapOf("courseName" to courseName, "format" to format),
-                    credentials = credentials)
-                    .await()
-            if (request.status.toInt() == 200) {
-                return request.response
-            } else {
-                throw FlaxoHttpCallException(request.responseText)
-            }
-        } catch (e: Throwable) {
-            throw FlaxoHttpCallException("Course statistics retrieving failed.", e)
+    override suspend fun downloadStatistics(credentials: Credentials,
+                                            courseName: String,
+                                            format: String
+    ): dynamic = handleErrors("Course statistics retrieving failed.") {
+        val request = get("/statistics/download",
+                parameters = mapOf("courseName" to courseName, "format" to format),
+                credentials = credentials
+        ).await()
+        if (request.status.toInt() == 200) {
+            return request.response
+        } else {
+            onError(request)
         }
     }
 
-    override suspend fun getGithubAuthData(credentials: Credentials): GithubAuthData {
-        try {
-            val request = get("/github/auth", credentials = credentials)
-                    .await()
-            if (request.status.toInt() == 200) {
-                return githubAuthDataFromDynamic(JSON.parse<Payload<dynamic>>(request.responseText).payload)
-            } else {
-                throw FlaxoHttpCallException(request.responseText)
+    override suspend fun getGithubAuthData(credentials: Credentials): GithubAuthData =
+            handleErrors("Course statistics retrieving failed.") {
+                val request = get("/github/auth", credentials = credentials).await()
+                if (request.status.toInt() == 200) {
+                    return githubAuthDataFromDynamic(JSON.parse<Payload<dynamic>>(request.responseText).payload)
+                } else {
+                    onError(request)
+                }
             }
+
+    private inline fun <T> handleErrors(errorMessage: String, function: () -> T): T =
+            try {
+                function()
+            } catch (e: FlaxoHttpException) {
+                throw FlaxoHttpException(errorMessage, e, e.userMessage)
+            } catch (e: Throwable) {
+                throw FlaxoHttpException(errorMessage, e)
+            }
+
+    private fun onError(request: XMLHttpRequest): Nothing {
+        val errorPayload: String?
+        try {
+            errorPayload = JSON.parse<Payload<String>>(request.responseText).payload
         } catch (e: Throwable) {
-            throw FlaxoHttpCallException("Course statistics retrieving failed.", e)
+            throw FlaxoHttpException(request.responseText)
         }
+        throw FlaxoHttpException(userMessage = errorPayload)
     }
 
     private fun get(method: String,

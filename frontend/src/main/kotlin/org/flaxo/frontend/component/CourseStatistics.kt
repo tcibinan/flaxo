@@ -9,6 +9,7 @@ import org.flaxo.frontend.credentials
 import org.flaxo.common.Course
 import org.flaxo.common.CourseStatistics
 import org.flaxo.frontend.Notifications
+import org.flaxo.frontend.client.FlaxoHttpException
 import react.RBuilder
 import react.RComponent
 import react.RProps
@@ -56,9 +57,9 @@ class CourseStatistics(props: CourseStatisticsProps)
                     val courseStatistics =
                             flaxoClient.getCourseStatistics(it, props.course.user.nickname, props.course.name)
                     setState { this.courseStatistics = courseStatistics }
-                } catch (e: Exception) {
+                } catch (e: FlaxoHttpException) {
                     console.log(e)
-                    Notifications.error("Error occurred while retrieving course statistics.")
+                    Notifications.error("Error occurred while retrieving course statistics.", e)
                 }
             }
         }

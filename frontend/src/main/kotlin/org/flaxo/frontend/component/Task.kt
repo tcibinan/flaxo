@@ -8,6 +8,7 @@ import org.flaxo.frontend.credentials
 import org.flaxo.common.Course
 import org.flaxo.common.Task
 import org.flaxo.frontend.Notifications
+import org.flaxo.frontend.client.FlaxoHttpException
 import react.RBuilder
 import react.RComponent
 import react.RProps
@@ -68,7 +69,7 @@ class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
                         hr {}
                         rules(props.course, props.task)
                     }
-                    taskStatistics(props.course, props.task, onStudentScoreUpdate=::updateStudentScore)
+                    taskStatistics(props.course, props.task, onStudentScoreUpdate = ::updateStudentScore)
                 }
             }
         }
@@ -82,9 +83,9 @@ class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
                         task = props.task.branch,
                         scores = state.scores)
                 Notifications.success("Task results were saved")
-            } catch (e: Exception) {
+            } catch (e: FlaxoHttpException) {
                 console.log(e)
-                Notifications.error("Error occurred while saving task results")
+                Notifications.error("Error occurred while saving task results", e)
             }
         }
     }

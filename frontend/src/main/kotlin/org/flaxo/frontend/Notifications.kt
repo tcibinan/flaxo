@@ -1,5 +1,6 @@
 package org.flaxo.frontend
 
+import org.flaxo.frontend.client.FlaxoHttpException
 import org.flaxo.frontend.wrapper.ReactNotificationManager
 
 // Hour in milliseconds
@@ -18,5 +19,9 @@ class Notifications {
 
         fun error(message: String, title: String? = null) =
                 ReactNotificationManager.error(message, title, time = HOUR)
+
+        fun error(message: String, e: FlaxoHttpException) =
+                if (e.userMessage == null) error(message)
+                else error(message + "\n\n" + e.userMessage)
     }
 }

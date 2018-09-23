@@ -5,7 +5,7 @@ import react.*
 import react.dom.div
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.client.FlaxoClient
-import org.flaxo.frontend.client.FlaxoHttpCallException
+import org.flaxo.frontend.client.FlaxoHttpException
 import org.flaxo.frontend.credentials
 import org.flaxo.frontend.wrapper.Cookies
 import org.flaxo.common.User
@@ -31,9 +31,9 @@ class Page : RComponent<EmptyProps, PageState>() {
                 try {
                     val user = flaxoClient.getSelf(it)
                     setState { this.user = user }
-                } catch (e: FlaxoHttpCallException) {
+                } catch (e: FlaxoHttpException) {
                     console.log(e)
-                    Notifications.error("Error occurred while retrieving ${it.username} user.")
+                    Notifications.error("Error occurred while retrieving ${it.username} user.", e)
                 }
             }
         }

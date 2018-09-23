@@ -13,7 +13,7 @@ import kotlinx.html.role
 import kotlinx.html.tabIndex
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.client.FlaxoClient
-import org.flaxo.frontend.client.FlaxoHttpCallException
+import org.flaxo.frontend.client.FlaxoHttpException
 import org.flaxo.frontend.Credentials
 import org.flaxo.frontend.Notifications
 import org.w3c.dom.HTMLInputElement
@@ -175,9 +175,9 @@ class RegistrationModal(props: RegistrationModalProps)
             val user = flaxoClient.registerUser(credentials)
             props.onLogin(username, password, user)
             Notifications.success("User $username has been registered.")
-        } catch (e: FlaxoHttpCallException) {
+        } catch (e: FlaxoHttpException) {
             console.log(e)
-            Notifications.error("Error occurred while registering $username user.")
+            Notifications.error("Error occurred while registering $username user.", e)
         }
     }
 }

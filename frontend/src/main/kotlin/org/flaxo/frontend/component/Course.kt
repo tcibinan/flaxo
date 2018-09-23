@@ -9,6 +9,7 @@ import org.flaxo.frontend.credentials
 import org.flaxo.common.Course
 import org.flaxo.common.CourseLifecycle
 import org.flaxo.frontend.Notifications
+import org.flaxo.frontend.client.FlaxoHttpException
 import react.RBuilder
 import react.RComponent
 import react.RProps
@@ -73,9 +74,9 @@ class Course(props: CourseProps) : RComponent<CourseProps, EmptyState>(props) {
                 flaxoClient.startCourse(it, props.course.name)
                 props.onUpdate()
                 Notifications.success("Course ${props.course.name} has been started.")
-            } catch (e: Exception) {
+            } catch (e: FlaxoHttpException) {
                 console.log(e)
-                Notifications.error("Error occurred while trying to start ${props.course.name} course.")
+                Notifications.error("Error occurred while trying to start ${props.course.name} course.", e)
             }
         }
     }
@@ -87,10 +88,10 @@ class Course(props: CourseProps) : RComponent<CourseProps, EmptyState>(props) {
                 flaxoClient.analysePlagiarism(it, props.course.name)
                 Notifications.success("Plagiarism analysis for course ${props.course.name} " +
                         "has been started.")
-            } catch (e: Exception) {
+            } catch (e: FlaxoHttpException) {
                 console.log(e)
                 Notifications.error("Error occurred while starting plagiarism analysis " +
-                        "for ${props.course.name} course.")
+                        "for ${props.course.name} course.", e)
             }
         }
     }

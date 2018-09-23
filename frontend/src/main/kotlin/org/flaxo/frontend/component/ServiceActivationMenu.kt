@@ -11,6 +11,7 @@ import org.flaxo.common.Course
 import org.flaxo.common.CourseLifecycle
 import org.flaxo.common.ExternalService
 import org.flaxo.frontend.Notifications
+import org.flaxo.frontend.client.FlaxoHttpException
 import react.RBuilder
 import react.RComponent
 import react.RProps
@@ -91,9 +92,9 @@ class ServiceActivationMenu(props: ServiceActivationMenuProps)
                 Notifications.info("Travis activation has been started.")
                 flaxoClient.activateTravis(it, props.course.name)
                 Notifications.success("Travis activation has been finished.")
-            } catch (e: Exception) {
+            } catch (e: FlaxoHttpException) {
                 console.log(e)
-                Notifications.error("Error occurred during travis activation.")
+                Notifications.error("Error occurred during travis activation.", e)
             }
         }
     }
@@ -104,9 +105,9 @@ class ServiceActivationMenu(props: ServiceActivationMenuProps)
                 Notifications.info("Codacy activation has been started.")
                 flaxoClient.activateCodacy(it, props.course.name)
                 Notifications.success("Codacy activation has been finished.")
-            } catch (e: Exception) {
+            } catch (e: FlaxoHttpException) {
                 console.log(e)
-                Notifications.error("Error occurred during codacy activation.")
+                Notifications.error("Error occurred during codacy activation.", e)
             }
         }
     }

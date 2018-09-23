@@ -11,6 +11,7 @@ import org.flaxo.frontend.credentials
 import org.flaxo.common.Course
 import org.flaxo.common.User
 import org.flaxo.frontend.Notifications
+import org.flaxo.frontend.client.FlaxoHttpException
 import react.setState
 import react.RBuilder
 import react.RComponent
@@ -83,9 +84,9 @@ class Courses(props: CoursesProps) : RComponent<CoursesProps, CoursesState>(prop
                     this.selectedCourse = selectedCourse
                     this.courses = courses
                 }
-            } catch (e: Throwable) {
+            } catch (e: FlaxoHttpException) {
                 console.log(e)
-                Notifications.error("Error occurred while retrieving courses list.")
+                Notifications.error("Error occurred while retrieving courses list.", e)
             }
         }
     }

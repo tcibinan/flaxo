@@ -5,7 +5,7 @@ import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.client.FlaxoClient
-import org.flaxo.frontend.client.FlaxoHttpCallException
+import org.flaxo.frontend.client.FlaxoHttpException
 import org.flaxo.common.User
 import org.w3c.dom.HTMLInputElement
 import kotlinx.html.ButtonType
@@ -174,9 +174,9 @@ class AuthenticationModal(props: AuthenticationModalProps)
         try {
             val user = flaxoClient.getSelf(credentials)
             props.onLogin(username, password, user)
-        } catch (e: FlaxoHttpCallException) {
+        } catch (e: FlaxoHttpException) {
             console.log(e)
-            Notifications.error("Error occurred while authenticating in flaxo.")
+            Notifications.error("Error occurred while authenticating in flaxo.", e)
         }
     }
 
