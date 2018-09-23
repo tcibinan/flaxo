@@ -7,7 +7,7 @@ import org.flaxo.frontend.Container
 import org.flaxo.frontend.credentials
 import org.flaxo.common.Course
 import org.flaxo.common.Task
-import org.flaxo.frontend.wrapper.NotificationManager
+import org.flaxo.frontend.Notifications
 import react.RBuilder
 import react.RComponent
 import react.RProps
@@ -81,10 +81,10 @@ class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
                         courseName = props.course.name,
                         task = props.task.branch,
                         scores = state.scores)
-                NotificationManager.success("Task results were saved")
+                Notifications.success("Task results were saved")
             } catch (e: Exception) {
                 console.log(e)
-                NotificationManager.error("Error occurred while saving task results")
+                Notifications.error("Error occurred while saving task results")
             }
         }
     }

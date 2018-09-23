@@ -6,7 +6,7 @@ import org.flaxo.frontend.Container
 import org.flaxo.frontend.credentials
 import org.flaxo.common.Course
 import org.flaxo.common.CourseLifecycle
-import org.flaxo.frontend.wrapper.NotificationManager
+import org.flaxo.frontend.Notifications
 import react.RBuilder
 import react.dom.button
 import react.dom.i
@@ -25,12 +25,12 @@ fun RBuilder.courseStatisticsRefresh(course: Course) {
 private suspend fun synchronizeCourseStatistics(course: Course) {
     credentials?.also {
         try {
-            NotificationManager.info("Course statistics refreshing was initiated.")
+            Notifications.info("Course statistics refreshing was initiated.")
             Container.flaxoClient.syncCourse(it, course.name)
-            NotificationManager.success("Course statistics synchronization has been finished.")
+            Notifications.success("Course statistics synchronization has been finished.")
         } catch (e: Exception) {
             console.log(e)
-            NotificationManager.error("Error occurred during ${course.name} course statistics synchronization.")
+            Notifications.error("Error occurred during ${course.name} course statistics synchronization.")
         }
     }
 }

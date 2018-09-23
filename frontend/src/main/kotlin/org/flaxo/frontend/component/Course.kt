@@ -8,7 +8,7 @@ import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.frontend.credentials
 import org.flaxo.common.Course
 import org.flaxo.common.CourseLifecycle
-import org.flaxo.frontend.wrapper.NotificationManager
+import org.flaxo.frontend.Notifications
 import react.RBuilder
 import react.RComponent
 import react.RProps
@@ -69,13 +69,13 @@ class Course(props: CourseProps) : RComponent<CourseProps, EmptyState>(props) {
     private suspend fun startCourse() {
         credentials?.also {
             try {
-                NotificationManager.info("Course starting was initiated.")
+                Notifications.info("Course starting was initiated.")
                 flaxoClient.startCourse(it, props.course.name)
                 props.onUpdate()
-                NotificationManager.success("Course ${props.course.name} has been started.")
+                Notifications.success("Course ${props.course.name} has been started.")
             } catch (e: Exception) {
                 console.log(e)
-                NotificationManager.error("Error occurred while trying to start ${props.course.name} course.")
+                Notifications.error("Error occurred while trying to start ${props.course.name} course.")
             }
         }
     }
@@ -83,13 +83,13 @@ class Course(props: CourseProps) : RComponent<CourseProps, EmptyState>(props) {
     private suspend fun analysePlagiarism() {
         credentials?.also {
             try {
-                NotificationManager.info("Course ${props.course.name} plagiarism analysis has been started.")
+                Notifications.info("Course ${props.course.name} plagiarism analysis has been started.")
                 flaxoClient.analysePlagiarism(it, props.course.name)
-                NotificationManager.success("Plagiarism analysis for course ${props.course.name} " +
+                Notifications.success("Plagiarism analysis for course ${props.course.name} " +
                         "has been started.")
             } catch (e: Exception) {
                 console.log(e)
-                NotificationManager.error("Error occurred while starting plagiarism analysis " +
+                Notifications.error("Error occurred while starting plagiarism analysis " +
                         "for ${props.course.name} course.")
             }
         }

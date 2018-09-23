@@ -7,7 +7,7 @@ import org.flaxo.frontend.Container
 import org.flaxo.frontend.credentials
 import org.flaxo.common.Course
 import org.flaxo.common.CourseLifecycle
-import org.flaxo.frontend.wrapper.NotificationManager
+import org.flaxo.frontend.Notifications
 import org.w3c.dom.url.URL.Companion.createObjectURL
 import org.w3c.files.Blob
 import react.RBuilder
@@ -79,7 +79,7 @@ class CourseStatisticsDownloadMenu(props: CourseStatisticsDownloadMenuProps)
                 link.click()
             } catch (e: Exception) {
                 console.log(e)
-                NotificationManager.error("Error occurred while downloading ${props.course.name} course statistics.")
+                Notifications.error("Error occurred while downloading ${props.course.name} course statistics.")
             }
 
         }

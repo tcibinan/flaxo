@@ -8,7 +8,7 @@ import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.frontend.credentials
 import org.flaxo.common.Course
 import org.flaxo.common.CourseStatistics
-import org.flaxo.frontend.wrapper.NotificationManager
+import org.flaxo.frontend.Notifications
 import react.RBuilder
 import react.RComponent
 import react.RProps
@@ -57,8 +57,8 @@ class CourseStatistics(props: CourseStatisticsProps)
                             flaxoClient.getCourseStatistics(it, props.course.user.nickname, props.course.name)
                     setState { this.courseStatistics = courseStatistics }
                 } catch (e: Exception) {
-                    NotificationManager.error("Error occurred while retrieving course statistics.")
                     console.log(e)
+                    Notifications.error("Error occurred while retrieving course statistics.")
                 }
             }
         }

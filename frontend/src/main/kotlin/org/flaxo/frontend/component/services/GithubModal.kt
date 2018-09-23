@@ -11,7 +11,7 @@ import org.flaxo.frontend.Container
 import org.flaxo.frontend.credentials
 import org.flaxo.common.User
 import org.flaxo.frontend.github.githubProfileUrl
-import org.flaxo.frontend.wrapper.NotificationManager
+import org.flaxo.frontend.Notifications
 import org.w3c.dom.url.URLSearchParams
 import react.RBuilder
 import react.dom.a
@@ -99,6 +99,6 @@ private suspend fun authWithGithub() {
         }
     } catch (e: Exception) {
         console.log(e)
-        NotificationManager.error("Error occurred while trying to authenticate with github.")
+        Notifications.error("Error occurred while trying to authenticate with github.")
     }
 }

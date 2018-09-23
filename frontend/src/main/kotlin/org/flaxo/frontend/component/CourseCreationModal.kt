@@ -15,7 +15,7 @@ import kotlinx.html.id
 import kotlinx.html.role
 import kotlinx.html.tabIndex
 import org.flaxo.frontend.credentials
-import org.flaxo.frontend.wrapper.NotificationManager
+import org.flaxo.frontend.Notifications
 import org.w3c.dom.HTMLSelectElement
 import react.RBuilder
 import react.RComponent
@@ -151,7 +151,7 @@ class CourseCreationModal(props: CourseCreationModalProps)
     private suspend fun createCourse() {
         credentials?.also {
             try {
-                NotificationManager.info("Course creation has been started.")
+                Notifications.info("Course creation has been started.")
                 val courseName = valueByInputId(COURSE_NAME_INPUT_ID) ?: ""
                 val description = valueByInputId(COURSE_NAME_INPUT_ID)
                 val language = valueBySelectId(LANGUAGE_SELECT_ID) ?: ""
@@ -166,10 +166,10 @@ class CourseCreationModal(props: CourseCreationModalProps)
                         testingFramework = testingFramework,
                         numberOfTasks = numberOfTasks)
                 props.onCourseCreation()
-                NotificationManager.success("Course has been created.")
+                Notifications.success("Course has been created.")
             } catch (e: Exception) {
                 console.log(e)
-                NotificationManager.error("Error occurred while course creation.")
+                Notifications.error("Error occurred while course creation.")
             }
         }
     }

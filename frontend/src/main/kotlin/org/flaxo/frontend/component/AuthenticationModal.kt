@@ -16,7 +16,7 @@ import kotlinx.html.id
 import kotlinx.html.role
 import kotlinx.html.tabIndex
 import org.flaxo.frontend.Credentials
-import org.flaxo.frontend.wrapper.NotificationManager
+import org.flaxo.frontend.Notifications
 import react.RBuilder
 import react.RComponent
 import react.RProps
@@ -176,7 +176,7 @@ class AuthenticationModal(props: AuthenticationModalProps)
             props.onLogin(username, password, user)
         } catch (e: FlaxoHttpCallException) {
             console.log(e)
-            NotificationManager.error("Error occurred while authenticating in flaxo.")
+            Notifications.error("Error occurred while authenticating in flaxo.")
         }
     }
 

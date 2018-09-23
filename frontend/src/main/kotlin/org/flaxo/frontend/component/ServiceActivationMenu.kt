@@ -10,7 +10,7 @@ import org.flaxo.frontend.credentials
 import org.flaxo.common.Course
 import org.flaxo.common.CourseLifecycle
 import org.flaxo.common.ExternalService
-import org.flaxo.frontend.wrapper.NotificationManager
+import org.flaxo.frontend.Notifications
 import react.RBuilder
 import react.RComponent
 import react.RProps
@@ -88,12 +88,12 @@ class ServiceActivationMenu(props: ServiceActivationMenuProps)
     private suspend fun activateTravis() {
         credentials?.also {
             try {
-                NotificationManager.info("Travis activation has been started.")
+                Notifications.info("Travis activation has been started.")
                 flaxoClient.activateTravis(it, props.course.name)
-                NotificationManager.success("Travis activation has been finished.")
+                Notifications.success("Travis activation has been finished.")
             } catch (e: Exception) {
                 console.log(e)
-                NotificationManager.error("Error occurred during travis activation.")
+                Notifications.error("Error occurred during travis activation.")
             }
         }
     }
@@ -101,12 +101,12 @@ class ServiceActivationMenu(props: ServiceActivationMenuProps)
     private suspend fun activateCodacy() {
         credentials?.also {
             try {
-                NotificationManager.info("Codacy activation has been started.")
+                Notifications.info("Codacy activation has been started.")
                 flaxoClient.activateCodacy(it, props.course.name)
-                NotificationManager.success("Codacy activation has been finished.")
+                Notifications.success("Codacy activation has been finished.")
             } catch (e: Exception) {
                 console.log(e)
-                NotificationManager.error("Error occurred during codacy activation.")
+                Notifications.error("Error occurred during codacy activation.")
             }
         }
     }

@@ -11,7 +11,7 @@ import org.flaxo.frontend.Container
 import org.flaxo.frontend.component.label
 import org.flaxo.frontend.credentials
 import org.flaxo.common.User
-import org.flaxo.frontend.wrapper.NotificationManager
+import org.flaxo.frontend.Notifications
 import org.w3c.dom.HTMLInputElement
 import react.RBuilder
 import react.dom.a
@@ -112,10 +112,10 @@ suspend fun updateCodacyToken() {
     credentials?.also {
         try {
             Container.flaxoClient.addCodacyToken(it, codacyToken)
-            NotificationManager.success("Codacy token was added to your account")
+            Notifications.success("Codacy token was added to your account")
         } catch (e: Exception) {
             console.log(e)
-            NotificationManager.error("Error occurred while adding codacy token")
+            Notifications.error("Error occurred while adding codacy token")
         }
     }
 }

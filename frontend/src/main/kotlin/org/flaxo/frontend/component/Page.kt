@@ -9,7 +9,7 @@ import org.flaxo.frontend.client.FlaxoHttpCallException
 import org.flaxo.frontend.credentials
 import org.flaxo.frontend.wrapper.Cookies
 import org.flaxo.common.User
-import org.flaxo.frontend.wrapper.NotificationManager
+import org.flaxo.frontend.Notifications
 
 class PageState(var user: User? = null) : RState
 
@@ -33,7 +33,7 @@ class Page : RComponent<EmptyProps, PageState>() {
                     setState { this.user = user }
                 } catch (e: FlaxoHttpCallException) {
                     console.log(e)
-                    NotificationManager.error("Error occurred while retrieving ${it.username} user.")
+                    Notifications.error("Error occurred while retrieving ${it.username} user.")
                 }
             }
         }
