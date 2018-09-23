@@ -1,5 +1,6 @@
 package org.flaxo.frontend.component.services
 
+import kotlinx.coroutines.experimental.launch
 import kotlinx.html.ButtonType
 import kotlinx.html.hidden
 import kotlinx.html.id
@@ -84,7 +85,7 @@ fun RBuilder.codacyModal(user: User) =
                                 attrs {
                                     onClickFunction = { event ->
                                         event.preventDefault()
-                                        updateCodacyToken()
+                                        launch { updateCodacyToken() }
                                     }
                                 }
                                 +"Update codacy token"
@@ -103,7 +104,7 @@ fun RBuilder.codacyModal(user: User) =
             }
         }
 
-fun updateCodacyToken() {
+suspend fun updateCodacyToken() {
     val codacyToken = document.getElementById(CODACY_TOKEN_INPUT_ID)
             .let { it as HTMLInputElement }
             .value

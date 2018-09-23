@@ -1,9 +1,9 @@
 package org.flaxo.frontend.component
 
+import kotlinx.coroutines.experimental.launch
 import kotlinx.html.id
 import kotlinx.html.js.onClickFunction
 import org.flaxo.frontend.Container
-import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.frontend.credentials
 import org.flaxo.common.Course
 import org.flaxo.common.CourseLifecycle
@@ -58,7 +58,7 @@ class CourseStatisticsDownloadMenu(props: CourseStatisticsDownloadMenuProps)
                     attrs { attributes["aria-labelledby"] = DOWNLOAD_AS_DROPDOWN_ID }
                     supportedFormats.forEach { format ->
                         a(classes = "dropdown-item", href = "#") {
-                            attrs { onClickFunction = { downloadAs(format) } }
+                            attrs.onClickFunction = { launch { downloadAs(format) } }
                             +format
                         }
                     }
@@ -67,7 +67,7 @@ class CourseStatisticsDownloadMenu(props: CourseStatisticsDownloadMenuProps)
         }
     }
 
-    private fun downloadAs(format: String) {
+    private suspend fun downloadAs(format: String) {
         credentials?.also {
             try {
                 val data = Container.flaxoClient.downloadStatistics(it, props.course.name, format)

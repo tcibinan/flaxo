@@ -1,5 +1,6 @@
 package org.flaxo.frontend.component
 
+import kotlinx.coroutines.experimental.launch
 import kotlinx.html.classes
 import kotlinx.html.id
 import kotlinx.html.js.onClickFunction
@@ -61,7 +62,7 @@ class ServiceActivationMenu(props: ServiceActivationMenuProps)
                                 in props.course.state.activatedServices -> classes = setOf("dropdown-item", "disabled")
                                 else -> {
                                     classes = setOf("dropdown-item")
-                                    onClickFunction = { activateTravis() }
+                                    onClickFunction = { launch { activateTravis() } }
                                 }
                             }
                         }
@@ -73,7 +74,7 @@ class ServiceActivationMenu(props: ServiceActivationMenuProps)
                                 in props.course.state.activatedServices -> classes = setOf("dropdown-item", "disabled")
                                 else -> {
                                     classes = setOf("dropdown-item")
-                                    onClickFunction = { activateCodacy() }
+                                    onClickFunction = { launch { activateCodacy() } }
                                 }
                             }
                         }
@@ -84,9 +85,10 @@ class ServiceActivationMenu(props: ServiceActivationMenuProps)
         }
     }
 
-    private fun activateTravis() {
+    private suspend fun activateTravis() {
         credentials?.also {
             try {
+                NotificationManager.info("Travis activation has been started.")
                 flaxoClient.activateTravis(it, props.course.name)
                 NotificationManager.success("Travis activation has been finished.")
             } catch (e: Exception) {
@@ -96,9 +98,10 @@ class ServiceActivationMenu(props: ServiceActivationMenuProps)
         }
     }
 
-    private fun activateCodacy() {
+    private suspend fun activateCodacy() {
         credentials?.also {
             try {
+                NotificationManager.info("Codacy activation has been started.")
                 flaxoClient.activateCodacy(it, props.course.name)
                 NotificationManager.success("Codacy activation has been finished.")
             } catch (e: Exception) {

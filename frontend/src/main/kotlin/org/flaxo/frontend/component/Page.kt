@@ -1,13 +1,12 @@
 package org.flaxo.frontend.component
 
-import courses
 import kotlinx.coroutines.experimental.launch
+import react.*
+import react.dom.div
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.frontend.client.FlaxoHttpCallException
 import org.flaxo.frontend.credentials
-import react.*
-import react.dom.div
 import org.flaxo.frontend.wrapper.Cookies
 import org.flaxo.common.User
 import org.flaxo.frontend.wrapper.NotificationManager

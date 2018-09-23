@@ -1,5 +1,6 @@
 package org.flaxo.frontend.component
 
+import kotlinx.coroutines.experimental.launch
 import kotlinx.html.id
 import kotlinx.html.js.onClickFunction
 import org.flaxo.frontend.Container
@@ -50,7 +51,7 @@ class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
                             .lastOrNull()
                             ?.also { a(classes = "card-link", href = it.url) { +"Plagiarism report" } }
                     button(classes = "save-results-btn btn btn-outline-primary") {
-                        attrs { onClickFunction = { saveResults() } }
+                        attrs { onClickFunction = { launch { saveResults() } } }
                         +"Save results"
                     }
                     button(classes = "rules-toggle-btn btn btn-outline-secondary") {
@@ -73,7 +74,7 @@ class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
         }
     }
 
-    private fun saveResults() {
+    private suspend fun saveResults() {
         credentials?.also { credentials ->
             try {
                 Container.flaxoClient.updateScores(credentials,

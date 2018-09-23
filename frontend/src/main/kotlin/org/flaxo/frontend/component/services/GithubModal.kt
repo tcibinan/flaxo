@@ -1,5 +1,6 @@
 package org.flaxo.frontend.component.services
 
+import kotlinx.coroutines.experimental.launch
 import kotlinx.html.ButtonType
 import kotlinx.html.hidden
 import kotlinx.html.id
@@ -70,7 +71,7 @@ fun RBuilder.githubModal(user: User) =
                         } else {
                             button(classes = "btn btn-primary") {
                                 attrs {
-                                    onClickFunction = { authWithGithub() }
+                                    onClickFunction = { launch { authWithGithub() } }
                                 }
                                 +"Sing in with Github"
                             }
@@ -88,7 +89,7 @@ fun RBuilder.githubModal(user: User) =
             }
         }
 
-private fun authWithGithub() {
+private suspend fun authWithGithub() {
     try {
         credentials?.also {
             val githubAuthData = Container.flaxoClient.getGithubAuthData(it)

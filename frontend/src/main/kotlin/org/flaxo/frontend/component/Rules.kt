@@ -1,5 +1,6 @@
 package org.flaxo.frontend.component
 
+import kotlinx.coroutines.experimental.launch
 import kotlinx.html.js.onClickFunction
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.client.FlaxoClient
@@ -43,7 +44,7 @@ class Rules(props: RulesProps) : RComponent<RulesProps, RulesState>(props) {
             deadlineRule(props.task) { newDeadline -> setState { this.deadline = newDeadline } }
             button(classes = "btn btn-primary") {
                 attrs {
-                    onClickFunction = { submitRulesChanges() }
+                    onClickFunction = { launch { submitRulesChanges() } }
                     disabled = state.deadline == props.task.deadline
                 }
                 +"Update rules"
@@ -51,7 +52,7 @@ class Rules(props: RulesProps) : RComponent<RulesProps, RulesState>(props) {
         }
     }
 
-    private fun submitRulesChanges() {
+    private suspend fun submitRulesChanges() {
         credentials?.also { credentials ->
             try {
                 flaxoClient.updateRules(credentials, props.course.name, props.task.branch,

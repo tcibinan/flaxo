@@ -1,3 +1,5 @@
+package org.flaxo.frontend.component
+
 import kotlinx.coroutines.experimental.launch
 import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
@@ -12,7 +14,6 @@ import kotlinx.html.hidden
 import kotlinx.html.id
 import kotlinx.html.role
 import kotlinx.html.tabIndex
-import org.flaxo.frontend.component.label
 import org.flaxo.frontend.credentials
 import org.flaxo.frontend.wrapper.NotificationManager
 import org.w3c.dom.HTMLSelectElement
@@ -130,7 +131,7 @@ class CourseCreationModal(props: CourseCreationModalProps)
                     div("modal-footer") {
                         button(classes = "btn btn-primary", type = ButtonType.button) {
                             attrs {
-                                onClickFunction = { createCourse() }
+                                onClickFunction = { launch { createCourse() } }
                                 attributes["data-dismiss"] = "modal"
                             }
                             +"Create"
@@ -147,9 +148,10 @@ class CourseCreationModal(props: CourseCreationModalProps)
         }
     }
 
-    private fun createCourse() {
+    private suspend fun createCourse() {
         credentials?.also {
             try {
+                NotificationManager.info("Course creation has been started.")
                 val courseName = valueByInputId(COURSE_NAME_INPUT_ID) ?: ""
                 val description = valueByInputId(COURSE_NAME_INPUT_ID)
                 val language = valueBySelectId(LANGUAGE_SELECT_ID) ?: ""

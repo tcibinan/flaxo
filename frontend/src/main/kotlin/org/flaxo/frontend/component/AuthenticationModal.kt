@@ -1,5 +1,6 @@
 package org.flaxo.frontend.component
 
+import kotlinx.coroutines.experimental.launch
 import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
 import org.flaxo.frontend.Container
@@ -97,7 +98,7 @@ class AuthenticationModal(props: AuthenticationModalProps)
                         div("modal-footer") {
                             button(classes = "btn btn-primary", type = ButtonType.button) {
                                 attrs {
-                                    onClickFunction = { authorizeUser() }
+                                    onClickFunction = { launch { authorizeUser() } }
                                     attributes["data-dismiss"] = "modal"
                                 }
                                 +"Login"
@@ -165,7 +166,7 @@ class AuthenticationModal(props: AuthenticationModalProps)
         }
     }
 
-    private fun authorizeUser() {
+    private suspend fun authorizeUser() {
         val username = state.username ?: throw RuntimeException("Username is not set!")
         val password = state.password ?: throw RuntimeException("Password is not set!")
         val credentials = Credentials(username, password)

@@ -9,13 +9,13 @@ import org.flaxo.frontend.Credentials
 
 interface FlaxoClient {
 
-    fun registerUser(credentials: Credentials): User
+    suspend fun registerUser(credentials: Credentials): User
 
-    fun getSelf(credentials: Credentials): User
+    suspend fun getSelf(credentials: Credentials): User
 
-    fun getUserCourses(credentials: Credentials, username: String): List<Course>
+    suspend fun getUserCourses(credentials: Credentials, username: String): List<Course>
 
-    fun createCourse(credentials: Credentials,
+    suspend fun createCourse(credentials: Credentials,
                      courseName: String,
                      description: String? = null,
                      language: String,
@@ -24,30 +24,30 @@ interface FlaxoClient {
                      numberOfTasks: Int
     ): Course
 
-    fun getAvailableLanguages(): List<Language>
+    suspend fun getAvailableLanguages(): List<Language>
 
-    fun getCourseStatistics(credentials: Credentials, username: String, courseName: String): CourseStatistics
+    suspend fun getCourseStatistics(credentials: Credentials, username: String, courseName: String): CourseStatistics
 
-    fun startCourse(credentials: Credentials, courseName: String): Course
+    suspend fun startCourse(credentials: Credentials, courseName: String): Course
 
-    fun deleteCourse(credentials: Credentials, courseName: String)
+    suspend fun deleteCourse(credentials: Credentials, courseName: String)
 
-    fun analysePlagiarism(credentials: Credentials, courseName: String)
+    suspend fun analysePlagiarism(credentials: Credentials, courseName: String)
 
-    fun syncCourse(credentials: Credentials, courseName: String)
+    suspend fun syncCourse(credentials: Credentials, courseName: String)
 
-    fun updateRules(credentials: Credentials, courseName: String, task: String, deadline: String?)
+    suspend fun updateRules(credentials: Credentials, courseName: String, task: String, deadline: String?)
 
-    fun updateScores(credentials: Credentials, courseName: String, task: String, scores: Map<String, Int>)
+    suspend fun updateScores(credentials: Credentials, courseName: String, task: String, scores: Map<String, Int>)
 
-    fun addCodacyToken(credentials: Credentials, codacyToken: String)
+    suspend fun addCodacyToken(credentials: Credentials, codacyToken: String)
 
-    fun activateCodacy(credentials: Credentials, courseName: String)
+    suspend fun activateCodacy(credentials: Credentials, courseName: String)
 
-    fun activateTravis(credentials: Credentials, courseName: String)
+    suspend fun activateTravis(credentials: Credentials, courseName: String)
 
-    fun downloadStatistics(credentials: Credentials, courseName: String, format: String): dynamic
+    suspend fun downloadStatistics(credentials: Credentials, courseName: String, format: String): dynamic
 
-    fun getGithubAuthData(credentials: Credentials): GithubAuthData
+    suspend fun getGithubAuthData(credentials: Credentials): GithubAuthData
 
 }

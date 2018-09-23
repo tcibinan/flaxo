@@ -1,5 +1,6 @@
 package org.flaxo.frontend.component
 
+import kotlinx.coroutines.experimental.launch
 import kotlinx.html.ButtonType
 import kotlinx.html.InputType
 import kotlinx.html.classes
@@ -98,7 +99,7 @@ class RegistrationModal(props: RegistrationModalProps)
                     div("modal-footer") {
                         button(classes = "btn btn-primary", type = ButtonType.button) {
                             attrs {
-                                onClickFunction = { registerUser() }
+                                onClickFunction = { launch { registerUser() } }
                                 attributes["data-dismiss"] = "modal"
                             }
                             +"Register"
@@ -165,7 +166,7 @@ class RegistrationModal(props: RegistrationModalProps)
         }
     }
 
-    private fun registerUser() {
+    private suspend fun registerUser() {
         val username = state.username ?: throw RuntimeException("Username is not set!")
         val password = state.password ?: throw RuntimeException("Password is not set!")
         val credentials = Credentials(username, password)

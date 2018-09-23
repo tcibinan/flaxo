@@ -1,5 +1,7 @@
 package org.flaxo.frontend.client
 
+import kotlinx.coroutines.experimental.CompletableDeferred
+import kotlinx.coroutines.experimental.Deferred
 import org.flaxo.common.*
 import org.flaxo.frontend.Credentials
 import org.flaxo.common.interop.courseFromDynamic
@@ -13,10 +15,11 @@ import org.w3c.xhr.XMLHttpRequest
 
 class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
 
-    override fun registerUser(credentials: Credentials): User {
+    override suspend fun registerUser(credentials: Credentials): User {
         try {
             val request = post("/user/register",
                     parameters = mapOf("nickname" to credentials.username, "password" to credentials.password))
+                    .await()
             if (request.status.toInt() == 200) {
                 return userFromDynamic(JSON.parse<Payload<dynamic>>(request.responseText).payload)
             } else {
@@ -27,9 +30,10 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
         }
     }
 
-    override fun getSelf(credentials: Credentials): User {
+    override suspend fun getSelf(credentials: Credentials): User {
         try {
             val request = get("/user", credentials = credentials)
+                    .await()
             if (request.status.toInt() == 200) {
                 return userFromDynamic(JSON.parse<Payload<dynamic>>(request.responseText).payload)
             } else {
@@ -40,11 +44,12 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
         }
     }
 
-    override fun getUserCourses(credentials: Credentials, username: String): List<Course> {
+    override suspend fun getUserCourses(credentials: Credentials, username: String): List<Course> {
         try {
             val request = get("/course/all",
                     parameters = mapOf("nickname" to username),
                     credentials = credentials)
+                    .await()
             if (request.status.toInt() == 200) {
                 return JSON.parse<Payload<Array<dynamic>>>(request.responseText)
                         .payload
@@ -59,13 +64,13 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
         }
     }
 
-    override fun createCourse(credentials: Credentials,
-                              courseName: String,
-                              description: String?,
-                              language: String,
-                              testingLanguage: String,
-                              testingFramework: String,
-                              numberOfTasks: Int
+    override suspend fun createCourse(credentials: Credentials,
+                                      courseName: String,
+                                      description: String?,
+                                      language: String,
+                                      testingLanguage: String,
+                                      testingFramework: String,
+                                      numberOfTasks: Int
     ): Course {
         try {
             val request = post("/course/create",
@@ -76,6 +81,7 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
                             "testingFramework" to testingFramework,
                             "numberOfTasks" to numberOfTasks),
                     credentials = credentials)
+                    .await()
             if (request.status.toInt() == 200) {
                 return courseFromDynamic(JSON.parse<Payload<dynamic>>(request.responseText).payload)
             } else {
@@ -86,9 +92,10 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
         }
     }
 
-    override fun getAvailableLanguages(): List<Language> {
+    override suspend fun getAvailableLanguages(): List<Language> {
         try {
             val request = get("/settings/languages")
+                    .await()
             if (request.status.toInt() == 200) {
                 return JSON.parse<Payload<Array<dynamic>>>(request.responseText)
                         .payload
@@ -103,14 +110,15 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
         }
     }
 
-    override fun getCourseStatistics(credentials: Credentials,
-                                     username: String,
-                                     courseName: String
+    override suspend fun getCourseStatistics(credentials: Credentials,
+                                             username: String,
+                                             courseName: String
     ): CourseStatistics {
         try {
             val request = get("/statistics",
                     parameters = mapOf("owner" to username, "course" to courseName),
                     credentials = credentials)
+                    .await()
             if (request.status.toInt() == 200) {
                 return courseStatisticsFromDynamic(JSON.parse<Payload<dynamic>>(request.responseText).payload)
             } else {
@@ -121,11 +129,12 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
         }
     }
 
-    override fun startCourse(credentials: Credentials, courseName: String): Course {
+    override suspend fun startCourse(credentials: Credentials, courseName: String): Course {
         try {
             val request = post("/course/activate",
                     parameters = mapOf("courseName" to courseName),
                     credentials = credentials)
+                    .await()
             if (request.status.toInt() == 200) {
                 return courseFromDynamic(JSON.parse<Payload<dynamic>>(request.responseText).payload)
             } else {
@@ -136,15 +145,16 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
         }
     }
 
-    override fun deleteCourse(credentials: Credentials, courseName: String) {
+    override suspend fun deleteCourse(credentials: Credentials, courseName: String) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun analysePlagiarism(credentials: Credentials, courseName: String) {
+    override suspend fun analysePlagiarism(credentials: Credentials, courseName: String) {
         try {
             val request = post("/course/analyse/plagiarism",
                     parameters = mapOf("courseName" to courseName),
                     credentials = credentials)
+                    .await()
             if (request.status.toInt() != 200) {
                 throw FlaxoHttpCallException(request.responseText)
             }
@@ -153,11 +163,12 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
         }
     }
 
-    override fun syncCourse(credentials: Credentials, courseName: String) {
+    override suspend fun syncCourse(credentials: Credentials, courseName: String) {
         try {
             val request = post("/course/sync",
                     parameters = mapOf("courseName" to courseName),
                     credentials = credentials)
+                    .await()
             if (request.status.toInt() != 200) {
                 throw FlaxoHttpCallException(request.responseText)
             }
@@ -166,10 +177,10 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
         }
     }
 
-    override fun updateRules(credentials: Credentials,
-                             courseName: String,
-                             task: String,
-                             deadline: String?
+    override suspend fun updateRules(credentials: Credentials,
+                                     courseName: String,
+                                     task: String,
+                                     deadline: String?
     ) {
         try {
             val request = post("/task/update/rules",
@@ -177,6 +188,7 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
                             "taskBranch" to task,
                             "deadline" to deadline),
                     credentials = credentials)
+                    .await()
             if (request.status.toInt() != 200) {
                 throw FlaxoHttpCallException(request.responseText)
             }
@@ -185,10 +197,10 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
         }
     }
 
-    override fun updateScores(credentials: Credentials,
-                              courseName: String,
-                              task: String,
-                              scores: Map<String, Int>
+    override suspend fun updateScores(credentials: Credentials,
+                                      courseName: String,
+                                      task: String,
+                                      scores: Map<String, Int>
     ) {
         try {
             val request = post("/task/update/scores",
@@ -198,6 +210,7 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
                             .joinToString(", ", "{", "}")
                             .let { JSON.parse<Map<String, Int>>(it) },
                     credentials = credentials)
+                    .await()
             if (request.status.toInt() != 200) {
                 throw FlaxoHttpCallException(request.responseText)
             }
@@ -206,11 +219,12 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
         }
     }
 
-    override fun addCodacyToken(credentials: Credentials, codacyToken: String) {
+    override suspend fun addCodacyToken(credentials: Credentials, codacyToken: String) {
         try {
             val request = put("/codacy/token",
                     parameters = mapOf("token" to codacyToken),
                     credentials = credentials)
+                    .await()
             if (request.status.toInt() != 200) {
                 throw FlaxoHttpCallException(request.responseText)
             }
@@ -219,11 +233,12 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
         }
     }
 
-    override fun activateCodacy(credentials: Credentials, courseName: String) {
+    override suspend fun activateCodacy(credentials: Credentials, courseName: String) {
         try {
             val request = post("/course/activate/codacy",
                     parameters = mapOf("courseName" to courseName),
                     credentials = credentials)
+                    .await()
             if (request.status.toInt() != 200) {
                 throw FlaxoHttpCallException(request.responseText)
             }
@@ -232,11 +247,12 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
         }
     }
 
-    override fun activateTravis(credentials: Credentials, courseName: String) {
+    override suspend fun activateTravis(credentials: Credentials, courseName: String) {
         try {
             val request = post("/course/activate/travis",
                     parameters = mapOf("courseName" to courseName),
                     credentials = credentials)
+                    .await()
             if (request.status.toInt() != 200) {
                 throw FlaxoHttpCallException(request.responseText)
             }
@@ -245,11 +261,12 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
         }
     }
 
-    override fun downloadStatistics(credentials: Credentials, courseName: String, format: String): dynamic {
+    override suspend fun downloadStatistics(credentials: Credentials, courseName: String, format: String): dynamic {
         try {
             val request = get("/statistics/download",
                     parameters = mapOf("courseName" to courseName, "format" to format),
                     credentials = credentials)
+                    .await()
             if (request.status.toInt() == 200) {
                 return request.response
             } else {
@@ -260,9 +277,10 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
         }
     }
 
-    override fun getGithubAuthData(credentials: Credentials): GithubAuthData {
+    override suspend fun getGithubAuthData(credentials: Credentials): GithubAuthData {
         try {
             val request = get("/github/auth", credentials = credentials)
+                    .await()
             if (request.status.toInt() == 200) {
                 return githubAuthDataFromDynamic(JSON.parse<Payload<dynamic>>(request.responseText).payload)
             } else {
@@ -277,50 +295,62 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
                     parameters: Map<String, Any?> = emptyMap(),
                     body: Any? = null,
                     credentials: Credentials? = null
-    ): XMLHttpRequest = httpCall("GET", method, parameters, body, credentials)
+    ): Deferred<XMLHttpRequest> = httpCall("GET", method, parameters, body, credentials)
 
     private fun post(method: String,
                      parameters: Map<String, Any?> = emptyMap(),
                      body: Any? = null,
                      credentials: Credentials? = null
-    ): XMLHttpRequest = httpCall("POST", method, parameters, body, credentials)
+    ): Deferred<XMLHttpRequest> = httpCall("POST", method, parameters, body, credentials)
 
     private fun put(method: String,
                     parameters: Map<String, Any?> = emptyMap(),
                     body: Any? = null,
                     credentials: Credentials? = null
-    ): XMLHttpRequest = httpCall("PUT", method, parameters, body, credentials)
+    ): Deferred<XMLHttpRequest> = httpCall("PUT", method, parameters, body, credentials)
 
     private fun httpCall(httpMethod: String,
                          apiMethod: String,
                          parameters: Map<String, Any?>,
                          body: Any?,
                          credentials: Credentials?
-    ): XMLHttpRequest = escapedHttpCall(httpMethod, apiMethod, parameters, body, credentials)
+    ): Deferred<XMLHttpRequest> = escapedHttpCall(httpMethod, apiMethod, parameters, body, credentials)
 
     private fun escapedHttpCall(httpMethod: String,
                                 apiMethod: String,
                                 parameters: Map<String, Any?>,
                                 body: Any?,
                                 credentials: Credentials?
-    ) = XMLHttpRequest().apply {
-        if (parameters.isEmpty()) {
-            open(httpMethod, "$baseUrl$apiMethod", async = false)
-        } else {
-            val parametersString = parameters.filterValues { it != null }
-                    .map { (key, value) -> "$key=${encodeURIComponent(value.toString())}" }
-                    .joinToString("&")
-            open(httpMethod, "$baseUrl$apiMethod?$parametersString", async = false)
+    ): Deferred<XMLHttpRequest> = XMLHttpRequest()
+            .apply {
+                if (parameters.isEmpty()) {
+                    open(httpMethod, "$baseUrl$apiMethod", async = true)
+                } else {
+                    val parametersString = parameters.filterValues { it != null }
+                            .map { (key, value) -> "$key=${encodeURIComponent(value.toString())}" }
+                            .joinToString("&")
+                    open(httpMethod, "$baseUrl$apiMethod?$parametersString", async = true)
+                }
+                if (credentials != null) {
+                    setRequestHeader("Authorization", authorizationToken(credentials))
+                }
+                if (body != null) {
+                    setRequestHeader("Content-Type", "application/json")
+                    send(JSON.stringify(body))
+                } else {
+                    send()
+                }
+            }
+            .deferredDoneRequest()
+
+    private fun XMLHttpRequest.deferredDoneRequest(): Deferred<XMLHttpRequest> {
+        val deferred = CompletableDeferred<XMLHttpRequest>()
+        onreadystatechange = {
+            if (readyState == XMLHttpRequest.DONE) {
+                deferred.complete(this)
+            }
         }
-        if (credentials != null) {
-            setRequestHeader("Authorization", authorizationToken(credentials))
-        }
-        if (body != null) {
-            setRequestHeader("Content-Type", "application/json")
-            send(JSON.stringify(body))
-        } else {
-            send()
-        }
+        return deferred
     }
 
     private fun authorizationToken(credentials: Credentials) =

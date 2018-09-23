@@ -47,7 +47,7 @@ class Course(props: CourseProps) : RComponent<CourseProps, EmptyState>(props) {
             div(classes = "course-controls") {
                 button(classes = "btn btn-outline-primary course-control", type = ButtonType.button) {
                     attrs {
-                        onClickFunction = { startCourse() }
+                        onClickFunction = { launch { startCourse() } }
                         disabled = props.course.state.lifecycle == CourseLifecycle.RUNNING
                     }
                     +"Start course"
@@ -55,7 +55,7 @@ class Course(props: CourseProps) : RComponent<CourseProps, EmptyState>(props) {
                 serviceActivationMenu(props.course)
                 button(classes = "btn btn-outline-primary course-control", type = ButtonType.button) {
                     attrs {
-                        onClickFunction = { analysePlagiarism() }
+                        onClickFunction = { launch { analysePlagiarism() } }
                         disabled = props.course.state.lifecycle != CourseLifecycle.RUNNING
                     }
                     +"Analyse plagiarism"
@@ -66,33 +66,31 @@ class Course(props: CourseProps) : RComponent<CourseProps, EmptyState>(props) {
         }
     }
 
-    private fun startCourse() {
-        launch {
-            credentials?.also {
-                try {
-                    flaxoClient.startCourse(it, props.course.name)
-                    props.onUpdate()
-                    NotificationManager.success("Course ${props.course.name} has been started.")
-                } catch (e: Exception) {
-                    console.log(e)
-                    NotificationManager.error("Error occurred while trying to start ${props.course.name} course.")
-                }
+    private suspend fun startCourse() {
+        credentials?.also {
+            try {
+                NotificationManager.info("Course starting was initiated.")
+                flaxoClient.startCourse(it, props.course.name)
+                props.onUpdate()
+                NotificationManager.success("Course ${props.course.name} has been started.")
+            } catch (e: Exception) {
+                console.log(e)
+                NotificationManager.error("Error occurred while trying to start ${props.course.name} course.")
             }
         }
     }
 
-    private fun analysePlagiarism() {
-        launch {
-            credentials?.also {
-                try {
-                    flaxoClient.analysePlagiarism(it, props.course.name)
-                    NotificationManager.success("Plagiarism analysis for course ${props.course.name} " +
-                            "has been started.")
-                } catch (e: Exception) {
-                    console.log(e)
-                    NotificationManager.error("Error occurred while starting plagiarism analysis " +
-                            "for ${props.course.name} course.")
-                }
+    private suspend fun analysePlagiarism() {
+        credentials?.also {
+            try {
+                NotificationManager.info("Course ${props.course.name} plagiarism analysis has been started.")
+                flaxoClient.analysePlagiarism(it, props.course.name)
+                NotificationManager.success("Plagiarism analysis for course ${props.course.name} " +
+                        "has been started.")
+            } catch (e: Exception) {
+                console.log(e)
+                NotificationManager.error("Error occurred while starting plagiarism analysis " +
+                        "for ${props.course.name} course.")
             }
         }
     }

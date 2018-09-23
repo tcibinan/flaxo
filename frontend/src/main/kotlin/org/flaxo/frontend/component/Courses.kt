@@ -1,17 +1,15 @@
+package org.flaxo.frontend.component
+
 import kotlinx.coroutines.experimental.launch
 import kotlinx.html.ButtonType
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.client.FlaxoClient
-import org.flaxo.frontend.component.course
-import org.flaxo.frontend.component.courseCard
-import org.flaxo.frontend.component.navigationBar
 import org.flaxo.frontend.component.services.codacyModal
 import org.flaxo.frontend.component.services.githubModal
 import org.flaxo.frontend.component.services.travisModal
 import org.flaxo.frontend.credentials
 import org.flaxo.common.Course
 import org.flaxo.common.User
-import org.flaxo.frontend.component.plagiarismModal
 import org.flaxo.frontend.wrapper.NotificationManager
 import react.setState
 import react.RBuilder
@@ -65,16 +63,16 @@ class Courses(props: CoursesProps) : RComponent<CoursesProps, CoursesState>(prop
                 }
             }
         } else {
-            course(selectedCourse, onUpdate = ::updateCoursesList, onDelete = ::deselectCourse)
+            course(selectedCourse, onUpdate = { launch { updateCoursesList() } }, onDelete = ::deselectCourse)
         }
         githubModal(props.user)
         travisModal(props.user)
         codacyModal(props.user)
         plagiarismModal()
-        courseCreationModal(onCourseCreation = ::updateCoursesList)
+        courseCreationModal(onCourseCreation = { launch { updateCoursesList() } })
     }
 
-    private fun updateCoursesList() {
+    private suspend fun updateCoursesList() {
         credentials?.also { credentials ->
             try {
                 val courses = flaxoClient.getUserCourses(credentials, props.user.nickname)

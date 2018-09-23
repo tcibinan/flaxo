@@ -497,14 +497,14 @@ class CourseController(private val dataManager: DataManager,
     }
 
     /**
-     * Synchronize all validations results.
+     * Synchronize all validation results.
      */
     @PostMapping("/sync")
     @Transactional
     fun synchronize(@RequestParam courseName: String,
                     principal: Principal
     ): ResponseEntity<Any> {
-        logger.info("Syncing ${principal.name} $courseName course validations")
+        logger.info("Syncing ${principal.name}/$courseName course validation results")
 
         val user = dataManager.getUser(principal.name)
                 ?: return responseManager.userNotFound(principal.name)
@@ -520,7 +520,8 @@ class CourseController(private val dataManager: DataManager,
                 ?: return responseManager.bad("Course ${user.nickname}/${course.name} " +
                         "is not running to be synchronized")
 
-        return responseManager.ok("Course validations are synchronized")
+        logger.info("Course validations were synchronized for ${principal.name}/$courseName")
+        return responseManager.ok("Course validations were synchronized")
     }
 
 }
