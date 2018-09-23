@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.2.60'
+    ext.kotlin_version = '1.2.70'
 
     repositories {
         jcenter()
@@ -10,7 +10,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'org.jetbrains.kotlin:kotlin-frontend-plugin:0.0.36'
+        classpath 'org.jetbrains.kotlin:kotlin-frontend-plugin:0.0.37'
     }
 }
 
@@ -28,9 +28,9 @@ dependencies {
     compile project(":common-js")
     compile "org.jetbrains.kotlin:kotlin-stdlib-js:$kotlin_version"
     testCompile "org.jetbrains.kotlin:kotlin-test-js:$kotlin_version"
-    compile 'org.jetbrains:kotlin-react:16.4.2-pre.38-kotlin-1.2.60',
-            'org.jetbrains:kotlin-react-dom:16.4.2-pre.38-kotlin-1.2.60'
-    compile 'org.jetbrains.kotlinx:kotlinx-coroutines-core-js:0.24.0'
+    compile 'org.jetbrains:kotlin-react:16.5.0-pre.54-kotlin-1.2.70',
+            'org.jetbrains:kotlin-react-dom:16.5.0-pre.54-kotlin-1.2.70'
+    compile 'org.jetbrains.kotlinx:kotlinx-coroutines-core-js:0.26.1'
 }
 
 compileKotlin2Js {
