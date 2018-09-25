@@ -57,7 +57,7 @@ class Rules(props: RulesProps) : RComponent<RulesProps, RulesState>(props) {
         credentials?.also { credentials ->
             try {
                 flaxoClient.updateRules(credentials, props.course.name, props.task.branch,
-                        state.deadline?.toDateTimeString())
+                        state.deadline?.toDateString())
                 Notifications.success("Task rules has been updated.")
             } catch (e: FlaxoHttpException) {
                 console.log(e)

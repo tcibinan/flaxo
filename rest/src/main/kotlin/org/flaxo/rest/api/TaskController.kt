@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.LocalTime
 
 /**
@@ -54,13 +53,11 @@ class TaskController(private val dataManager: DataManager,
                 .find { it.branch == taskBranch }
                 ?: return responseManager.taskNotFound(principal.name, courseName, taskBranch)
 
-        return deadline
-                ?.let { LocalDate.parse(it) }
-                ?.let { LocalDateTime.of(it, LocalTime.MAX) }
-                ?.takeIf { it != task.deadline }
-                ?.let { dataManager.updateTask(task.copy(deadline = it)) }
-                ?.let { responseManager.ok(it.view()) }
-                ?: responseManager.ok(task.view())
+        val updatedTask =
+                if (deadline == null) dataManager.updateTask(task.copy(deadline = null))
+                else dataManager.updateTask(task.copy(deadline = LocalDate.parse(deadline).atTime(LocalTime.MAX)))
+
+        return responseManager.ok(updatedTask.view())
     }
 
     /**
