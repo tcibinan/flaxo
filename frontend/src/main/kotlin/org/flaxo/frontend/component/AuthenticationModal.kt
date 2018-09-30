@@ -1,13 +1,11 @@
 package org.flaxo.frontend.component
 
 import kotlinx.coroutines.experimental.launch
-import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.frontend.client.FlaxoHttpException
 import org.flaxo.common.User
-import org.w3c.dom.HTMLInputElement
 import kotlinx.html.ButtonType
 import kotlinx.html.InputType
 import kotlinx.html.classes
@@ -18,11 +16,10 @@ import kotlinx.html.tabIndex
 import org.flaxo.frontend.Credentials
 import org.flaxo.frontend.Notifications
 import org.flaxo.frontend.clickOnButton
-import org.flaxo.frontend.validateFormInputField
+import org.flaxo.frontend.validatedInputValue
 import react.RBuilder
 import react.RComponent
 import react.RProps
-import react.RState
 import react.dom.button
 import react.dom.div
 import react.dom.form
@@ -30,18 +27,16 @@ import react.dom.h5
 import react.dom.input
 import react.dom.small
 import react.dom.span
-import react.setState
 
-fun RBuilder.authenticationModal(onLogin: (String, String, User) -> Unit) = child<AuthenticationModalProps, AuthenticationModal> {
-    attrs.onLogin = onLogin
-}
+fun RBuilder.authenticationModal(onLogin: (String, String, User) -> Unit) =
+        child<AuthenticationModalProps, AuthenticationModal> {
+            attrs.onLogin = onLogin
+        }
 
 class AuthenticationModalProps(var onLogin: (String, String, User) -> Unit) : RProps
-class AuthenticationModalState(var username: String? = null,
-                               var password: String? = null) : RState
 
 class AuthenticationModal(props: AuthenticationModalProps)
-    : RComponent<AuthenticationModalProps, AuthenticationModalState>(props) {
+    : RComponent<AuthenticationModalProps, EmptyState>(props) {
 
     private val flaxoClient: FlaxoClient = Container.flaxoClient
 
@@ -93,10 +88,8 @@ class AuthenticationModal(props: AuthenticationModalProps)
                             }
                         }
                         div("modal-body") {
-                            form {
-                                usernameInput()
-                                passwordInput()
-                            }
+                            usernameInput()
+                            passwordInput()
                         }
                         div("modal-footer") {
                             button(classes = "btn btn-primary", type = ButtonType.button) {
@@ -125,10 +118,6 @@ class AuthenticationModal(props: AuthenticationModalProps)
                     id = USERNAME_INPUT_ID
                     classes = setOf("form-control")
                     type = InputType.text
-                    onChangeFunction = { event ->
-                        val target = event.target as HTMLInputElement
-                        setState { username = target.value }
-                    }
                     attributes["aria-describedby"] = USERNAME_INPUT_HELP_ID
                 }
             }
@@ -150,10 +139,6 @@ class AuthenticationModal(props: AuthenticationModalProps)
                     id = PASSWORD_INPUT_ID
                     classes = setOf("form-control")
                     type = InputType.password
-                    onChangeFunction = { event ->
-                        val target = event.target as HTMLInputElement
-                        setState { password = target.value }
-                    }
                     attributes["aria-describedby"] = PASSWORD_INPUT_HELP_ID
                 }
             }
@@ -168,8 +153,8 @@ class AuthenticationModal(props: AuthenticationModalProps)
     }
 
     private suspend fun authorizeUser() {
-        val username = validateFormInputField(USERNAME_INPUT_ID)
-        val password = validateFormInputField(PASSWORD_INPUT_ID)
+        val username = validatedInputValue(USERNAME_INPUT_ID)
+        val password = validatedInputValue(PASSWORD_INPUT_ID)
 
         if (username != null && password != null) {
             val credentials = Credentials(username, password)

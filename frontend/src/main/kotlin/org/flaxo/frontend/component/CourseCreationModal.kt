@@ -6,7 +6,6 @@ import kotlinx.html.js.onClickFunction
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.common.Language
-import org.w3c.dom.HTMLInputElement
 import kotlinx.html.ButtonType
 import kotlinx.html.InputType
 import kotlinx.html.classes
@@ -16,7 +15,11 @@ import kotlinx.html.role
 import kotlinx.html.tabIndex
 import org.flaxo.frontend.credentials
 import org.flaxo.frontend.Notifications
+import org.flaxo.frontend.clickOnButton
 import org.flaxo.frontend.client.FlaxoHttpException
+import org.flaxo.frontend.inputValue
+import org.flaxo.frontend.selectValue
+import org.flaxo.frontend.validatedInputValue
 import org.w3c.dom.HTMLSelectElement
 import react.RBuilder
 import react.RComponent
@@ -32,7 +35,6 @@ import react.dom.option
 import react.dom.select
 import react.dom.small
 import react.dom.span
-import kotlin.browser.document
 
 fun RBuilder.courseCreationModal(onCourseCreation: () -> Unit) = child(CourseCreationModal::class) {
     attrs {
@@ -44,7 +46,8 @@ class CourseCreationModalProps(var onCourseCreation: () -> Unit) : RProps
 class CourseCreationModalState(var language: String? = null,
                                var testingLanguage: String? = null,
                                var testingFramework: String? = null,
-                               var flaxoLanguages: List<Language> = emptyList()) : RState
+                               var flaxoLanguages: List<Language> = emptyList()
+) : RState
 
 class CourseCreationModal(props: CourseCreationModalProps)
     : RComponent<CourseCreationModalProps, CourseCreationModalState>(props) {
@@ -63,6 +66,7 @@ class CourseCreationModal(props: CourseCreationModalProps)
         private const val TESTING_FRAMEWORK_SELECT_HELP_ID = "testingFrameworkSelectHelp"
         private const val NUMBER_OF_TASKS_INPUT_ID = "numberOfTasksInput"
         private const val NUMBER_OF_TASKS_INPUT_HELP_ID = "numberOfTasksInputHelp"
+        private const val COURSE_CREATION_MODAL_CANCEL_ID = "courseCreationModalCancel"
     }
 
     private val flaxoClient: FlaxoClient
@@ -120,25 +124,23 @@ class CourseCreationModal(props: CourseCreationModalProps)
                         }
                     }
                     div("modal-body") {
-                        form {
-                            courseNameInput()
-                            courseDescriptionInput()
-                            languageSelect()
-                            testingLanguageSelect()
-                            testingFrameworkSelect()
-                            tasksNumberInput()
-                        }
+                        courseNameInput()
+                        courseDescriptionInput()
+                        languageSelect()
+                        testingLanguageSelect()
+                        testingFrameworkSelect()
+                        tasksNumberInput()
                     }
                     div("modal-footer") {
                         button(classes = "btn btn-primary", type = ButtonType.button) {
                             attrs {
                                 onClickFunction = { launch { createCourse() } }
-                                attributes["data-dismiss"] = "modal"
                             }
                             +"Create"
                         }
                         button(classes = "btn btn-secondary", type = ButtonType.button) {
                             attrs {
+                                id = COURSE_CREATION_MODAL_CANCEL_ID
                                 attributes["data-dismiss"] = "modal"
                             }
                             +"Cancel"
@@ -148,40 +150,6 @@ class CourseCreationModal(props: CourseCreationModalProps)
             }
         }
     }
-
-    private suspend fun createCourse() {
-        credentials?.also {
-            try {
-                Notifications.info("Course creation has been started.")
-                val courseName = valueByInputId(COURSE_NAME_INPUT_ID) ?: ""
-                val description = valueByInputId(COURSE_NAME_INPUT_ID)
-                val language = valueBySelectId(LANGUAGE_SELECT_ID) ?: ""
-                val testingLanguage = valueBySelectId(TESTING_LANGUAGE_SELECT_ID) ?: ""
-                val testingFramework = valueBySelectId(TESTING_FRAMEWORK_SELECT_ID) ?: ""
-                val numberOfTasks = valueByInputId(NUMBER_OF_TASKS_INPUT_ID)?.toInt() ?: 0
-                flaxoClient.createCourse(it,
-                        courseName = courseName,
-                        description = description,
-                        language = language,
-                        testingLanguage = testingLanguage,
-                        testingFramework = testingFramework,
-                        numberOfTasks = numberOfTasks)
-                props.onCourseCreation()
-                Notifications.success("Course has been created.")
-            } catch (e: FlaxoHttpException) {
-                console.log(e)
-                Notifications.error("Error occurred while course creation.", e)
-            }
-        }
-    }
-
-    private fun valueBySelectId(selectId: String): String? = document.getElementById(selectId)
-            ?.let { it as? HTMLSelectElement }
-            ?.value
-
-    private fun valueByInputId(inputId: String): String? = document.getElementById(inputId)
-            ?.let { it as? HTMLInputElement }
-            ?.value
 
     private fun RBuilder.courseNameInput() {
         div("form-group") {
@@ -350,6 +318,35 @@ class CourseCreationModal(props: CourseCreationModalProps)
                     classes = setOf("form-text", "text-muted")
                 }
                 +"Number of tasks in course. Each branch represents a single task"
+            }
+        }
+    }
+
+    private suspend fun createCourse() {
+        credentials?.also {
+            try {
+                val courseName = validatedInputValue(COURSE_NAME_INPUT_ID)
+                val description = inputValue(COURSE_NAME_INPUT_ID)
+                val language = selectValue(LANGUAGE_SELECT_ID) ?: ""
+                val testingLanguage = selectValue(TESTING_LANGUAGE_SELECT_ID) ?: ""
+                val testingFramework = selectValue(TESTING_FRAMEWORK_SELECT_ID) ?: ""
+                val numberOfTasks = validatedInputValue(NUMBER_OF_TASKS_INPUT_ID)?.toInt()
+                if (courseName != null && numberOfTasks != null) {
+                    Notifications.info("Course creation has been started.")
+                    flaxoClient.createCourse(it,
+                            courseName = courseName,
+                            description = description,
+                            language = language,
+                            testingLanguage = testingLanguage,
+                            testingFramework = testingFramework,
+                            numberOfTasks = numberOfTasks)
+                    clickOnButton(COURSE_CREATION_MODAL_CANCEL_ID)
+                    props.onCourseCreation()
+                    Notifications.success("Course has been created.")
+                }
+            } catch (e: FlaxoHttpException) {
+                console.log(e)
+                Notifications.error("Error occurred while course creation.", e)
             }
         }
     }

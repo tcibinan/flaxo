@@ -7,7 +7,6 @@ import kotlinx.html.classes
 import kotlinx.html.hidden
 import kotlinx.html.id
 import org.flaxo.common.User
-import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.role
 import kotlinx.html.tabIndex
@@ -17,12 +16,10 @@ import org.flaxo.frontend.client.FlaxoHttpException
 import org.flaxo.frontend.Credentials
 import org.flaxo.frontend.Notifications
 import org.flaxo.frontend.clickOnButton
-import org.flaxo.frontend.validateFormInputField
-import org.w3c.dom.HTMLInputElement
+import org.flaxo.frontend.validatedInputValue
 import react.RBuilder
 import react.RComponent
 import react.RProps
-import react.RState
 import react.dom.button
 import react.dom.div
 import react.dom.form
@@ -30,19 +27,15 @@ import react.dom.h5
 import react.dom.input
 import react.dom.small
 import react.dom.span
-import react.setState
-import kotlin.browser.document
 
 fun RBuilder.registrationModal(onLogin: (String, String, User) -> Unit) = child(RegistrationModal::class) {
     attrs.onLogin = onLogin
 }
 
 class RegistrationModalProps(var onLogin: (String, String, User) -> Unit) : RProps
-class RegistrationModalState(var username: String? = null,
-                             var password: String? = null) : RState
 
 class RegistrationModal(props: RegistrationModalProps)
-    : RComponent<RegistrationModalProps, RegistrationModalState>(props) {
+    : RComponent<RegistrationModalProps, EmptyState>(props) {
 
     private companion object {
         const val REGISTRATION_MODAL_ID = "registrationModal"
@@ -95,10 +88,8 @@ class RegistrationModal(props: RegistrationModalProps)
                         }
                     }
                     div("modal-body") {
-                        form {
-                            usernameInput()
-                            passwordInput()
-                        }
+                        usernameInput()
+                        passwordInput()
                     }
                     div("modal-footer") {
                         button(classes = "btn btn-primary", type = ButtonType.button) {
@@ -126,10 +117,6 @@ class RegistrationModal(props: RegistrationModalProps)
                     id = USERNAME_INPUT_ID
                     classes = setOf("form-control")
                     type = InputType.text
-                    onChangeFunction = { event ->
-                        val target = event.target as HTMLInputElement
-                        setState { username = target.value }
-                    }
                     attributes["aria-describedby"] = USERNAME_INPUT_HELP_ID
                 }
             }
@@ -151,10 +138,6 @@ class RegistrationModal(props: RegistrationModalProps)
                     id = PASSWORD_INPUT_ID
                     classes = setOf("form-control")
                     type = InputType.password
-                    onChangeFunction = { event ->
-                        val target = event.target as HTMLInputElement
-                        setState { password = target.value }
-                    }
                     attributes["aria-describedby"] = PASSWORD_INPUT_HELP_ID
                 }
             }
@@ -169,8 +152,8 @@ class RegistrationModal(props: RegistrationModalProps)
     }
 
     private suspend fun registerUser() {
-        val username = validateFormInputField(USERNAME_INPUT_ID)
-        val password = validateFormInputField(PASSWORD_INPUT_ID)
+        val username = validatedInputValue(USERNAME_INPUT_ID)
+        val password = validatedInputValue(PASSWORD_INPUT_ID)
 
         if (username != null && password != null) {
             val credentials = Credentials(username, password)
