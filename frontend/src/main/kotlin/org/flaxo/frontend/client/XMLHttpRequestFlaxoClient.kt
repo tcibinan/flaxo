@@ -13,7 +13,7 @@ import org.flaxo.common.interop.languageFromDynamic
 import org.flaxo.common.interop.userFromDynamic
 import org.flaxo.frontend.Credentials
 
-class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
+class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
 
     override suspend fun registerUser(credentials: Credentials): User =
             post {
@@ -206,11 +206,17 @@ class PlainHttpFlaxoClient(private val baseUrl: String) : FlaxoClient {
             wrappedBlock = block
         }
 
-        return HttpRequest<T>().run {
-            url = baseUrl
-            httpMethod = method
-            wrappedBlock()
-            execute()
+        try {
+            return HttpRequest<T>().run {
+                url = baseUrl
+                httpMethod = method
+                wrappedBlock()
+                execute()
+            }
+        } catch (e: FlaxoHttpException) {
+            throw FlaxoHttpException(message = e.message, cause = e, userMessage = e.userMessage)
+        } catch (e: Throwable) {
+            throw FlaxoHttpException(cause = e)
         }
     }
 }
