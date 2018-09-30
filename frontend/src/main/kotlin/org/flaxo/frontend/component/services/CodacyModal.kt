@@ -13,19 +13,17 @@ import org.flaxo.frontend.credentials
 import org.flaxo.common.User
 import org.flaxo.frontend.Notifications
 import org.flaxo.frontend.client.FlaxoHttpException
-import org.w3c.dom.HTMLInputElement
+import org.flaxo.frontend.validatedInputValue
 import react.RBuilder
 import react.dom.a
 import react.dom.b
 import react.dom.button
 import react.dom.div
-import react.dom.form
 import react.dom.h5
 import react.dom.input
 import react.dom.p
 import react.dom.small
 import react.dom.span
-import kotlin.browser.document
 
 const val CODACY_MODAL_ID = "codacyModal"
 private const val CODACY_TOKEN_INPUT_ID = "codacyTokenInput"
@@ -64,33 +62,27 @@ fun RBuilder.codacyModal(user: User) =
                         if (user.isCodacyAuthorized) {
                             p { b { +"You are already authorized with codacy." } }
                         }
-
-                        form {
-                            div(classes = "form-group") {
-                                label("Codacy token", forInput = CODACY_TOKEN_INPUT_ID)
-                                input(classes = "form-control") {
-                                    attrs {
-                                        id = CODACY_TOKEN_INPUT_ID
-                                        attributes["aria-describedby"] = CODACY_TOKEN_INPUT_HELP_ID
-                                    }
-                                }
-                                small(classes = "form-text text-muted") {
-                                    +"Generate api token in "
-                                    a(href = "https://app.codacy.com/account/apiTokens") {
-                                        +"codacy account settings "
-                                    }
-                                    +"and copy-paste it here."
-                                }
-                            }
-                            button(classes = "btn btn-primary") {
+                        div(classes = "form-group") {
+                            label("Codacy token", forInput = CODACY_TOKEN_INPUT_ID)
+                            input(classes = "form-control") {
                                 attrs {
-                                    onClickFunction = { event ->
-                                        event.preventDefault()
-                                        launch { updateCodacyToken() }
-                                    }
+                                    id = CODACY_TOKEN_INPUT_ID
+                                    attributes["aria-describedby"] = CODACY_TOKEN_INPUT_HELP_ID
                                 }
-                                +"Update codacy token"
                             }
+                            small(classes = "form-text text-muted") {
+                                +"Generate api token in "
+                                a(href = "https://app.codacy.com/account/apiTokens") {
+                                    +"codacy account settings "
+                                }
+                                +"and copy-paste it here."
+                            }
+                        }
+                        button(classes = "btn btn-primary") {
+                            attrs {
+                                onClickFunction = { launch { updateCodacyToken() } }
+                            }
+                            +"Update codacy token"
                         }
                     }
                     div(classes = "modal-footer") {
@@ -106,17 +98,17 @@ fun RBuilder.codacyModal(user: User) =
         }
 
 suspend fun updateCodacyToken() {
-    val codacyToken = document.getElementById(CODACY_TOKEN_INPUT_ID)
-            .let { it as HTMLInputElement }
-            .value
+    val codacyToken = validatedInputValue(CODACY_TOKEN_INPUT_ID)
 
     credentials?.also {
-        try {
-            Container.flaxoClient.addCodacyToken(it, codacyToken)
-            Notifications.success("Codacy token was added to your account")
-        } catch (e: FlaxoHttpException) {
-            console.log(e)
-            Notifications.error("Error occurred while adding codacy token", e)
+        if (codacyToken != null) {
+            try {
+                Container.flaxoClient.addCodacyToken(it, codacyToken)
+                Notifications.success("Codacy token was added to your account")
+            } catch (e: FlaxoHttpException) {
+                console.log(e)
+                Notifications.error("Error occurred while adding codacy token", e)
+            }
         }
     }
 }
