@@ -6,6 +6,7 @@ import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
 import org.flaxo.common.DateTime
 import org.flaxo.common.Task
+import org.flaxo.frontend.clearInputValue
 import org.w3c.dom.HTMLInputElement
 import react.RBuilder
 import react.RComponent
@@ -15,7 +16,6 @@ import react.dom.defaultValue
 import react.dom.div
 import react.dom.input
 import react.dom.small
-import kotlin.browser.document
 
 fun RBuilder.deadlineRule(task: Task, onDeadlineChange: (DateTime?) -> Unit) =
         child(DeadlineRule::class) {
@@ -26,35 +26,31 @@ fun RBuilder.deadlineRule(task: Task, onDeadlineChange: (DateTime?) -> Unit) =
         }
 
 class DeadlineRuleProps(var task: Task,
-                        var onDeadlineChange: (DateTime?) -> Unit) : RProps
+                        var onDeadlineChange: (DateTime?) -> Unit
+) : RProps
 
 class DeadlineRule(props: DeadlineRuleProps) : RComponent<DeadlineRuleProps, EmptyState>(props) {
 
-    private companion object {
-        // TODO 18.08.18: Input and help ids can be non-unique between task tabs
-        val DEADLINE_RULE_INPUT_ID = "deadlineRule"
-        val DEADLINE_RULE_HELP_ID = "deadlineRuleHelp"
-    }
+    private val deadlineRuleInputId = "deadlineRule-" + props.task.branch
+    private val deadlineRuleHelpId = "deadlineRuleHelp-" + props.task.branch
 
     override fun RBuilder.render() {
         div(classes = "task-deadline-rule") {
             div(classes = "form-group") {
-                label("Deadline", forInput = DEADLINE_RULE_INPUT_ID)
+                label("Deadline", forInput = deadlineRuleInputId)
                 input(classes = "form-control", type = InputType.date) {
                     attrs {
-                        id = DEADLINE_RULE_INPUT_ID
+                        id = deadlineRuleInputId
                         defaultValue = props.task.deadline?.toDateString() ?: ""
                         onChangeFunction = { event ->
                             val target = event.target as HTMLInputElement
                             props.onDeadlineChange(DateTime.fromDateTimeString(target.value))
                         }
-                        attributes["aria-describedby"] = DEADLINE_RULE_HELP_ID
+                        attributes["aria-describedby"] = deadlineRuleHelpId
                     }
                 }
                 small(classes = "form-text text-muted") {
-                    attrs {
-                        id = DEADLINE_RULE_HELP_ID
-                    }
+                    attrs.id = deadlineRuleHelpId
                     if (props.task.deadline != null) {
                         +"All solutions that will be received after the deadline will be fined. "
                         +"Otherwise you can "
@@ -63,8 +59,7 @@ class DeadlineRule(props: DeadlineRuleProps) : RComponent<DeadlineRuleProps, Emp
                             attrs {
                                 onClickFunction = { event ->
                                     event.preventDefault()
-                                    (document.getElementById(DEADLINE_RULE_INPUT_ID) as? HTMLInputElement)
-                                            ?.apply { value = "" }
+                                    clearInputValue(deadlineRuleInputId)
                                     props.onDeadlineChange(null)
                                 }
                             }

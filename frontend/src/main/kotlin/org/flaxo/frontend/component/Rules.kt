@@ -65,5 +65,4 @@ class Rules(props: RulesProps) : RComponent<RulesProps, RulesState>(props) {
             }
         }
     }
-
 }

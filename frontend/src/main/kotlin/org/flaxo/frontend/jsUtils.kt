@@ -25,6 +25,12 @@ fun inputValue(id: String): String? = document.getElementById(id)
         ?.let { it as? HTMLInputElement }
         ?.value
 
+fun clearInputValue(id: String) {
+    document.getElementById(id)
+            ?.let { it as? HTMLInputElement }
+            ?.value = ""
+}
+
 private const val INVALID_INPUT_VALUE_CLASS = "is-invalid"
 
 fun validatedInputValue(id: String): String? {
