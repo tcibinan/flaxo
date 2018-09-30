@@ -17,6 +17,8 @@ import kotlinx.html.role
 import kotlinx.html.tabIndex
 import org.flaxo.frontend.Credentials
 import org.flaxo.frontend.Notifications
+import org.flaxo.frontend.clickOnButton
+import org.flaxo.frontend.validateFormInputField
 import react.RBuilder
 import react.RComponent
 import react.RProps
@@ -49,6 +51,7 @@ class AuthenticationModal(props: AuthenticationModalProps)
         const val USERNAME_INPUT_HELP_ID = "usernameAuthorizationHelp"
         const val PASSWORD_INPUT_ID = "passwordAuthorization"
         const val PASSWORD_INPUT_HELP_ID = "passwordAuthorizationHelp"
+        const val AUTHORIZATION_MODAL_CANCEL_ID = "authorizationModalCancel"
     }
 
     override fun RBuilder.render() {
@@ -97,14 +100,12 @@ class AuthenticationModal(props: AuthenticationModalProps)
                         }
                         div("modal-footer") {
                             button(classes = "btn btn-primary", type = ButtonType.button) {
-                                attrs {
-                                    onClickFunction = { launch { authorizeUser() } }
-                                    attributes["data-dismiss"] = "modal"
-                                }
+                                attrs.onClickFunction = { launch { authorizeUser() } }
                                 +"Login"
                             }
                             button(classes = "btn btn-secondary", type = ButtonType.button) {
                                 attrs {
+                                    id = AUTHORIZATION_MODAL_CANCEL_ID
                                     attributes["data-dismiss"] = "modal"
                                 }
                                 +"Cancel"
@@ -167,16 +168,20 @@ class AuthenticationModal(props: AuthenticationModalProps)
     }
 
     private suspend fun authorizeUser() {
-        val username = state.username ?: throw RuntimeException("Username is not set!")
-        val password = state.password ?: throw RuntimeException("Password is not set!")
-        val credentials = Credentials(username, password)
+        val username = validateFormInputField(USERNAME_INPUT_ID)
+        val password = validateFormInputField(PASSWORD_INPUT_ID)
 
-        try {
-            val user = flaxoClient.getSelf(credentials)
-            props.onLogin(username, password, user)
-        } catch (e: FlaxoHttpException) {
-            console.log(e)
-            Notifications.error("Error occurred while authenticating in flaxo.", e)
+        if (username != null && password != null) {
+            val credentials = Credentials(username, password)
+
+            try {
+                val user = flaxoClient.getSelf(credentials)
+                clickOnButton(AUTHORIZATION_MODAL_CANCEL_ID)
+                props.onLogin(username, password, user)
+            } catch (e: FlaxoHttpException) {
+                console.log(e)
+                Notifications.error("Error occurred while authenticating in flaxo.", e)
+            }
         }
     }
 

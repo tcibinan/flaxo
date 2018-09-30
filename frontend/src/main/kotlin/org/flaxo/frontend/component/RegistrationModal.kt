@@ -16,6 +16,8 @@ import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.frontend.client.FlaxoHttpException
 import org.flaxo.frontend.Credentials
 import org.flaxo.frontend.Notifications
+import org.flaxo.frontend.clickOnButton
+import org.flaxo.frontend.validateFormInputField
 import org.w3c.dom.HTMLInputElement
 import react.RBuilder
 import react.RComponent
@@ -29,6 +31,7 @@ import react.dom.input
 import react.dom.small
 import react.dom.span
 import react.setState
+import kotlin.browser.document
 
 fun RBuilder.registrationModal(onLogin: (String, String, User) -> Unit) = child(RegistrationModal::class) {
     attrs.onLogin = onLogin
@@ -47,6 +50,7 @@ class RegistrationModal(props: RegistrationModalProps)
         const val USERNAME_INPUT_HELP_ID = "usernameRegistrationHelp"
         const val PASSWORD_INPUT_ID = "passwordRegistration"
         const val PASSWORD_INPUT_HELP_ID = "passwordRegistrationHelp"
+        const val REGISTRATION_MODAL_CANCEL_ID = "registrationModelCancel"
     }
 
     private val flaxoClient: FlaxoClient = Container.flaxoClient
@@ -98,14 +102,12 @@ class RegistrationModal(props: RegistrationModalProps)
                     }
                     div("modal-footer") {
                         button(classes = "btn btn-primary", type = ButtonType.button) {
-                            attrs {
-                                onClickFunction = { launch { registerUser() } }
-                                attributes["data-dismiss"] = "modal"
-                            }
+                            attrs.onClickFunction = { launch { registerUser() } }
                             +"Register"
                         }
                         button(classes = "btn btn-secondary", type = ButtonType.button) {
                             attrs {
+                                id = REGISTRATION_MODAL_CANCEL_ID
                                 attributes["data-dismiss"] = "modal"
                             }
                             +"Cancel"
@@ -167,17 +169,21 @@ class RegistrationModal(props: RegistrationModalProps)
     }
 
     private suspend fun registerUser() {
-        val username = state.username ?: throw RuntimeException("Username is not set!")
-        val password = state.password ?: throw RuntimeException("Password is not set!")
-        val credentials = Credentials(username, password)
+        val username = validateFormInputField(USERNAME_INPUT_ID)
+        val password = validateFormInputField(PASSWORD_INPUT_ID)
 
-        try {
-            val user = flaxoClient.registerUser(credentials)
-            props.onLogin(username, password, user)
-            Notifications.success("User $username has been registered.")
-        } catch (e: FlaxoHttpException) {
-            console.log(e)
-            Notifications.error("Error occurred while registering $username user.", e)
+        if (username != null && password != null) {
+            val credentials = Credentials(username, password)
+
+            try {
+                val user = flaxoClient.registerUser(credentials)
+                clickOnButton(REGISTRATION_MODAL_CANCEL_ID)
+                props.onLogin(username, password, user)
+                Notifications.success("User $username has been registered.")
+            } catch (e: FlaxoHttpException) {
+                console.log(e)
+                Notifications.error("Error occurred while registering $username user.", e)
+            }
         }
     }
 }
