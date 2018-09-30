@@ -1,5 +1,6 @@
 package org.flaxo.cpp
 
+import org.amshove.kluent.shouldContain
 import org.amshove.kluent.shouldEqual
 import org.amshove.kluent.shouldNotBeNull
 import org.flaxo.cmd.CmdExecutor
@@ -11,11 +12,19 @@ import org.jetbrains.spek.api.dsl.on
 import java.nio.file.Files
 
 object CppBashEnvironmentSpec : Spek({
-    val environment = CppBashEnvironment()
+    val travisWebHookUrl = "http://travisWebHookUrl"
+    val environment = CppBashEnvironment(travisWebHookUrl)
 
     describe("c++ bash environment") {
         it("should contain .travis.yml in the root") {
             environment.file(".travis.yml").shouldNotBeNull()
+        }
+
+        it("should contain .travis.yml with required webhook url") {
+            val travisYml = environment.file(".travis.yml")
+
+            travisYml.shouldNotBeNull()
+            travisYml!!.content shouldContain "webhooks: $travisWebHookUrl"
         }
 
         it("should contain main .cpp file") {

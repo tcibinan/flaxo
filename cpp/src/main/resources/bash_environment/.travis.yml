@@ -1,1 +1,6 @@
 script: ./run_tests.sh plus minus
+
+# disabling email notifications
+notifications:
+  email: false
+  webhooks: $TRAVIS_WEB_HOOK_URL

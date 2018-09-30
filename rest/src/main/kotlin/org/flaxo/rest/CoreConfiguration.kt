@@ -56,12 +56,14 @@ class CoreConfiguration {
             SimpleTravisEnvironmentSupplier(travisWebHookUrl = travisWebHookUrl)
 
     @Bean
-    fun defaultEnvironmentSupplier(travisEnvironmentSupplier: TravisEnvironmentSupplier
+    fun defaultEnvironmentSupplier(travisEnvironmentSupplier: TravisEnvironmentSupplier,
+                                   @Value("\${TRAVIS_WEB_HOOK_URL}") travisWebHookUrl: String
     ): Map<Language, EnvironmentSupplier> =
             mapOf(
                     JavaLang to GradleBuildTool(travisEnvironmentSupplier),
                     KotlinLang to GradleBuildTool(travisEnvironmentSupplier),
-                    `C++Lang` to CppEnvironmentSupplier(`C++Lang`, BashLang, BashInputOutputTestingFramework)
+                    `C++Lang` to CppEnvironmentSupplier(`C++Lang`, BashLang, BashInputOutputTestingFramework,
+                            travisWebHookUrl)
             )
 
     @Bean

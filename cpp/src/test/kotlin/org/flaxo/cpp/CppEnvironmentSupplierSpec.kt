@@ -14,12 +14,13 @@ import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
 
 object CppEnvironmentSupplierSpec : Spek({
+    val travisWebHookUrl = "travisWebHookUrl"
 
     describe("c++ environment supplier") {
         on("initialization with an unsupported language") {
             it("should throw an exception") {
                 {
-                    CppEnvironmentSupplier(JavaLang, BashLang, BashInputOutputTestingFramework)
+                    CppEnvironmentSupplier(JavaLang, BashLang, BashInputOutputTestingFramework, travisWebHookUrl)
                 } shouldThrow CppEnvironmentException::class
             }
         }
@@ -27,7 +28,7 @@ object CppEnvironmentSupplierSpec : Spek({
         on("initialization with an unsupported testing language") {
             it("should throw an exception") {
                 {
-                    CppEnvironmentSupplier(`C++Lang`, JavaLang, BashInputOutputTestingFramework)
+                    CppEnvironmentSupplier(`C++Lang`, JavaLang, BashInputOutputTestingFramework, travisWebHookUrl)
                 } shouldThrow CppEnvironmentException::class
             }
         }
@@ -35,7 +36,7 @@ object CppEnvironmentSupplierSpec : Spek({
         on("initialization with an unsupported testing framework") {
             it("should throw an exception") {
                 {
-                    CppEnvironmentSupplier(`C++Lang`, BashLang, JUnitTestingFramework)
+                    CppEnvironmentSupplier(`C++Lang`, BashLang, JUnitTestingFramework, travisWebHookUrl)
                 } shouldThrow CppEnvironmentException::class
             }
         }
@@ -43,13 +44,14 @@ object CppEnvironmentSupplierSpec : Spek({
         on("initialization with supported technologies") {
             it("should no throw exception") {
                 {
-                    CppEnvironmentSupplier(`C++Lang`, BashLang, BashInputOutputTestingFramework)
+                    CppEnvironmentSupplier(`C++Lang`, BashLang, BashInputOutputTestingFramework, travisWebHookUrl)
                 } shouldNotThrow CppEnvironmentException::class
             }
         }
 
         on("getting environment for C++, Bash, IO tests") {
-            val supplier = CppEnvironmentSupplier(`C++Lang`, BashLang, BashInputOutputTestingFramework)
+            val supplier = CppEnvironmentSupplier(`C++Lang`, BashLang, BashInputOutputTestingFramework,
+                    travisWebHookUrl)
             val environment = supplier.environment()
 
             it("should produce CppBashEnvironment") {

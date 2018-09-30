@@ -10,4 +10,6 @@ open class StringEnvironmentFile(override val path: Path, override val content: 
 
     constructor(path: String, content: String) : this(Paths.get(path), content)
 
+    override fun toLocalFile(directory: Path): LocalFile =
+            LazyLocalEnvironmentFile(path, directory, content.byteInputStream())
 }

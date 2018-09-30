@@ -13,7 +13,8 @@ import org.flaxo.core.lang.Language
  */
 class CppEnvironmentSupplier(private val language: Language,
                              private val testingLanguage: Language,
-                             private val testingFramework: TestingFramework
+                             private val testingFramework: TestingFramework,
+                             private val travisWebHookUrl: String
 ) : EnvironmentSupplier {
 
     init {
@@ -24,15 +25,13 @@ class CppEnvironmentSupplier(private val language: Language,
     }
 
     private fun isCppAndBashIOEnvironment(): Boolean =
-            language == `C++Lang` && testingLanguage == BashLang && testingFramework == BashInputOutputTestingFramework
+            language == `C++Lang` && testingLanguage == BashLang
+                    && testingFramework == BashInputOutputTestingFramework
 
     override fun environment(): Environment =
-            if (isCppAndBashIOEnvironment()) {
-                CppBashEnvironment()
-            } else {
-                throw CppEnvironmentException("Given group of technologies are not supported: " +
-                        "($language, $testingLanguage, $testingFramework)")
-            }
+            if (isCppAndBashIOEnvironment()) CppBashEnvironment(travisWebHookUrl)
+            else throw CppEnvironmentException("Given group of technologies are not supported: " +
+                    "($language, $testingLanguage, $testingFramework)")
 
     override fun with(language: Language?,
                       testingLanguage: Language?,
@@ -41,7 +40,8 @@ class CppEnvironmentSupplier(private val language: Language,
             CppEnvironmentSupplier(
                     language = language ?: this.language,
                     testingLanguage = testingLanguage ?: this.testingLanguage,
-                    testingFramework = testingFramework ?: this.testingFramework
+                    testingFramework = testingFramework ?: this.testingFramework,
+                    travisWebHookUrl = travisWebHookUrl
             )
 
 }
