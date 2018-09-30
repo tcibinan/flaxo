@@ -332,6 +332,7 @@ class CourseCreationModal(props: CourseCreationModalProps)
                 val testingFramework = selectValue(TESTING_FRAMEWORK_SELECT_ID) ?: ""
                 val numberOfTasks = validatedInputValue(NUMBER_OF_TASKS_INPUT_ID)?.toInt()
                 if (courseName != null && numberOfTasks != null) {
+                    clickOnButton(COURSE_CREATION_MODAL_CANCEL_ID)
                     Notifications.info("Course creation has been started.")
                     flaxoClient.createCourse(it,
                             courseName = courseName,
@@ -340,7 +341,6 @@ class CourseCreationModal(props: CourseCreationModalProps)
                             testingLanguage = testingLanguage,
                             testingFramework = testingFramework,
                             numberOfTasks = numberOfTasks)
-                    clickOnButton(COURSE_CREATION_MODAL_CANCEL_ID)
                     props.onCourseCreation()
                     Notifications.success("Course has been created.")
                 }
