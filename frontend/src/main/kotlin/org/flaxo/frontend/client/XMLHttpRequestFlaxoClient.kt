@@ -5,11 +5,13 @@ import org.flaxo.common.CourseStatistics
 import org.flaxo.common.GithubAuthData
 import org.flaxo.common.Language
 import org.flaxo.common.Payload
+import org.flaxo.common.Solution
 import org.flaxo.common.User
 import org.flaxo.common.interop.courseFromDynamic
 import org.flaxo.common.interop.courseStatisticsFromDynamic
 import org.flaxo.common.interop.githubAuthDataFromDynamic
 import org.flaxo.common.interop.languageFromDynamic
+import org.flaxo.common.interop.solutionFromDynamic
 import org.flaxo.common.interop.userFromDynamic
 import org.flaxo.frontend.Credentials
 
@@ -187,6 +189,28 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
                 creds = credentials
                 onSuccess = { response -> githubAuthDataFromDynamic(JSON.parse<Payload<dynamic>>(response).payload) }
                 errorMessage = "Github auth data retrieving failed."
+            }
+
+    override suspend fun updateSolutionApprovals(credentials: Credentials,
+                                                 courseName: String,
+                                                 task: String,
+                                                 approvals: Map<String, Boolean>
+    ): List<Solution> =
+            post {
+                apiMethod = "/task/update/approvals"
+                params = mapOf("courseName" to courseName, "taskBranch" to task)
+                creds = credentials
+                // TODO 01.10.18: This is some common logic. It should be moved somewhere and become common.
+                body = approvals.map { (a, b) -> "\"$a\": $b" }
+                        .joinToString(", ", "{", "}")
+                        .let { JSON.parse<Map<String, Boolean>>(it) }
+                onSuccess = { response ->
+                    // TODO 01.10.18: Think about how to write tests for such a logic
+                    JSON.parse<Payload<Array<dynamic>>>(response).payload?.toList()
+                            ?.map { solutionFromDynamic(it) }
+                            .orEmpty()
+                }
+                errorMessage = "Task approvals updating failed."
             }
 
     private suspend inline fun <reified T> get(noinline block: HttpRequest<T>.() -> Unit): T = http("GET", block)

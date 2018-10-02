@@ -31,6 +31,12 @@ fun clearInputValue(id: String) {
             ?.value = ""
 }
 
+fun checkBoxValue(id: String): Boolean =
+        document.getElementById(id)
+                ?.let { it as? HTMLInputElement }
+                ?.checked
+                ?: false
+
 private const val INVALID_INPUT_VALUE_CLASS = "is-invalid"
 
 fun validatedInputValue(id: String): String? {

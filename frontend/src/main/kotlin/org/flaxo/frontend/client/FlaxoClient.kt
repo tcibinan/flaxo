@@ -4,6 +4,7 @@ import org.flaxo.common.Course
 import org.flaxo.common.CourseStatistics
 import org.flaxo.common.GithubAuthData
 import org.flaxo.common.Language
+import org.flaxo.common.Solution
 import org.flaxo.common.User
 import org.flaxo.frontend.Credentials
 
@@ -16,12 +17,12 @@ interface FlaxoClient {
     suspend fun getUserCourses(credentials: Credentials, username: String): List<Course>
 
     suspend fun createCourse(credentials: Credentials,
-                     courseName: String,
-                     description: String? = null,
-                     language: String,
-                     testingLanguage: String,
-                     testingFramework: String,
-                     numberOfTasks: Int
+                             courseName: String,
+                             description: String? = null,
+                             language: String,
+                             testingLanguage: String,
+                             testingFramework: String,
+                             numberOfTasks: Int
     ): Course
 
     suspend fun getAvailableLanguages(): List<Language>
@@ -50,4 +51,9 @@ interface FlaxoClient {
 
     suspend fun getGithubAuthData(credentials: Credentials): GithubAuthData
 
+    suspend fun updateSolutionApprovals(credentials: Credentials,
+                                        courseName: String,
+                                        task: String,
+                                        approvals: Map<String, Boolean>
+    ): List<Solution>
 }

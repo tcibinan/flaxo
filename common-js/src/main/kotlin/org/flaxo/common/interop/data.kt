@@ -84,7 +84,8 @@ fun solutionFromDynamic(solutionJson: dynamic): Solution =
                 buildReports = (solutionJson.buildReports as Array<dynamic>).toList()
                         .map { buildReportFromDynamic(it) },
                 codeStyleReports = (solutionJson.codeStyleReports as Array<dynamic>).toList()
-                        .map { codeStyleReportFromDynamic(it) }
+                        .map { codeStyleReportFromDynamic(it) },
+                approved = solutionJson.approved
         )
 
 fun codeStyleReportFromDynamic(codeStyleReportJson: dynamic): CodeStyleReport =

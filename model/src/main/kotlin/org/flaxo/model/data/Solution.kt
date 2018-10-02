@@ -46,7 +46,8 @@ data class Solution(
             score = score,
             commits = commits.views(),
             buildReports = buildReports.views(),
-            codeStyleReports = codeStyleReports.views()
+            codeStyleReports = codeStyleReports.views(),
+            approved = false
     )
 
     override fun toString() = "${this::class.simpleName}(id=$id)"

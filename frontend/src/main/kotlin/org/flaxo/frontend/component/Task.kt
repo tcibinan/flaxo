@@ -27,9 +27,12 @@ fun RBuilder.task(course: Course, task: Task) = child(org.flaxo.frontend.compone
 }
 
 class TaskProps(var course: Course,
-                var task: Task) : RProps
+                var task: Task
+) : RProps
 
-class TaskState(var scores: MutableMap<String, Int>) : RState
+class TaskState(var scores: MutableMap<String, Int>,
+                var approvals: MutableMap<String, Boolean>
+) : RState
 
 class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
 
@@ -40,6 +43,7 @@ class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
 
     init {
         state.scores = mutableMapOf()
+        state.approvals = mutableMapOf()
     }
 
     override fun RBuilder.render() {
@@ -52,7 +56,10 @@ class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
                             .lastOrNull()
                             ?.also { a(classes = "card-link", href = it.url) { +"Plagiarism report" } }
                     button(classes = "save-results-btn btn btn-outline-primary") {
-                        attrs { onClickFunction = { launch { saveResults() } } }
+                        attrs.onClickFunction = {
+                            launch { saveScores() }
+                            launch { saveApprovals() }
+                        }
                         +"Save results"
                     }
                     button(classes = "rules-toggle-btn btn btn-outline-secondary") {
@@ -65,33 +72,57 @@ class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
                         +"Rules"
                     }
                     div(classes = "collapse") {
-                        attrs { id = RULES_DROPDOWN_ID }
+                        attrs.id = RULES_DROPDOWN_ID
                         hr {}
                         rules(props.course, props.task)
                     }
-                    taskStatistics(props.course, props.task, onStudentScoreUpdate = ::updateStudentScore)
+                    taskStatistics(props.course, props.task,
+                            onSolutionScoreUpdate = { student, score ->
+                                state.scores[student] = score
+                            },
+                            onSolutionApprovalUpdate = { student, approved ->
+                                state.approvals[student] = approved
+                            }
+                    )
                 }
             }
         }
     }
 
-    private suspend fun saveResults() {
-        credentials?.also { credentials ->
-            try {
-                Container.flaxoClient.updateScores(credentials,
-                        courseName = props.course.name,
-                        task = props.task.branch,
-                        scores = state.scores)
-                Notifications.success("Task results were saved")
-            } catch (e: FlaxoHttpException) {
-                console.log(e)
-                Notifications.error("Error occurred while saving task results", e)
-            }
-        }
+    private suspend fun saveScores() {
+        credentials
+                ?.takeIf { state.scores.isNotEmpty() }
+                ?.also { credentials ->
+                    try {
+                        Container.flaxoClient.updateScores(credentials,
+                                courseName = props.course.name,
+                                task = props.task.branch,
+                                scores = state.scores)
+                        state.scores.clear()
+                        Notifications.success("Task results were saved")
+                    } catch (e: FlaxoHttpException) {
+                        console.log(e)
+                        Notifications.error("Error occurred while saving task results", e)
+                    }
+                }
     }
 
-    private fun updateStudentScore(student: String, score: Int) {
-        state.scores[student] = score
+    private suspend fun saveApprovals() {
+        credentials
+                ?.takeIf { state.approvals.isNotEmpty() }
+                ?.also { credentials ->
+                    try {
+                        Container.flaxoClient.updateSolutionApprovals(credentials,
+                                courseName = props.course.name,
+                                task = props.task.branch,
+                                approvals = state.approvals)
+                        state.approvals.clear()
+                        Notifications.success("Task approvals were saved")
+                    } catch (e: FlaxoHttpException) {
+                        console.log(e)
+                        Notifications.error("Error occurred while saving task approvals", e)
+                    }
+                }
     }
 
 }

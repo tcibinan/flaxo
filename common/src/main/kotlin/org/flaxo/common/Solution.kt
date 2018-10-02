@@ -37,7 +37,14 @@ class Solution(
         val buildReports: List<BuildReport>,
 
         /**
-         * Code style reports.
+         * Solution code style reports.
          */
-        val codeStyleReports: List<CodeStyleReport>
+        val codeStyleReports: List<CodeStyleReport>,
+
+        /**
+         * Solution approval status.
+         *
+         * If set to true than solution score is frozen in its current state.
+         */
+        val approved: Boolean
 )
