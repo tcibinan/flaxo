@@ -36,7 +36,9 @@ data class Solution(
         @OneToMany(mappedBy = "solution", orphanRemoval = true)
         val codeStyleReports: List<CodeStyleReport> = mutableListOf(),
 
-        val score: Int? = null
+        val score: Int? = null,
+
+        val approved: Boolean = false
 
 ) : Identifiable, Viewable<SolutionView> {
 
@@ -47,7 +49,7 @@ data class Solution(
             commits = commits.views(),
             buildReports = buildReports.views(),
             codeStyleReports = codeStyleReports.views(),
-            approved = false
+            approved = approved
     )
 
     override fun toString() = "${this::class.simpleName}(id=$id)"
