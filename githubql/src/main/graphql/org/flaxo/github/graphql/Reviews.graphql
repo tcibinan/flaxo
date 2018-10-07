@@ -1,0 +1,20 @@
+query Reviews($repository: String!, $owner: String!, $pullRequestNumber: Int!, $lastReviews: Int!) {
+  repository(name: $repository, owner: $owner) {
+    name
+    pullRequest(number: $pullRequestNumber) {
+      reviews(last: $lastReviews) {
+        nodes {
+          author {
+            login
+          }
+        	body
+          submittedAt
+          state
+          commit {
+            id
+          }
+        }
+      }
+    }
+  }
+}
