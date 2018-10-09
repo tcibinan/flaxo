@@ -5,7 +5,7 @@ package org.flaxo.common
  *
  * Each task is associated with a git branch.
  */
-class Task(
+data class Task(
         /**
          * Associated git branch name.
          */

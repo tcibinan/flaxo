@@ -18,6 +18,7 @@ import react.dom.button
 import react.dom.div
 import react.dom.h5
 import react.dom.hr
+import react.setState
 
 fun RBuilder.task(course: Course, task: Task) = child(org.flaxo.frontend.component.Task::class) {
     attrs {
@@ -30,8 +31,8 @@ class TaskProps(var course: Course,
                 var task: Task
 ) : RProps
 
-class TaskState(var scores: MutableMap<String, Int>,
-                var approvals: MutableMap<String, Boolean>
+class TaskState(var scores: Map<String, Int>,
+                var approvals: Map<String, Boolean>
 ) : RState
 
 class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
@@ -42,8 +43,8 @@ class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
     }
 
     init {
-        state.scores = mutableMapOf()
-        state.approvals = mutableMapOf()
+        state.scores = emptyMap()
+        state.approvals = emptyMap()
     }
 
     override fun RBuilder.render() {
@@ -56,9 +57,12 @@ class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
                             .lastOrNull()
                             ?.also { a(classes = "card-link", href = it.url) { +"Plagiarism report" } }
                     button(classes = "save-results-btn btn btn-outline-primary") {
-                        attrs.onClickFunction = {
-                            launch { saveScores() }
-                            launch { saveApprovals() }
+                        attrs {
+                            disabled = state.scores.isEmpty() && state.approvals.isEmpty()
+                            onClickFunction = {
+                                launch { saveScores() }
+                                launch { saveApprovals() }
+                            }
                         }
                         +"Save results"
                     }
@@ -78,10 +82,10 @@ class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
                     }
                     taskStatistics(props.course, props.task,
                             onSolutionScoreUpdate = { student, score ->
-                                state.scores[student] = score
+                                setState { scores += Pair(student, score) }
                             },
                             onSolutionApprovalUpdate = { student, approved ->
-                                state.approvals[student] = approved
+                                setState { approvals += Pair(student, approved) }
                             }
                     )
                 }
@@ -98,7 +102,7 @@ class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
                                 courseName = props.course.name,
                                 task = props.task.branch,
                                 scores = state.scores)
-                        state.scores.clear()
+                        setState { scores = emptyMap() }
                         Notifications.success("Task results were saved")
                     } catch (e: FlaxoHttpException) {
                         console.log(e)
@@ -116,7 +120,7 @@ class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
                                 courseName = props.course.name,
                                 task = props.task.branch,
                                 approvals = state.approvals)
-                        state.approvals.clear()
+                        setState { approvals = emptyMap() }
                         Notifications.success("Task approvals were saved")
                     } catch (e: FlaxoHttpException) {
                         console.log(e)

@@ -2,6 +2,7 @@ package org.flaxo.rest.api
 
 import org.apache.logging.log4j.LogManager
 import org.flaxo.model.DataManager
+import org.flaxo.model.SolutionView
 import org.flaxo.rest.manager.response.ResponseManager
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -61,10 +62,10 @@ class TaskController(private val dataManager: DataManager,
     }
 
     /**
-     * Update task solutions scores.
+     * Update task solution scores.
      *
      * @param courseName Name of the course.
-     * @param taskBranch Name of the branch related to exact task.
+     * @param taskBranch Name of the task.
      * @param scores Updates students scores.
      */
     @PostMapping("/update/scores")
@@ -87,14 +88,57 @@ class TaskController(private val dataManager: DataManager,
                 .find { it.branch == taskBranch }
                 ?: return responseManager.taskNotFound(principal.name, courseName, taskBranch)
 
-        task.solutions
+        val updatedSolutions: List<SolutionView> = task.solutions
+                .asSequence()
                 .map { it to scores[it.student.nickname] }
                 .filter { (_, updatedScore) -> updatedScore != null }
                 .filter { (_, updatedScore) -> updatedScore in 0..100 }
                 .filter { (solution, updatedScore) -> solution.score != updatedScore }
                 .map { (solution, updatedScore) -> solution.copy(score = updatedScore) }
-                .forEach { dataManager.updateSolution(it) }
+                .map { dataManager.updateSolution(it) }
+                .map { it.view() }
+                .toList()
 
-        return responseManager.ok()
+        return responseManager.ok(updatedSolutions)
+    }
+
+    /**
+     * Update task solution approvals.
+     *
+     * @param courseName Name of the course.
+     * @param taskBranch Name of the task.
+     * @param scores Updates students scores.
+     */
+    @PostMapping("/update/approvals")
+    @PreAuthorize("hasAuthority('USER')")
+    @Transactional
+    fun updateApprovals(@RequestParam courseName: String,
+                     @RequestParam taskBranch: String,
+                     @RequestBody approvals: Map<String, Boolean>,
+                     principal: Principal
+    ): ResponseEntity<Any> {
+        logger.info("Updating approvals for ${principal.name}/$courseName/$taskBranch task: $approvals")
+
+        val user = dataManager.getUser(principal.name)
+                ?: return responseManager.userNotFound(principal.name)
+
+        val course = dataManager.getCourse(courseName, user)
+                ?: return responseManager.courseNotFound(principal.name, courseName)
+
+        val task = course.tasks
+                .find { it.branch == taskBranch }
+                ?: return responseManager.taskNotFound(principal.name, courseName, taskBranch)
+
+        // TODO 09.10.18: Submits reviews to github here
+
+        val updatedSolutions: List<SolutionView> = task.solutions.asSequence()
+                .map { it to approvals[it.student.nickname] }
+                .filter { (_, updatedApproval) -> updatedApproval != null }
+                .map { (solution, updatedApproval) -> solution.copy(approved = updatedApproval!!) }
+                .map { dataManager.updateSolution(it) }
+                .map { it.view() }
+                .toList()
+
+        return responseManager.ok(updatedSolutions)
     }
 }

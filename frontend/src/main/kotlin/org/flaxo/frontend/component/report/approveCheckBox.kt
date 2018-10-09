@@ -19,7 +19,7 @@ fun RBuilder.approveCheckBox(task: Task,
             input(type = InputType.checkBox) {
                 attrs {
                     id = "approvalCheckBoxId-" + task.branch + solution.student
-                    checked = solution.approved
+                    defaultChecked = solution.approved
                     onChangeFunction = { onSolutionApprovalStatusChange(solution.student, checkBoxValue(id)) }
                 }
             }

@@ -5,7 +5,7 @@ package org.flaxo.common
  *
  * Each task represent a relationship between a single student and a single course task.
  */
-class Solution(
+data class Solution(
         /**
          * Task name.
          */
