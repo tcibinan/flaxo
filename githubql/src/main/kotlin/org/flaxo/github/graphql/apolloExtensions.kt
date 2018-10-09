@@ -6,18 +6,26 @@ import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.exception.ApolloException
 import kotlinx.coroutines.experimental.CompletableDeferred
 import kotlinx.coroutines.experimental.Deferred
-import java.lang.RuntimeException
 
 
 internal fun <D> ApolloQueryCall<D>.asDeferred(): Deferred<D> {
     val deferred: CompletableDeferred<D> = CompletableDeferred()
     enqueue(object : ApolloCall.Callback<D>() {
         override fun onFailure(e: ApolloException) {
-            deferred.cancel(e)
+            deferred.cancel(GithubQLException("Apollo exception occurred while performing graphql request", e))
         }
 
         override fun onResponse(response: Response<D>) {
-            deferred.complete(response.data() ?: throw RuntimeException("No data in graphql response"))
+            if (response.hasErrors()) {
+                deferred.cancel(GithubQLException("GraphQL response has errors: " + response.errors().toString()))
+            } else {
+                val data = response.data()
+                if (data != null) {
+                    deferred.complete(data)
+                } else {
+                    deferred.cancel(GithubQLException("No data in graphql response"))
+                }
+            }
         }
 
     })

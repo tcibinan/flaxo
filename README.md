@@ -50,9 +50,9 @@ You can create unlimited amount of courses for free. And it is as easy as it can
 
 ![all-courses](screenshots/all-courses.png?raw=true)
 
-## Courses examples
+## Course examples
 
-[Java data structures course](https://github.com/tcibinan/data-structures-course) (🇷🇺)
+[Data structures on Java](https://github.com/tcibinan/data-structures-course) :ru:
 
 ## Supported languages and tools
 

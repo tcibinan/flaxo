@@ -56,12 +56,12 @@ interface Repository {
     fun getPullRequest(pullRequestNumber: Int): PullRequest
 
     /**
-     * Retrieves open pull requests for this repository.
-     */
-    fun getOpenPullRequests(): List<PullRequest>
-
-    /**
      * Retrieves all pull request for this repository.
      */
     fun getPullRequests(): List<PullRequest>
+
+    /**
+     * Retrieves pull request with [pullRequestNumber] reviews.
+     */
+    fun getPullRequestReviews(pullRequestNumber: Int): List<PullRequestReview>
 }

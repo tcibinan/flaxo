@@ -1,7 +1,10 @@
 package org.flaxo.github
 
+import arrow.core.getOrHandle
+import kotlinx.coroutines.experimental.runBlocking
 import org.flaxo.git.Branch
 import org.flaxo.git.PullRequest
+import org.flaxo.git.PullRequestReview
 import org.flaxo.git.Repository
 import java.io.IOException
 
@@ -56,14 +59,17 @@ data class GithubRepository(override val name: String,
                     ?: throw GithubException("Pull request $pullRequestNumber wasn't found " +
                             "for repositoryName ${github.nickname()}/$name.")
 
-    override fun getOpenPullRequests(): List<PullRequest> =
-            client.repository(owner, name)
-                    .getPullRequests(RawGithubIssueState.OPEN)
-                    .map { GithubPullRequest(it) }
+    override fun getPullRequests(): List<PullRequest> = runBlocking {
+        github.githubQL.pullRequests(name, owner)
+    }.getOrHandle { e ->
+        throw GithubException("GitHub repository $owner/$name pull requests retrieving failed", e)
+    }
 
-    override fun getPullRequests(): List<PullRequest> =
-            client.repository(owner, name)
-                    .getPullRequests(RawGithubIssueState.ALL)
-                    .map { GithubPullRequest(it) }
+    override fun getPullRequestReviews(pullRequestNumber: Int): List<PullRequestReview> = runBlocking {
+        github.githubQL.reviews(name, owner, pullRequestNumber)
+    }.getOrHandle { e ->
+        throw GithubException("GitHub repository $owner/$name pull request #$pullRequestNumber reviews " +
+                "retrieving failed", e)
+    }
 
 }

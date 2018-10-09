@@ -2,21 +2,21 @@ package org.flaxo.github
 
 import org.flaxo.git.Git
 import org.flaxo.git.Repository
+import org.flaxo.github.graphql.GithubQL
 import java.net.URL
 
 /**
  * Github client class.
  */
 class Github(githubClientProducer: () -> RawGithub,
-             rawWebHookUrl: String
+             rawWebHookUrl: String,
+             val githubQL: GithubQL
 ) : Git {
 
     val webHookUrl: URL = URL(rawWebHookUrl)
     val client: RawGithub by lazy(githubClientProducer)
 
-    override fun createRepository(repositoryName: String,
-                                  private: Boolean
-    ): Repository {
+    override fun createRepository(repositoryName: String, private: Boolean): Repository {
         client.createRepository(repositoryName)
                 .private_(private)
                 .create()
@@ -35,9 +35,7 @@ class Github(githubClientProducer: () -> RawGithub,
             "(https://img.shields.io/badge/from_flaxo-with_♥-blue.svg)]" +
             "(https://github.com/tcibinan/flaxo)"
 
-    override fun forkRepository(ownerNickname: String,
-                                repositoryName: String
-    ): Repository =
+    override fun forkRepository(ownerNickname: String, repositoryName: String): Repository =
             client.getUser(ownerNickname)
                     .getRepository(repositoryName)
                     ?.fork()
@@ -47,9 +45,7 @@ class Github(githubClientProducer: () -> RawGithub,
     override fun getRepository(repositoryName: String): Repository =
             GithubRepository(repositoryName, nickname(), this)
 
-    override fun getRepository(ownerName: String,
-                               repositoryName: String
-    ): Repository =
+    override fun getRepository(ownerName: String, repositoryName: String): Repository =
             GithubRepository(repositoryName, ownerName, this)
 
     override fun nickname(): String = client.nickname()

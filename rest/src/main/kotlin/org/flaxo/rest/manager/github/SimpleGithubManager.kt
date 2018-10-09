@@ -3,6 +3,7 @@ package org.flaxo.rest.manager.github
 import org.flaxo.git.GitPayload
 import org.flaxo.github.Github
 import org.flaxo.github.GithubException
+import org.flaxo.github.graphql.GithubQL
 import org.flaxo.github.parseGithubEvent
 import java.io.Reader
 import org.kohsuke.github.GitHub as KohsukeGithub
@@ -13,7 +14,11 @@ import org.kohsuke.github.GitHub as KohsukeGithub
 class SimpleGithubManager(private val webHookUrl: String) : GithubManager {
 
     override fun with(credentials: String) =
-            Github({ KohsukeGithub.connectUsingOAuth(credentials) }, webHookUrl)
+            Github(
+                    githubClientProducer = { KohsukeGithub.connectUsingOAuth(credentials) },
+                    rawWebHookUrl = webHookUrl,
+                    githubQL = GithubQL.from(credentials)
+            )
 
     override fun parsePayload(reader: Reader,
                               headers: Map<String, List<String>>

@@ -3,6 +3,7 @@ package org.flaxo.github
 import org.amshove.kluent.shouldContain
 import org.amshove.kluent.shouldEqual
 import org.flaxo.core.env.file.StringEnvironmentFile
+import org.flaxo.github.graphql.GithubQL
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
@@ -19,7 +20,13 @@ object GithubSpec : SubjectSpek<Github>({
     val subBranchName = "sub-branch"
     val fileName = "file-name"
 
-    subject { Github({ KohsukeGithub.connectUsingOAuth(credentials) }, "http://ignored.web.hook.url") }
+    subject {
+        Github(
+                githubClientProducer = { KohsukeGithub.connectUsingOAuth(credentials) },
+                rawWebHookUrl = "http://ignored.web.hook.url",
+                githubQL = GithubQL.from(credentials)
+        )
+    }
 
     afterGroup {
         subject.getRepository(repositoryName)

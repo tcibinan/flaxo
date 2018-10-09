@@ -7,7 +7,7 @@ import org.flaxo.cmd.CmdExecutor
 import org.flaxo.common.ExternalService
 import org.flaxo.core.of
 import org.flaxo.core.repeatUntil
-import org.flaxo.github.GithubException
+import org.flaxo.git.PullRequest
 import org.flaxo.model.DataManager
 import org.flaxo.model.ModelException
 import org.flaxo.model.data.Course
@@ -190,15 +190,19 @@ open class SimpleTravisManager(private val client: TravisClient,
                 .takeIf { travisBuilds != null }.orEmpty()
                 .flatMap { it.solutions }
                 .filter { it.commits.isNotEmpty() }
-                .forEach { solution ->
-                    val solutionPullRequest = pullRequests
+                .mapNotNull { solution ->
+                    val pullRequest: PullRequest? = pullRequests
                             .filter { it.authorId == solution.student.nickname }
                             .firstOrNull { it.baseBranch == solution.task.branch }
-                            ?: throw GithubException("Pull request solution of ${solution.student.nickname}/${solution.task.branch} student " +
-                                    "for ${user.nickname}/${course.name} course was not found")
-
+                    if (pullRequest == null) {
+                        logger.warn("Pull request solution of ${solution.student.nickname}/${solution.task.branch} " +
+                                "student for ${user.nickname}/${course.name} course was not found")
+                    }
+                    pullRequest?.let { Pair(solution, it) }
+                }
+                .forEach { (solution, pullRequest) ->
                     travisBuilds!!
-                            .filter { it.commitSha == solutionPullRequest.mergeCommitSha }
+                            .filter { it.commitSha == pullRequest.mergeCommitSha }
                             .filter {
                                 it.buildStatus in setOf(
                                         TravisBuildStatus.SUCCEED,

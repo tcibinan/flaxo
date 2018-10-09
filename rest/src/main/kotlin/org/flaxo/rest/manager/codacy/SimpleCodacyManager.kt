@@ -132,6 +132,7 @@ open class SimpleCodacyManager(private val client: CodacyClient,
                                     null
                                 }
                             }
+                            ?.takeIf { it.grade.isNotBlank() }
                             ?.let { codacyCommit ->
                                 val latestGrade = solution.codeStyleReports
                                         .lastOrNull()

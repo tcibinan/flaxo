@@ -1,11 +1,21 @@
 plugins {
-    id "org.junit.platform.gradle.plugin"
+    id 'org.junit.platform.gradle.plugin'
 }
 
 dependencies {
-    compile project(":core")
-    compile project(":git")
+    compile project(':core')
+    compile project(':git')
+    compile project(':githubql')
 
     // Github client
     compile "org.kohsuke:github-api:$kohsuke_github_version"
+
+    // Coroutines
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.26.1'
+}
+
+kotlin {
+    experimental {
+        coroutines 'enable'
+    }
 }

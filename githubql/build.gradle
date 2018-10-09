@@ -1,5 +1,5 @@
 buildscript {
-    ext.apollo_version = "1.0.0-alpha2"
+    ext.apollo_version = '1.0.0-alpha2'
     ext.kotlin_version = '1.2.70'
     repositories {
         jcenter()
@@ -10,10 +10,10 @@ buildscript {
 }
 
 plugins {
-    id "org.junit.platform.gradle.plugin"
+    id 'org.junit.platform.gradle.plugin'
 }
 
-apply plugin: "com.apollographql.android"
+apply plugin: 'com.apollographql.android'
 
 repositories {
     jcenter()
@@ -24,7 +24,7 @@ repositories {
 }
 
 dependencies {
-    compile project(":git")
+    compile project(':git')
 
     // GraphQL client
     compile "com.apollographql.apollo:apollo-runtime:$apollo_version"
@@ -35,14 +35,14 @@ dependencies {
 
 kotlin {
     experimental {
-        coroutines "enable"
+        coroutines 'enable'
     }
 }
 
 task loadGithubScheme(type: Exec) {
-    commandLine "curl",
-            "-H", "Authorization: bearer ${System.getenv().get("GITHUB_USER1_TOKEN")}",
-            "https://api.github.com/graphql"
+    commandLine 'curl',
+            '-H', "Authorization: bearer ${System.getenv().get('GITHUB_USER1_TOKEN')}",
+            'https://api.github.com/graphql'
 
     def schemePath = "$projectDir/src/main/graphql/org/flaxo/github/graphql/schema.json"
 
@@ -57,6 +57,6 @@ generateMainApolloIR.dependsOn loadGithubScheme
 
 apollo {
     customTypeMapping = [
-            "DateTime" : "java.time.ZonedDateTime"
+            'DateTime' : 'java.time.ZonedDateTime'
     ]
 }

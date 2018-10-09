@@ -25,6 +25,5 @@ interface GithubQL {
     /**
      * Returns a list of pull requests of the [repository] of [owner] user or throwable if something went wrong.
      */
-    suspend fun pullRequests(repository: String, owner: String, lastPullRequests: Int, lastCommits: Int = 1)
-            : Either<Throwable, List<PullRequest>>
+    suspend fun pullRequests(repository: String, owner: String): Either<Throwable, List<PullRequest>>
 }

@@ -1,7 +1,15 @@
-query PullRequests($repository: String!, $owner: String!, $lastPullRequests: Int!, $lastCommits: Int!) {
+query PullRequests($repository: String!,
+                   $owner: String!,
+                   $afterPullRequestsCursor: String,
+                   $firstPullRequests: Int!,
+                   $lastCommits: Int!) {
   repository(name: $repository, owner: $owner) {
     name
-    pullRequests(last: $lastPullRequests) {
+    pullRequests(after: $afterPullRequestsCursor, first: $firstPullRequests) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
       nodes {
         number
         author {

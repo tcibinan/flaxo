@@ -5,7 +5,7 @@ import java.nio.file.Path
 /**
  * Environment file.
  *
- * *Notify:* Either [content] or [binaryContent] should be overridden at least
+ * **Interface contract:** At least on of the methods [content] or [binaryContent] should be overridden
  * otherwise [StackOverflowError] will be thrown on calling one of these methods.
  */
 interface EnvironmentFile  {
