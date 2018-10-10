@@ -13,6 +13,7 @@ import org.flaxo.core.lang.KotlinLang
 import org.flaxo.core.lang.`C++Lang`
 import org.flaxo.core.lang.Language
 import org.flaxo.cpp.CppEnvironmentSupplier
+import org.flaxo.rest.manager.github.GithubValidationManager
 import org.flaxo.gradle.GradleBuildTool
 import org.flaxo.rest.manager.ValidationManager
 import org.flaxo.rest.manager.codacy.CodacyManager
@@ -86,15 +87,11 @@ class CoreConfiguration {
 
     @Bean
     fun courseValidations(codacyManager: CodacyManager,
-                          travisManager: TravisManager
+                          travisManager: TravisManager,
+                          githubValidationManager: GithubValidationManager
     ): Map<ExternalService, ValidationManager> = mapOf(
             ExternalService.CODACY to codacyManager,
-            ExternalService.TRAVIS to travisManager
+            ExternalService.TRAVIS to travisManager,
+            ExternalService.GITHUB to githubValidationManager
     )
-
-    private fun <TYPE : NamedEntity> namedMap(vararg namedEntity: TYPE): Map<String, TYPE> =
-            namedEntity.groupBy { it.name }
-                    .map { (name, entities) -> name to entities.first() }
-                    .toMap()
 }
-

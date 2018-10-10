@@ -22,7 +22,6 @@ import org.flaxo.rest.manager.moss.MossSubmission
 import org.flaxo.rest.manager.response.Response
 import org.flaxo.rest.manager.response.ResponseManager
 import org.flaxo.rest.manager.travis.TravisManager
-import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.DeleteMapping
