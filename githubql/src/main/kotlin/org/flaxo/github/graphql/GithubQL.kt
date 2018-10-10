@@ -10,9 +10,7 @@ import org.flaxo.git.PullRequestReview
 interface GithubQL {
 
     companion object {
-        fun from(githubToken: String, githubV4Endpoint: String? = null): GithubQL =
-                githubV4Endpoint?.let { SimpleGithubQL(githubToken, it) }
-                        ?: SimpleGithubQL(githubToken)
+        fun from(githubToken: String): GithubQL = DefaultGithubQL(githubToken)
     }
 
     /**

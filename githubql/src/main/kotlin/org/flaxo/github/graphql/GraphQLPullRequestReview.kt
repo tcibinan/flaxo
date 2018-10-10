@@ -15,7 +15,7 @@ internal class GraphQLPullRequestReview private constructor(
     companion object {
         fun from(rawReview: ReviewsQuery.Node): GraphQLPullRequestReview? =
                 from(
-                        status = PullRequestReviewStatus.valueOf(rawReview.state.name),
+                        status = rawReview.state.toStatus(),
                         user = rawReview.author?.login,
                         body = rawReview.body,
                         submittedDate = rawReview.submittedAt?.toLocalDateTime(),
@@ -24,7 +24,7 @@ internal class GraphQLPullRequestReview private constructor(
 
         fun from(rawReview: AddReviewMutation.PullRequestReview): GraphQLPullRequestReview? =
                 from(
-                        status = PullRequestReviewStatus.valueOf(rawReview.state.name),
+                        status = rawReview.state.toStatus(),
                         user = rawReview.author?.login,
                         body = rawReview.body,
                         submittedDate = rawReview.submittedAt?.toLocalDateTime(),

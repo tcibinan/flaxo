@@ -3,40 +3,17 @@ package org.flaxo.github.graphql
 import arrow.core.Either
 import arrow.core.Try
 import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.api.Mutation
 import com.apollographql.apollo.api.Operation
 import com.apollographql.apollo.api.Query
-import okhttp3.OkHttpClient
 import org.flaxo.git.PullRequest
 import org.flaxo.git.PullRequestReview
-import org.flaxo.github.graphql.type.AddPullRequestReviewInput
-import org.flaxo.github.graphql.type.CustomType
 
-internal class SimpleGithubQL(githubToken: String,
-                              githubV4Endpoint: String = "https://api.github.com/graphql"
-) : GithubQL {
+class SimpleGithubQL(private val client: ApolloClient) : GithubQL {
 
     companion object {
         const val MAX_FIRST = 100
         const val MAX_PAGE = 10
-    }
-
-    private val okHttpClient: OkHttpClient by lazy {
-        OkHttpClient.Builder()
-                .authenticator { _, response ->
-                    response.request()
-                            .newBuilder()
-                            .header("Authorization", "bearer $githubToken")
-                            .build()
-                }
-                .build()
-    }
-
-    private val apolloClient: ApolloClient by lazy {
-        ApolloClient.builder().apply {
-            serverUrl(githubV4Endpoint)
-            okHttpClient(okHttpClient)
-            addCustomTypeAdapter(CustomType.DATETIME, DateTimeCustomTypeAdapter())
-        }.build()
     }
 
     override suspend fun reviews(repository: String, owner: String, pullRequestNumber: Int, lastReviews: Int)
@@ -100,9 +77,7 @@ internal class SimpleGithubQL(githubToken: String,
             input(addReviewRequest.toInput())
         }.build()
 
-        apolloClient.mutate(mutation)
-                .asDeferred()
-                .await()
+        mutate(mutation)
                 .addPullRequestReview
                 ?.pullRequestReview
                 ?.let { GraphQLPullRequestReview.from(it) }
@@ -111,9 +86,13 @@ internal class SimpleGithubQL(githubToken: String,
 
     private inline fun <A> wrapToEither(block: () -> A): Either<Throwable, A> = Try { block() }.toEither()
 
+    private suspend fun <D: Operation.Data, V: Operation.Variables, M: Mutation<D, D, V>> mutate(mutation: M): D =
+        client.mutate(mutation)
+                .asDeferred()
+                .await()
+
     private suspend fun <D : Operation.Data, V : Operation.Variables, Q : Query<D, D, V>> query(query: Q): D =
-            apolloClient
-                    .query(query)
+            client.query(query)
                     .asDeferred()
                     .await()
 
