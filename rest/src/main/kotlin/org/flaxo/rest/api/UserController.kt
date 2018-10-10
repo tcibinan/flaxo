@@ -4,6 +4,8 @@ import org.flaxo.model.DataManager
 import org.flaxo.model.EntityAlreadyExistsException
 import org.flaxo.rest.manager.response.ResponseManager
 import org.apache.logging.log4j.LogManager
+import org.flaxo.model.UserView
+import org.flaxo.rest.manager.response.Response
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.transaction.annotation.Transactional
@@ -35,7 +37,7 @@ class UserController(private val dataManager: DataManager,
     @Transactional
     fun register(@RequestParam nickname: String,
                  @RequestParam password: String
-    ): ResponseEntity<Any> {
+    ): Response<UserView> {
         logger.info("Trying to register user $nickname")
 
         return try {
@@ -57,7 +59,7 @@ class UserController(private val dataManager: DataManager,
     @GetMapping
     @PreAuthorize("hasAuthority('USER')")
     @Transactional(readOnly = true)
-    fun user(principal: Principal): Any {
+    fun user(principal: Principal): Response<UserView> {
         logger.info("Trying to retrieve user ${principal.name}")
 
         val user = dataManager.getUser(principal.name)

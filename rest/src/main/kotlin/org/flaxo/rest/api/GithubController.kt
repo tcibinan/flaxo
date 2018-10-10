@@ -12,6 +12,7 @@ import org.apache.http.client.fluent.Request
 import org.apache.logging.log4j.LogManager
 import org.flaxo.common.ExternalService
 import org.flaxo.common.GithubAuthData
+import org.flaxo.rest.manager.response.Response
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.transaction.annotation.Transactional
@@ -56,7 +57,7 @@ class GithubController(private val responseManager: ResponseManager,
      */
     @GetMapping("/auth")
     @PreAuthorize("hasAuthority('USER')")
-    fun githubAuth(principal: Principal): Any {
+    fun githubAuth(principal: Principal): Response<GithubAuthData> {
         val state = Random().nextInt().toString()
 
         synchronized(states) { states[principal.name] = state }
@@ -172,4 +173,3 @@ class GithubController(private val responseManager: ResponseManager,
     }
 
 }
-

@@ -1,7 +1,5 @@
 package org.flaxo.rest.manager.response
 
-import org.springframework.http.ResponseEntity
-
 /**
  * Http response manager.
  *
@@ -13,58 +11,65 @@ interface ResponseManager {
     /**
      * Forms a response with status code 200.
      */
-    fun ok(body: Any? = null): ResponseEntity<Any>
+    fun <T> ok(body: T? = null): Response<T>
 
     /**
      * Forms a response with status code 400.
      */
-    fun bad(body: Any? = null): ResponseEntity<Any>
+    fun <T> bad(body: T? = null): Response<T>
+
+    /**
+     * Forms a response with status code 400.
+     */
+    fun <T> bad(message: String): Response<T>
 
     /**
      * Forms a response with status code 404.
      */
-    fun notFound(body: Any? = null): ResponseEntity<Any>
+    fun <T> notFound(body: T? = null): Response<T>
+
+    /**
+     * Forms a response with status code 404.
+     */
+    fun <T> notFound(message: String): Response<T>
 
     /**
      * Forms a response with status code 500.
      */
-    fun serverError(body: Any? = null): ResponseEntity<Any>
+    fun <T> serverError(body: T? = null): Response<T>
 
     /**
      * Forms a response with status code 401.
      */
-    fun unauthorized(body: Any? = null): ResponseEntity<Any>
+    fun <T> unauthorized(body: T? = null): Response<T>
 
     /**
      * Forms a response with status code 403.
      */
-    fun forbidden(body: Any? = null): ResponseEntity<Any>
+    fun <T> forbidden(body: T? = null): Response<T>
 
     /**
      * Forms a response with status code 404 and course not found message.
      */
-    fun courseNotFound(username: String, courseName: String): ResponseEntity<Any>
+    fun <T> courseNotFound(username: String, courseName: String): Response<T>
 
     /**
      * Forms a response with status code 404 and user not found message.
      */
-    fun userNotFound(username: String): ResponseEntity<Any>
+    fun <T> userNotFound(username: String): Response<T>
 
     /**
      * Forms a response with status code 400 and github token absences message.
      */
-    fun githubTokenNotFound(username: String): ResponseEntity<Any>
+    fun <T> githubTokenNotFound(username: String): Response<T>
 
     /**
      * Forms a response with status code 404 and github id not found message.
      */
-    fun githubIdNotFound(username: String): ResponseEntity<Any>
+    fun <T> githubIdNotFound(username: String): Response<T>
 
     /**
      * Forms a response with status code 404 and course task not found message.
      */
-    fun taskNotFound(username: String,
-                     courseName: String,
-                     taskBranch: String
-    ): ResponseEntity<Any>
+    fun <T> taskNotFound(username: String, courseName: String, taskBranch: String): Response<T>
 }

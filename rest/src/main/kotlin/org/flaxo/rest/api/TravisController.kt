@@ -9,6 +9,7 @@ import org.flaxo.travis.TravisBuild
 import org.flaxo.travis.TravisPullRequestBuild
 import org.apache.logging.log4j.LogManager
 import org.flaxo.common.ExternalService
+import org.flaxo.rest.manager.response.Response
 import org.flaxo.rest.manager.response.ResponseManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -44,7 +45,7 @@ class TravisController @Autowired constructor(private val travisManager: TravisM
     @Transactional
     fun putToken(@RequestParam token: String,
                  principal: Principal
-    ): ResponseEntity<Any> {
+    ): Response<Unit> {
         logger.info("Putting travis token for ${principal.name} user")
 
         val user = dataManager.getUser(principal.name)
@@ -56,7 +57,6 @@ class TravisController @Autowired constructor(private val travisManager: TravisM
         }
 
         dataManager.addToken(user.nickname, ExternalService.TRAVIS, token)
-
         logger.info("Travis token was added for ${principal.name}")
         return responseManager.ok()
     }

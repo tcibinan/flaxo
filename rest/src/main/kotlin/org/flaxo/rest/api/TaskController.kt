@@ -3,6 +3,8 @@ package org.flaxo.rest.api
 import org.apache.logging.log4j.LogManager
 import org.flaxo.model.DataManager
 import org.flaxo.model.SolutionView
+import org.flaxo.model.TaskView
+import org.flaxo.rest.manager.response.Response
 import org.flaxo.rest.manager.response.ResponseManager
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -41,7 +43,7 @@ class TaskController(private val dataManager: DataManager,
                     @RequestParam taskBranch: String,
                     @RequestParam(required = false) deadline: String?,
                     principal: Principal
-    ): ResponseEntity<Any> {
+    ): Response<TaskView> {
         logger.info("Updating rules of ${principal.name}/$courseName/$taskBranch task")
 
         val user = dataManager.getUser(principal.name)
@@ -55,8 +57,11 @@ class TaskController(private val dataManager: DataManager,
                 ?: return responseManager.taskNotFound(principal.name, courseName, taskBranch)
 
         val updatedTask =
-                if (deadline == null) dataManager.updateTask(task.copy(deadline = null))
-                else dataManager.updateTask(task.copy(deadline = LocalDate.parse(deadline).atTime(LocalTime.MAX)))
+                if (deadline == null) {
+                    dataManager.updateTask(task.copy(deadline = null))
+                } else {
+                    dataManager.updateTask(task.copy(deadline = LocalDate.parse(deadline).atTime(LocalTime.MAX)))
+                }
 
         return responseManager.ok(updatedTask.view())
     }
@@ -75,7 +80,7 @@ class TaskController(private val dataManager: DataManager,
                      @RequestParam taskBranch: String,
                      @RequestBody scores: Map<String, Int>,
                      principal: Principal
-    ): ResponseEntity<Any> {
+    ): Response<List<SolutionView>> {
         logger.info("Updating scores for ${principal.name}/$courseName/$taskBranch task: $scores")
 
         val user = dataManager.getUser(principal.name)
@@ -116,7 +121,7 @@ class TaskController(private val dataManager: DataManager,
                      @RequestParam taskBranch: String,
                      @RequestBody approvals: Map<String, Boolean>,
                      principal: Principal
-    ): ResponseEntity<Any> {
+    ): Response<List<SolutionView>> {
         logger.info("Updating approvals for ${principal.name}/$courseName/$taskBranch task: $approvals")
 
         val user = dataManager.getUser(principal.name)

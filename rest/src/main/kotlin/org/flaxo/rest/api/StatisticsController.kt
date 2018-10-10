@@ -4,10 +4,12 @@ import org.apache.logging.log4j.LogManager
 import org.flaxo.model.CourseStatisticsView
 import org.flaxo.model.DataManager
 import org.flaxo.model.data.views
+import org.flaxo.rest.manager.response.Response
 import org.flaxo.rest.manager.statistics.StatisticsManager
 import org.flaxo.rest.manager.response.ResponseManager
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -48,13 +50,13 @@ class StatisticsController(private val dataManager: DataManager,
         logger.info("Collecting statistics of ${principal.name}/$courseName for download in $format format")
 
         val user = dataManager.getUser(principal.name)
-                ?: return responseManager.userNotFound(principal.name)
+                ?: return responseManager.userNotFound<String>(principal.name)
 
         val course = dataManager.getCourse(courseName, user)
-                ?: return responseManager.courseNotFound(principal.name, courseName)
+                ?: return responseManager.courseNotFound<String>(principal.name, courseName)
 
         val statisticsConverter = statisticsManager[format]
-                ?: return responseManager.bad("Given $format format is not supported")
+                ?: return responseManager.bad<String>("Given $format format is not supported")
 
         return course.tasks
                 .map { it.branch to it.solutions }
@@ -87,7 +89,7 @@ class StatisticsController(private val dataManager: DataManager,
     @Transactional(readOnly = true)
     fun getCourseStatistics(@RequestParam("owner") ownerNickname: String,
                             @RequestParam("course") courseName: String
-    ): ResponseEntity<Any> {
+    ): Response<CourseStatisticsView> {
         logger.info("Aggregating course $ownerNickname/$courseName statistics")
 
         val user = dataManager.getUser(ownerNickname)

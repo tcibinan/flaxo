@@ -1,5 +1,6 @@
 package org.flaxo.rest.api
 
+import org.flaxo.rest.manager.response.Response
 import org.flaxo.rest.manager.response.ResponseManager
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
@@ -18,7 +19,7 @@ class FlaxoController(private val responseManager: ResponseManager) {
      * Shows welcome message.
      */
     @GetMapping
-    fun index() = responseManager.ok("Welcome to flaxo")
+    fun index(): Response<String> = responseManager.ok("Welcome to flaxo")
 
     /**
      * Echoes the given message.
@@ -27,7 +28,6 @@ class FlaxoController(private val responseManager: ResponseManager) {
      */
     @GetMapping("/echo")
     @PreAuthorize("hasAuthority('USER')")
-    fun echo(@RequestParam("message") message: String) =
-            responseManager.ok(message)
+    fun echo(@RequestParam("message") message: String): Response<String> = responseManager.ok(message)
 
 }

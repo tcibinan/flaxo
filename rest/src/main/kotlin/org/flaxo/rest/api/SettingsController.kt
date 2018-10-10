@@ -2,6 +2,7 @@ package org.flaxo.rest.api
 
 import org.flaxo.core.lang.Language
 import org.flaxo.model.LanguageView
+import org.flaxo.rest.manager.response.Response
 import org.flaxo.rest.manager.response.ResponseManager
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -21,7 +22,7 @@ class SettingsController(private val responseManager: ResponseManager,
      * Returns a list of supported languages by flaxo.
      */
     @GetMapping("/languages")
-    fun languages(): ResponseEntity<Any> =
+    fun languages(): Response<List<LanguageView>> =
             languages
                     .map { language ->
                         LanguageView(

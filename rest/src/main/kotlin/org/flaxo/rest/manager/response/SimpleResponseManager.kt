@@ -1,54 +1,45 @@
 package org.flaxo.rest.manager.response
 
-import org.flaxo.common.Payload
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 
 /**
  * Response manager implementation.
  */
 class SimpleResponseManager : ResponseManager {
 
-    override fun userNotFound(username: String): ResponseEntity<Any> =
+    override fun <T> userNotFound(username: String): Response<T> =
             notFound("User $username not found")
 
-    override fun courseNotFound(username: String,
-                                courseName: String
-    ): ResponseEntity<Any> =
+    override fun <T> courseNotFound(username: String, courseName: String): Response<T> =
             notFound("Course $courseName wasn't found for user $username.")
 
-    override fun taskNotFound(username: String,
-                              courseName: String,
-                              taskBranch: String
-    ): ResponseEntity<Any> =
+    override fun <T> taskNotFound(username: String, courseName: String, taskBranch: String): Response<T> =
             notFound("Task $taskBranch wasn't found for $username/$courseName")
 
-    override fun githubTokenNotFound(username: String): ResponseEntity<Any> =
+    override fun <T> githubTokenNotFound(username: String): Response<T> =
             bad("There is no github auth for $username")
 
-    override fun githubIdNotFound(username: String): ResponseEntity<Any> =
+    override fun <T> githubIdNotFound(username: String): Response<T> =
             notFound("Github id for $username is not set.")
 
-    override fun ok(body: Any?): ResponseEntity<Any> =
-            response(body, HttpStatus.OK)
+    override fun <T> ok(body: T?): Response<T> = response(body, HttpStatus.OK)
 
-    override fun bad(body: Any?): ResponseEntity<Any> =
-            response(body, HttpStatus.BAD_REQUEST)
+    override fun <T> bad(body: T?): Response<T> = response(body, HttpStatus.BAD_REQUEST)
 
-    override fun notFound(body: Any?): ResponseEntity<Any> =
-            response(body, HttpStatus.NOT_FOUND)
+    override fun <T> bad(message: String): Response<T> = response(message, HttpStatus.BAD_REQUEST)
 
-    override fun serverError(body: Any?): ResponseEntity<Any> =
-            response(body, HttpStatus.INTERNAL_SERVER_ERROR)
+    override fun <T> notFound(body: T?): Response<T> = response(body, HttpStatus.NOT_FOUND)
 
-    override fun unauthorized(body: Any?): ResponseEntity<Any> =
-            response(body, HttpStatus.UNAUTHORIZED)
+    override fun <T> notFound(message: String): Response<T> = response(message, HttpStatus.NOT_FOUND)
 
-    override fun forbidden(body: Any?): ResponseEntity<Any> =
-            response(body, HttpStatus.FORBIDDEN)
+    override fun <T> serverError(body: T?): Response<T> = response(body, HttpStatus.INTERNAL_SERVER_ERROR)
 
-    private fun response(body: Any?, httpStatus: HttpStatus): ResponseEntity<Any> =
-            body?.let { ResponseEntity<Any>(Payload(body), httpStatus) }
-                    ?: ResponseEntity(httpStatus)
+    override fun <T> unauthorized(body: T?): Response<T> = response(body, HttpStatus.UNAUTHORIZED)
+
+    override fun <T> forbidden(body: T?): Response<T> = response(body, HttpStatus.FORBIDDEN)
+
+    private fun <T> response(body: T?, httpStatus: HttpStatus): Response<T> = Response(body, httpStatus)
+
+    private fun <T> response(message: String, httpStatus: HttpStatus): Response<T> = Response(message, httpStatus)
 
 }

@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager
 import org.flaxo.common.CourseLifecycle
 import org.flaxo.common.ExternalService
 import org.flaxo.core.stringStackTrace
+import org.flaxo.model.CourseView
 import org.flaxo.model.DataManager
 import org.flaxo.model.data.Course
 import org.flaxo.model.data.PlagiarismMatch
@@ -18,6 +19,7 @@ import org.flaxo.rest.manager.environment.EnvironmentManager
 import org.flaxo.rest.manager.github.GithubManager
 import org.flaxo.rest.manager.moss.MossManager
 import org.flaxo.rest.manager.moss.MossSubmission
+import org.flaxo.rest.manager.response.Response
 import org.flaxo.rest.manager.response.ResponseManager
 import org.flaxo.rest.manager.travis.TravisManager
 import org.springframework.http.ResponseEntity
@@ -64,7 +66,7 @@ class CourseController(private val dataManager: DataManager,
                @RequestParam testingLanguage: String,
                @RequestParam testingFramework: String,
                principal: Principal
-    ): ResponseEntity<Any> {
+    ): Response<CourseView> {
         logger.info("Trying to import course ${principal.name}/$repositoryName from an existing repository")
 
         val user = dataManager.getUser(principal.name)
@@ -76,15 +78,15 @@ class CourseController(private val dataManager: DataManager,
         val githubToken = user.credentials.githubToken
                 ?: return responseManager.githubTokenNotFound(user.nickname)
 
-        githubManager.with(githubToken)
+        return githubManager.with(githubToken)
                 .getRepository(repositoryName)
                 .takeIf { it.exists() }
-                ?.also { repository ->
+                ?.let { repository ->
                     logger.info("Scanning for tasks of the importing course ${principal.name}/$repositoryName")
                     repository.branches()
                             .map { it.name }
                             .filter { it.startsWith(tasksPrefix) }
-                            .also { tasksNames ->
+                            .let { tasksNames ->
                                 dataManager.createCourse(
                                         repositoryName,
                                         description,
@@ -96,9 +98,8 @@ class CourseController(private val dataManager: DataManager,
                                 )
                             }
                 }
-                ?: return responseManager.bad("Github repository $githubId/$repositoryName")
-
-        return responseManager.ok("Course ${user.nickname}/$repositoryName was created")
+                ?.let { responseManager.ok(it.view()) }
+                ?: responseManager.bad("Github repository $githubId/$repositoryName doesn't exist")
     }
 
     /**
@@ -122,7 +123,7 @@ class CourseController(private val dataManager: DataManager,
                      @RequestParam testingFramework: String,
                      @RequestParam numberOfTasks: Int,
                      principal: Principal
-    ): ResponseEntity<Any> {
+    ): Response<CourseView> {
         logger.info("Trying to create course ${principal.name}/$courseName")
 
         val user = dataManager.getUser(principal.name)
@@ -178,7 +179,7 @@ class CourseController(private val dataManager: DataManager,
     @Transactional(readOnly = true)
     fun course(@RequestParam courseName: String,
                principal: Principal
-    ): ResponseEntity<Any> {
+    ): Response<CourseView> {
         val user = dataManager.getUser(principal.name)
                 ?: return responseManager.userNotFound(principal.name)
 
@@ -198,7 +199,7 @@ class CourseController(private val dataManager: DataManager,
     @Transactional(readOnly = true)
     fun allCourses(@RequestParam nickname: String,
                    principal: Principal
-    ): ResponseEntity<Any> =
+    ): Response<List<CourseView>> =
             if (principal.name == nickname) {
                 responseManager.ok(dataManager.getCourses(nickname).views())
             } else {
@@ -215,7 +216,7 @@ class CourseController(private val dataManager: DataManager,
     @Transactional
     fun deleteCourse(@RequestParam courseName: String,
                      principal: Principal
-    ): ResponseEntity<Any> {
+    ): Response<CourseView> {
         logger.info("Trying to delete course ${principal.name}/$courseName")
 
         val user = dataManager.getUser(principal.name)
@@ -246,7 +247,7 @@ class CourseController(private val dataManager: DataManager,
 
         logger.info("Course ${principal.name}/$courseName has been successfully deleted")
 
-        return responseManager.ok()
+        return responseManager.ok(course.view())
     }
 
     /**
@@ -265,7 +266,7 @@ class CourseController(private val dataManager: DataManager,
     @Transactional
     fun activate(@RequestParam courseName: String,
                  principal: Principal
-    ): ResponseEntity<Any> {
+    ): Response<CourseView> {
         logger.info("Trying to compose course ${principal.name}/$courseName")
 
         val user = dataManager.getUser(principal.name)
@@ -317,7 +318,7 @@ class CourseController(private val dataManager: DataManager,
     @Transactional
     fun activateCodacy(@RequestParam courseName: String,
                        principal: Principal
-    ): ResponseEntity<Any> {
+    ): Response<CourseView> {
         logger.info("Trying to activate codacy for course ${principal.name}/$courseName")
 
         val user = dataManager.getUser(principal.name)
@@ -366,7 +367,7 @@ class CourseController(private val dataManager: DataManager,
     @Transactional
     fun activateTravis(@RequestParam courseName: String,
                        principal: Principal
-    ): ResponseEntity<Any> {
+    ): Response<CourseView> {
         logger.info("Trying to activate travis for course ${principal.name}/$courseName")
 
         val user = dataManager.getUser(principal.name)
@@ -375,8 +376,9 @@ class CourseController(private val dataManager: DataManager,
         val course = dataManager.getCourse(courseName, user)
                 ?: return responseManager.courseNotFound(principal.name, courseName)
 
-        if (course.state.lifecycle != CourseLifecycle.RUNNING)
+        if (course.state.lifecycle != CourseLifecycle.RUNNING) {
             return responseManager.bad("Course ${principal.name}/$courseName is not started yet")
+        }
 
         course.state
                 .activatedServices
@@ -413,7 +415,7 @@ class CourseController(private val dataManager: DataManager,
     @Transactional
     fun analysePlagiarism(@RequestParam courseName: String,
                           principal: Principal
-    ): ResponseEntity<Any> {
+    ): Response<Unit> {
         logger.info("Trying to start plagiarism analysis for ${principal.name}/$courseName")
 
         val user = dataManager.getUser(principal.name)
@@ -440,9 +442,7 @@ class CourseController(private val dataManager: DataManager,
             logger.error("Moss plagiarism analysis went bad for some of the submissions: ${e.stringStackTrace()}")
         }
 
-        val scheduledTasksNames = mossSubmissions.map { it.branch }
-
-        return responseManager.ok("Plagiarism analysis has finished for submissions: $scheduledTasksNames")
+        return responseManager.ok()
     }
 
     private fun submitMossTasksExecution(mossSubmissions: List<MossSubmission>,
@@ -497,13 +497,13 @@ class CourseController(private val dataManager: DataManager,
     }
 
     /**
-     * Synchronize all validation results.
+     * Synchronize course validations.
      */
     @PostMapping("/sync")
     @Transactional
     fun synchronize(@RequestParam courseName: String,
                     principal: Principal
-    ): ResponseEntity<Any> {
+    ): Response<CourseView> {
         logger.info("Syncing ${principal.name}/$courseName course validation results")
 
         val user = dataManager.getUser(principal.name)
@@ -521,7 +521,8 @@ class CourseController(private val dataManager: DataManager,
                         "is not running to be synchronized")
 
         logger.info("Course validations were synchronized for ${principal.name}/$courseName")
-        return responseManager.ok("Course validations were synchronized")
+
+        return responseManager.ok(dataManager.getCourse(courseName, user)?.view())
     }
 
 }

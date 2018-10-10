@@ -3,6 +3,8 @@ package org.flaxo.rest.api
 import org.apache.logging.log4j.LogManager
 import org.flaxo.common.ExternalService
 import org.flaxo.model.DataManager
+import org.flaxo.model.UserView
+import org.flaxo.rest.manager.response.Response
 import org.flaxo.rest.manager.response.ResponseManager
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -32,7 +34,7 @@ class CodacyController(private val dataManager: DataManager,
     @Transactional
     fun putToken(@RequestParam token: String,
                  principal: Principal
-    ): ResponseEntity<Any> {
+    ): Response<UserView> {
         logger.info("Putting codacy token for ${principal.name}")
 
         val user = dataManager.getUser(principal.name)
@@ -43,9 +45,8 @@ class CodacyController(private val dataManager: DataManager,
             return responseManager.bad("Given codacy token is invalid")
         }
 
-        dataManager.addToken(user.nickname, ExternalService.CODACY, token)
-
+        val updatedUser = dataManager.addToken(user.nickname, ExternalService.CODACY, token)
         logger.info("Codacy token was added for ${principal.name}")
-        return responseManager.ok()
+        return responseManager.ok(updatedUser.view())
     }
 }
