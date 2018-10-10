@@ -1,0 +1,15 @@
+mutation AddReview($input: AddPullRequestReviewInput!) {
+  addPullRequestReview(input: $input) {
+    pullRequestReview {
+      author {
+        login
+      }
+      body
+      submittedAt
+      state
+      commit {
+        id
+      }
+    }
+  }
+}

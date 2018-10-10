@@ -8,6 +8,7 @@ import com.apollographql.apollo.api.Query
 import okhttp3.OkHttpClient
 import org.flaxo.git.PullRequest
 import org.flaxo.git.PullRequestReview
+import org.flaxo.github.graphql.type.AddPullRequestReviewInput
 import org.flaxo.github.graphql.type.CustomType
 
 internal class SimpleGithubQL(githubToken: String,
@@ -89,6 +90,23 @@ internal class SimpleGithubQL(githubToken: String,
             currentPage += 1
         }
         pullRequests
+    }
+
+    override suspend fun addReview(repository: String,
+                                   owner: String,
+                                   addReviewRequest: AddReviewRequest
+    ): Either<Throwable, PullRequestReview> = wrapToEither {
+        val mutation = AddReviewMutation.builder().apply {
+            input(addReviewRequest.toInput())
+        }.build()
+
+        apolloClient.mutate(mutation)
+                .asDeferred()
+                .await()
+                .addPullRequestReview
+                ?.pullRequestReview
+                ?.let { GraphQLPullRequestReview.from(it) }
+                ?: throw GithubQLException("Add review call didn't return a created review")
     }
 
     private inline fun <A> wrapToEither(block: () -> A): Either<Throwable, A> = Try { block() }.toEither()

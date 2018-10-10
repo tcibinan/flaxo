@@ -13,21 +13,36 @@ internal class GraphQLPullRequestReview private constructor(
 ) : PullRequestReview {
 
     companion object {
-        fun from(rawReview: ReviewsQuery.Node): GraphQLPullRequestReview? {
-            val status: PullRequestReviewStatus = PullRequestReviewStatus.valueOf(rawReview.state.name)
-            val user: String = rawReview.author?.login
-                    ?: return null
-            val body: String? = rawReview.body
-            val submittedDate: LocalDateTime = rawReview.submittedAt?.toLocalDateTime() ?: LocalDateTime.MIN
-            val commitId: String = rawReview.commit?.id
-                    ?: return null
+        fun from(rawReview: ReviewsQuery.Node): GraphQLPullRequestReview? =
+                from(
+                        status = PullRequestReviewStatus.valueOf(rawReview.state.name),
+                        user = rawReview.author?.login,
+                        body = rawReview.body,
+                        submittedDate = rawReview.submittedAt?.toLocalDateTime(),
+                        commitId = rawReview.commit?.id
+                )
 
+        fun from(rawReview: AddReviewMutation.PullRequestReview): GraphQLPullRequestReview? =
+                from(
+                        status = PullRequestReviewStatus.valueOf(rawReview.state.name),
+                        user = rawReview.author?.login,
+                        body = rawReview.body,
+                        submittedDate = rawReview.submittedAt?.toLocalDateTime(),
+                        commitId = rawReview.commit?.id
+                )
+
+        fun from(status: PullRequestReviewStatus,
+                 user: String?,
+                 body: String?,
+                 submittedDate: LocalDateTime?,
+                 commitId: String?
+        ): GraphQLPullRequestReview? {
             return GraphQLPullRequestReview(
                     status = status,
-                    user = user,
+                    user = user ?: return null,
                     body = body,
-                    submittedDate = submittedDate,
-                    commitId = commitId
+                    submittedDate = submittedDate ?: LocalDateTime.MIN,
+                    commitId = commitId ?: return null
             )
         }
     }

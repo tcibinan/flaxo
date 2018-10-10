@@ -17,13 +17,22 @@ interface GithubQL {
 
     /**
      * Returns a list of pull requests reviews of the [repository] of [owner] user by a [pullRequestNumber]
-     * or throwable if something went wrong.
+     * or throwable.
      */
     suspend fun reviews(repository: String, owner: String, pullRequestNumber: Int, lastReviews: Int = 10)
             : Either<Throwable, List<PullRequestReview>>
 
     /**
-     * Returns a list of pull requests of the [repository] of [owner] user or throwable if something went wrong.
+     * Returns a list of pull requests of the [repository] of [owner] user or throwable.
      */
     suspend fun pullRequests(repository: String, owner: String): Either<Throwable, List<PullRequest>>
+
+    /**
+     * Add a pull request review to a pull request with [pullRequestId] from [repository] of [owner]
+     * according to the given [addReviewRequest].
+     *
+     * @return The created review or throwable.
+     */
+    suspend fun addReview(repository: String, owner: String, addReviewRequest: AddReviewRequest)
+            : Either<Throwable, PullRequestReview>
 }

@@ -1,14 +1,15 @@
 package org.flaxo.github.graphql
 
 import com.apollographql.apollo.ApolloCall
-import com.apollographql.apollo.ApolloQueryCall
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.exception.ApolloException
 import kotlinx.coroutines.experimental.CompletableDeferred
 import kotlinx.coroutines.experimental.Deferred
 
-
-internal fun <D> ApolloQueryCall<D>.asDeferred(): Deferred<D> {
+/**
+ * Returns a deferred that is based on the results of the apollo call.
+ */
+internal fun <D> ApolloCall<D>.asDeferred(): Deferred<D> {
     val deferred: CompletableDeferred<D> = CompletableDeferred()
     enqueue(object : ApolloCall.Callback<D>() {
         override fun onFailure(e: ApolloException) {
