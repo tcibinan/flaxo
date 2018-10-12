@@ -6,6 +6,7 @@ import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Mutation
 import com.apollographql.apollo.api.Operation
 import com.apollographql.apollo.api.Query
+import org.flaxo.git.AddReviewRequest
 import org.flaxo.git.PullRequest
 import org.flaxo.git.PullRequestReview
 

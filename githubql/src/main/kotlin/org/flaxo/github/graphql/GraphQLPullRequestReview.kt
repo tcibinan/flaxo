@@ -4,7 +4,7 @@ import org.flaxo.git.PullRequestReview
 import org.flaxo.git.PullRequestReviewStatus
 import java.time.LocalDateTime
 
-internal class GraphQLPullRequestReview private constructor(
+internal data class GraphQLPullRequestReview constructor(
         override val status: PullRequestReviewStatus,
         override val user: String,
         override val body: String?,

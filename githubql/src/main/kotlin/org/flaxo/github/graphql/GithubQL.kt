@@ -1,6 +1,7 @@
 package org.flaxo.github.graphql
 
 import arrow.core.Either
+import org.flaxo.git.AddReviewRequest
 import org.flaxo.git.PullRequest
 import org.flaxo.git.PullRequestReview
 

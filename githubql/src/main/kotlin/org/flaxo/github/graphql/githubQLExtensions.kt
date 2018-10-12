@@ -1,5 +1,6 @@
 package org.flaxo.github.graphql
 
+import org.flaxo.git.AddReviewRequest
 import org.flaxo.git.PullRequestReviewStatus
 import org.flaxo.github.graphql.type.AddPullRequestReviewInput
 import org.flaxo.github.graphql.type.PullRequestReviewEvent

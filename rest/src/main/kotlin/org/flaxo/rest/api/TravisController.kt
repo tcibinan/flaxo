@@ -12,7 +12,6 @@ import org.flaxo.common.ExternalService
 import org.flaxo.rest.manager.response.Response
 import org.flaxo.rest.manager.response.ResponseManager
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.PostMapping
@@ -89,8 +88,8 @@ class TravisController @Autowired constructor(private val travisManager: TravisM
                         .getPullRequest(hook.pullRequestNumber)
 
                 val student = course.students
-                        .find { it.nickname == pullRequest.authorId }
-                        ?: throw TravisException("Student ${pullRequest.authorId} wasn't found " +
+                        .find { it.nickname == pullRequest.authorLogin }
+                        ?: throw TravisException("Student ${pullRequest.authorLogin} wasn't found " +
                                 "in course ${hook.repositoryOwner}/${hook.repositoryName}.")
 
                 val solution = student.solutions

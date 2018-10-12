@@ -137,27 +137,27 @@ class GithubController(private val responseManager: ResponseManager,
 
         when (hook) {
             is PullRequest -> {
-                logger.info("Github pull request web hook received from ${hook.authorId} " +
-                        "to ${hook.receiverId}/${hook.receiverRepositoryName}.")
+                logger.info("Github pull request web hook received from ${hook.authorLogin} " +
+                        "to ${hook.receiverLogin}/${hook.receiverRepositoryName}.")
 
-                val user = dataManager.getUserByGithubId(hook.receiverId)
-                        ?: throw GithubException("User with githubId ${hook.receiverId} wasn't found in database.")
+                val user = dataManager.getUserByGithubId(hook.receiverLogin)
+                        ?: throw GithubException("User with githubId ${hook.receiverLogin} wasn't found in database.")
 
                 val course = dataManager.getCourse(hook.receiverRepositoryName, user)
                         ?: throw GithubException("Course ${hook.receiverRepositoryName} wasn't found for user ${user.nickname}.")
 
                 val student = course.students
-                        .find { it.nickname == hook.authorId }
-                        ?: dataManager.addStudent(hook.authorId, course).also {
+                        .find { it.nickname == hook.authorLogin }
+                        ?: dataManager.addStudent(hook.authorLogin, course).also {
                             logger.info("Student ${it.nickname} was initialised for course ${user.nickname}/${course.name}.")
                         }
 
                 student.solutions
-                        .find { it.task.branch == hook.baseBranch }
+                        .find { it.task.branch == hook.targetBranch }
                         ?.also { solution ->
                             logger.info("Add ${hook.lastCommitSha} commit to ${student.nickname} student solution " +
                                     "for course ${user.nickname}/${course.name}.")
-                            dataManager.addCommit(solution, hook.id, hook.lastCommitSha)
+                            dataManager.addCommit(solution, hook.number, hook.lastCommitSha)
                         }
             }
             else -> {

@@ -11,9 +11,24 @@ query PullRequests($repository: String!,
         endCursor
       }
       nodes {
+        id
         number
-        author {
-          login
+        repository {
+          id
+          name
+          owner {
+            id
+            login
+          }
+        }
+        headRef {
+          name
+          repository {
+            owner {
+              id
+              login
+            }
+          }
         }
         baseRef {
           name
@@ -25,14 +40,8 @@ query PullRequests($repository: String!,
             }
           }
         }
-        mergeCommit {
+        potentialMergeCommit {
           id
-        }
-        repository {
-          owner {
-            login
-          }
-          name
         }
         state
       }

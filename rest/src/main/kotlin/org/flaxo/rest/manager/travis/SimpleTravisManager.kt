@@ -192,8 +192,8 @@ open class SimpleTravisManager(private val client: TravisClient,
                 .filter { it.commits.isNotEmpty() }
                 .mapNotNull { solution ->
                     val pullRequest: PullRequest? = pullRequests
-                            .filter { it.authorId == solution.student.nickname }
-                            .firstOrNull { it.baseBranch == solution.task.branch }
+                            .filter { it.authorLogin == solution.student.nickname }
+                            .firstOrNull { it.targetBranch == solution.task.branch }
                     if (pullRequest == null) {
                         logger.warn("Pull request solution of ${solution.student.nickname}/${solution.task.branch} " +
                                 "student for ${user.nickname}/${course.name} course was not found")

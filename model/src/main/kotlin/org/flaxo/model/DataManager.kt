@@ -86,7 +86,7 @@ interface DataManager {
     /**
      * Removes course model.
      */
-    fun deleteCourse(courseName: String, owner: User)
+    fun deleteCourse(courseName: String, owner: User): Course
 
     /**
      * Changes existing course.
@@ -139,10 +139,7 @@ interface DataManager {
      * @param service on which access token grants access.
      * @param accessToken the access token itself.
      */
-    fun addToken(userNickname: String,
-                 service: ExternalService,
-                 accessToken: String
-    ): User
+    fun addToken(userNickname: String, service: ExternalService, accessToken: String): User
 
     /**
      * Adds [githubId] to a user with [userNickname].
@@ -168,10 +165,7 @@ interface DataManager {
     /**
      * Adds new build report.
      */
-    fun addBuildReport(solution: Solution,
-                       succeed: Boolean,
-                       date: LocalDateTime = LocalDateTime.now()
-    ): BuildReport
+    fun addBuildReport(solution: Solution, succeed: Boolean, date: LocalDateTime = LocalDateTime.now()): BuildReport
 
     /**
      * Adds new code style report.
@@ -182,12 +176,9 @@ interface DataManager {
     ): CodeStyleReport
 
     /**
-     * Adds commit by its [pullRequestId] and [commitSha] to [solution].
+     * Adds commit by its [pullRequestNumber] and [commitSha] to [solution].
      */
-    fun addCommit(solution: Solution,
-                  pullRequestId: Int,
-                  commitSha: String
-    ): Commit
+    fun addCommit(solution: Solution, pullRequestNumber: Int, commitSha: String): Commit
 
     /**
      * Adds new plagiarism report.
@@ -201,6 +192,6 @@ interface DataManager {
     /**
      * Deletes user.
      */
-    fun deleteUser(username: String)
+    fun deleteUser(username: String): User
 
 }

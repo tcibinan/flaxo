@@ -1,6 +1,4 @@
-package org.flaxo.github.graphql
-
-import org.flaxo.git.PullRequestReviewStatus
+package org.flaxo.git
 
 /**
  * Add pull request review request.

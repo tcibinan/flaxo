@@ -2,6 +2,7 @@ package org.flaxo.github
 
 import arrow.core.getOrHandle
 import kotlinx.coroutines.experimental.runBlocking
+import org.flaxo.git.AddReviewRequest
 import org.flaxo.git.Branch
 import org.flaxo.git.PullRequest
 import org.flaxo.git.PullRequestReview
@@ -72,4 +73,9 @@ data class GithubRepository(override val name: String,
                 "retrieving failed", e)
     }
 
+    override fun addPullRequestReview(request: AddReviewRequest): PullRequestReview = runBlocking {
+        github.githubQL.addReview(name, owner, request)
+    }.getOrHandle { e ->
+        throw GithubException("GitHub repository $owner/$name review addition failed: $request", e)
+    }
 }

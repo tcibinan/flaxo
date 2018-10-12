@@ -64,4 +64,9 @@ interface Repository {
      * Retrieves pull request with [pullRequestNumber] reviews.
      */
     fun getPullRequestReviews(pullRequestNumber: Int): List<PullRequestReview>
+
+    /**
+     * Add pull request review according to the given [request].
+     */
+    fun addPullRequestReview(request: AddReviewRequest): PullRequestReview
 }

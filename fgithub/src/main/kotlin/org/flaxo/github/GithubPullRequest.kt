@@ -2,40 +2,52 @@ package org.flaxo.github
 
 import org.flaxo.git.PullRequest
 
+private const val UNDEFINED = "undefined"
+
 /**
  * Github pull request class.
  */
 class GithubPullRequest : PullRequest {
 
-    override val id: Int
-    override val baseBranch: String
+    // These 4 id fields are conceptually wrong in the GitHub REST implementation
+    // It is temporary workaround until GitHub REST will be completely replaced with the GraphQL one
+    override val id: String  = UNDEFINED
+    override val authorId: String = UNDEFINED
+    override val receiverId: String = UNDEFINED
+    override val receiverRepositoryId: String = UNDEFINED
+
+    override val number: Int
+    override val sourceBranch: String
+    override val targetBranch: String
     override val lastCommitSha: String
     override val mergeCommitSha: String?
-    override val authorId: String
-    override val receiverId: String
+    override val authorLogin: String
+    override val receiverLogin: String
     override val receiverRepositoryName: String
     override val isOpened: Boolean
 
     constructor(pullRequestEventPayload: RawGithubEventPullRequestPayload) {
-        this.id = pullRequestEventPayload.number
-        this.baseBranch = pullRequestEventPayload.pullRequest.base.ref
-        this.lastCommitSha = pullRequestEventPayload.pullRequest.lastCommit()
-        this.mergeCommitSha = pullRequestEventPayload.pullRequest.mergeCommitSha
-        this.authorId = pullRequestEventPayload.pullRequest.user.login
-        this.receiverId = pullRequestEventPayload.repository.owner.login
-        this.receiverRepositoryName = pullRequestEventPayload.repository.name
-        this.isOpened = pullRequestEventPayload.action == "opened"
+        number = pullRequestEventPayload.number
+        sourceBranch = pullRequestEventPayload.pullRequest.head.ref
+        targetBranch = pullRequestEventPayload.pullRequest.base.ref
+        lastCommitSha = pullRequestEventPayload.pullRequest.lastCommit()
+        mergeCommitSha = pullRequestEventPayload.pullRequest.mergeCommitSha
+        authorLogin = pullRequestEventPayload.pullRequest.user.login
+        receiverLogin = pullRequestEventPayload.repository.owner.login
+        receiverRepositoryName = pullRequestEventPayload.repository.name
+        isOpened = pullRequestEventPayload.action == "opened"
     }
 
     constructor(pullRequest: RawGithubPullRequest) {
-        this.id = pullRequest.number
-        this.baseBranch = pullRequest.base.ref
-        this.lastCommitSha = pullRequest.lastCommit()
-        this.mergeCommitSha = pullRequest.mergeCommitSha
-        this.authorId = pullRequest.user.login
-        this.receiverId = pullRequest.repository.owner.login
-        this.receiverRepositoryName = pullRequest.repository.name
-        this.isOpened = pullRequest.state == RawGithubIssueState.OPEN
+        number = pullRequest.number
+        sourceBranch = pullRequest.head.ref
+        targetBranch = pullRequest.base.ref
+        lastCommitSha = pullRequest.lastCommit()
+        mergeCommitSha = pullRequest.mergeCommitSha
+        authorLogin = pullRequest.user.login
+        receiverLogin = pullRequest.repository.owner.login
+        receiverRepositoryName = pullRequest.repository.name
+        isOpened = pullRequest.state == RawGithubIssueState.OPEN
     }
 
 }

@@ -43,29 +43,22 @@ open class PlainDataManager(private val userRepository: UserRepository,
 ) : DataManager {
 
     @Transactional
-    override fun addUser(nickname: String,
-                         password: String
-    ): User = userRepository.findByNickname(nickname)
-            ?.also { throw EntityAlreadyExistsException("User $nickname") }
-            ?: userRepository.save(User(
-                    nickname = nickname,
-                    credentials = Credentials(password = password)
-            ))
-
-    @Transactional(readOnly = true)
-    override fun getUser(nickname: String): User? =
+    override fun addUser(nickname: String, password: String): User =
             userRepository.findByNickname(nickname)
+                    ?.also { throw EntityAlreadyExistsException("User $nickname") }
+                    ?: userRepository.save(User(nickname = nickname, credentials = Credentials(password = password)))
 
     @Transactional(readOnly = true)
-    override fun getUserByGithubId(githubId: String): User? =
-            userRepository.findByGithubId(githubId)
+    override fun getUser(nickname: String): User? = userRepository.findByNickname(nickname)
+
+    @Transactional(readOnly = true)
+    override fun getUserByGithubId(githubId: String): User? = userRepository.findByGithubId(githubId)
 
     @Transactional
-    override fun deleteUser(username: String) {
-        getUser(username)
-                ?.also { userRepository.delete(it) }
-                ?: throw ModelException("User $username not found")
-    }
+    override fun deleteUser(username: String): User =
+            getUser(username)
+                    ?.also { userRepository.delete(it) }
+                    ?: throw ModelException("User $username not found")
 
     @Transactional
     override fun createCourse(courseName: String,
@@ -112,24 +105,17 @@ open class PlainDataManager(private val userRepository: UserRepository,
 
         val tasks = tasksNames
                 .map { branchName ->
-                    taskRepository
-                            .save(Task(
-                                    branch = branchName,
-                                    url = "${course.url}/tree/$branchName",
-                                    course = course
-                            ))
+                    Task(branch = branchName, url = "${course.url}/tree/$branchName", course = course)
                 }
+                .map { taskRepository.save(it) }
         return updateCourse(course.copy(tasks = course.tasks.plus(tasks)))
     }
 
     @Transactional
-    override fun deleteCourse(courseName: String,
-                              owner: User
-    ) {
-        getCourse(courseName, owner)
-                ?.also { courseRepository.delete(it) }
-                ?: throw EntityNotFound("Repository $courseName")
-    }
+    override fun deleteCourse(courseName: String, owner: User): Course =
+            getCourse(courseName, owner)
+                    ?.also { courseRepository.delete(it) }
+                    ?: throw EntityNotFound("Repository $courseName")
 
     @Transactional
     override fun updateCourse(updatedCourse: Course): Course = courseRepository.save(updatedCourse)
@@ -144,18 +130,14 @@ open class PlainDataManager(private val userRepository: UserRepository,
                     ?: userNotFound(userNickname)
 
     @Transactional
-    override fun addStudent(nickname: String,
-                            course: Course
-    ): Student {
+    override fun addStudent(nickname: String, course: Course): Student {
         val student = studentRepository.save(Student(nickname = nickname, course = course))
 
         return taskRepository
                 .findAllByCourse(course)
                 .map { task -> solutionRepository.save(Solution(task = task, student = student)) }
                 .let { solutions ->
-                    studentRepository.save(student.copy(
-                            solutions = student.solutions.plus(solutions)
-                    ))
+                    studentRepository.save(student.copy(solutions = student.solutions.plus(solutions)))
                 }
                 .also { updateCourse(course.copy(students = course.students.plus(it))) }
     }
@@ -173,25 +155,22 @@ open class PlainDataManager(private val userRepository: UserRepository,
     override fun getTasks(course: Course): Set<Task> = taskRepository.findAllByCourse(course)
 
     @Transactional
-    override fun addToken(userNickname: String,
-                          service: ExternalService,
-                          accessToken: String
-    ): User = getUser(userNickname)
-            ?.also { user -> credentialsRepository.save(user.credentials.withServiceToken(service, accessToken)) }
-            ?: userNotFound(userNickname)
+    override fun addToken(userNickname: String, service: ExternalService, accessToken: String): User =
+            getUser(userNickname)
+                    ?.also { user ->
+                        credentialsRepository.save(user.credentials.withServiceToken(service, accessToken))
+                    }
+                    ?: userNotFound(userNickname)
 
-    private fun Credentials.withServiceToken(service: ExternalService,
-                                             accessToken: String
-    ): Credentials = when (service) {
-        ExternalService.GITHUB -> copy(githubToken = accessToken)
-        ExternalService.TRAVIS -> copy(travisToken = accessToken)
-        ExternalService.CODACY -> copy(codacyToken = accessToken)
-    }
+    private fun Credentials.withServiceToken(service: ExternalService, accessToken: String): Credentials =
+            when (service) {
+                ExternalService.GITHUB -> copy(githubToken = accessToken)
+                ExternalService.TRAVIS -> copy(travisToken = accessToken)
+                ExternalService.CODACY -> copy(codacyToken = accessToken)
+            }
 
     @Transactional
-    override fun addGithubId(userNickname: String,
-                             githubId: String
-    ): User {
+    override fun addGithubId(userNickname: String, githubId: String): User {
         userRepository.findByGithubId(githubId)
                 ?.also { throw ModelException("User with $githubId github id already exists") }
 
@@ -201,9 +180,8 @@ open class PlainDataManager(private val userRepository: UserRepository,
         return userRepository.save(user.copy(githubId = githubId))
     }
 
-    private fun userNotFound(userNickname: String): Nothing {
-        throw ModelException("Could not find user with $userNickname nickname")
-    }
+    private fun userNotFound(userNickname: String): Nothing =
+            throw ModelException("Could not find user with $userNickname nickname")
 
     @Transactional
     override fun updateSolution(updatedSolution: Solution): Solution = solutionRepository.save(updatedSolution)
@@ -212,21 +190,10 @@ open class PlainDataManager(private val userRepository: UserRepository,
     override fun updateTask(updatedTask: Task): Task = taskRepository.save(updatedTask)
 
     @Transactional
-    override fun addBuildReport(solution: Solution,
-                                succeed: Boolean,
-                                date: LocalDateTime
-    ): BuildReport =
+    override fun addBuildReport(solution: Solution, succeed: Boolean, date: LocalDateTime): BuildReport =
             buildReportRepository
-                    .save(BuildReport(
-                            solution = solution,
-                            date = date,
-                            succeed = succeed
-                    ))
-                    .also {
-                        updateSolution(solution.copy(
-                                buildReports = solution.buildReports + it
-                        ))
-                    }
+                    .save(BuildReport(solution = solution, date = date, succeed = succeed))
+                    .also { updateSolution(solution.copy(buildReports = solution.buildReports + it)) }
 
     @Transactional
     override fun addCodeStyleReport(solution: Solution,
@@ -234,16 +201,8 @@ open class PlainDataManager(private val userRepository: UserRepository,
                                     date: LocalDateTime
     ): CodeStyleReport =
             codeStyleReportRepository
-                    .save(CodeStyleReport(
-                            solution = solution,
-                            date = date,
-                            grade = codeStyleGrade
-                    ))
-                    .also {
-                        updateSolution(solution.copy(
-                                codeStyleReports = solution.codeStyleReports + it
-                        ))
-                    }
+                    .save(CodeStyleReport(solution = solution, date = date, grade = codeStyleGrade))
+                    .also { updateSolution(solution.copy(codeStyleReports = solution.codeStyleReports + it)) }
 
     @Transactional
     override fun addPlagiarismReport(task: Task,
@@ -252,33 +211,14 @@ open class PlainDataManager(private val userRepository: UserRepository,
                                      date: LocalDateTime
     ): PlagiarismReport =
             plagiarismReportRepository
-                    .save(PlagiarismReport(
-                            task = task,
-                            date = date,
-                            url = url,
-                            matches = matches
-                    ))
-                    .also {
-                        updateTask(task.copy(
-                                plagiarismReports = task.plagiarismReports + it
-                        ))
-                    }
+                    .save(PlagiarismReport(task = task, date = date, url = url, matches = matches))
+                    .also { updateTask(task.copy(plagiarismReports = task.plagiarismReports + it)) }
 
     @Transactional
-    override fun addCommit(solution: Solution,
-                           pullRequestId: Int,
-                           commitSha: String
-    ): Commit =
+    override fun addCommit(solution: Solution, pullRequestNumber: Int, commitSha: String): Commit =
             commitRepository
-                    .save(Commit(
-                            solution = solution,
-                            date = LocalDateTime.now(),
-                            pullRequestId = pullRequestId,
+                    .save(Commit(solution = solution, date = LocalDateTime.now(), pullRequestId = pullRequestNumber,
                             sha = commitSha
                     ))
-                    .also {
-                        updateSolution(solution.copy(
-                                commits = solution.commits + it
-                        ))
-                    }
+                    .also { updateSolution(solution.copy(commits = solution.commits + it)) }
 }

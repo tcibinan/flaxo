@@ -18,7 +18,8 @@ object GithubWebHookParserSpec : SubjectSpek<(Reader) -> GitPayload?>({
     val pullRequestAuthor = "pullRequestAuthor"
     val repositoryOwner = "repositoryOwner"
     val repositoryName = "repositoryName"
-    val baseBranch = "baseBranch"
+    val headBranch = "sourceBranch"
+    val baseBranch = "targetBranch"
     val lastCommitSha = "lastCommitSha"
     val mergeCommitSha = "mergeCommitSha"
 
@@ -52,6 +53,9 @@ object GithubWebHookParserSpec : SubjectSpek<(Reader) -> GitPayload?>({
                         },
                         "base": {
                             "ref": "$baseBranch"
+                        },
+                        "head": {
+                            "ref": "$headBranch"
                         }
                     },
                     "repository": {
@@ -115,11 +119,11 @@ object GithubWebHookParserSpec : SubjectSpek<(Reader) -> GitPayload?>({
             }
 
             it("should determine pull request author") {
-                assertTrue { payload.authorId == pullRequestAuthor }
+                assertTrue { payload.authorLogin == pullRequestAuthor }
             }
 
             it("should determine pull request repository owner") {
-                assertTrue { payload.receiverId == repositoryOwner }
+                assertTrue { payload.receiverLogin == repositoryOwner }
             }
 
             it("should determine pull request repository name") {
@@ -127,7 +131,7 @@ object GithubWebHookParserSpec : SubjectSpek<(Reader) -> GitPayload?>({
             }
 
             it("should determine pull request base branch") {
-                assertTrue { payload.baseBranch == baseBranch }
+                assertTrue { payload.targetBranch == baseBranch }
             }
 
             it("should determine pull request last commit sha") {
