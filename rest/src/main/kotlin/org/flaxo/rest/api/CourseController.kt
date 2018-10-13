@@ -496,20 +496,32 @@ class CourseController(private val dataManager: DataManager,
     }
 
     /**
-     * Synchronize course validations.
+     * Synchronize course solutions and validations.
      */
     @PostMapping("/sync")
     @Transactional
     fun synchronize(@RequestParam courseName: String,
                     principal: Principal
     ): Response<CourseView> {
-        logger.info("Syncing ${principal.name}/$courseName course validation results")
+        logger.info("Syncing ${principal.name}/$courseName course")
 
         val user = dataManager.getUser(principal.name)
                 ?: return responseManager.userNotFound(principal.name)
 
+        val githubToken = user.credentials.githubToken
+                ?: return responseManager.githubTokenNotFound(principal.name)
+
         val course = dataManager.getCourse(courseName, user)
                 ?: return responseManager.courseNotFound(principal.name, courseName)
+
+        logger.info("Upserting missing solutions and commits of ${principal.name}/${course.name} course")
+
+        githubManager.with(githubToken)
+                .getRepository(course.name)
+                .getPullRequests()
+                .forEach { githubManager.upsertPullRequest(it) }
+
+        logger.info("Syncing ${principal.name}/$courseName course validation results")
 
         course.takeIf { it.state.lifecycle == CourseLifecycle.RUNNING }
                 ?.state
@@ -523,5 +535,4 @@ class CourseController(private val dataManager: DataManager,
 
         return responseManager.ok(dataManager.getCourse(courseName, user)?.view())
     }
-
 }

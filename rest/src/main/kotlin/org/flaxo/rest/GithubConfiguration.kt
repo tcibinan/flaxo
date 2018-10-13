@@ -15,8 +15,10 @@ import org.springframework.context.annotation.Configuration
 class GithubConfiguration {
 
     @Bean
-    fun githubManager(@Value("\${GITHUB_WEB_HOOK_URL}") githubWebHookUrl: String): GithubManager =
-            SimpleGithubManager(githubWebHookUrl)
+    fun githubManager(dataManager: DataManager,
+                      @Value("\${GITHUB_WEB_HOOK_URL}") githubWebHookUrl: String
+    ): GithubManager =
+            SimpleGithubManager(dataManager, githubWebHookUrl)
 
     @Bean
     fun githubValidationManager(githubManager: GithubManager, dataManager: DataManager): GithubValidationManager =

@@ -22,6 +22,7 @@ class Commit(
         @GeneratedValue
         override val id: Long = -1,
 
+        // TODO 13.10.18: Rename to pullRequestNumber
         val pullRequestId: Int? = null,
 
         val date: LocalDateTime? = null,

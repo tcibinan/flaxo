@@ -1,12 +1,15 @@
 package org.flaxo.rest.api
 
 import org.apache.logging.log4j.LogManager
+import org.flaxo.git.AddReviewRequest
+import org.flaxo.git.PullRequestReviewStatus
 import org.flaxo.model.DataManager
 import org.flaxo.model.SolutionView
 import org.flaxo.model.TaskView
+import org.flaxo.model.data.Task
+import org.flaxo.rest.manager.github.GithubManager
 import org.flaxo.rest.manager.response.Response
 import org.flaxo.rest.manager.response.ResponseManager
-import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.PostMapping
@@ -24,6 +27,7 @@ import java.time.LocalTime
 @RestController
 @RequestMapping("/rest/task")
 class TaskController(private val dataManager: DataManager,
+                     private val githubManager: GithubManager,
                      private val responseManager: ResponseManager
 ) {
 
@@ -113,19 +117,23 @@ class TaskController(private val dataManager: DataManager,
      * @param courseName Name of the course.
      * @param taskBranch Name of the task.
      * @param scores Updates students scores.
+     * @return List of *updated* solutions only.
      */
     @PostMapping("/update/approvals")
     @PreAuthorize("hasAuthority('USER')")
     @Transactional
     fun updateApprovals(@RequestParam courseName: String,
-                     @RequestParam taskBranch: String,
-                     @RequestBody approvals: Map<String, Boolean>,
-                     principal: Principal
+                        @RequestParam taskBranch: String,
+                        @RequestBody approvals: Map<String, Boolean>,
+                        principal: Principal
     ): Response<List<SolutionView>> {
         logger.info("Updating approvals for ${principal.name}/$courseName/$taskBranch task: $approvals")
 
         val user = dataManager.getUser(principal.name)
                 ?: return responseManager.userNotFound(principal.name)
+
+        val githubToken = user.credentials.githubToken
+                ?: return responseManager.githubTokenNotFound(principal.name)
 
         val course = dataManager.getCourse(courseName, user)
                 ?: return responseManager.courseNotFound(principal.name, courseName)
@@ -134,16 +142,46 @@ class TaskController(private val dataManager: DataManager,
                 .find { it.branch == taskBranch }
                 ?: return responseManager.taskNotFound(principal.name, courseName, taskBranch)
 
-        // TODO 09.10.18: Submits reviews to github here
+        logger.info("Creating new pull request reviews for ${principal.name}/$courseName/$taskBranch task")
 
-        val updatedSolutions: List<SolutionView> = task.solutions.asSequence()
-                .map { it to approvals[it.student.nickname] }
-                .filter { (_, updatedApproval) -> updatedApproval != null }
-                .map { (solution, updatedApproval) -> solution.copy(approved = updatedApproval!!) }
-                .map { dataManager.updateSolution(it) }
-                .map { it.view() }
-                .toList()
+        val repository = githubManager.with(githubToken)
+                .getRepository(course.name)
+
+        repository.getPullRequests().asSequence()
+                .filter { it.targetBranch == task.branch }
+                .filter { it.authorLogin in approvals }
+                .filter { pullRequest ->
+                    pullRequest.number == solutionPullRequestNumber(task, pullRequest.authorLogin)
+                }
+                .map { pullRequest ->
+                    AddReviewRequest(
+                            pullRequestId = pullRequest.id,
+                            body = "Some review body",
+                            state = approvals[pullRequest.authorLogin].toReviewStatus()
+                    )
+                }
+                .forEach { repository.addPullRequestReview(it) }
+
+        logger.info("Updating solution models to the latest approvals")
+
+        val updatedSolutions: List<SolutionView> =
+                task.solutions.asSequence()
+                        .filter { it.student.nickname in approvals }
+                        .map { it.copy(approved = approvals[it.student.nickname]!!) }
+                        .map { dataManager.updateSolution(it) }
+                        .map { it.view() }
+                        .toList()
 
         return responseManager.ok(updatedSolutions)
     }
+
+    private fun solutionPullRequestNumber(task: Task, student: String): Int? =
+            task.solutions.find { it.student.nickname == student }
+                    ?.commits
+                    ?.lastOrNull()
+                    ?.pullRequestId
+
+    private fun Boolean?.toReviewStatus(): PullRequestReviewStatus =
+            if (this == true) PullRequestReviewStatus.APPROVED
+            else PullRequestReviewStatus.CHANGES_REQUESTED
 }
