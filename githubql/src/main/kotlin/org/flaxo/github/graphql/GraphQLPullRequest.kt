@@ -23,16 +23,17 @@ internal data class GraphQLPullRequest constructor(
         fun from(rawPullRequest: PullRequestsQuery.Node): GraphQLPullRequest? {
             val id = rawPullRequest.id
             val number = rawPullRequest.number
-            val lastCommitSha = rawPullRequest.commits.nodes.orEmpty().lastOrNull()?.commit?.id
+            val lastCommitSha = rawPullRequest.commits.nodes.orEmpty().lastOrNull()?.commit?.oid
                     ?: return null
-            val mergeCommitSha = rawPullRequest.potentialMergeCommit?.id
+            val mergeCommitSha = rawPullRequest.potentialMergeCommit?.oid
             val sourceBranch = rawPullRequest.headRef?.name
                     ?: return null
             val targetBranch = rawPullRequest.baseRef?.name
                     ?: return null
             val isOpened = rawPullRequest.state == PullRequestState.OPEN
             val authorId = rawPullRequest.headRef.repository.owner.id
-            val authorLogin = rawPullRequest.headRef.repository.owner.login
+            val authorLogin = rawPullRequest.author?.login
+                    ?: return null
             val receiverId = rawPullRequest.repository.owner.id
             val receiverLogin = rawPullRequest.repository.owner.login
             val receiverRepositoryId = rawPullRequest.repository.id

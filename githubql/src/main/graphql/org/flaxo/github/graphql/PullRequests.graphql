@@ -13,6 +13,9 @@ query PullRequests($repository: String!,
       nodes {
         id
         number
+        author {
+          login
+        }
         repository {
           id
           name
@@ -36,12 +39,12 @@ query PullRequests($repository: String!,
         commits(last: $lastCommits) {
           nodes {
             commit {
-              id
+              oid
             }
           }
         }
         potentialMergeCommit {
-          id
+          oid
         }
         state
       }

@@ -57,6 +57,7 @@ generateMainApolloIR.dependsOn loadGithubScheme
 
 apollo {
     customTypeMapping = [
-            'DateTime' : 'java.time.ZonedDateTime'
+            'DateTime' : 'java.time.ZonedDateTime',
+            'GitObjectID' : 'java.lang.String'
     ]
 }
