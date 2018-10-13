@@ -13,6 +13,10 @@ import org.flaxo.frontend.credentials
 import org.flaxo.common.User
 import org.flaxo.frontend.Notifications
 import org.flaxo.frontend.client.FlaxoHttpException
+import org.flaxo.frontend.component.ariaDescribedBy
+import org.flaxo.frontend.component.ariaHidden
+import org.flaxo.frontend.component.ariaLabel
+import org.flaxo.frontend.component.dataDismiss
 import org.flaxo.frontend.validatedInputValue
 import react.RBuilder
 import react.dom.a
@@ -35,7 +39,7 @@ fun RBuilder.codacyModal(user: User) =
                 id = CODACY_MODAL_ID
                 role = "dialog"
                 tabIndex = "-1"
-                attributes["aria-hidden"] = "true"
+                ariaHidden = true
             }
             div(classes = "modal-dialog") {
                 attrs {
@@ -47,13 +51,11 @@ fun RBuilder.codacyModal(user: User) =
                         h5(classes = "modal-title") { +"Codacy settings" }
                         button(classes = "close", type = ButtonType.button) {
                             attrs {
-                                attributes["data-dismiss"] = "modal"
-                                attributes["aria-label"] = "Close"
+                                dataDismiss = "modal"
+                                ariaLabel = "Close"
                             }
                             span {
-                                attrs {
-                                    hidden = true
-                                }
+                                attrs.hidden = true
                                 +"&times;"
                             }
                         }
@@ -67,7 +69,7 @@ fun RBuilder.codacyModal(user: User) =
                             input(classes = "form-control") {
                                 attrs {
                                     id = CODACY_TOKEN_INPUT_ID
-                                    attributes["aria-describedby"] = CODACY_TOKEN_INPUT_HELP_ID
+                                    ariaDescribedBy = CODACY_TOKEN_INPUT_HELP_ID
                                 }
                             }
                             small(classes = "form-text text-muted") {
@@ -79,16 +81,14 @@ fun RBuilder.codacyModal(user: User) =
                             }
                         }
                         button(classes = "btn btn-primary") {
-                            attrs {
-                                onClickFunction = { launch { updateCodacyToken() } }
-                            }
+                            attrs.onClickFunction = { launch { updateCodacyToken() } }
                             +"Update codacy token"
                         }
                     }
                     div(classes = "modal-footer") {
                         button(classes = "btn btn-outline-primary") {
                             attrs {
-                                attributes["data-dismiss"] = "modal"
+                                dataDismiss = "modal"
                             }
                             +"Close"
                         }

@@ -6,6 +6,7 @@ import org.flaxo.common.GithubAuthData
 import org.flaxo.common.Language
 import org.flaxo.common.Payload
 import org.flaxo.common.Solution
+import org.flaxo.common.SolutionReview
 import org.flaxo.common.User
 import org.flaxo.common.interop.courseFromDynamic
 import org.flaxo.common.interop.courseStatisticsFromDynamic
@@ -194,16 +195,18 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
     override suspend fun updateSolutionApprovals(credentials: Credentials,
                                                  courseName: String,
                                                  task: String,
-                                                 approvals: Map<String, Boolean>
+                                                 approvals: Map<String, SolutionReview>
     ): List<Solution> =
             post {
                 apiMethod = "/task/update/approvals"
                 params = mapOf("courseName" to courseName, "taskBranch" to task)
                 creds = credentials
-                // TODO 01.10.18: This is some common logic. It should be moved somewhere and become common.
-                body = approvals.map { (a, b) -> "\"$a\": $b" }
+                // TODO 01.10.18: This is some common logic. It should be moved somewhere and become shared.
+                body = approvals
+                        .mapValues { (_, b) -> JSON.stringify(b) }
+                        .map { (a, b) -> "\"$a\": $b" }
                         .joinToString(", ", "{", "}")
-                        .let { JSON.parse<Map<String, Boolean>>(it) }
+                        .let { JSON.parse<Map<String, SolutionReview>>(it) }
                 onSuccess = { response ->
                     // TODO 01.10.18: Think about how to write tests for such a logic
                     JSON.parse<Payload<Array<dynamic>>>(response).payload?.toList()

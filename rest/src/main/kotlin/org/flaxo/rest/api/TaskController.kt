@@ -1,6 +1,7 @@
 package org.flaxo.rest.api
 
 import org.apache.logging.log4j.LogManager
+import org.flaxo.common.SolutionReview
 import org.flaxo.git.AddReviewRequest
 import org.flaxo.git.PullRequestReviewStatus
 import org.flaxo.model.DataManager
@@ -124,7 +125,7 @@ class TaskController(private val dataManager: DataManager,
     @Transactional
     fun updateApprovals(@RequestParam courseName: String,
                         @RequestParam taskBranch: String,
-                        @RequestBody approvals: Map<String, Boolean>,
+                        @RequestBody approvals: Map<String, SolutionReview>,
                         principal: Principal
     ): Response<List<SolutionView>> {
         logger.info("Updating approvals for ${principal.name}/$courseName/$taskBranch task: $approvals")
@@ -154,10 +155,11 @@ class TaskController(private val dataManager: DataManager,
                     pullRequest.number == solutionPullRequestNumber(task, pullRequest.authorLogin)
                 }
                 .map { pullRequest ->
+                    val solutionReview = approvals[pullRequest.authorLogin]!!
                     AddReviewRequest(
                             pullRequestId = pullRequest.id,
-                            body = "Some review body",
-                            state = approvals[pullRequest.authorLogin].toReviewStatus()
+                            body = solutionReview.body,
+                            state = solutionReview.approved.toReviewStatus()
                     )
                 }
                 .forEach { repository.addPullRequestReview(it) }
@@ -167,7 +169,7 @@ class TaskController(private val dataManager: DataManager,
         val updatedSolutions: List<SolutionView> =
                 task.solutions.asSequence()
                         .filter { it.student.nickname in approvals }
-                        .map { it.copy(approved = approvals[it.student.nickname]!!) }
+                        .map { it.copy(approved = approvals[it.student.nickname]?.approved!!) }
                         .map { dataManager.updateSolution(it) }
                         .map { it.view() }
                         .toList()
@@ -181,7 +183,7 @@ class TaskController(private val dataManager: DataManager,
                     ?.lastOrNull()
                     ?.pullRequestId
 
-    private fun Boolean?.toReviewStatus(): PullRequestReviewStatus =
-            if (this == true) PullRequestReviewStatus.APPROVED
+    private fun Boolean.toReviewStatus(): PullRequestReviewStatus =
+            if (this) PullRequestReviewStatus.APPROVED
             else PullRequestReviewStatus.CHANGES_REQUESTED
 }

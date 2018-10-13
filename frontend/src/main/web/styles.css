@@ -163,6 +163,14 @@ a.github-profile:hover {
 
 }
 
+.report-cell .review-toggle-btn {
+    display: none;
+}
+
+.review-modal {
+    text-align: left;
+}
+
 .task-card .card,
 .course-summary .card {
     border-radius: 0 0 4px 4px;

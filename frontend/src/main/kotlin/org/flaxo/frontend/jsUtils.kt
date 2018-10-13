@@ -31,6 +31,13 @@ fun clearInputValue(id: String) {
             ?.value = ""
 }
 
+fun toggleCheckbox(id: String): Boolean =
+        document.getElementById(id)
+                ?.let { it as? HTMLInputElement }
+                ?.also { it.click() }
+                ?.checked
+                ?: false
+
 fun checkBoxValue(id: String): Boolean =
         document.getElementById(id)
                 ?.let { it as? HTMLInputElement }

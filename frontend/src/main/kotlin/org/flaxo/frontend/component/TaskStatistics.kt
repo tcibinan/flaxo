@@ -10,6 +10,7 @@ import org.flaxo.frontend.component.report.plagiarismReport
 import org.flaxo.frontend.component.report.scoreInput
 import org.flaxo.common.Course
 import org.flaxo.common.Solution
+import org.flaxo.common.SolutionReview
 import org.flaxo.common.Task
 import org.flaxo.frontend.component.report.approveCheckBox
 import org.flaxo.frontend.github.githubPullRequestUrl
@@ -29,20 +30,20 @@ import react.dom.tr
 fun RBuilder.taskStatistics(course: Course,
                             task: Task,
                             onSolutionScoreUpdate: (String, Int) -> Unit,
-                            onSolutionApprovalUpdate: (String, Boolean) -> Unit
+                            onReviewAddition: (String, SolutionReview) -> Unit
 ) = child(TaskStatistics::class) {
     attrs {
         this.course = course
         this.task = task
         this.onStudentScoreUpdate = onSolutionScoreUpdate
-        this.onStudentSolutionApproval = onSolutionApprovalUpdate
+        this.onReviewAddition = onReviewAddition
     }
 }
 
 class TaskStatisticsProps(var course: Course,
                           var task: Task,
                           var onStudentScoreUpdate: (String, Int) -> Unit,
-                          var onStudentSolutionApproval: (String, Boolean) -> Unit
+                          var onReviewAddition: (String, SolutionReview) -> Unit
 ) : RProps
 
 class TaskStatistics(props: TaskStatisticsProps) : RComponent<TaskStatisticsProps, EmptyState>(props) {
@@ -98,7 +99,7 @@ class TaskStatistics(props: TaskStatisticsProps) : RComponent<TaskStatisticsProp
                                 }
                                 td(classes = "report-cell") {
                                     approveCheckBox(props.task, solution,
-                                            onSolutionApprovalStatusChange = props.onStudentSolutionApproval)
+                                            onReviewAddition = props.onReviewAddition)
                                 }
                             }
                         }

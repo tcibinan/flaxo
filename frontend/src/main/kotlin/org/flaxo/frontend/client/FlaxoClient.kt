@@ -5,6 +5,7 @@ import org.flaxo.common.CourseStatistics
 import org.flaxo.common.GithubAuthData
 import org.flaxo.common.Language
 import org.flaxo.common.Solution
+import org.flaxo.common.SolutionReview
 import org.flaxo.common.User
 import org.flaxo.frontend.Credentials
 
@@ -54,6 +55,6 @@ interface FlaxoClient {
     suspend fun updateSolutionApprovals(credentials: Credentials,
                                         courseName: String,
                                         task: String,
-                                        approvals: Map<String, Boolean>
+                                        approvals: Map<String, SolutionReview>
     ): List<Solution>
 }

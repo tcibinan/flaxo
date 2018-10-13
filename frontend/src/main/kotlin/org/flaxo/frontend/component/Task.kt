@@ -6,6 +6,7 @@ import kotlinx.html.js.onClickFunction
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.credentials
 import org.flaxo.common.Course
+import org.flaxo.common.SolutionReview
 import org.flaxo.common.Task
 import org.flaxo.frontend.Notifications
 import org.flaxo.frontend.client.FlaxoHttpException
@@ -32,7 +33,7 @@ class TaskProps(var course: Course,
 ) : RProps
 
 class TaskState(var scores: Map<String, Int>,
-                var approvals: Map<String, Boolean>
+                var reviews: Map<String, SolutionReview>
 ) : RState
 
 class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
@@ -44,7 +45,7 @@ class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
 
     init {
         state.scores = emptyMap()
-        state.approvals = emptyMap()
+        state.reviews = emptyMap()
     }
 
     override fun RBuilder.render() {
@@ -58,7 +59,7 @@ class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
                             ?.also { a(classes = "card-link", href = it.url) { +"Plagiarism report" } }
                     button(classes = "save-results-btn btn btn-outline-primary") {
                         attrs {
-                            disabled = state.scores.isEmpty() && state.approvals.isEmpty()
+                            disabled = state.scores.isEmpty() && state.reviews.isEmpty()
                             onClickFunction = {
                                 launch { saveScores() }
                                 launch { saveApprovals() }
@@ -84,8 +85,8 @@ class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
                             onSolutionScoreUpdate = { student, score ->
                                 setState { scores += Pair(student, score) }
                             },
-                            onSolutionApprovalUpdate = { student, approved ->
-                                setState { approvals += Pair(student, approved) }
+                            onReviewAddition = { student, review ->
+                                setState { reviews += Pair(student, review) }
                             }
                     )
                 }
@@ -113,14 +114,15 @@ class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
 
     private suspend fun saveApprovals() {
         credentials
-                ?.takeIf { state.approvals.isNotEmpty() }
+                ?.takeIf { state.reviews.isNotEmpty() }
                 ?.also { credentials ->
                     try {
                         Container.flaxoClient.updateSolutionApprovals(credentials,
                                 courseName = props.course.name,
                                 task = props.task.branch,
-                                approvals = state.approvals)
-                        setState { approvals = emptyMap() }
+                                approvals = state.reviews
+                        )
+                        setState { reviews = emptyMap() }
                         Notifications.success("Task approvals were saved")
                     } catch (e: FlaxoHttpException) {
                         console.log(e)
