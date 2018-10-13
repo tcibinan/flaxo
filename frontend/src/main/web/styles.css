@@ -159,8 +159,8 @@ a.github-profile:hover {
     color: #c9302c;
 }
 
-.suggesting-result {
-
+.report-cell .score-input:disabled {
+    cursor: not-allowed;
 }
 
 .report-cell .review-toggle-btn {

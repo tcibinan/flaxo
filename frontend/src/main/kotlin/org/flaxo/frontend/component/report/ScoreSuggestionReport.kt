@@ -31,7 +31,7 @@ fun RBuilder.scoreInput(task: Task,
     val suggestedScoreAppendId = "suggestedScore${solution.task}${solution.student}"
 
     div(classes = "input-group input-group-sm") {
-        input(classes = "form-control", type = InputType.number) {
+        input(classes = "form-control score-input", type = InputType.number) {
             attrs {
                 id = scoreInputId
                 onChangeFunction = { event ->
