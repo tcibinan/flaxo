@@ -499,7 +499,6 @@ class CourseController(private val dataManager: DataManager,
      * Synchronize course solutions and validations.
      */
     @PostMapping("/sync")
-    @Transactional
     fun synchronize(@RequestParam courseName: String,
                     principal: Principal
     ): Response<CourseView> {
@@ -523,16 +522,22 @@ class CourseController(private val dataManager: DataManager,
 
         logger.info("Syncing ${principal.name}/$courseName course validation results")
 
-        course.takeIf { it.state.lifecycle == CourseLifecycle.RUNNING }
+        val courseWithNewSolutions = dataManager.getCourse(course.name, user)
+                ?: return responseManager.courseNotFound(principal.name, course.name)
+
+        courseWithNewSolutions.takeIf { it.state.lifecycle == CourseLifecycle.RUNNING }
                 ?.state
                 ?.activatedServices
                 ?.mapNotNull { courseValidations[it] }
-                ?.forEach { it.refresh(course) }
-                ?: return responseManager.bad("Course ${user.nickname}/${course.name} " +
+                ?.forEach { it.refresh(courseWithNewSolutions) }
+                ?: return responseManager.bad("Course ${user.nickname}/${courseWithNewSolutions.name} " +
                         "is not running to be synchronized")
 
-        logger.info("Course validations were synchronized for ${principal.name}/$courseName")
+        logger.info("Course validations were synchronized for ${principal.name}/${courseWithNewSolutions.name}")
 
-        return responseManager.ok(dataManager.getCourse(courseName, user)?.view())
+        val courseWithRefreshedValidations = dataManager.getCourse(courseWithNewSolutions.name, user)
+                ?: return responseManager.courseNotFound(principal.name, courseWithNewSolutions.name)
+
+        return responseManager.ok(courseWithRefreshedValidations.view())
     }
 }
