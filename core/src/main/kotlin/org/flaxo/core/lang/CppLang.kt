@@ -3,9 +3,9 @@ package org.flaxo.core.lang
 /**
  * C++ language.
  */
-object `C++Lang` : AbstractLanguage(
+object CppLang : AbstractLanguage(
         name = "c++",
-        extensions = setOf("cpp"),
+        extensions = setOf("cc", "cpp"),
         testingLanguages = setOf(BashLang),
         testingFrameworks = emptySet()
 )

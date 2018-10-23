@@ -1,7 +1,6 @@
 package org.flaxo.rest
 
 import org.flaxo.common.ExternalService
-import org.flaxo.core.NamedEntity
 import org.flaxo.core.env.EnvironmentSupplier
 import org.flaxo.core.framework.BashInputOutputTestingFramework
 import org.flaxo.core.framework.JUnitTestingFramework
@@ -10,7 +9,7 @@ import org.flaxo.core.framework.TestingFramework
 import org.flaxo.core.lang.BashLang
 import org.flaxo.core.lang.JavaLang
 import org.flaxo.core.lang.KotlinLang
-import org.flaxo.core.lang.`C++Lang`
+import org.flaxo.core.lang.CppLang
 import org.flaxo.core.lang.Language
 import org.flaxo.cpp.CppEnvironmentSupplier
 import org.flaxo.rest.manager.github.GithubValidationManager
@@ -40,7 +39,7 @@ class CoreConfiguration {
     fun languages(): List<Language> = listOf(
             JavaLang,
             KotlinLang,
-            `C++Lang`,
+            CppLang,
             BashLang
     )
 
@@ -63,7 +62,7 @@ class CoreConfiguration {
             mapOf(
                     JavaLang to GradleBuildTool(travisEnvironmentSupplier),
                     KotlinLang to GradleBuildTool(travisEnvironmentSupplier),
-                    `C++Lang` to CppEnvironmentSupplier(`C++Lang`, BashLang, BashInputOutputTestingFramework,
+                    CppLang to CppEnvironmentSupplier(CppLang, BashLang, BashInputOutputTestingFramework,
                             travisWebHookUrl)
             )
 

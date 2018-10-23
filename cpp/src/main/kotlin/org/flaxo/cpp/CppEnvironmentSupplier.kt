@@ -1,7 +1,7 @@
 package org.flaxo.cpp
 
 import org.flaxo.core.env.Environment
-import org.flaxo.core.lang.`C++Lang`
+import org.flaxo.core.lang.CppLang
 import org.flaxo.core.env.EnvironmentSupplier
 import org.flaxo.core.framework.BashInputOutputTestingFramework
 import org.flaxo.core.framework.TestingFramework
@@ -25,7 +25,7 @@ class CppEnvironmentSupplier(private val language: Language,
     }
 
     private fun isCppAndBashIOEnvironment(): Boolean =
-            language == `C++Lang` && testingLanguage == BashLang
+            language == CppLang && testingLanguage == BashLang
                     && testingFramework == BashInputOutputTestingFramework
 
     override fun environment(): Environment =

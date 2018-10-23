@@ -5,6 +5,8 @@ import org.flaxo.core.framework.TestingFramework
 /**
  * The language itself.
  *
+ * [Itself] object is **not an actual programming language**.
+ *
  * Represents the same language that is being used in the current context.
  */
 internal object Itself : Language {

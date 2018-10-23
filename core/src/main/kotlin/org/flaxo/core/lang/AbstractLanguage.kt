@@ -12,8 +12,8 @@ abstract class AbstractLanguage(
         override val extensions: Set<String>,
 
         /**
-         * You can't use a declaring language in the list of testing languages.
-         * Use [Itself] object to represent the same language.
+         * You can't use a declaring language in the list of its testing languages.
+         * Use [Itself] to represent the declaring language instead.
          */
         private val testingLanguages: Set<Language>,
 

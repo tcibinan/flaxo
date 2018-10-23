@@ -7,7 +7,7 @@ import org.flaxo.core.framework.BashInputOutputTestingFramework
 import org.flaxo.core.framework.JUnitTestingFramework
 import org.flaxo.core.lang.BashLang
 import org.flaxo.core.lang.JavaLang
-import org.flaxo.core.lang.`C++Lang`
+import org.flaxo.core.lang.CppLang
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
@@ -28,7 +28,7 @@ object CppEnvironmentSupplierSpec : Spek({
         on("initialization with an unsupported testing language") {
             it("should throw an exception") {
                 {
-                    CppEnvironmentSupplier(`C++Lang`, JavaLang, BashInputOutputTestingFramework, travisWebHookUrl)
+                    CppEnvironmentSupplier(CppLang, JavaLang, BashInputOutputTestingFramework, travisWebHookUrl)
                 } shouldThrow CppEnvironmentException::class
             }
         }
@@ -36,7 +36,7 @@ object CppEnvironmentSupplierSpec : Spek({
         on("initialization with an unsupported testing framework") {
             it("should throw an exception") {
                 {
-                    CppEnvironmentSupplier(`C++Lang`, BashLang, JUnitTestingFramework, travisWebHookUrl)
+                    CppEnvironmentSupplier(CppLang, BashLang, JUnitTestingFramework, travisWebHookUrl)
                 } shouldThrow CppEnvironmentException::class
             }
         }
@@ -44,13 +44,13 @@ object CppEnvironmentSupplierSpec : Spek({
         on("initialization with supported technologies") {
             it("should no throw exception") {
                 {
-                    CppEnvironmentSupplier(`C++Lang`, BashLang, BashInputOutputTestingFramework, travisWebHookUrl)
+                    CppEnvironmentSupplier(CppLang, BashLang, BashInputOutputTestingFramework, travisWebHookUrl)
                 } shouldNotThrow CppEnvironmentException::class
             }
         }
 
         on("getting environment for C++, Bash, IO tests") {
-            val supplier = CppEnvironmentSupplier(`C++Lang`, BashLang, BashInputOutputTestingFramework,
+            val supplier = CppEnvironmentSupplier(CppLang, BashLang, BashInputOutputTestingFramework,
                     travisWebHookUrl)
             val environment = supplier.environment()
 
