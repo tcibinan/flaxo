@@ -28,9 +28,8 @@ import java.nio.file.Paths
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-object MossServiceSpec : SubjectSpek<MossManager>({
+object MossSubmissionsExtractorSpec : SubjectSpek<MossSubmissionsExtractor>({
     val language = "java"
-    val userId = "userId"
     val userName = "userName"
     val userGithubId = "userGithubId"
     val courseName = "courseName"
@@ -90,12 +89,12 @@ object MossServiceSpec : SubjectSpek<MossManager>({
         on { with(any()) }.thenReturn(git)
     }
 
-    subject { SimpleMossManager(userId, githubManager, supportedLanguages) }
+    subject { SimpleMossSubmissionsExtractor(githubManager, supportedLanguages) }
 
     describe("Moss service") {
 
         on("creating moss tasks") {
-            val mossSubmissions: List<MossSubmission> = subject.extractSubmissions(course)
+            val mossSubmissions: List<MossSubmission> = subject.extract(course)
 
             it("should create non-empty set of tasks") {
                 assertTrue { mossSubmissions.isNotEmpty() }
