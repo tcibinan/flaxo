@@ -110,7 +110,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
 
     override suspend fun analysePlagiarism(credentials: Credentials, courseName: String): Unit =
             post {
-                apiMethod = "/course/analyse/plagiarism"
+                apiMethod = "/moss/analyse"
                 params = mapOf("courseName" to courseName)
                 creds = credentials
                 errorMessage = "Plagiarism analysis scheduling failed."

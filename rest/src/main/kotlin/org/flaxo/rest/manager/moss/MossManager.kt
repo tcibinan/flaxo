@@ -1,10 +1,6 @@
 package org.flaxo.rest.manager.moss
 
-import org.flaxo.core.lang.Language
 import org.flaxo.model.data.Course
-import org.flaxo.moss.Moss
-import org.flaxo.moss.MossResult
-import org.flaxo.moss.MossSubmission
 
 /**
  * Moss manager.
@@ -12,18 +8,9 @@ import org.flaxo.moss.MossSubmission
 interface MossManager {
 
     /**
-     * Returns a moss client for the given programming [language].
+     * Analyses plagiarism of the given [course].
+     *
+     * @return Course with an updated plagiarism reports list.
      */
-    fun client(language: Language): Moss
-
-    /**
-     * Extract moss analysis submissions from the given [course].
-     */
-    fun extractSubmissions(course: Course): List<MossSubmission>
-
-    /**
-     * Retrieves analysis result by the given [mossResultUrl].
-     */
-    fun retrieveAnalysisResult(mossResultUrl: String): MossResult
+    fun analysePlagiarism(course: Course): Course
 }
-

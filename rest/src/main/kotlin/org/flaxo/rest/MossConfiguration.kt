@@ -1,6 +1,7 @@
 package org.flaxo.rest
 
 import org.flaxo.core.lang.Language
+import org.flaxo.model.DataManager
 import org.flaxo.rest.manager.github.GithubManager
 import org.flaxo.rest.manager.moss.MossManager
 import org.flaxo.rest.manager.moss.SimpleMossManager
@@ -16,8 +17,9 @@ class MossConfiguration {
 
     @Bean
     fun mossManager(@Value("\${MOSS_USER_ID}") userId: String,
+                    dataManager: DataManager,
                     githubManager: GithubManager,
                     languages: List<Language>
     ): MossManager =
-            SimpleMossManager(userId, githubManager, languages)
+            SimpleMossManager(userId, dataManager, githubManager, languages)
 }

@@ -8,12 +8,8 @@ import org.flaxo.common.ExternalService
 import org.flaxo.core.stringStackTrace
 import org.flaxo.model.CourseView
 import org.flaxo.model.DataManager
-import org.flaxo.model.data.Course
-import org.flaxo.model.data.PlagiarismMatch
-import org.flaxo.model.data.Task
 import org.flaxo.model.data.views
-import org.flaxo.moss.MossException
-import org.flaxo.moss.MossSubmission
+import org.flaxo.rest.friendlyId
 import org.flaxo.rest.manager.ValidationManager
 import org.flaxo.rest.manager.codacy.CodacyManager
 import org.flaxo.rest.manager.environment.EnvironmentManager
@@ -30,11 +26,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import java.nio.file.Files
 import java.security.Principal
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.Executor
-import java.util.concurrent.Executors
 
 /**
  * Courses handling controller.
@@ -53,7 +45,6 @@ class CourseController(private val dataManager: DataManager,
 
     private val tasksPrefix = "task-"
     private val logger = LogManager.getLogger(CourseController::class.java)
-    private val executor: Executor = Executors.newCachedThreadPool()
 
     /**
      * Imports a course from an existing git repository or the [principal] by its [repositoryName].
@@ -351,7 +342,7 @@ class CourseController(private val dataManager: DataManager,
                     }
                 }
                 ?: return responseManager.bad("Codacy is already integrated with " +
-                        "${principal.name}/$courseName course")
+                        "${course.friendlyId} course")
     }
 
     /**
@@ -376,7 +367,7 @@ class CourseController(private val dataManager: DataManager,
                 ?: return responseManager.courseNotFound(principal.name, courseName)
 
         if (course.state.lifecycle != CourseLifecycle.RUNNING) {
-            return responseManager.bad("Course ${principal.name}/$courseName is not started yet")
+            return responseManager.bad("Course ${course.friendlyId} is not started yet")
         }
 
         course.state
@@ -401,98 +392,8 @@ class CourseController(private val dataManager: DataManager,
                     }
                 }
                 ?: return responseManager.bad("Travis is already integrated with " +
-                        "${principal.name}/$courseName course")
+                        "${course.friendlyId} course")
     }
-
-    /**
-     * Starts current user's [courseName] plagiarism analysis.
-     *
-     * @param courseName Name of the course and related git repository.
-     */
-    @PostMapping("/analyse/plagiarism")
-    @PreAuthorize("hasAuthority('USER')")
-    @Transactional
-    fun analysePlagiarism(@RequestParam courseName: String,
-                          principal: Principal
-    ): Response<Unit> {
-        logger.info("Trying to start plagiarism analysis for ${principal.name}/$courseName")
-
-        val user = dataManager.getUser(principal.name)
-                ?: return responseManager.userNotFound(principal.name)
-
-        val course = dataManager.getCourse(courseName, user)
-                ?: return responseManager.courseNotFound(principal.name, courseName)
-
-        logger.info("Extracting moss submissions for ${user.nickname}/$courseName")
-
-        val mossSubmissions: List<MossSubmission> = mossManager.extractSubmissions(course)
-
-        logger.info("${mossSubmissions.size} moss tasks were extracted for ${user.nickname}/$courseName")
-
-        logger.info("Scheduling moss submissions for ${user.nickname}/$courseName")
-
-        val analyses = submitToMoss(mossSubmissions, course)
-
-        logger.info("Moss plagiarism analysis has been started for ${principal.name}/$courseName")
-
-        Try {
-            CompletableFuture.allOf(*analyses).get()
-        }.getOrElse { e ->
-            logger.error("Moss plagiarism analysis went bad for some of the submissions: ${e.stringStackTrace()}")
-        }
-
-        return responseManager.ok()
-    }
-
-    private fun submitToMoss(mossSubmissions: List<MossSubmission>, course: Course)
-            : Array<CompletableFuture<Void>> = synchronized(executor) {
-        mossSubmissions.map { submission ->
-            CompletableFuture.runAsync(Runnable { analyseMossSubmission(submission, course, course.tasks) }, executor)
-        }
-    }.toTypedArray()
-
-    private fun analyseMossSubmission(submission: MossSubmission, course: Course, courseTasks: Set<Task>) {
-        val branch = submission.branch
-
-        val task = courseTasks.find { it.branch == branch }
-                ?: throw MossException("Moss submission ${submission.id} " +
-                        "target task ${course.name}/$branch was not found ")
-
-        logger.info("Starting moss submission ${submission.id} for " +
-                "${submission.base.size} bases files " +
-                "and ${submission.solutions.size} solutions files")
-
-        val mossResult = mossManager.client(submission.language)
-                .analyse(submission)
-
-        logger.info("Moss submission ${submission.id} has finished successfully and is available by ${mossResult.url}")
-
-        val plagiarismReport = dataManager.addPlagiarismReport(
-                task = task,
-                url = mossResult.url.toString(),
-                matches = mossResult.matches().map {
-                    PlagiarismMatch(
-                            student1 = it.students.first,
-                            student2 = it.students.second,
-                            lines = it.lines,
-                            url = it.link,
-                            percentage = it.percentage
-                    )
-                }
-        )
-
-        dataManager.updateTask(task.copy(
-                plagiarismReports = task.plagiarismReports.plus(plagiarismReport)
-        ))
-
-        logger.info("Deleting moss submission ${submission.id} generated files.")
-
-        (submission.base + submission.solutions)
-                .forEach { Files.delete(it.localPath) }
-    }
-
-    private val MossSubmission.id
-        get() = "$user/$course/$branch"
 
     /**
      * Synchronize course solutions and validations.
@@ -512,7 +413,7 @@ class CourseController(private val dataManager: DataManager,
         val course = dataManager.getCourse(courseName, user)
                 ?: return responseManager.courseNotFound(principal.name, courseName)
 
-        logger.info("Upserting missing solutions and commits of ${principal.name}/${course.name} course")
+        logger.info("Upserting missing solutions and commits of ${course.friendlyId} course")
 
         githubManager.with(githubToken)
                 .getRepository(course.name)
@@ -529,10 +430,10 @@ class CourseController(private val dataManager: DataManager,
                 ?.activatedServices
                 ?.mapNotNull { courseValidations[it] }
                 ?.forEach { it.refresh(courseWithNewSolutions) }
-                ?: return responseManager.bad("Course ${user.nickname}/${courseWithNewSolutions.name} " +
+                ?: return responseManager.bad("Course ${courseWithNewSolutions.friendlyId} " +
                         "is not running to be synchronized")
 
-        logger.info("Course validations were synchronized for ${principal.name}/${courseWithNewSolutions.name}")
+        logger.info("Course validations were synchronized for ${courseWithNewSolutions.friendlyId}")
 
         val courseWithRefreshedValidations = dataManager.getCourse(courseWithNewSolutions.name, user)
                 ?: return responseManager.courseNotFound(principal.name, courseWithNewSolutions.name)
