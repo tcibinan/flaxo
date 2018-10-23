@@ -13,12 +13,12 @@ import org.flaxo.model.data.PlagiarismMatch
 import org.flaxo.model.data.Task
 import org.flaxo.model.data.views
 import org.flaxo.moss.MossException
+import org.flaxo.moss.MossSubmission
 import org.flaxo.rest.manager.ValidationManager
 import org.flaxo.rest.manager.codacy.CodacyManager
 import org.flaxo.rest.manager.environment.EnvironmentManager
 import org.flaxo.rest.manager.github.GithubManager
 import org.flaxo.rest.manager.moss.MossManager
-import org.flaxo.rest.manager.moss.MossSubmission
 import org.flaxo.rest.manager.response.Response
 import org.flaxo.rest.manager.response.ResponseManager
 import org.flaxo.rest.manager.travis.TravisManager
@@ -431,12 +431,12 @@ class CourseController(private val dataManager: DataManager,
 
         logger.info("Scheduling moss submissions for ${user.nickname}/$courseName")
 
-        val submittedTasks = submitMossTasksExecution(mossSubmissions, course)
+        val analyses = submitToMoss(mossSubmissions, course)
 
         logger.info("Moss plagiarism analysis has been started for ${principal.name}/$courseName")
 
         Try {
-            CompletableFuture.allOf(*submittedTasks).get()
+            CompletableFuture.allOf(*analyses).get()
         }.getOrElse { e ->
             logger.error("Moss plagiarism analysis went bad for some of the submissions: ${e.stringStackTrace()}")
         }
@@ -444,15 +444,14 @@ class CourseController(private val dataManager: DataManager,
         return responseManager.ok()
     }
 
-    private fun submitMossTasksExecution(mossSubmissions: List<MossSubmission>,
-                                         course: Course
-    ): Array<CompletableFuture<Void>> = synchronized(executor) {
-        mossSubmissions.map { mossTask ->
-            CompletableFuture.runAsync(Runnable { analyseMossTask(mossTask, course, course.tasks) }, executor)
+    private fun submitToMoss(mossSubmissions: List<MossSubmission>, course: Course)
+            : Array<CompletableFuture<Void>> = synchronized(executor) {
+        mossSubmissions.map { submission ->
+            CompletableFuture.runAsync(Runnable { analyseMossSubmission(submission, course, course.tasks) }, executor)
         }
     }.toTypedArray()
 
-    private fun analyseMossTask(submission: MossSubmission, course: Course, courseTasks: Set<Task>) {
+    private fun analyseMossSubmission(submission: MossSubmission, course: Course, courseTasks: Set<Task>) {
         val branch = submission.branch
 
         val task = courseTasks.find { it.branch == branch }
@@ -463,11 +462,8 @@ class CourseController(private val dataManager: DataManager,
                 "${submission.base.size} bases files " +
                 "and ${submission.solutions.size} solutions files")
 
-        val mossResult =
-                mossManager.client(course.language)
-                        .base(submission.base)
-                        .solutions(submission.solutions)
-                        .analyse()
+        val mossResult = mossManager.client(submission.language)
+                .analyse(submission)
 
         logger.info("Moss submission ${submission.id} has finished successfully and is available by ${mossResult.url}")
 
@@ -494,6 +490,9 @@ class CourseController(private val dataManager: DataManager,
         (submission.base + submission.solutions)
                 .forEach { Files.delete(it.localPath) }
     }
+
+    private val MossSubmission.id
+        get() = "$user/$course/$branch"
 
     /**
      * Synchronize course solutions and validations.

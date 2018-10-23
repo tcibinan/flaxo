@@ -2,35 +2,34 @@ package org.flaxo.moss
 
 import it.zielke.moji.SocketClient
 import org.flaxo.core.env.file.LocalFile
+import org.flaxo.core.lang.CppLang
+import org.flaxo.core.lang.Language
 import org.jsoup.Jsoup
 
 /**
  * Simple moss analysis implementation.
  */
-class SimpleMoss(override val userId: String,
-                 override val language: String,
-                 private val client: SocketClient,
-                 private val bases: List<LocalFile> = emptyList(),
-                 private val solutions: List<LocalFile> = emptyList()
-) : Moss {
+class SimpleMoss(private val client: SocketClient) : Moss {
 
-    init {
-        client.userID = userId
-        client.language = language
+    companion object {
+        fun using(client: SocketClient): Moss = SimpleMoss(client)
+        fun of(userId: String, language: Language): Moss = using(SocketClient().apply {
+            this.userID = userId
+            this.language = when(language) {
+                CppLang -> "cc"
+                else -> language.name
+            }
+        })
     }
 
-    override fun base(bases: List<LocalFile>): Moss =
-            SimpleMoss(userId, language, client, bases, solutions)
-
-    override fun solutions(solutions: List<LocalFile>): Moss =
-            SimpleMoss(userId, language, client, bases, solutions)
-
-    override fun analyse(): MossResult {
+    override fun analyse(submission: MossSubmission): MossResult {
         try {
             client.run()
 
-            bases.forEach { loadBaseFile(it) }
-            solutions.forEach { loadFile(it) }
+            with(submission) {
+                base.forEach { loadBaseFile(it) }
+                solutions.forEach { loadFile(it) }
+            }
 
             client.sendQuery()
         } finally {
@@ -50,6 +49,4 @@ class SimpleMoss(override val userId: String,
                 throw MossException("Can't load ${if (isBase) "base" else "solutions"} " +
                         "file ${file.fileName} to moss server", e)
             }
-
 }
-

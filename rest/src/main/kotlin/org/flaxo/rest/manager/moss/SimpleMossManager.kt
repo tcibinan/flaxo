@@ -11,11 +11,11 @@ import org.flaxo.moss.SimpleMoss
 import org.flaxo.moss.SimpleMossResult
 import org.flaxo.rest.manager.UnsupportedLanguageException
 import org.flaxo.rest.manager.github.GithubManager
-import it.zielke.moji.SocketClient
-import org.apache.logging.log4j.LogManager
 import org.flaxo.git.Branch
 import org.flaxo.git.Git
 import org.flaxo.model.data.Student
+import org.flaxo.moss.MossSubmission
+import org.apache.logging.log4j.LogManager
 import org.jsoup.Jsoup
 import java.net.URL
 import java.nio.file.Files
@@ -31,7 +31,7 @@ class SimpleMossManager(private val userId: String,
 
     private val logger = LogManager.getLogger(SimpleMossManager::class.java)
 
-    override fun client(language: String): Moss = SimpleMoss(userId, language, SocketClient())
+    override fun client(language: Language): Moss = SimpleMoss.of(userId, language)
 
     override fun extractSubmissions(course: Course): List<MossSubmission> {
         val user = course.user
@@ -87,11 +87,12 @@ class SimpleMossManager(private val userId: String,
                 .filter { branch -> taskToSolutionFiles[branch] != null }
                 .map { branch ->
                     MossSubmission(
-                            base = taskToBaseFiles[branch].orEmpty(),
-                            solutions = taskToSolutionFiles[branch].orEmpty(),
                             user = user.nickname,
                             course = course.name,
-                            branch = branch
+                            branch = branch,
+                            language = language,
+                            base = taskToBaseFiles[branch].orEmpty(),
+                            solutions = taskToSolutionFiles[branch].orEmpty()
                     )
                 }
     }

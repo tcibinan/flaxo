@@ -17,7 +17,7 @@ import org.flaxo.model.data.Student
 import org.flaxo.model.data.Solution
 import org.flaxo.model.data.Task
 import org.flaxo.model.data.User
-import org.flaxo.moss.Moss
+import org.flaxo.moss.MossSubmission
 import org.flaxo.rest.manager.github.GithubManager
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
@@ -93,18 +93,6 @@ object MossServiceSpec : SubjectSpek<MossManager>({
     subject { SimpleMossManager(userId, githubManager, supportedLanguages) }
 
     describe("Moss service") {
-
-        on("creating client for $language language with $userId userid") {
-            val mossClient: Moss = subject.client(language)
-
-            it("should client with the given userid") {
-                assertTrue { mossClient.userId == userId }
-            }
-
-            it("should client with the given language") {
-                assertTrue { mossClient.language == language }
-            }
-        }
 
         on("creating moss tasks") {
             val mossSubmissions: List<MossSubmission> = subject.extractSubmissions(course)
