@@ -34,7 +34,7 @@ interface FlaxoClient {
 
     suspend fun deleteCourse(credentials: Credentials, courseName: String)
 
-    suspend fun analysePlagiarism(credentials: Credentials, courseName: String)
+    suspend fun analysePlagiarism(credentials: Credentials, courseName: String, task: String)
 
     suspend fun syncCourse(credentials: Credentials, courseName: String)
 

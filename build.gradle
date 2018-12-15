@@ -52,6 +52,10 @@ configure(subprojects.findAll { it.name != 'frontend' && it.name != 'common' && 
         // Json
         compile 'com.fasterxml.jackson.module:jackson-module-kotlin:2.9.4.1'
         compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.4'
+        
+        // Log4j
+        compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.1'
+        compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.1'
     }
 
     compileKotlin { kotlinOptions.jvmTarget = "1.8" }

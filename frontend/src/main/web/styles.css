@@ -180,9 +180,8 @@ a.github-profile:hover {
 .icon-btn {
 }
 
-.task-card .rules-toggle-btn,
-.task-card .save-results-btn,
 .task-card .icon-btn,
+.task-card .task-btn,
 .course-summary .save-results-btn,
 .course-summary .icon-btn {
     margin-left: 20px;

@@ -2,11 +2,15 @@ package org.flaxo.rest
 
 import org.flaxo.core.lang.Language
 import org.flaxo.model.DataManager
+import org.flaxo.moss.MossSubmissionAnalyser
+import org.flaxo.moss.SimpleMoss
+import org.flaxo.moss.SimpleMossSubmissionsAnalyser
 import org.flaxo.rest.manager.github.GithubManager
 import org.flaxo.rest.manager.moss.MossManager
-import org.flaxo.rest.manager.moss.MossSubmissionsExtractor
+import org.flaxo.rest.manager.moss.MossSubmissionExtractor
 import org.flaxo.rest.manager.moss.SimpleMossManager
 import org.flaxo.rest.manager.moss.SimpleMossSubmissionsExtractor
+import org.jsoup.Jsoup
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -18,12 +22,22 @@ import org.springframework.context.annotation.Configuration
 class MossConfiguration {
 
     @Bean
-    fun mossSubmissionsExtractor(githubManager: GithubManager, languages: List<Language>): MossSubmissionsExtractor =
+    fun mossSubmissionsExtractor(githubManager: GithubManager, languages: List<Language>): MossSubmissionExtractor =
             SimpleMossSubmissionsExtractor(githubManager, languages)
 
     @Bean
-    fun mossManager(@Value("\${MOSS_USER_ID}") userId: String,
-                    dataManager: DataManager,
-                    mossSubmissionsExtractor: MossSubmissionsExtractor
-    ): MossManager = SimpleMossManager(userId, dataManager, mossSubmissionsExtractor)
+    fun mossSubmissionsAnalyser(@Value("\${MOSS_USER_ID}") userId: String,
+                                githubManager: GithubManager,
+                                languages: List<Language>
+    ): MossSubmissionAnalyser =
+            SimpleMossSubmissionsAnalyser(
+                    mossSupplier = { language -> SimpleMoss.of(userId, language) },
+                    connectionSupplier = { url -> Jsoup.connect(url) }
+            )
+
+    @Bean
+    fun mossManager(dataManager: DataManager,
+                    mossSubmissionsExtractor: MossSubmissionExtractor,
+                    mossSubmissionsAnalyser: MossSubmissionAnalyser
+    ): MossManager = SimpleMossManager(dataManager, mossSubmissionsExtractor, mossSubmissionsAnalyser)
 }

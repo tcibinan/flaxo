@@ -4,10 +4,10 @@ import it.zielke.moji.SocketClient
 import org.flaxo.core.env.file.LocalFile
 import org.flaxo.core.lang.CppLang
 import org.flaxo.core.lang.Language
-import org.jsoup.Jsoup
+import java.net.URL
 
 /**
- * Simple moss analysis implementation.
+ * Simple Moss analysis implementation.
  */
 class SimpleMoss(private val client: SocketClient) : Moss {
 
@@ -22,7 +22,7 @@ class SimpleMoss(private val client: SocketClient) : Moss {
         })
     }
 
-    override fun analyse(submission: MossSubmission): MossResult {
+    override fun submit(submission: MossSubmission): URL {
         try {
             client.run()
 
@@ -37,7 +37,7 @@ class SimpleMoss(private val client: SocketClient) : Moss {
             client.close()
         }
 
-        return SimpleMossResult(client.resultURL) { url -> Jsoup.connect(url) }
+        return client.resultURL
     }
 
     private fun loadBaseFile(file: LocalFile): Unit = loadFile(file, isBase = true)

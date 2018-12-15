@@ -1,14 +1,17 @@
 package org.flaxo.frontend.component
 
 import kotlinx.coroutines.experimental.launch
+import kotlinx.html.ButtonType
 import kotlinx.html.id
 import kotlinx.html.js.onClickFunction
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.credentials
 import org.flaxo.common.Course
+import org.flaxo.common.CourseLifecycle
 import org.flaxo.common.SolutionReview
 import org.flaxo.common.Task
 import org.flaxo.frontend.Notifications
+import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.frontend.client.FlaxoHttpException
 import react.RBuilder
 import react.RComponent
@@ -40,12 +43,15 @@ class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
 
     private companion object {
         // TODO 16.08.18: Id can be non-unique between tabs
-        val RULES_DROPDOWN_ID = "taskRulesDropdown"
+        const val RULES_DROPDOWN_ID = "taskRulesDropdown"
     }
+
+    private val flaxoClient: FlaxoClient
 
     init {
         state.scores = emptyMap()
         state.reviews = emptyMap()
+        flaxoClient = Container.flaxoClient
     }
 
     override fun RBuilder.render() {
@@ -57,17 +63,25 @@ class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
                     props.task.plagiarismReports
                             .lastOrNull()
                             ?.also { a(classes = "card-link", href = it.url) { +"Plagiarism report" } }
-                    button(classes = "save-results-btn btn btn-outline-primary") {
+                    button(classes = "btn btn-outline-primary task-btn", type = ButtonType.button) {
                         attrs {
-                            disabled = state.scores.isEmpty() && state.reviews.isEmpty()
+                            onClickFunction = { launch { analysePlagiarism() } }
+                            disabled = !props.course.isRunning()
+                                    || !props.task.hasEnoughSolutionsForPlagiarismAnalysis()
+                        }
+                        +"Analyse plagiarism"
+                    }
+                    button(classes = "btn btn-outline-primary task-btn") {
+                        attrs {
                             onClickFunction = {
                                 launch { saveScores() }
                                 launch { saveApprovals() }
                             }
+                            disabled = state.scores.isEmpty() && state.reviews.isEmpty()
                         }
                         +"Save results"
                     }
-                    button(classes = "rules-toggle-btn btn btn-outline-secondary") {
+                    button(classes = "btn btn-outline-secondary task-btn") {
                         attrs {
                             attributes["data-toggle"] = "collapse"
                             attributes["data-target"] = "#$RULES_DROPDOWN_ID"
@@ -90,6 +104,19 @@ class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
                             }
                     )
                 }
+            }
+        }
+    }
+
+    private suspend fun analysePlagiarism() {
+        credentials?.also {
+            try {
+                Notifications.info("Task ${props.task.branch} plagiarism analysis has been started.")
+                flaxoClient.analysePlagiarism(it, props.course.name, props.task.branch)
+                Notifications.success("Task ${props.course.name} plagiarism analysis has finished successfully.")
+            } catch (e: FlaxoHttpException) {
+                console.log(e)
+                Notifications.error("Error occurred performing task ${props.task.branch} plagiarism analysis.", e)
             }
         }
     }
@@ -132,3 +159,12 @@ class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
     }
 
 }
+
+private fun Course.isRunning(): Boolean = state.lifecycle == CourseLifecycle.RUNNING
+
+private fun Task.hasEnoughSolutionsForPlagiarismAnalysis(): Boolean =
+        solutions.asSequence()
+                .map { it.commits }
+                .filter { it.isNotEmpty() }
+                .toList()
+                .size > 1

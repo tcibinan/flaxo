@@ -54,13 +54,6 @@ class Course(props: CourseProps) : RComponent<CourseProps, EmptyState>(props) {
                     +"Start course"
                 }
                 serviceActivationMenu(props.course)
-                button(classes = "btn btn-outline-primary course-control", type = ButtonType.button) {
-                    attrs {
-                        onClickFunction = { launch { analysePlagiarism() } }
-                        disabled = props.course.state.lifecycle != CourseLifecycle.RUNNING
-                    }
-                    +"Analyse plagiarism"
-                }
                 courseStatisticsDownloadMenu(props.course)
             }
             courseStatistics(props.course)
@@ -77,21 +70,6 @@ class Course(props: CourseProps) : RComponent<CourseProps, EmptyState>(props) {
             } catch (e: FlaxoHttpException) {
                 console.log(e)
                 Notifications.error("Error occurred while trying to start ${props.course.name} course.", e)
-            }
-        }
-    }
-
-    private suspend fun analysePlagiarism() {
-        credentials?.also {
-            try {
-                Notifications.info("Course ${props.course.name} plagiarism analysis has been started.")
-                flaxoClient.analysePlagiarism(it, props.course.name)
-                Notifications.success("Plagiarism analysis for course ${props.course.name} " +
-                        "has been started.")
-            } catch (e: FlaxoHttpException) {
-                console.log(e)
-                Notifications.error("Error occurred while starting plagiarism analysis " +
-                        "for ${props.course.name} course.", e)
             }
         }
     }

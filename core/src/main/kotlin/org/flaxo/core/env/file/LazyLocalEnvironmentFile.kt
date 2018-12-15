@@ -8,9 +8,6 @@ import java.nio.file.Path
  * Lazy local environment file.
  *
  * Loads the given [inputStream] to the [localDirectory] by the given [path].
- * **Notice:** Local file and the tmp directory will be deleted only after
- * the jvm will stop. So the proper way to use [LazyLocalEnvironmentFile] is the
- * one where you call [close] after all calculations have been done.
  */
 class LazyLocalEnvironmentFile(override val path: Path,
                                private val localDirectory: Path,

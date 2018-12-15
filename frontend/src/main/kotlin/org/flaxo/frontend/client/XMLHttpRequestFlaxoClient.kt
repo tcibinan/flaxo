@@ -108,12 +108,12 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override suspend fun analysePlagiarism(credentials: Credentials, courseName: String): Unit =
+    override suspend fun analysePlagiarism(credentials: Credentials, courseName: String, task: String): Unit =
             post {
                 apiMethod = "/moss/analyse"
-                params = mapOf("courseName" to courseName)
+                params = mapOf("courseName" to courseName, "taskBranch" to task)
                 creds = credentials
-                errorMessage = "Plagiarism analysis scheduling failed."
+                errorMessage = "Plagiarism analysis failed."
             }
 
     override suspend fun syncCourse(credentials: Credentials, courseName: String): Unit =

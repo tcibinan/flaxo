@@ -1,6 +1,6 @@
 package org.flaxo.rest.manager.moss
 
-import org.flaxo.model.data.Course
+import org.flaxo.model.data.Task
 
 /**
  * Moss manager.
@@ -8,9 +8,9 @@ import org.flaxo.model.data.Course
 interface MossManager {
 
     /**
-     * Analyses plagiarism of the given [course].
+     * Analyses plagiarism of the given [task].
      *
-     * @return Course with an updated plagiarism reports list.
+     * @return Task with an updated plagiarism reports list.
      */
-    fun analysePlagiarism(course: Course): Course
+    fun analysePlagiarism(task: Task): Task
 }

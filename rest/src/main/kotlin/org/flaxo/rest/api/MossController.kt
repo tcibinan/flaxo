@@ -1,8 +1,8 @@
 package org.flaxo.rest.api
 
 import org.apache.logging.log4j.LogManager
-import org.flaxo.model.CourseView
 import org.flaxo.model.DataManager
+import org.flaxo.model.TaskView
 import org.flaxo.rest.manager.moss.MossManager
 import org.flaxo.rest.manager.response.Response
 import org.flaxo.rest.manager.response.ResponseManager
@@ -26,16 +26,18 @@ class MossController(private val dataManager: DataManager,
     }
 
     /**
-     * Starts current user's [courseName] plagiarism analysis.
+     * Performs task plagiarism analysis.
      *
-     * @param courseName Name of the course and related git repository.
+     * @param courseName Name of the course to find task into.
+     * @param taskBranch Name of the task branch to perform plagiarism analysis for.
      */
     @PostMapping("/analyse")
     @PreAuthorize("hasAuthority('USER')")
     @Transactional
     fun analysePlagiarism(@RequestParam courseName: String,
+                          @RequestParam taskBranch: String,
                           principal: Principal
-    ): Response<CourseView> {
+    ): Response<TaskView> {
         logger.info("Trying to start plagiarism analysis for ${principal.name}/$courseName")
 
         val user = dataManager.getUser(principal.name)
@@ -44,8 +46,9 @@ class MossController(private val dataManager: DataManager,
         val course = dataManager.getCourse(courseName, user)
                 ?: return responseManager.courseNotFound(principal.name, courseName)
 
-        val updatedCourse = mossManager.analysePlagiarism(course)
+        val task = course.tasks.find { it.branch == taskBranch }
+                ?: return responseManager.taskNotFound(principal.name, courseName, taskBranch)
 
-        return responseManager.ok(updatedCourse.view())
+        return responseManager.ok(mossManager.analysePlagiarism(task).view())
     }
 }

@@ -2,6 +2,9 @@ package org.flaxo.rest.manager.moss
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
+import org.amshove.kluent.shouldBeFalse
+import org.amshove.kluent.shouldBeTrue
+import org.amshove.kluent.shouldEqual
 import org.flaxo.core.env.file.EnvironmentFile
 import org.flaxo.core.env.file.LocalFile
 import org.flaxo.core.env.file.RemoteEnvironmentFile
@@ -25,10 +28,9 @@ import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.subject.SubjectSpek
 import java.nio.file.Files
 import java.nio.file.Paths
-import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-object MossSubmissionsExtractorSpec : SubjectSpek<MossSubmissionsExtractor>({
+object MossSubmissionsExtractorSpec : SubjectSpek<MossSubmissionExtractor>({
     val language = "java"
     val userName = "userName"
     val userGithubId = "userGithubId"
@@ -39,19 +41,19 @@ object MossSubmissionsExtractorSpec : SubjectSpek<MossSubmissionsExtractor>({
     val student1ExtraFile = "some/path/$student1Name/student1ExtraFile.kt"
     val student2Name = "student2"
     val student2SolutionFile = "another/package/student2Solution.java"
-    val branch1 = "branch1"
+    val branchName = "branch1"
 
     val supportedLanguages: List<Language> = listOf(JavaLang)
     val solutionEntities1: Set<Solution> = setOf(
             Solution(
-                    task = Task(branch = branch1),
+                    task = Task(branch = branchName),
                     buildReports = listOf(BuildReport(succeed = true))
             )
     )
     val student1 = Student(nickname = student1Name, solutions = solutionEntities1)
     val solutionEntities2: Set<Solution> = setOf(
             Solution(
-                    task = Task(branch = branch1),
+                    task = Task(branch = branchName),
                     buildReports = listOf(BuildReport(succeed = false))
             )
     )
@@ -60,23 +62,23 @@ object MossSubmissionsExtractorSpec : SubjectSpek<MossSubmissionsExtractor>({
             credentials = Credentials(githubToken = "userGithubToken")
     )
     val course = Course(name = courseName, user = user, language = language,
-            students = setOf(student1, student2)
-    )
+            students = setOf(student1, student2))
+    val task = Task(branch = branchName, course = course)
     val userRepository = mock<Repository> {
         val userBranches = listOf(
-                branch(branch1, file(userTaskFile))
+                branch(branchName, file(userTaskFile))
         )
         on { branches() }.thenReturn(userBranches)
     }
     val student1Repository = mock<Repository> {
         val student1Branches = listOf(
-                branch(branch1, file(student1SolutionFile), file(student1ExtraFile))
+                branch(branchName, file(student1SolutionFile), file(student1ExtraFile))
         )
         on { branches() }.thenReturn(student1Branches)
     }
     val student2Repository = mock<Repository> {
         val student2Branches = listOf(
-                branch(branch1, file(student2SolutionFile))
+                branch(branchName, file(student2SolutionFile))
         )
         on { branches() }.thenReturn(student2Branches)
     }
@@ -93,49 +95,31 @@ object MossSubmissionsExtractorSpec : SubjectSpek<MossSubmissionsExtractor>({
 
     describe("Moss service") {
 
-        on("creating moss tasks") {
-            val mossSubmissions: List<MossSubmission> = subject.extract(course)
+        on("extracting moss submission") {
+            val submission: MossSubmission = subject.extract(task)
 
-            it("should create non-empty set of tasks") {
-                assertTrue { mossSubmissions.isNotEmpty() }
+            it("should return submission with filled user, course and task") {
+                submission.user shouldEqual userName
+                submission.course shouldEqual courseName
+                submission.branch shouldEqual branchName
             }
 
-            it("should contain all tasks from course") {
-                assertTrue { mossSubmissions.size == 1 }
-                assertTrue {
-                    mossSubmissions.any {
-                        it.user == userName
-                                && it.course == courseName
-                                && it.branch == branch1
-                    }
-                }
+            it("should return submission with solution files only from succeed solutions") {
+                submission.solutions.any(filesWithFileNameOf(student1SolutionFile)).shouldBeTrue()
+                submission.solutions.any(filesWithFileNameOf(student2SolutionFile)).shouldBeFalse()
             }
 
-            it("should only contain tasks where is at least one succeed solutions") {
-                val submission: MossSubmission = mossSubmissions.find { it.branch == branch1 }
-                        ?: throw MossTaskNotFound("Moss task with postfix $branch1 not found")
-
-                assertTrue { submission.solutions.any(filesWithFileNameOf(student1SolutionFile)) }
-                assertFalse { submission.solutions.any(filesWithFileNameOf(student2SolutionFile)) }
-            }
-
-            it("should only contain tasks with solutions on the proper language") {
-                mossSubmissions.flatMap { it.solutions }
-                        .also { solutions ->
-                            assertTrue { solutions.all { it.fileName.endsWith("java") } }
-                        }
+            it("should return submission with solutions files with the course language extension") {
+                submission.solutions.all { it.fileName.endsWith("java") }.shouldBeTrue()
             }
 
             it("should contain tasks where each solution file have student's name as a root folder") {
-                val submission: MossSubmission = mossSubmissions.first()
-                val solutions: List<LocalFile> = submission.solutions
 
-                assertTrue { solutions.size == 1 }
-                assertTrue { solutions.any { it.localPath.contains(Paths.get(student1Name)) } }
+                assertTrue { submission.solutions.size == 1 }
+                assertTrue { submission.solutions.any { it.localPath.contains(Paths.get(student1Name)) } }
             }
 
             it("should contain tasks where each base file have 'base' as a root folder") {
-                val submission: MossSubmission = mossSubmissions.first()
                 val base: List<LocalFile> = submission.base
 
                 assertTrue { base.isNotEmpty() }
@@ -143,7 +127,6 @@ object MossSubmissionsExtractorSpec : SubjectSpek<MossSubmissionsExtractor>({
             }
 
             it("should contain tasks where each environment file could be retrieved as a valid file") {
-                val submission: MossSubmission = mossSubmissions.first()
                 val files: List<LocalFile> = submission.base + submission.solutions
 
                 assertTrue {
@@ -156,8 +139,6 @@ object MossSubmissionsExtractorSpec : SubjectSpek<MossSubmissionsExtractor>({
     }
 
 })
-
-class MossTaskNotFound(taskPostfix: String) : RuntimeException(taskPostfix)
 
 private fun branch(branchName: String, vararg files: EnvironmentFile): Branch = mock {
     on { name }.thenReturn(branchName)
