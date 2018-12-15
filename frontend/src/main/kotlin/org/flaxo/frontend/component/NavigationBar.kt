@@ -8,6 +8,7 @@ import kotlinx.html.role
 import org.flaxo.frontend.component.services.CODACY_MODAL_ID
 import org.flaxo.frontend.component.services.GITHUB_MODAL_ID
 import org.flaxo.frontend.component.services.TRAVIS_MODAL_ID
+import org.flaxo.frontend.Configuration
 import org.flaxo.common.User
 import react.RBuilder
 import react.RComponent
@@ -40,7 +41,11 @@ class NavigationBar(props: NavigationBarProps) : RComponent<NavigationBarProps, 
                 attrs {
                     onClickFunction = { props.toCourses() }
                 }
-                +"Flaxo"
+                +"Flaxo "
+                span(classes = "text-muted align-middle flaxo-version") {
+                    +"v"
+                    +Configuration.FLAXO_VERSION
+                }
             }
             button(classes = "navbar-toggler", type = ButtonType.button) {
                 attrs {

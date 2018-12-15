@@ -52,6 +52,7 @@ kotlinFrontend {
         dependency('css-loader', '1.0.0')
         dependency('react-notifications', '1.4.3')
         dependency('url-loader', '1.1.1')
+        dependency('string-replace-loader', '2.1.1')
     }
 
     webpackBundle {
