@@ -14,47 +14,39 @@ data class GithubRepository(override val name: String,
                             private val github: Github
 ) : Repository {
 
-    override fun exists(): Boolean =
-            try {
-                client.repository(owner, name)
-                true
-            } catch (e: IOException) {
-                false
-            }
+    val client by lazy { github.client }
+    val rawRepository by lazy { client.repository(owner, name) }
 
-    private val client = github.client
-
-    override val forks: Int = client.repository(owner, name).forks
-
-    override fun delete() {
-        client.repository(owner, name).delete()
+    override fun exists(): Boolean = try {
+        client.repository(owner, name)
+        true
+    } catch (e: IOException) {
+        false
     }
 
+    override val forks: Int by lazy { rawRepository.forks }
+
+    override fun delete() = rawRepository.delete()
+
     override fun branches(): List<Branch> =
-            client.repository(owner, name)
+            rawRepository
                     .branches
                     .values
-                    .map { branch ->
-                        GithubBranch(branch.name, this, github)
-                    }
+                    .map { branch -> GithubBranch(branch.name, this, github) }
 
     override fun createBranch(branchName: String): Branch {
-        client.repository(owner, name).apply {
-            listCommits().asList().last().shA1.also {
-                createBranch(branchName, it)
-            }
-        }
+        val shA1 = rawRepository.listCommits().asList().last().shA1
+        rawRepository.createBranch(branchName, shA1)
 
         return GithubBranch(branchName, this, github)
     }
 
     override fun addWebHook() {
-        client.repository(owner, name)
-                .createWebHook(github.webHookUrl, listOf(RawGithubEvent.PULL_REQUEST))
+        rawRepository.createWebHook(github.webHookUrl, listOf(RawGithubEvent.PULL_REQUEST))
     }
 
     override fun getPullRequest(pullRequestNumber: Int): PullRequest =
-            client.repository(owner, name)
+            rawRepository
                     .getPullRequest(pullRequestNumber)
                     ?.let { GithubPullRequest(it) }
                     ?: throw GithubException("Pull request $pullRequestNumber wasn't found " +

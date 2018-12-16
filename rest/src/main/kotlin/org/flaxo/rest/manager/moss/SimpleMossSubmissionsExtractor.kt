@@ -67,12 +67,10 @@ class SimpleMossSubmissionsExtractor(private val githubManager: GithubManager,
                 git.getRepository(course.name)
                         .branches()
                         .find { it.name == task.branch }
-                        ?.let { find ->
-                            find.files()
-                                    .filter { it.suits(language) }
-                                    .map { it.toLocalFile(submissionsDirectory.resolve(find.name).resolve("base")) }
-                        }
-                        ?: emptyList()
+                        ?.files()
+                        .orEmpty()
+                        .filter { it.suits(language) }
+                        .map { it.toLocalFile(submissionsDirectory.resolve(task.branch).resolve("base")) }
 
         logger.info("Task ${course.friendlyId} bases were aggregated successfully")
 

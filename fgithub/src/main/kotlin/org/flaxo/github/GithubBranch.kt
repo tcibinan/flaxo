@@ -15,57 +15,37 @@ class GithubBranch(override val name: String,
                    private val github: Github
 ) : Branch {
 
-    private val client: RawGithub = github.client
+    val client: RawGithub by lazy { github.client }
+    val rawRepository: RawGithubRepository by lazy { client.repository(repository.owner, repository.name) }
 
-    override fun commit(file: EnvironmentFile,
-                        commitMessage: String
-    ): Commit {
-        val content = createContent(file, this, commitMessage)
+    override fun commit(file: EnvironmentFile, commitMessage: String): Commit {
+        val content = createContent(file, commitMessage)
         return GithubCommit(content.commit.shA1, this, this.github)
     }
 
-    private fun createContent(file: EnvironmentFile,
-                              branch: GithubBranch,
-                              commitMessage: String
-    ): RawGithubContentUpdateResponse {
-        val repository = client.repository(branch.repository.owner, branch.repository.name)
+    private fun createContent(file: EnvironmentFile, commitMessage: String): RawGithubContentUpdateResponse =
+            when (file) {
+                is ByteArrayEnvironmentFile ->
+                    rawRepository.createContent(file.binaryContent, commitMessage, file.path.toString(), name)
+                else -> rawRepository.createContent(file.content, commitMessage, file.path.toString(), name)
+            }
+
+    override fun update(file: EnvironmentFile, commitMessage: String): Commit {
+        val content = updateContent(file, commitMessage)
+        return GithubCommit(content.commit.shA1, this, github)
+    }
+
+    private fun updateContent(file: EnvironmentFile, commitMessage: String): RawGithubContentUpdateResponse {
+        val content = rawRepository.getFileContent(file.path.toString(), name)
         return when (file) {
-            is ByteArrayEnvironmentFile ->
-                repository.createContent(file.binaryContent, commitMessage, file.path.toString(), branch.name)
-            else -> repository.createContent(file.content, commitMessage, file.path.toString(), branch.name)
+            is ByteArrayEnvironmentFile -> content.update(file.binaryContent, commitMessage, name)
+            else -> content.update(file.content, commitMessage, name)
         }
     }
-
-    override fun update(file: EnvironmentFile,
-                        commitMessage: String
-    ): Commit = let { branch ->
-        updateContent(file, branch, commitMessage).let {
-            GithubCommit(it.commit.shA1, branch, branch.github)
-        }
-    }
-
-    private fun updateContent(file: EnvironmentFile,
-                              branch: GithubBranch,
-                              commitMessage: String
-    ): RawGithubContentUpdateResponse =
-            client.repository(repository.owner, repository.name)
-                    .getFileContent(file.path.toString(), branch.name)
-                    .let {
-                        when (file) {
-                            is ByteArrayEnvironmentFile -> it.update(file.binaryContent, commitMessage, branch.name)
-                            else -> it.update(file.content, commitMessage, branch.name)
-                        }
-                    }
 
     override fun createSubBranch(subBranchName: String): Branch {
-        val rootBranchName = name
-
-        client.repository(repository.owner, repository.name).apply {
-            getBranch(rootBranchName).shA1.also {
-                createBranch(subBranchName, it)
-            }
-        }
-
+        val shA1 = rawRepository.getBranch(name).shA1
+        rawRepository.createBranch(subBranchName, shA1)
         return GithubBranch(subBranchName, repository, github)
     }
 
@@ -75,8 +55,7 @@ class GithubBranch(override val name: String,
     }
 
     override fun files(): List<EnvironmentFile> =
-            client.repository(repository.owner, repository.name)
-                    .getTreeRecursive(name, 1)
+            rawRepository.getTreeRecursive(name, 1)
                     .tree
                     .filter { it.type == "blob" }
                     .map { RemoteEnvironmentFile(Paths.get(it.path), it.readAsBlob()) }
