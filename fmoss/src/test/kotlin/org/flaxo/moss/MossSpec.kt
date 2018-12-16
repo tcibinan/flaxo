@@ -15,6 +15,8 @@ import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.subject.SubjectSpek
 import java.net.URL
+import java.nio.file.Files
+import java.nio.file.Paths
 
 object MossSpec : SubjectSpek<Moss>({
     val mossResultUrl = URL("http://test.url.com/results/2312432")
@@ -26,7 +28,16 @@ object MossSpec : SubjectSpek<Moss>({
             LocalEnvironmentFile("src/test/resources/student2/ClassName.java"),
             LocalEnvironmentFile("src/test/resources/student3/ClassName.java")
     )
-    val submission = MossSubmission("user", "course", "branch", JavaLang, base, solutions)
+    val submission = MossSubmission(
+            user = "user",
+            course = "course",
+            task = "branch",
+            language = JavaLang,
+            students = emptyList(),
+            base = base,
+            solutions = solutions,
+            tempDirectory = Files.createTempDirectory("moss-submission-analyser-spec")
+    )
     val client: SocketClient = mock {
         on { resultURL }.thenReturn(mossResultUrl)
     }

@@ -1,4 +1,4 @@
 package org.flaxo.moss
 
 val MossSubmission.friendlyId
-    get() = "$user/$course/$branch"
+    get() = "$user/$course/$task"

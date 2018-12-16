@@ -5,7 +5,6 @@ import org.flaxo.core.env.file.EnvironmentFile
 import org.flaxo.core.env.file.RemoteEnvironmentFile
 import org.flaxo.git.Branch
 import org.flaxo.git.Commit
-import java.nio.file.Path
 import java.nio.file.Paths
 
 /**

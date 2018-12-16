@@ -44,26 +44,28 @@ object MossSubmissionsExtractorSpec : SubjectSpek<MossSubmissionExtractor>({
     val branchName = "branch1"
 
     val supportedLanguages: List<Language> = listOf(JavaLang)
-    val solutionEntities1: Set<Solution> = setOf(
+    val student1Solutions: Set<Solution> = setOf(
             Solution(
                     task = Task(branch = branchName),
-                    buildReports = listOf(BuildReport(succeed = true))
+                    buildReports = listOf(BuildReport(succeed = true)),
+                    student = Student(nickname = student1Name)
             )
     )
-    val student1 = Student(nickname = student1Name, solutions = solutionEntities1)
-    val solutionEntities2: Set<Solution> = setOf(
+    val student1 = Student(nickname = student1Name, solutions = student1Solutions)
+    val student2Solutions: Set<Solution> = setOf(
             Solution(
                     task = Task(branch = branchName),
-                    buildReports = listOf(BuildReport(succeed = false))
+                    buildReports = listOf(BuildReport(succeed = false)),
+                    student = Student(nickname = student2Name)
             )
     )
-    val student2 = Student(nickname = student2Name, solutions = solutionEntities2)
+    val student2 = Student(nickname = student2Name, solutions = student2Solutions)
     val user = User(nickname = userName, githubId = userGithubId,
             credentials = Credentials(githubToken = "userGithubToken")
     )
-    val course = Course(name = courseName, user = user, language = language,
-            students = setOf(student1, student2))
-    val task = Task(branch = branchName, course = course)
+    val course = Course(name = courseName, user = user, language = language, students = setOf(student1, student2))
+    val solutions = student1Solutions + student2Solutions
+    val task = Task(branch = branchName, course = course, solutions = solutions)
     val userRepository = mock<Repository> {
         val userBranches = listOf(
                 branch(branchName, file(userTaskFile))
@@ -101,7 +103,7 @@ object MossSubmissionsExtractorSpec : SubjectSpek<MossSubmissionExtractor>({
             it("should return submission with filled user, course and task") {
                 submission.user shouldEqual userName
                 submission.course shouldEqual courseName
-                submission.branch shouldEqual branchName
+                submission.task shouldEqual branchName
             }
 
             it("should return submission with solution files only from succeed solutions") {
@@ -151,4 +153,3 @@ private fun file(filePath: String) =
 private fun filesWithFileNameOf(filePath: String): (EnvironmentFile) -> Boolean = {
     it.fileName == Paths.get(filePath).fileName.toString()
 }
-

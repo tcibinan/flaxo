@@ -13,6 +13,11 @@ class MossResult(
         val url: URL,
 
         /**
+         * Students which solutions were analysed.
+         */
+        val students: List<String>,
+
+        /**
          * All Moss plagiarism matches.
          */
         val matches: Set<MossMatch>

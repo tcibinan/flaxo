@@ -1,6 +1,7 @@
 package org.flaxo.moss
 
 import org.apache.logging.log4j.LogManager
+import org.flaxo.core.deleteDirectoryRecursively
 import org.flaxo.core.lang.Language
 import org.jsoup.Connection
 import org.jsoup.nodes.Element
@@ -24,22 +25,20 @@ class SimpleMossSubmissionsAnalyser(private val mossSupplier: (Language) -> Moss
                 "${submission.base.size} bases files " +
                 "and ${submission.solutions.size} solutions files")
 
-        val mossResult = mossSupplier(submission.language)
+        val resultURL = mossSupplier(submission.language)
                 .submit(submission)
-                .toResult()
+
+        val mossResult = MossResult(resultURL, students = submission.students, matches = retrieveMatches(resultURL))
 
         logger.info("Moss submission ${submission.friendlyId} analysis has finished successfully " +
                 "and is available by ${mossResult.url}")
 
         logger.info("Deleting moss submission ${submission.friendlyId} generated files")
 
-        (submission.base + submission.solutions)
-                .forEach { Files.delete(it.localPath) }
+        deleteDirectoryRecursively(submission.tempDirectory)
 
         return mossResult
     }
-
-    private fun URL.toResult(): MossResult = MossResult(this, matches = retrieveMatches(this))
 
     private fun retrieveMatches(mossResultUrl: URL): Set<MossMatch> =
             connectionSupplier(mossResultUrl.toString())

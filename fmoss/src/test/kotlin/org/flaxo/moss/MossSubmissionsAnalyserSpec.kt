@@ -19,7 +19,17 @@ object MossSubmissionsAnalyserSpec : SubjectSpek<MossSubmissionAnalyser>({
 
     val mossResultsUrl = URL("http://test.url.com/results/2312432")
     val mossAnswerHtml = Files.readAllLines(Paths.get("src/test/resources/moss-results.html")).joinToString("\n")
-    val submission = MossSubmission("user", "course", "branch", JavaLang, emptyList(), emptyList())
+
+    val submission = MossSubmission(
+            user = "user",
+            course = "course",
+            task = "branch",
+            language = JavaLang,
+            students = emptyList(),
+            base = emptyList(),
+            solutions = emptyList(),
+            tempDirectory = Files.createTempDirectory("moss-submission-analyser-spec")
+    )
 
     val moss: Moss = mock {
         on { submit(any()) }.thenReturn(mossResultsUrl)

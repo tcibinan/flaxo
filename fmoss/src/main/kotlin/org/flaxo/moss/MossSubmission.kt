@@ -2,6 +2,7 @@ package org.flaxo.moss
 
 import org.flaxo.core.env.file.LocalFile
 import org.flaxo.core.lang.Language
+import java.nio.file.Path
 
 /**
  * Moss analysis submission parameters.
@@ -12,12 +13,17 @@ data class MossSubmission(
         
         val course: String,
 
-        val branch: String,
+        val task: String,
 
         /**
          * Plagiarism analysis target language.
          */
         val language: Language,
+
+        /**
+         * Students which solutions are going to be analysed.
+         */
+        val students: List<String>,
 
         /**
          * Original task local files.
@@ -45,5 +51,10 @@ data class MossSubmission(
          * Student 2 files:
          * /some/common/path/student2/SomeClass.java
          */
-        val solutions: List<LocalFile>
+        val solutions: List<LocalFile>,
+
+        /**
+         * Directory that contains all files supposed to **be deleted** when submission finishes.
+         */
+        val tempDirectory: Path
 )
