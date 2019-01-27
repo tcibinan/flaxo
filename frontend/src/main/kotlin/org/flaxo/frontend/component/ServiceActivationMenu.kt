@@ -38,7 +38,7 @@ class ServiceActivationMenu(props: ServiceActivationMenuProps)
 
     init {
         flaxoClient = Container.flaxoClient
-        availableValidations = setOf(ExternalService.TRAVIS, ExternalService.CODACY)
+        availableValidations = ExternalService.values().toSet() - ExternalService.GITHUB
     }
 
     override fun RBuilder.render() {
@@ -51,7 +51,7 @@ class ServiceActivationMenu(props: ServiceActivationMenuProps)
                         attributes["aria-haspopup"] = "true"
                         attributes["aria-expanded"] = "false"
                         disabled = props.course.state.lifecycle != CourseLifecycle.RUNNING
-                                || props.course.state.activatedServices.all { it in availableValidations }
+                                || availableValidations.all { it in props.course.state.activatedServices }
                     }
                     +"Activate service"
                 }
