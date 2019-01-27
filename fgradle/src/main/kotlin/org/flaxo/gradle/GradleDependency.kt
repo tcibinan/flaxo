@@ -1,6 +1,6 @@
 package org.flaxo.gradle
 
-import org.flaxo.core.NamedEntity
+import org.flaxo.common.NamedEntity
 
 internal data class GradleDependency(val group: String,
                                      val id: String,

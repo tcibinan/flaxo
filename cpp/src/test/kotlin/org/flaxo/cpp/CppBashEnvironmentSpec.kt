@@ -3,8 +3,8 @@ package org.flaxo.cpp
 import org.amshove.kluent.shouldContain
 import org.amshove.kluent.shouldEqual
 import org.amshove.kluent.shouldNotBeNull
-import org.flaxo.cmd.CmdExecutor
-import org.flaxo.core.deleteDirectoryRecursively
+import org.flaxo.common.cmd.CmdExecutor
+import org.flaxo.common.deleteDirectoryRecursively
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it

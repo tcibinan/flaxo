@@ -8,8 +8,8 @@ import org.flaxo.frontend.component.services.codacyModal
 import org.flaxo.frontend.component.services.githubModal
 import org.flaxo.frontend.component.services.travisModal
 import org.flaxo.frontend.credentials
-import org.flaxo.common.Course
-import org.flaxo.common.User
+import org.flaxo.common.data.Course
+import org.flaxo.common.data.User
 import org.flaxo.frontend.Notifications
 import org.flaxo.frontend.client.FlaxoHttpException
 import react.setState

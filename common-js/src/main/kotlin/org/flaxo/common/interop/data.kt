@@ -1,23 +1,23 @@
 // todo: Replace with kotlinx.serialization features
 package org.flaxo.common.interop
 
-import org.flaxo.common.BuildReport
-import org.flaxo.common.CodeStyleReport
-import org.flaxo.common.CodeStyleGrade
-import org.flaxo.common.Commit
-import org.flaxo.common.Course
-import org.flaxo.common.CourseLifecycle
-import org.flaxo.common.CourseState
-import org.flaxo.common.CourseStatistics
+import org.flaxo.common.data.BuildReport
+import org.flaxo.common.data.CodeStyleReport
+import org.flaxo.common.data.CodeStyleGrade
+import org.flaxo.common.data.Commit
+import org.flaxo.common.data.Course
+import org.flaxo.common.data.CourseLifecycle
+import org.flaxo.common.data.CourseState
+import org.flaxo.common.data.CourseStatistics
 import org.flaxo.common.DateTime
-import org.flaxo.common.ExternalService
-import org.flaxo.common.GithubAuthData
-import org.flaxo.common.Language
-import org.flaxo.common.PlagiarismMatch
-import org.flaxo.common.PlagiarismReport
-import org.flaxo.common.Solution
-import org.flaxo.common.Task
-import org.flaxo.common.User
+import org.flaxo.common.data.ExternalService
+import org.flaxo.common.data.GithubAuthData
+import org.flaxo.common.data.Language
+import org.flaxo.common.data.PlagiarismMatch
+import org.flaxo.common.data.PlagiarismReport
+import org.flaxo.common.data.Solution
+import org.flaxo.common.data.Task
+import org.flaxo.common.data.User
 import kotlin.js.Json
 
 fun languageFromDynamic(languageJson: dynamic): Language =

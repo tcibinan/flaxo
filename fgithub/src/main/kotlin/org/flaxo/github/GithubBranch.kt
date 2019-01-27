@@ -1,8 +1,8 @@
 package org.flaxo.github
 
-import org.flaxo.core.env.file.ByteArrayEnvironmentFile
-import org.flaxo.core.env.file.EnvironmentFile
-import org.flaxo.core.env.file.RemoteEnvironmentFile
+import org.flaxo.common.env.file.ByteArrayEnvironmentFile
+import org.flaxo.common.env.file.EnvironmentFile
+import org.flaxo.common.env.file.RemoteEnvironmentFile
 import org.flaxo.git.Branch
 import org.flaxo.git.Commit
 import java.nio.file.Paths

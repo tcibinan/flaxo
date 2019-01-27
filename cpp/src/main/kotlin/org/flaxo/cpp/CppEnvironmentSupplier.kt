@@ -1,12 +1,12 @@
 package org.flaxo.cpp
 
-import org.flaxo.core.env.Environment
-import org.flaxo.core.lang.CppLang
-import org.flaxo.core.env.EnvironmentSupplier
-import org.flaxo.core.framework.BashInputOutputTestingFramework
-import org.flaxo.core.framework.TestingFramework
-import org.flaxo.core.lang.BashLang
-import org.flaxo.core.lang.Language
+import org.flaxo.common.env.Environment
+import org.flaxo.common.lang.CppLang
+import org.flaxo.common.env.EnvironmentSupplier
+import org.flaxo.common.framework.BashInputOutputTestingFramework
+import org.flaxo.common.framework.TestingFramework
+import org.flaxo.common.lang.BashLang
+import org.flaxo.common.lang.Language
 
 /**
  * C++ environment supplier.

@@ -3,10 +3,10 @@ package org.flaxo.rest.manager.travis
 import arrow.core.getOrHandle
 import arrow.core.orNull
 import org.apache.logging.log4j.LogManager
-import org.flaxo.cmd.CmdExecutor
-import org.flaxo.common.ExternalService
-import org.flaxo.core.of
-import org.flaxo.core.repeatUntil
+import org.flaxo.common.cmd.CmdExecutor
+import org.flaxo.common.data.ExternalService
+import org.flaxo.common.of
+import org.flaxo.common.repeatUntil
 import org.flaxo.git.PullRequest
 import org.flaxo.model.DataManager
 import org.flaxo.model.ModelException

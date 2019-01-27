@@ -5,11 +5,11 @@ import com.nhaarman.mockito_kotlin.mock
 import org.amshove.kluent.shouldContain
 import org.amshove.kluent.shouldContainSome
 import org.amshove.kluent.shouldEqual
-import org.flaxo.core.env.file.EnvironmentFile
-import org.flaxo.core.env.EnvironmentSupplier
-import org.flaxo.core.env.SimpleEnvironment
-import org.flaxo.core.framework.JUnitTestingFramework
-import org.flaxo.core.lang.JavaLang
+import org.flaxo.common.env.file.EnvironmentFile
+import org.flaxo.common.env.EnvironmentSupplier
+import org.flaxo.common.env.SimpleEnvironment
+import org.flaxo.common.framework.JUnitTestingFramework
+import org.flaxo.common.lang.JavaLang
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on

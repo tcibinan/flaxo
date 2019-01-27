@@ -5,7 +5,7 @@ import kotlinx.html.id
 import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
 import org.flaxo.common.DateTime
-import org.flaxo.common.Task
+import org.flaxo.common.data.Task
 import org.flaxo.frontend.clearInputValue
 import org.w3c.dom.HTMLInputElement
 import react.RBuilder

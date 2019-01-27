@@ -9,9 +9,9 @@ import org.amshove.kluent.shouldEqual
 import org.amshove.kluent.shouldNotBeNull
 import org.amshove.kluent.shouldStartWith
 import org.amshove.kluent.shouldThrow
-import org.flaxo.common.CodeStyleGrade
-import org.flaxo.common.CourseLifecycle
-import org.flaxo.common.ExternalService
+import org.flaxo.common.data.CodeStyleGrade
+import org.flaxo.common.data.CourseLifecycle
+import org.flaxo.common.data.ExternalService
 import org.flaxo.model.data.PlagiarismMatch
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it

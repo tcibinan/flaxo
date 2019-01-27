@@ -1,6 +1,6 @@
 package org.flaxo.rest
 
-import org.flaxo.core.lang.Language
+import org.flaxo.common.lang.Language
 import org.flaxo.model.DataManager
 import org.flaxo.moss.MossSubmissionAnalyser
 import org.flaxo.moss.SimpleMoss

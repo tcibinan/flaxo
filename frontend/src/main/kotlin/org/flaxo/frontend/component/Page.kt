@@ -8,7 +8,7 @@ import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.frontend.client.FlaxoHttpException
 import org.flaxo.frontend.credentials
 import org.flaxo.frontend.wrapper.Cookies
-import org.flaxo.common.User
+import org.flaxo.common.data.User
 import org.flaxo.frontend.Notifications
 
 class PageState(var user: User? = null) : RState

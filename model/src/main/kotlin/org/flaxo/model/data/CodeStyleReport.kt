@@ -1,6 +1,6 @@
 package org.flaxo.model.data
 
-import org.flaxo.common.CodeStyleGrade
+import org.flaxo.common.data.CodeStyleGrade
 import org.flaxo.common.DateTime
 import org.flaxo.model.CodeStyleReportView
 import java.time.LocalDateTime

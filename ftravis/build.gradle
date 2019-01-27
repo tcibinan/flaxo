@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    compile project(":core")
+    compile project(":common-jvm")
 
     // http client
     compile "com.squareup.retrofit2:retrofit:2.3.0"

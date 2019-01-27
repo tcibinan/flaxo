@@ -1,7 +1,7 @@
 package org.flaxo.rest.api
 
 import org.apache.logging.log4j.LogManager
-import org.flaxo.common.SolutionReview
+import org.flaxo.common.data.SolutionReview
 import org.flaxo.git.AddReviewRequest
 import org.flaxo.git.PullRequestReviewStatus
 import org.flaxo.model.DataManager

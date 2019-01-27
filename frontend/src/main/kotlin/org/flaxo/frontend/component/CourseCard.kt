@@ -1,7 +1,7 @@
 package org.flaxo.frontend.component
 
 import kotlinx.html.js.onClickFunction
-import org.flaxo.common.Course
+import org.flaxo.common.data.Course
 import react.RBuilder
 import react.dom.div
 import react.dom.h5

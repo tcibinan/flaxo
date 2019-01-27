@@ -1,15 +1,15 @@
 package org.flaxo.gradle
 
-import org.flaxo.core.NamedEntity
-import org.flaxo.core.env.Environment
-import org.flaxo.core.env.file.EnvironmentFile
-import org.flaxo.core.env.EnvironmentSupplier
-import org.flaxo.core.framework.JUnitTestingFramework
-import org.flaxo.core.framework.SpekTestingFramework
-import org.flaxo.core.framework.TestingFramework
-import org.flaxo.core.lang.JavaLang
-import org.flaxo.core.lang.KotlinLang
-import org.flaxo.core.lang.Language
+import org.flaxo.common.NamedEntity
+import org.flaxo.common.env.Environment
+import org.flaxo.common.env.file.EnvironmentFile
+import org.flaxo.common.env.EnvironmentSupplier
+import org.flaxo.common.framework.JUnitTestingFramework
+import org.flaxo.common.framework.SpekTestingFramework
+import org.flaxo.common.framework.TestingFramework
+import org.flaxo.common.lang.JavaLang
+import org.flaxo.common.lang.KotlinLang
+import org.flaxo.common.lang.Language
 
 data class GradleBuildTool internal constructor(
         private val travis: EnvironmentSupplier,

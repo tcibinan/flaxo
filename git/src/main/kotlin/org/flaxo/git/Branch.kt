@@ -1,7 +1,6 @@
 package org.flaxo.git
 
-import org.flaxo.core.env.file.EnvironmentFile
-import java.nio.file.Path
+import org.flaxo.common.env.file.EnvironmentFile
 
 /**
  * Git repository branch interface.

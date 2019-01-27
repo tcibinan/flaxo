@@ -1,13 +1,12 @@
 package org.flaxo.moss
 
 import org.apache.logging.log4j.LogManager
-import org.flaxo.core.deleteDirectoryRecursively
-import org.flaxo.core.lang.Language
+import org.flaxo.common.deleteDirectoryRecursively
+import org.flaxo.common.lang.Language
 import org.jsoup.Connection
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 import java.net.URL
-import java.nio.file.Files
 
 /**
  * Simple Moss submissions analyser implementation.

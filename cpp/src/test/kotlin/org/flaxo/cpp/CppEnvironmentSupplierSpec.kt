@@ -3,11 +3,11 @@ package org.flaxo.cpp
 import org.amshove.kluent.shouldBeInstanceOf
 import org.amshove.kluent.shouldNotThrow
 import org.amshove.kluent.shouldThrow
-import org.flaxo.core.framework.BashInputOutputTestingFramework
-import org.flaxo.core.framework.JUnitTestingFramework
-import org.flaxo.core.lang.BashLang
-import org.flaxo.core.lang.JavaLang
-import org.flaxo.core.lang.CppLang
+import org.flaxo.common.framework.BashInputOutputTestingFramework
+import org.flaxo.common.framework.JUnitTestingFramework
+import org.flaxo.common.lang.BashLang
+import org.flaxo.common.lang.JavaLang
+import org.flaxo.common.lang.CppLang
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it

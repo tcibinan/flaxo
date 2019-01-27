@@ -1,9 +1,9 @@
 package org.flaxo.rest.manager.moss
 
 import org.apache.logging.log4j.LogManager
-import org.flaxo.core.env.file.EnvironmentFile
-import org.flaxo.core.env.file.LocalFile
-import org.flaxo.core.lang.Language
+import org.flaxo.common.env.file.EnvironmentFile
+import org.flaxo.common.env.file.LocalFile
+import org.flaxo.common.lang.Language
 import org.flaxo.model.ModelException
 import org.flaxo.model.data.Task
 import org.flaxo.moss.MossSubmission

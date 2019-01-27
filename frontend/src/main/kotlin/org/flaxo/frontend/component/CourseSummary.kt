@@ -4,9 +4,9 @@ import kotlinx.html.TABLE
 import kotlinx.html.TR
 import kotlinx.html.ThScope
 import kotlinx.html.js.onClickFunction
-import org.flaxo.common.Course
-import org.flaxo.common.CourseStatistics
-import org.flaxo.common.Solution
+import org.flaxo.common.data.Course
+import org.flaxo.common.data.CourseStatistics
+import org.flaxo.common.data.Solution
 import org.flaxo.frontend.github.githubProfileUrl
 import react.RBuilder
 import react.RComponent

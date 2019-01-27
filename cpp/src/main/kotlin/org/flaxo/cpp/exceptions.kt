@@ -1,6 +1,6 @@
 package org.flaxo.cpp
 
-import org.flaxo.core.FlaxoException
+import org.flaxo.common.FlaxoException
 
 /**
  *  C++ environment exception.

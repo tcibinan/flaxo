@@ -7,9 +7,9 @@ import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import it.zielke.moji.SocketClient
 import org.amshove.kluent.shouldEqual
-import org.flaxo.core.env.file.LocalEnvironmentFile
-import org.flaxo.core.env.file.LocalFile
-import org.flaxo.core.lang.JavaLang
+import org.flaxo.common.env.file.LocalEnvironmentFile
+import org.flaxo.common.env.file.LocalFile
+import org.flaxo.common.lang.JavaLang
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on

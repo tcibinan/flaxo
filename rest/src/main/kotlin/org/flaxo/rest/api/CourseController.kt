@@ -3,9 +3,9 @@ package org.flaxo.rest.api
 import arrow.core.Try
 import arrow.core.getOrElse
 import org.apache.logging.log4j.LogManager
-import org.flaxo.common.CourseLifecycle
-import org.flaxo.common.ExternalService
-import org.flaxo.core.stringStackTrace
+import org.flaxo.common.data.CourseLifecycle
+import org.flaxo.common.data.ExternalService
+import org.flaxo.common.stringStackTrace
 import org.flaxo.model.CourseView
 import org.flaxo.model.DataManager
 import org.flaxo.model.data.views

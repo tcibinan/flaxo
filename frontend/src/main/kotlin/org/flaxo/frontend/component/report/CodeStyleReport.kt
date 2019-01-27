@@ -1,6 +1,6 @@
 package org.flaxo.frontend.component.report
 
-import org.flaxo.common.Solution
+import org.flaxo.common.data.Solution
 import react.RBuilder
 import react.dom.div
 

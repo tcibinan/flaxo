@@ -20,7 +20,12 @@ plugins {
 
 version '0.1'
 
-configure(subprojects.findAll { it.name != 'frontend' && it.name != 'common' && it.name != 'common-js' && it.name != 'common-jvm'}) {
+def javaProjects = subprojects.findAll {
+    it.name in ['common-jvm', 'cpp', 'fcodacy', 'fgithub', 'fgradle', 'fmoss', 'fretrofit', 'ftravis', 'git', 
+                'githubql', 'model', 'rest']
+}
+
+configure(javaProjects) {
     apply plugin: 'kotlin-platform-jvm'
 
     repositories {

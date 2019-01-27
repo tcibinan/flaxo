@@ -5,7 +5,7 @@ import kotlinx.html.js.onClickFunction
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.frontend.client.FlaxoHttpException
-import org.flaxo.common.User
+import org.flaxo.common.data.User
 import kotlinx.html.ButtonType
 import kotlinx.html.InputType
 import kotlinx.html.classes
@@ -22,7 +22,6 @@ import react.RComponent
 import react.RProps
 import react.dom.button
 import react.dom.div
-import react.dom.form
 import react.dom.h5
 import react.dom.input
 import react.dom.small

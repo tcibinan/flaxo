@@ -1,6 +1,6 @@
 package org.flaxo.gradle
 
-import org.flaxo.core.env.file.EnvironmentFile
+import org.flaxo.common.env.file.EnvironmentFile
 import java.nio.file.Path
 import java.nio.file.Paths
 

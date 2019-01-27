@@ -6,14 +6,13 @@ plugins {
 
 dependencies {
     // modules dependencies
-    compile project(":core")
+    compile project(":common-jvm")
     compile project(":model")
     compile project(":fgradle")
     compile project(":ftravis")
     compile project(":git")
     compile project(":fgithub")
     compile project(":githubql")
-    compile project(":cmd")
     compile project(":fmoss")
     compile project(":fcodacy")
     compile project(":cpp")

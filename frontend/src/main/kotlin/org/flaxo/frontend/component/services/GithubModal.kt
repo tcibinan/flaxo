@@ -9,7 +9,7 @@ import kotlinx.html.role
 import kotlinx.html.tabIndex
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.credentials
-import org.flaxo.common.User
+import org.flaxo.common.data.User
 import org.flaxo.frontend.github.githubProfileUrl
 import org.flaxo.frontend.Notifications
 import org.flaxo.frontend.client.FlaxoHttpException

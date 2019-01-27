@@ -9,7 +9,7 @@ import org.flaxo.frontend.component.services.CODACY_MODAL_ID
 import org.flaxo.frontend.component.services.GITHUB_MODAL_ID
 import org.flaxo.frontend.component.services.TRAVIS_MODAL_ID
 import org.flaxo.frontend.Configuration
-import org.flaxo.common.User
+import org.flaxo.common.data.User
 import react.RBuilder
 import react.RComponent
 import react.RProps

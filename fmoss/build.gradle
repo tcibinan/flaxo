@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    compile project(":core")
+    compile project(":common-jvm")
 
     // Moss java client
     compile "it.zielke:moji:1.0.2"

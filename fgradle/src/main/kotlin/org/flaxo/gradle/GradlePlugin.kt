@@ -1,6 +1,6 @@
 package org.flaxo.gradle
 
-import org.flaxo.core.NamedEntity
+import org.flaxo.common.NamedEntity
 
 internal data class GradlePlugin(val id: String,
                                  val version: String? = null,

@@ -10,8 +10,8 @@ import org.apache.commons.collections4.map.PassiveExpiringMap
 import org.apache.http.client.fluent.Form
 import org.apache.http.client.fluent.Request
 import org.apache.logging.log4j.LogManager
-import org.flaxo.common.ExternalService
-import org.flaxo.common.GithubAuthData
+import org.flaxo.common.data.ExternalService
+import org.flaxo.common.data.GithubAuthData
 import org.flaxo.rest.manager.response.Response
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.access.prepost.PreAuthorize

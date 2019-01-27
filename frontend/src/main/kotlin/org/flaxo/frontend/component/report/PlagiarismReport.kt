@@ -1,9 +1,9 @@
 package org.flaxo.frontend.component.report
 
 import kotlinx.html.js.onClickFunction
-import org.flaxo.common.PlagiarismMatch
-import org.flaxo.common.Solution
-import org.flaxo.common.Task
+import org.flaxo.common.data.PlagiarismMatch
+import org.flaxo.common.data.Solution
+import org.flaxo.common.data.Task
 import org.flaxo.frontend.component.PlagiarismModal
 import org.w3c.dom.HTMLIFrameElement
 import org.w3c.dom.events.Event

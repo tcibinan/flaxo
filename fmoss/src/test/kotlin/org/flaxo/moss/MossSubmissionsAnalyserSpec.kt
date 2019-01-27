@@ -4,7 +4,7 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import org.amshove.kluent.shouldEqual
 import org.amshove.kluent.shouldNotBeBlank
-import org.flaxo.core.lang.JavaLang
+import org.flaxo.common.lang.JavaLang
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on

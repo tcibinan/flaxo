@@ -1,7 +1,7 @@
 package org.flaxo.model.data
 
-import org.flaxo.common.CourseLifecycle
-import org.flaxo.common.ExternalService
+import org.flaxo.common.data.CourseLifecycle
+import org.flaxo.common.data.ExternalService
 import org.flaxo.model.CourseStateView
 import java.util.*
 import javax.persistence.ElementCollection

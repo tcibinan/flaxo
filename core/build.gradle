@@ -1,4 +1,0 @@
-plugins {
-    id "org.junit.platform.gradle.plugin"
-    id "org.jetbrains.kotlin.plugin.spring"
-}

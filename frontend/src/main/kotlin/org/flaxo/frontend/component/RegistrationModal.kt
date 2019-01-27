@@ -6,7 +6,7 @@ import kotlinx.html.InputType
 import kotlinx.html.classes
 import kotlinx.html.hidden
 import kotlinx.html.id
-import org.flaxo.common.User
+import org.flaxo.common.data.User
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.role
 import kotlinx.html.tabIndex
@@ -22,7 +22,6 @@ import react.RComponent
 import react.RProps
 import react.dom.button
 import react.dom.div
-import react.dom.form
 import react.dom.h5
 import react.dom.input
 import react.dom.small

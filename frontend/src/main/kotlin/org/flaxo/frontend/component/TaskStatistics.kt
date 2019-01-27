@@ -8,10 +8,10 @@ import org.flaxo.frontend.component.report.codeStyleReport
 import org.flaxo.frontend.component.report.deadlineReport
 import org.flaxo.frontend.component.report.plagiarismReport
 import org.flaxo.frontend.component.report.scoreInput
-import org.flaxo.common.Course
-import org.flaxo.common.Solution
-import org.flaxo.common.SolutionReview
-import org.flaxo.common.Task
+import org.flaxo.common.data.Course
+import org.flaxo.common.data.Solution
+import org.flaxo.common.data.SolutionReview
+import org.flaxo.common.data.Task
 import org.flaxo.frontend.component.report.approveCheckBox
 import org.flaxo.frontend.github.githubPullRequestUrl
 import react.RBuilder

@@ -1,6 +1,6 @@
 package org.flaxo.gradle
 
-import org.flaxo.cmd.CmdExecutor
+import org.flaxo.common.cmd.CmdExecutor
 import java.nio.file.Path
 import java.nio.file.Paths
 

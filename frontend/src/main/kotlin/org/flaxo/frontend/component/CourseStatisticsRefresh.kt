@@ -4,8 +4,8 @@ import kotlinx.coroutines.experimental.launch
 import kotlinx.html.js.onClickFunction
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.credentials
-import org.flaxo.common.Course
-import org.flaxo.common.CourseLifecycle
+import org.flaxo.common.data.Course
+import org.flaxo.common.data.CourseLifecycle
 import org.flaxo.frontend.Notifications
 import org.flaxo.frontend.client.FlaxoHttpException
 import react.RBuilder

@@ -8,10 +8,10 @@ import org.flaxo.codacy.Codacy
 import org.flaxo.codacy.CodacyClient
 import org.flaxo.codacy.CodacyException
 import org.flaxo.codacy.SimpleCodacy
-import org.flaxo.common.CodeStyleGrade
-import org.flaxo.common.ExternalService
-import org.flaxo.core.repeatUntil
-import org.flaxo.core.stringStackTrace
+import org.flaxo.common.data.CodeStyleGrade
+import org.flaxo.common.data.ExternalService
+import org.flaxo.common.repeatUntil
+import org.flaxo.common.stringStackTrace
 import org.flaxo.model.DataManager
 import org.flaxo.model.ModelException
 import org.flaxo.model.data.Course

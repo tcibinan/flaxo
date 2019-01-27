@@ -5,7 +5,7 @@ import kotlinx.html.hidden
 import kotlinx.html.id
 import kotlinx.html.role
 import kotlinx.html.tabIndex
-import org.flaxo.common.User
+import org.flaxo.common.data.User
 import react.RBuilder
 import react.dom.a
 import react.dom.b

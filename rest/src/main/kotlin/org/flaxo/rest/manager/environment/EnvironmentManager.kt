@@ -1,6 +1,6 @@
 package org.flaxo.rest.manager.environment
 
-import org.flaxo.core.env.Environment
+import org.flaxo.common.env.Environment
 
 /**
  * Environment manager.

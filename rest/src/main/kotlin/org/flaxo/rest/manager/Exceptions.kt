@@ -1,7 +1,7 @@
 package org.flaxo.rest.manager
 
-import org.flaxo.core.framework.TestingFramework
-import org.flaxo.core.lang.Language
+import org.flaxo.common.framework.TestingFramework
+import org.flaxo.common.lang.Language
 
 /**
  * Unsupported by flaxo testing framework exception.

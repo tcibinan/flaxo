@@ -1,10 +1,10 @@
 package org.flaxo.gradle
 
-import org.flaxo.core.env.Environment
-import org.flaxo.core.env.file.ByteArrayEnvironmentFile
-import org.flaxo.core.env.file.StringEnvironmentFile
-import org.flaxo.core.env.SimpleEnvironment
-import org.flaxo.core.env.file.EnvironmentFile
+import org.flaxo.common.env.Environment
+import org.flaxo.common.env.file.ByteArrayEnvironmentFile
+import org.flaxo.common.env.file.StringEnvironmentFile
+import org.flaxo.common.env.SimpleEnvironment
+import org.flaxo.common.env.file.EnvironmentFile
 
 internal fun gradleWrappers(): Environment = SimpleEnvironment(setOf(
         gradlew(),

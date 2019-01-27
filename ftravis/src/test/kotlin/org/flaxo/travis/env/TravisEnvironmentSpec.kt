@@ -1,7 +1,7 @@
 package org.flaxo.travis.env
 
-import org.flaxo.core.framework.JUnitTestingFramework
-import org.flaxo.core.lang.JavaLang
+import org.flaxo.common.framework.JUnitTestingFramework
+import org.flaxo.common.lang.JavaLang
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on

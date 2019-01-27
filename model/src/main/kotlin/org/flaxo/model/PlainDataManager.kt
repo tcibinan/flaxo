@@ -1,7 +1,7 @@
 package org.flaxo.model
 
-import org.flaxo.common.CodeStyleGrade
-import org.flaxo.common.ExternalService
+import org.flaxo.common.data.CodeStyleGrade
+import org.flaxo.common.data.ExternalService
 import org.flaxo.model.dao.BuildReportRepository
 import org.flaxo.model.dao.CodeStyleReportRepository
 import org.flaxo.model.dao.CommitRepository

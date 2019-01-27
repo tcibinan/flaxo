@@ -1,9 +1,9 @@
 package org.flaxo.rest.manager.environment
 
-import org.flaxo.core.env.Environment
-import org.flaxo.core.env.EnvironmentSupplier
-import org.flaxo.core.framework.TestingFramework
-import org.flaxo.core.lang.Language
+import org.flaxo.common.env.Environment
+import org.flaxo.common.env.EnvironmentSupplier
+import org.flaxo.common.framework.TestingFramework
+import org.flaxo.common.lang.Language
 import org.flaxo.rest.manager.IncompatibleLanguageException
 import org.flaxo.rest.manager.IncompatibleTestingFrameworkException
 import org.flaxo.rest.manager.NoDefaultBuildToolException

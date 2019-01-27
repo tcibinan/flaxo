@@ -1,7 +1,7 @@
 package org.flaxo.moss
 
-import org.flaxo.core.env.file.LocalFile
-import org.flaxo.core.lang.Language
+import org.flaxo.common.env.file.LocalFile
+import org.flaxo.common.lang.Language
 import java.nio.file.Path
 
 /**

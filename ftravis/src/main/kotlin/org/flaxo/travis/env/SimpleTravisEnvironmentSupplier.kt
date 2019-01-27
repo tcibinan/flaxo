@@ -1,14 +1,14 @@
 package org.flaxo.travis.env
 
-import org.flaxo.core.env.Environment
-import org.flaxo.core.env.file.EnvironmentFile
-import org.flaxo.core.env.EnvironmentSupplier
-import org.flaxo.core.env.SimpleEnvironment
-import org.flaxo.core.env.file.StringEnvironmentFile
-import org.flaxo.core.framework.TestingFramework
-import org.flaxo.core.lang.JavaLang
-import org.flaxo.core.lang.KotlinLang
-import org.flaxo.core.lang.Language
+import org.flaxo.common.env.Environment
+import org.flaxo.common.env.file.EnvironmentFile
+import org.flaxo.common.env.EnvironmentSupplier
+import org.flaxo.common.env.SimpleEnvironment
+import org.flaxo.common.env.file.StringEnvironmentFile
+import org.flaxo.common.framework.TestingFramework
+import org.flaxo.common.lang.JavaLang
+import org.flaxo.common.lang.KotlinLang
+import org.flaxo.common.lang.Language
 import org.flaxo.travis.TravisException
 import org.flaxo.travis.UnsupportedLanguageException
 

@@ -4,7 +4,7 @@ import react.RBuilder
 import react.RComponent
 import react.RProps
 import react.dom.*
-import org.flaxo.common.User
+import org.flaxo.common.data.User
 
 fun RBuilder.welcomeDesk(onLogin: (String, String, User) -> Unit) = child(WelcomeDesk::class) {
     attrs.onLogin = onLogin

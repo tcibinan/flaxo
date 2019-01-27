@@ -1,12 +1,11 @@
 package org.flaxo.rest.api
 
 import org.apache.logging.log4j.LogManager
-import org.flaxo.common.ExternalService
+import org.flaxo.common.data.ExternalService
 import org.flaxo.model.DataManager
 import org.flaxo.model.UserView
 import org.flaxo.rest.manager.response.Response
 import org.flaxo.rest.manager.response.ResponseManager
-import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.PutMapping

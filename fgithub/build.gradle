@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    compile project(':core')
+    compile project(':common-jvm')
     compile project(':git')
     compile project(':githubql')
 

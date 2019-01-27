@@ -1,16 +1,16 @@
 package org.flaxo.rest
 
-import org.flaxo.common.ExternalService
-import org.flaxo.core.env.EnvironmentSupplier
-import org.flaxo.core.framework.BashInputOutputTestingFramework
-import org.flaxo.core.framework.JUnitTestingFramework
-import org.flaxo.core.framework.SpekTestingFramework
-import org.flaxo.core.framework.TestingFramework
-import org.flaxo.core.lang.BashLang
-import org.flaxo.core.lang.JavaLang
-import org.flaxo.core.lang.KotlinLang
-import org.flaxo.core.lang.CppLang
-import org.flaxo.core.lang.Language
+import org.flaxo.common.data.ExternalService
+import org.flaxo.common.env.EnvironmentSupplier
+import org.flaxo.common.framework.BashInputOutputTestingFramework
+import org.flaxo.common.framework.JUnitTestingFramework
+import org.flaxo.common.framework.SpekTestingFramework
+import org.flaxo.common.framework.TestingFramework
+import org.flaxo.common.lang.BashLang
+import org.flaxo.common.lang.JavaLang
+import org.flaxo.common.lang.KotlinLang
+import org.flaxo.common.lang.CppLang
+import org.flaxo.common.lang.Language
 import org.flaxo.cpp.CppEnvironmentSupplier
 import org.flaxo.rest.manager.github.GithubValidationManager
 import org.flaxo.gradle.GradleBuildTool

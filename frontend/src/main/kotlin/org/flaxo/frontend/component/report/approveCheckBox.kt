@@ -8,9 +8,9 @@ import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.role
 import kotlinx.html.tabIndex
-import org.flaxo.common.Solution
-import org.flaxo.common.SolutionReview
-import org.flaxo.common.Task
+import org.flaxo.common.data.Solution
+import org.flaxo.common.data.SolutionReview
+import org.flaxo.common.data.Task
 import org.flaxo.frontend.checkBoxValue
 import org.flaxo.frontend.clickOnButton
 import org.flaxo.frontend.component.ariaHidden

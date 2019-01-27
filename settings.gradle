@@ -30,13 +30,11 @@ pluginManagement {
 
 rootProject.name = 'flaxo'
 
-include 'core'
 include 'model'
 include 'fgradle'
 include 'git'
 include 'fgithub'
 include 'rest'
-include 'cmd'
 include 'ftravis'
 include 'fmoss'
 include 'frontend'

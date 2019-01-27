@@ -2,7 +2,7 @@ package org.flaxo.github
 
 import org.amshove.kluent.shouldContain
 import org.amshove.kluent.shouldEqual
-import org.flaxo.core.env.file.StringEnvironmentFile
+import org.flaxo.common.env.file.StringEnvironmentFile
 import org.flaxo.github.graphql.GithubQL
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it

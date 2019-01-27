@@ -1,6 +1,6 @@
 package org.flaxo.travis.env
 
-import org.flaxo.core.env.EnvironmentSupplier
+import org.flaxo.common.env.EnvironmentSupplier
 
 /**
  * Travis environment supplier marker interface.

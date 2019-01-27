@@ -8,7 +8,7 @@ import org.flaxo.travis.TravisBuildStatus
 import org.flaxo.travis.TravisBuild
 import org.flaxo.travis.TravisPullRequestBuild
 import org.apache.logging.log4j.LogManager
-import org.flaxo.common.ExternalService
+import org.flaxo.common.data.ExternalService
 import org.flaxo.rest.manager.response.Response
 import org.flaxo.rest.manager.response.ResponseManager
 import org.springframework.beans.factory.annotation.Autowired

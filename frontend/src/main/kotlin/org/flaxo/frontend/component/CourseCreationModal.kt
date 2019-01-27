@@ -5,7 +5,7 @@ import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.client.FlaxoClient
-import org.flaxo.common.Language
+import org.flaxo.common.data.Language
 import kotlinx.html.ButtonType
 import kotlinx.html.InputType
 import kotlinx.html.classes
@@ -28,7 +28,6 @@ import react.RState
 import react.setState
 import react.dom.button
 import react.dom.div
-import react.dom.form
 import react.dom.h5
 import react.dom.input
 import react.dom.option

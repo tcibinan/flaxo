@@ -2,13 +2,13 @@ package org.flaxo.gradle
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
-import org.flaxo.cmd.CmdExecutor
-import org.flaxo.core.env.EnvironmentSupplier
-import org.flaxo.core.env.SimpleEnvironment
-import org.flaxo.core.framework.TestingFramework
-import org.flaxo.core.lang.JavaLang
-import org.flaxo.core.lang.KotlinLang
-import org.flaxo.core.lang.Language
+import org.flaxo.common.cmd.CmdExecutor
+import org.flaxo.common.env.EnvironmentSupplier
+import org.flaxo.common.env.SimpleEnvironment
+import org.flaxo.common.framework.TestingFramework
+import org.flaxo.common.lang.JavaLang
+import org.flaxo.common.lang.KotlinLang
+import org.flaxo.common.lang.Language
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.data_driven.Data3

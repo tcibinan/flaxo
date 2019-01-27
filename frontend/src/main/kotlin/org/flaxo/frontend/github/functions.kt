@@ -1,7 +1,7 @@
 package org.flaxo.frontend.github
 
-import org.flaxo.common.Course
-import org.flaxo.common.Solution
+import org.flaxo.common.data.Course
+import org.flaxo.common.data.Solution
 
 fun githubProfileUrl(nickname: String): String = "https://github.com/$nickname"
 
