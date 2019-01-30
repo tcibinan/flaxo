@@ -20,9 +20,9 @@ interface FlaxoClient {
     suspend fun createCourse(credentials: Credentials,
                              courseName: String,
                              description: String? = null,
-                             language: String,
-                             testingLanguage: String,
-                             testingFramework: String,
+                             language: String? = null,
+                             testingLanguage: String? = null,
+                             testingFramework: String? = null,
                              numberOfTasks: Int
     ): Course
 

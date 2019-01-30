@@ -52,9 +52,9 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
     override suspend fun createCourse(credentials: Credentials,
                                       courseName: String,
                                       description: String?,
-                                      language: String,
-                                      testingLanguage: String,
-                                      testingFramework: String,
+                                      language: String?,
+                                      testingLanguage: String?,
+                                      testingFramework: String?,
                                       numberOfTasks: Int
     ): Course =
             post {

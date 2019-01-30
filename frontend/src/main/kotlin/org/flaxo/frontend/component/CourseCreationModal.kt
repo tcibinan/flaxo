@@ -15,6 +15,7 @@ import kotlinx.html.role
 import kotlinx.html.tabIndex
 import org.flaxo.frontend.credentials
 import org.flaxo.frontend.Notifications
+import org.flaxo.frontend.checkBoxValue
 import org.flaxo.frontend.clickOnButton
 import org.flaxo.frontend.client.FlaxoHttpException
 import org.flaxo.frontend.inputValue
@@ -42,7 +43,8 @@ fun RBuilder.courseCreationModal(onCourseCreation: () -> Unit) = child(CourseCre
 }
 
 class CourseCreationModalProps(var onCourseCreation: () -> Unit) : RProps
-class CourseCreationModalState(var language: String? = null,
+class CourseCreationModalState(var generateEnvironment: Boolean = false,
+                               var language: String? = null,
                                var testingLanguage: String? = null,
                                var testingFramework: String? = null,
                                var flaxoLanguages: List<Language> = emptyList()
@@ -57,6 +59,8 @@ class CourseCreationModal(props: CourseCreationModalProps)
         private const val COURSE_NAME_INPUT_HELP_ID = "courseNameInputHelp"
         private const val COURSE_DESCRIPTION_INPUT_ID = "courseDescriptionInput"
         private const val COURSE_DESCRIPTION_INPUT_HELP_ID = "courseDescriptionInputHelp"
+        private const val GENERATE_ENVIRONMENT_CHECKBOX_ID = "generateEnvironmentCheckbox"
+        private const val GENERATE_ENVIRONMENT_CHECKBOX_HELP_ID = "generateEnvironmentCheckboxHelp"
         private const val LANGUAGE_SELECT_ID = "languageSelect"
         private const val LANGUAGE_SELECT_HELP_ID = "languageInputHelp"
         private const val TESTING_LANGUAGE_SELECT_ID = "testingLanguageSelect"
@@ -125,10 +129,13 @@ class CourseCreationModal(props: CourseCreationModalProps)
                     div("modal-body") {
                         courseNameInput()
                         courseDescriptionInput()
-                        languageSelect()
-                        testingLanguageSelect()
-                        testingFrameworkSelect()
                         tasksNumberInput()
+                        generateEnvironmentCheckbox()
+                        if (state.generateEnvironment) {
+                            languageSelect()
+                            testingLanguageSelect()
+                            testingFrameworkSelect()
+                        }
                     }
                     div("modal-footer") {
                         button(classes = "btn btn-primary", type = ButtonType.button) {
@@ -189,6 +196,22 @@ class CourseCreationModal(props: CourseCreationModalProps)
                 }
                 +"Course description won't be visible for students"
             }
+        }
+    }
+
+    private fun RBuilder.generateEnvironmentCheckbox() {
+        div("form-check") {
+            input {
+                attrs {
+                    id = GENERATE_ENVIRONMENT_CHECKBOX_ID
+                    classes = setOf("form-check-input")
+                    type = InputType.checkBox
+                    attributes["aria-describedby"] = GENERATE_ENVIRONMENT_CHECKBOX_HELP_ID
+                    defaultChecked = state.generateEnvironment
+                    onClickFunction = { setState { generateEnvironment = !generateEnvironment } }
+                }
+            }
+            label("Enable environment generation (experimental)", GENERATE_ENVIRONMENT_CHECKBOX_ID)
         }
     }
 
@@ -326,19 +349,20 @@ class CourseCreationModal(props: CourseCreationModalProps)
             try {
                 val courseName = validatedInputValue(COURSE_NAME_INPUT_ID)
                 val description = inputValue(COURSE_NAME_INPUT_ID)
-                val language = selectValue(LANGUAGE_SELECT_ID) ?: ""
-                val testingLanguage = selectValue(TESTING_LANGUAGE_SELECT_ID) ?: ""
-                val testingFramework = selectValue(TESTING_FRAMEWORK_SELECT_ID) ?: ""
+                val generateEnvironment = checkBoxValue(GENERATE_ENVIRONMENT_CHECKBOX_ID)
                 val numberOfTasks = validatedInputValue(NUMBER_OF_TASKS_INPUT_ID)?.toInt()
+                val language = selectValue(LANGUAGE_SELECT_ID)
+                val testingLanguage = selectValue(TESTING_LANGUAGE_SELECT_ID)
+                val testingFramework = selectValue(TESTING_FRAMEWORK_SELECT_ID)
                 if (courseName != null && numberOfTasks != null) {
                     clickOnButton(COURSE_CREATION_MODAL_CANCEL_ID)
                     Notifications.info("Course creation has been started.")
                     flaxoClient.createCourse(it,
                             courseName = courseName,
                             description = description,
-                            language = language,
-                            testingLanguage = testingLanguage,
-                            testingFramework = testingFramework,
+                            language = language?.filter { generateEnvironment },
+                            testingLanguage = testingLanguage?.filter { generateEnvironment },
+                            testingFramework = testingFramework?.filter { generateEnvironment },
                             numberOfTasks = numberOfTasks)
                     props.onCourseCreation()
                     Notifications.success("Course has been created.")
