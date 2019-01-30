@@ -15,6 +15,7 @@ import org.flaxo.git.Git
 import org.flaxo.git.Repository
 import org.flaxo.model.data.BuildReport
 import org.flaxo.model.data.Course
+import org.flaxo.model.data.CourseSettings
 import org.flaxo.model.data.Credentials
 import org.flaxo.model.data.Student
 import org.flaxo.model.data.Solution
@@ -63,7 +64,8 @@ object MossSubmissionsExtractorSpec : SubjectSpek<MossSubmissionExtractor>({
     val user = User(nickname = userName, githubId = userGithubId,
             credentials = Credentials(githubToken = "userGithubToken")
     )
-    val course = Course(name = courseName, user = user, language = language, students = setOf(student1, student2))
+    val settings = CourseSettings(language = language)
+    val course = Course(name = courseName, user = user, settings = settings, students = setOf(student1, student2))
     val solutions = student1Solutions + student2Solutions
     val task = Task(branch = branchName, course = course, solutions = solutions)
     val userRepository = mock<Repository> {

@@ -20,7 +20,8 @@ private fun RBuilder.servicesLabels(course: Course) =
                 .forEach { span(classes = "course-label badge badge-warning") { +it } }
 
 private fun RBuilder.techLabels(course: Course) =
-        setOf(course.language, course.testingLanguage, course.testingFramework)
+        setOf(course.settings.language, course.settings.testingLanguage, course.settings.testingFramework)
+                .filterNotNull()
                 .map { it.toLowerCase() }
                 .forEach { span(classes = "course-label badge btn-info") { +it } }
 

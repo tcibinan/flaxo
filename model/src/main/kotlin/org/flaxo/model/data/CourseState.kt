@@ -3,7 +3,7 @@ package org.flaxo.model.data
 import org.flaxo.common.data.CourseLifecycle
 import org.flaxo.common.data.ExternalService
 import org.flaxo.model.CourseStateView
-import java.util.*
+import java.util.Objects
 import javax.persistence.ElementCollection
 import javax.persistence.Entity
 import javax.persistence.FetchType

@@ -14,7 +14,6 @@ import org.flaxo.rest.manager.ValidationManager
 import org.flaxo.rest.manager.codacy.CodacyManager
 import org.flaxo.rest.manager.environment.EnvironmentManager
 import org.flaxo.rest.manager.github.GithubManager
-import org.flaxo.rest.manager.moss.MossManager
 import org.flaxo.rest.manager.response.Response
 import org.flaxo.rest.manager.response.ResponseManager
 import org.flaxo.rest.manager.travis.TravisManager
@@ -39,7 +38,6 @@ class CourseController(private val dataManager: DataManager,
                        private val travisManager: TravisManager,
                        private val codacyManager: CodacyManager,
                        private val githubManager: GithubManager,
-                       private val mossManager: MossManager,
                        private val courseValidations: Map<ExternalService, ValidationManager>
 ) {
 
@@ -52,9 +50,9 @@ class CourseController(private val dataManager: DataManager,
     @PostMapping("/import")
     fun import(@RequestParam repositoryName: String,
                @RequestParam(required = false) description: String?,
-               @RequestParam language: String,
-               @RequestParam testingLanguage: String,
-               @RequestParam testingFramework: String,
+               @RequestParam(required = false)  language: String?,
+               @RequestParam(required = false)  testingLanguage: String?,
+               @RequestParam(required = false)  testingFramework: String?,
                principal: Principal
     ): Response<CourseView> {
         logger.info("Trying to import course ${principal.name}/$repositoryName from an existing repository")
@@ -108,9 +106,9 @@ class CourseController(private val dataManager: DataManager,
     @Transactional
     fun createCourse(@RequestParam courseName: String,
                      @RequestParam(required = false) description: String?,
-                     @RequestParam language: String,
-                     @RequestParam testingLanguage: String,
-                     @RequestParam testingFramework: String,
+                     @RequestParam(required = false)  language: String?,
+                     @RequestParam(required = false)  testingLanguage: String?,
+                     @RequestParam(required = false)  testingFramework: String?,
                      @RequestParam numberOfTasks: Int,
                      principal: Principal
     ): Response<CourseView> {

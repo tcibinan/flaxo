@@ -3,7 +3,7 @@ package org.flaxo.model.data
 import org.flaxo.common.DateTime
 import org.flaxo.model.PlagiarismReportView
 import java.time.LocalDateTime
-import java.util.*
+import java.util.Objects
 import javax.persistence.CascadeType
 import javax.persistence.Entity
 import javax.persistence.FetchType

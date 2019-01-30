@@ -7,8 +7,6 @@ import org.flaxo.common.lang.Language
 import org.flaxo.rest.manager.IncompatibleLanguageException
 import org.flaxo.rest.manager.IncompatibleTestingFrameworkException
 import org.flaxo.rest.manager.NoDefaultBuildToolException
-import org.flaxo.rest.manager.UnsupportedLanguageException
-import org.flaxo.rest.manager.UnsupportedTestingFrameworkException
 
 /**
  * Environment manager implementation.
@@ -19,22 +17,25 @@ class SimpleEnvironmentManager(
         private val defaultBuildTools: Map<Language, EnvironmentSupplier>
 ) : EnvironmentManager {
 
-    override fun produceEnvironment(language: String,
-                                    testingLanguage: String,
-                                    testingFramework: String
+    override fun produceEnvironment(language: String?,
+                                    testingLanguage: String?,
+                                    testingFramework: String?
     ): Environment = produceEnvironment(
-            language = languages.find { it.name == language }
-                    ?: throw UnsupportedLanguageException(language),
-            testingLanguage = languages.find { it.name == testingLanguage }
-                    ?: throw UnsupportedLanguageException(testingLanguage),
+            language = languages.find { it.name == language },
+            testingLanguage = languages.find { it.name == testingLanguage },
             testingFramework = testingFrameworks.find { it.name == testingFramework }
-                    ?: throw UnsupportedTestingFrameworkException(testingFramework)
     )
 
-    private fun produceEnvironment(language: Language,
-                                   testingLanguage: Language,
-                                   testingFramework: TestingFramework
+    private fun produceEnvironment(language: Language?,
+                                   testingLanguage: Language?,
+                                   testingFramework: TestingFramework?
     ): Environment {
+        if (language == null
+                || testingLanguage == null
+                || testingFramework == null) {
+            return Environment.empty()
+        }
+
         testingLanguage shouldSuit language
         testingFramework shouldSuit testingLanguage
 

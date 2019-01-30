@@ -26,19 +26,9 @@ class Course(
         val createdDate: DateTime,
 
         /**
-         * Course main language.
+         * Course settings.
          */
-        val language: String,
-
-        /**
-         * Course testing language.
-         */
-        val testingLanguage: String,
-
-        /**
-         * Course testing framework.
-         */
-        val testingFramework: String,
+        val settings: CourseSettings,
 
         /**
          * Git repository url.

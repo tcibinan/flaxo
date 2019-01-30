@@ -1,6 +1,6 @@
 package org.flaxo.model.data
 
-import java.util.*
+import java.util.Objects
 import javax.persistence.Entity
 import javax.persistence.FetchType
 import javax.persistence.GeneratedValue

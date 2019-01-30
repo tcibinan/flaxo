@@ -1,7 +1,7 @@
 package org.flaxo.model.data
 
 import org.flaxo.model.SolutionView
-import java.util.*
+import java.util.Objects
 import javax.persistence.Entity
 import javax.persistence.FetchType
 import javax.persistence.GeneratedValue

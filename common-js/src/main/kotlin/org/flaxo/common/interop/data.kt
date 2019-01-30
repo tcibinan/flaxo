@@ -10,6 +10,7 @@ import org.flaxo.common.data.CourseLifecycle
 import org.flaxo.common.data.CourseState
 import org.flaxo.common.data.CourseStatistics
 import org.flaxo.common.DateTime
+import org.flaxo.common.data.CourseSettings
 import org.flaxo.common.data.ExternalService
 import org.flaxo.common.data.GithubAuthData
 import org.flaxo.common.data.Language
@@ -29,9 +30,11 @@ fun languageFromDynamic(languageJson: dynamic): Language =
 fun courseFromDynamic(courseJson: dynamic): Course =
         Course(name = courseJson.name,
                 state = courseStateFromDynamic(courseJson.state),
-                language = courseJson.language,
-                testingLanguage = courseJson.testingLanguage,
-                testingFramework = courseJson.testingFramework,
+                settings = CourseSettings(
+                        language = courseJson.settings.language,
+                        testingLanguage = courseJson.settings.testingLanguage,
+                        testingFramework = courseJson.settings.testingFramework
+                ),
                 description = courseJson.description,
                 createdDate = DateTime.fromDateTimeString(courseJson.createdDate as String),
                 tasks = (courseJson.tasks as Array<String>).toList(),

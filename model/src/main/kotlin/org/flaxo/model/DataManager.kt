@@ -52,9 +52,9 @@ interface DataManager {
      */
     fun createCourse(courseName: String,
                      description: String? = null,
-                     language: String,
-                     testingLanguage: String,
-                     testingFramework: String,
+                     language: String?,
+                     testingLanguage: String?,
+                     testingFramework: String?,
                      tasksPrefix: String,
                      numberOfTasks: Int,
                      owner: User
@@ -76,9 +76,9 @@ interface DataManager {
      */
     fun createCourse(courseName: String,
                      description: String? = null,
-                     language: String,
-                     testingLanguage: String,
-                     testingFramework: String,
+                     language: String?,
+                     testingLanguage: String?,
+                     testingFramework: String?,
                      tasksNames: List<String>,
                      owner: User
     ): Course

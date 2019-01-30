@@ -1,7 +1,7 @@
 package org.flaxo.model.data
 
 import org.flaxo.model.PlagiarismMatchView
-import java.util.*
+import java.util.Objects
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.Id

@@ -135,10 +135,10 @@ class DataServiceSpec : SubjectSpek<DataManager>({
             )
             val tasks = course.tasks
 
-            it("should contain the course") {
-                course.language shouldEqual language
-                course.testingLanguage shouldEqual testLanguage
-                course.testingFramework shouldEqual testingFramework
+            it("should have settings with all the specified technologies") {
+                course.settings.language shouldEqual language
+                course.settings.testingLanguage shouldEqual testLanguage
+                course.settings.testingFramework shouldEqual testingFramework
             }
 
             it("should create necessary amount of tasks") {

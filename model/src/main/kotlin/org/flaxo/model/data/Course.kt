@@ -3,7 +3,7 @@ package org.flaxo.model.data
 import org.flaxo.common.DateTime
 import org.flaxo.model.CourseView
 import java.time.LocalDateTime
-import java.util.*
+import java.util.Objects
 import javax.persistence.CascadeType
 import javax.persistence.Entity
 import javax.persistence.FetchType
@@ -31,11 +31,8 @@ data class Course(
 
         val createdDate: LocalDateTime = LocalDateTime.MIN,
 
-        val language: String = "",
-
-        val testingLanguage: String = "",
-
-        val testingFramework: String = "",
+        @OneToOne(cascade = [CascadeType.ALL], optional = false, fetch = FetchType.LAZY)
+        val settings: CourseSettings = CourseSettings(),
 
         val url: String = "",
 
@@ -57,9 +54,7 @@ data class Course(
             name = name,
             description = description,
             createdDate = DateTime(createdDate),
-            language = language,
-            testingLanguage = testingLanguage,
-            testingFramework = testingFramework,
+            settings = settings.view(),
             state = state.view(),
             user = user.view(),
             url = url,

@@ -15,9 +15,9 @@ abstract class AbstractLanguage(
          * You can't use a declaring language in the list of its testing languages.
          * Use [Itself] to represent the declaring language instead.
          */
-        private val testingLanguages: Set<Language>,
+        private val testingLanguages: Set<Language> = emptySet(),
 
-        testingFrameworks: Set<TestingFramework>
+        testingFrameworks: Set<TestingFramework> = emptySet()
 ) : Language {
 
     override val compatibleTestingLanguages: Set<Language>

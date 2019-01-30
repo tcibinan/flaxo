@@ -4,6 +4,7 @@ import org.flaxo.model.dao.BuildReportRepository
 import org.flaxo.model.dao.CodeStyleReportRepository
 import org.flaxo.model.dao.CommitRepository
 import org.flaxo.model.dao.CourseRepository
+import org.flaxo.model.dao.SettingsRepository
 import org.flaxo.model.dao.CredentialsRepository
 import org.flaxo.model.dao.PlagiarismReportRepository
 import org.flaxo.model.dao.StudentRepository
@@ -24,6 +25,7 @@ class JpaTestApplication {
     fun dataService(userRepository: UserRepository,
                     credentialsRepository: CredentialsRepository,
                     courseRepository: CourseRepository,
+                    settingsRepository: SettingsRepository,
                     taskRepository: TaskRepository,
                     studentRepository: StudentRepository,
                     solutionRepository: SolutionRepository,
@@ -35,6 +37,7 @@ class JpaTestApplication {
             userRepository,
             credentialsRepository,
             courseRepository,
+            settingsRepository,
             taskRepository,
             studentRepository,
             solutionRepository,

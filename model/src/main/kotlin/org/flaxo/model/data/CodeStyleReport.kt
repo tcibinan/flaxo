@@ -4,7 +4,7 @@ import org.flaxo.common.data.CodeStyleGrade
 import org.flaxo.common.DateTime
 import org.flaxo.model.CodeStyleReportView
 import java.time.LocalDateTime
-import java.util.*
+import java.util.Objects
 import javax.persistence.Entity
 import javax.persistence.FetchType
 import javax.persistence.GeneratedValue

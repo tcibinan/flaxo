@@ -7,10 +7,17 @@ import org.flaxo.common.framework.JUnitTestingFramework
 import org.flaxo.common.framework.SpekTestingFramework
 import org.flaxo.common.framework.TestingFramework
 import org.flaxo.common.lang.BashLang
+import org.flaxo.common.lang.CLang
 import org.flaxo.common.lang.JavaLang
 import org.flaxo.common.lang.KotlinLang
 import org.flaxo.common.lang.CppLang
+import org.flaxo.common.lang.HaskellLang
+import org.flaxo.common.lang.JavascriptLang
 import org.flaxo.common.lang.Language
+import org.flaxo.common.lang.PythonLang
+import org.flaxo.common.lang.RLang
+import org.flaxo.common.lang.RustLang
+import org.flaxo.common.lang.ScalaLang
 import org.flaxo.cpp.CppEnvironmentSupplier
 import org.flaxo.rest.manager.github.GithubValidationManager
 import org.flaxo.gradle.GradleBuildTool
@@ -40,7 +47,13 @@ class CoreConfiguration {
             JavaLang,
             KotlinLang,
             CppLang,
-            BashLang
+            CLang,
+            ScalaLang,
+            RLang,
+            PythonLang,
+            HaskellLang,
+            JavascriptLang,
+            RustLang
     )
 
     @Bean

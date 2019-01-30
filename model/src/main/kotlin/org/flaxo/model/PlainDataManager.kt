@@ -6,6 +6,7 @@ import org.flaxo.model.dao.BuildReportRepository
 import org.flaxo.model.dao.CodeStyleReportRepository
 import org.flaxo.model.dao.CommitRepository
 import org.flaxo.model.dao.CourseRepository
+import org.flaxo.model.dao.SettingsRepository
 import org.flaxo.model.dao.CredentialsRepository
 import org.flaxo.model.dao.PlagiarismReportRepository
 import org.flaxo.model.dao.StudentRepository
@@ -16,6 +17,7 @@ import org.flaxo.model.data.BuildReport
 import org.flaxo.model.data.CodeStyleReport
 import org.flaxo.model.data.Commit
 import org.flaxo.model.data.Course
+import org.flaxo.model.data.CourseSettings
 import org.flaxo.model.data.CourseState
 import org.flaxo.model.data.Credentials
 import org.flaxo.model.data.PlagiarismMatch
@@ -33,6 +35,7 @@ import java.time.LocalDateTime
 open class PlainDataManager(private val userRepository: UserRepository,
                             private val credentialsRepository: CredentialsRepository,
                             private val courseRepository: CourseRepository,
+                            private val settingsRepository: SettingsRepository,
                             private val taskRepository: TaskRepository,
                             private val studentRepository: StudentRepository,
                             private val solutionRepository: SolutionRepository,
@@ -63,9 +66,9 @@ open class PlainDataManager(private val userRepository: UserRepository,
     @Transactional
     override fun createCourse(courseName: String,
                               description: String?,
-                              language: String,
-                              testingLanguage: String,
-                              testingFramework: String,
+                              language: String?,
+                              testingLanguage: String?,
+                              testingFramework: String?,
                               tasksPrefix: String,
                               numberOfTasks: Int,
                               owner: User
@@ -81,14 +84,21 @@ open class PlainDataManager(private val userRepository: UserRepository,
 
     override fun createCourse(courseName: String,
                               description: String?,
-                              language: String,
-                              testingLanguage: String,
-                              testingFramework: String,
+                              language: String?,
+                              testingLanguage: String?,
+                              testingFramework: String?,
                               tasksNames: List<String>,
                               owner: User
     ): Course {
         getCourse(courseName, owner)
                 ?.also { throw EntityAlreadyExistsException("Course $owner/$courseName") }
+
+        val settings = settingsRepository
+                .save(CourseSettings(
+                        language = language,
+                        testingLanguage = testingLanguage,
+                        testingFramework = testingFramework
+                ))
 
         val course = courseRepository
                 .save(Course(
@@ -96,9 +106,7 @@ open class PlainDataManager(private val userRepository: UserRepository,
                         description = description,
                         url = "https://github.com/${owner.githubId}/$courseName",
                         createdDate = LocalDateTime.now(),
-                        language = language,
-                        testingLanguage = testingLanguage,
-                        testingFramework = testingFramework,
+                        settings = settings,
                         state = CourseState(),
                         user = owner
                 ))

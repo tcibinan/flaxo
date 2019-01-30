@@ -24,4 +24,9 @@ interface Environment {
      */
     fun file(path: String): EnvironmentFile? =
             files().firstOrNull { it.path == Paths.get(path) }
+
+    companion object {
+        private val empty = SimpleEnvironment(emptySet())
+        fun empty() = empty
+    }
 }

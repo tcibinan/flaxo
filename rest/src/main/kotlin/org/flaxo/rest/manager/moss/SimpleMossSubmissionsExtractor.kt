@@ -25,13 +25,18 @@ class SimpleMossSubmissionsExtractor(private val githubManager: GithubManager,
 
         val course = task.course
 
+        course.settings.language
+                ?: throw UnsupportedLanguageException("Course ${course.friendlyId} doesn\'t have language specified. " +
+                        "Plagiarism analysis cannot be performed.")
+
         val githubToken = user.credentials.githubToken
                 ?: throw ModelException("Github credentials wasn't found for user ${user.nickname}.")
 
         val git = githubManager.with(githubToken)
 
-        val language = languages.find { it.name == course.language }
-                ?: throw UnsupportedLanguageException("Language ${course.language} is not supported for analysis yet.")
+        val language = languages.find { it.name == course.settings.language }
+                ?: throw UnsupportedLanguageException("Language ${course.settings.language} is not supported " +
+                        "for plagiarism analysis yet.")
 
         logger.info("Aggregating ${task.friendlyId} task solutions to local file system")
 
