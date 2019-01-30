@@ -53,7 +53,8 @@ class CoreConfiguration {
             PythonLang,
             HaskellLang,
             JavascriptLang,
-            RustLang
+            RustLang,
+            BashLang
     )
 
     @Bean
