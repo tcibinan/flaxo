@@ -61,13 +61,27 @@ Run time environment variables.
 | TRAVIS_WEB_HOOK_URL | Travis web hook redirect url `$REST_URL/travis/hook`. |
 | MOSS_USER_ID | Moss system userid. |
 
-Using docker compose all flaxo images can be launched at once from `compose` directory
+Using docker compose all `latest` flaxo images can be launched at once from `compose` directory.
 
 ```bash
 docker-compose up
 ```
 
-To stop all containers at once from `compose` directory
+To launch flaxo images with `some` tag then additional environment variable `tag` shall be set.
+
+```bash
+export tag=some
+docker-compose up
+```
+
+To launch all images with the current flaxo version.
+
+```bash
+export tag=$(../../../gradlew -q -p ../../.. version)
+docker-compose up
+```
+
+To stop all containers at once from `compose` directory.
 
 ```bash
 docker-compose down
