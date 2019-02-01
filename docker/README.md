@@ -2,8 +2,8 @@
 
 Flaxo is a system which consists of several independent services:
 
-- backend server, `flaxo-backend`
-- web client server, `flaxo-frontend`
+- backend server, `flaxo/backend`
+- web client server, `flaxo/frontend`
 
 Each service has its own docker image with all required dependencies and configurations. But there is no need to
 start each service container independently because docker compose is configured to do so.
@@ -33,8 +33,8 @@ To build all images with `some` tag.
 ```
 
 It will generate the images like the following:
-- `flaxo-frontend:some`
-- `tcibinan/flaxo-frontend:some`
+- `flaxo/frontend:some`
+- `flaxo/backend:some`
 
 To build all images with the current flaxo version.
 

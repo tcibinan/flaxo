@@ -7,7 +7,5 @@ fi
 
 tag=$1
 
-docker build . -t flaxo-frontend:$tag \
+docker build . -t flaxo/frontend:$tag \
                --network=host
-
-docker tag flaxo-frontend:$tag tcibinan/flaxo-frontend:$tag

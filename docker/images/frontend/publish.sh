@@ -7,4 +7,4 @@ fi
 
 tag=$1
 
-docker push tcibinan/flaxo-frontend:$tag
+docker push flaxo/frontend:$tag
