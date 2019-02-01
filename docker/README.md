@@ -1,5 +1,13 @@
 # Flaxo deployment
 
+Flaxo is a system which consists of several independent services:
+
+- backend server, `flaxo-backend`
+- web client server, `flaxo-frontend`
+
+Each service has its own docker image with all required dependencies and configurations. But there is no need to
+start each service container independently because docker compose is configured to do so.
+
 ## Docker images
 
 Build time environment variables.
@@ -13,15 +21,32 @@ Build time environment variables.
 | GITHUB_USER2_TOKEN | Second account github access token. |
 | GITHUB_USER3_TOKEN | Third account github access token. |
 
-To build all images at once just run `./build.sh` under `images` directory.
+Several handy scripts are in the images directory:
 
-### flaxo-backend
+- `./build.sh` builds all flaxo images with *tag* specified as a first argument.
+- `./publish.sh` publishes all flaxo images to dockerhub by *tag* as a first argument.
 
-...
+To build all images with `some` tag.
 
-### flaxo-frontend
+```bash
+./build.sh some
+```
 
-...
+It will generate the images like the following:
+- `flaxo-frontend:some`
+- `tcibinan/flaxo-frontend:some`
+
+To build all images with the current flaxo version.
+
+```bash
+./build.sh $(../../../gradlew -q -p ../../.. version)
+```
+
+To publish all images with `some` tag.
+
+```bash
+./publish.sh some
+```
 
 ## Docker compose
 
