@@ -1,0 +1,19 @@
+version: '3'
+services:
+  backend:
+    image: flaxo-backend:latest
+    ports:
+      - 8080:8080
+    environment:
+      REST_URL:
+      GITHUB_ID:
+      GITHUB_SECRET:
+      GITHUB_WEB_HOOK_URL:
+      TRAVIS_WEB_HOOK_URL:
+      MOSS_USER_ID:
+  frontend:
+    image: flaxo-frontend:latest
+    ports:
+      - 8088:8088
+    environment:
+      REST_URL:
