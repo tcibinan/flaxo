@@ -1,0 +1,15 @@
+\copy credentials (ID,CODACY_TOKEN,GITHUB_TOKEN,PASSWORD,TRAVIS_TOKEN) from '/some/path/credentials.csv' DELIMITER ',' CSV HEADER;
+\copy flaxo_user (ID,GITHUB_ID,NICKNAME,CREDENTIALS_ID) from '/some/path/user.csv' DELIMITER ',' CSV HEADER;
+\copy course_state (ID,LIFECYCLE) from '/some/path/course_state.csv' DELIMITER ',' CSV HEADER;
+\copy course_settings (ID,LANGUAGE,TESTING_LANGUAGE,TESTING_FRAMEWORK) from '/some/path/course_settings.csv' DELIMITER ',' CSV HEADER;
+\copy course (ID,CREATED_DATE,DESCRIPTION,NAME,URL,STATE_ID,USER_ID,SETTINGS_ID) from '/some/path/course.csv' DELIMITER ',' CSV HEADER;
+\copy task (ID,BRANCH,DEADLINE,URL,COURSE_ID) from '/some/path/task.csv' DELIMITER ',' CSV HEADER;
+\copy student (ID,NICKNAME,COURSE_ID) from '/some/path/student.csv' DELIMITER ',' CSV HEADER;
+\copy solution (ID,SCORE,STUDENT_ID,TASK_ID,APPROVED) from '/some/path/solution.csv' DELIMITER ',' CSV HEADER;
+\copy build_report (ID,DATE,SUCCEED,SOLUTION_ID) from '/some/path/build_report.csv' DELIMITER ',' CSV HEADER;
+\copy code_style_report (ID,DATE,GRADE,SOLUTION_ID) from '/some/path/code_style_report.csv' DELIMITER ',' CSV HEADER;
+\copy commit (ID,DATE,SHA,SOLUTION_ID,PULL_REQUEST_ID) from '/some/path/commit.csv' DELIMITER ',' CSV HEADER;
+\copy course_state_activated_services (COURSE_STATE_ID,ACTIVATED_SERVICES) from '/some/path/course_state_activated_services.csv' DELIMITER ',' CSV HEADER;
+\copy plagiarism_match (ID,LINES,PERCENTAGE,STUDENT1,STUDENT2,URL) from '/some/path/plagiarism_match.csv' DELIMITER ',' CSV HEADER;
+\copy plagiarism_report (ID,DATE,URL,TASK_ID) from '/some/path/plagiarism_report.csv' DELIMITER ',' CSV HEADER;
+\copy plagiarism_report_matches (PLAGIARISM_REPORT_ID,MATCHES_ID) from '/some/path/plagiarism_report_matches.csv' DELIMITER ',' CSV HEADER;

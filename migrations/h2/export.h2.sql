@@ -1,0 +1,15 @@
+call CSVWRITE ( '/some/path/credentials.csv', 'SELECT ID,CODACY_TOKEN,GITHUB_TOKEN,PASSWORD,TRAVIS_TOKEN FROM credentials' );
+call CSVWRITE ( '/some/path/user.csv', 'SELECT ID,GITHUB_ID,NICKNAME,CREDENTIALS_ID FROM user' );
+call CSVWRITE ( '/some/path/course_state.csv', 'SELECT ID,LIFECYCLE FROM course_state' );
+call CSVWRITE ( '/some/path/course_settings.csv', 'SELECT ID,LANGUAGE,TESTING_LANGUAGE,TESTING_FRAMEWORK FROM course_settings' );
+call CSVWRITE ( '/some/path/course.csv', 'SELECT ID,CREATED_DATE,DESCRIPTION,NAME,URL,STATE_ID,USER_ID,SETTINGS_ID FROM course' );
+call CSVWRITE ( '/some/path/task.csv', 'SELECT ID,BRANCH,DEADLINE,URL,COURSE_ID FROM task' );
+call CSVWRITE ( '/some/path/student.csv', 'SELECT ID,NICKNAME,COURSE_ID FROM student' );
+call CSVWRITE ( '/some/path/solution.csv', 'SELECT ID,SCORE,STUDENT_ID,TASK_ID,APPROVED FROM solution' );
+call CSVWRITE ( '/some/path/build_report.csv', 'SELECT ID,DATE,SUCCEED,SOLUTION_ID FROM build_report' );
+call CSVWRITE ( '/some/path/code_style_report.csv', 'SELECT ID,DATE,GRADE,SOLUTION_ID FROM code_style_report' );
+call CSVWRITE ( '/some/path/commit.csv', 'SELECT ID,DATE,SHA,SOLUTION_ID,PULL_REQUEST_ID FROM commit' );
+call CSVWRITE ( '/some/path/course_state_activated_services.csv', 'SELECT COURSE_STATE_ID,ACTIVATED_SERVICES FROM course_state_activated_services' );
+call CSVWRITE ( '/some/path/plagiarism_match.csv', 'SELECT ID,LINES,PERCENTAGE,STUDENT1,STUDENT2,URL FROM plagiarism_match' );
+call CSVWRITE ( '/some/path/plagiarism_report.csv', 'SELECT ID,DATE,URL,TASK_ID FROM plagiarism_report' );
+call CSVWRITE ( '/some/path/plagiarism_report_matches.csv', 'SELECT PLAGIARISM_REPORT_ID,MATCHES_ID FROM plagiarism_report_matches' );
