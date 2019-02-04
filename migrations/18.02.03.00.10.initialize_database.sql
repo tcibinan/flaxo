@@ -122,3 +122,4 @@ CREATE TABLE plagiarism_report_matches
   matches_id           bigint NOT NULL REFERENCES plagiarism_match (id)
 );
 
+CREATE SEQUENCE hibernate_sequence START 100000;

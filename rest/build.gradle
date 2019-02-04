@@ -26,9 +26,9 @@ dependencies {
 
     // for post requests - could be replaced with git module in the future
     compile "org.apache.httpcomponents:fluent-hc:4.5.3"
-
-    // embedded database
-    compile "com.h2database:h2:1.4.196"
+    
+    // postgres database
+    compile "org.postgresql:postgresql:42.2.5.jre7"
 
     // apache collections
     compile "org.apache.commons:commons-collections4:4.1"

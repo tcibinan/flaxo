@@ -4,6 +4,8 @@ services:
     image: flaxo/backend:${tag:-latest}
     ports:
       - 8080:8080
+    volumes:
+      - ${logs_dir}:/opt/flaxo/logs
     environment:
       REST_URL:
       GITHUB_ID:
@@ -11,9 +13,22 @@ services:
       GITHUB_WEB_HOOK_URL:
       TRAVIS_WEB_HOOK_URL:
       MOSS_USER_ID:
+      POSTGRES_USER:
+      POSTGRES_PASSWORD:
+      POSTGRES_DB:
   frontend:
     image: flaxo/frontend:${tag:-latest}
     ports:
       - 8088:8088
     environment:
       REST_URL:
+  postgres:
+    image: postgres:11.1
+    ports:
+      - 5433:5432
+    volumes:
+      - ${data_dir}:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER:
+      POSTGRES_PASSWORD:
+      POSTGRES_DB:

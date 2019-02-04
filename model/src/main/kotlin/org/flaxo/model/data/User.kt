@@ -16,7 +16,7 @@ import javax.persistence.FetchType
  * User entity.
  */
 @Entity(name = "user")
-@Table(name = "user",
+@Table(name = "flaxo_user",
         uniqueConstraints = [
             UniqueConstraint(columnNames = ["nickname"]),
             UniqueConstraint(columnNames = ["githubId"])

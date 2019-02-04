@@ -4,6 +4,7 @@ Flaxo is a system which consists of several independent services:
 
 - backend server, `flaxo/backend`
 - web client server, `flaxo/frontend`
+- postgres database, `postgres`
 
 Each service has its own docker image with all required dependencies and configurations. But there is no need to
 start each service container independently because docker compose is configured to do so.
@@ -54,30 +55,36 @@ Run time environment variables.
 
 | Variable | Description |
 |---|---|
-| REST_URL | Outer rest url. |
-| GITHUB_ID | Github OAuth App id. |
-| GITHUB_SECRET | Github OAuth App secret. |
-| GITHUB_WEB_HOOK_URL | Github web hook redirect url `$REST_URL/github/hook`. |
-| TRAVIS_WEB_HOOK_URL | Travis web hook redirect url `$REST_URL/travis/hook`. |
-| MOSS_USER_ID | Moss system userid. |
+| REST_URL | Flaxo external rest endpoint which will be used by flaxo frontend and some integrated external services. F.e. `http://localhost:8080/rest`. |
+| GITHUB_ID | Your Github OAuth App id. |
+| GITHUB_SECRET | Your Github OAuth App secret. |
+| GITHUB_WEB_HOOK_URL | Flaxo github webhook url which will be used by github. It is `$REST_URL`/github/hook. |
+| TRAVIS_WEB_HOOK_URL |  Flaxo travis webhook url which will be used by travis. It is `$REST_URL`/travis/hook. |
+| MOSS_USER_ID | Moss system user id that can be retrieved using email registration process. More info can be found [here](https://theory.stanford.edu/~aiken/moss/). |
+| tag | Flaxo release to launch. |
+| data_dir | Local machine directory to store database files. |
+| logs_dir | Local machine directory to store flaxo logs. |
 
-Using docker compose all `latest` flaxo images can be launched at once from `compose` directory.
+All environment variables for docker compose run should be specified in `docker/compose/.env` file like the following:
 
 ```bash
-docker-compose up
+REST_URL=http://externalurl:8080/rest
+GITHUB_ID=githubid
+GITHUB_SECRET=githubsecret
+GITHUB_WEB_HOOK_URL=http://externalurl:8080/rest/github/hook
+TRAVIS_WEB_HOOK_URL=http://externalurl:8080/rest/travis/hook
+MOSS_USER_ID=mossuserid
+POSTGRES_USER=username
+POSTGRES_PASSWORD=password
+POSTGRES_DB=flaxo
+tag=latestrelease
+data_dir=/some/path/to/mount/containers/data
+logs_dir=/some/path/to/mount/containers/logs
 ```
 
-To launch flaxo images with `some` tag then additional environment variable `tag` shall be set.
+Using docker compose all flaxo images can be launched at once under `docker/compose` directory.
 
 ```bash
-export tag=some
-docker-compose up
-```
-
-To launch all images with the current flaxo version.
-
-```bash
-export tag=$(../../../gradlew -q -p ../../.. version)
 docker-compose up
 ```
 
