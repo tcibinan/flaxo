@@ -24,14 +24,14 @@ Flaxo aggregates results for each course task using different metrics including:
 - code style analysis
 - plagiarism analysis
 
-![course-task-statistics](screenshots/course-task.png?raw=true)
+![course-task-statistics](https://github.com/tcibinan/flaxo/raw/dev/screenshots/course-task.png)
 
 ### Course generation
 
 You can create a course from scratch just selecting languages and framework for testing.
 Flaxo knows how to create a git repository with a required gradle project.
 
-![course-creation-modal](screenshots/course-creation-modal.png?raw=true)
+![course-creation-modal](https://github.com/tcibinan/flaxo/raw/dev/screenshots/course-creation-modal.png)
 
 ### Statistics export in json, csv and tsv
 
@@ -41,17 +41,21 @@ All courses statistics could be retrieved in one of the supported formats: json,
 
 You can create unlimited amount of courses for free. And it is as easy as it can be.
 
-![all-courses](screenshots/all-courses.png?raw=true)
+![all-courses](https://github.com/tcibinan/flaxo/raw/dev/screenshots/all-courses.png)
 
 ## Course examples
 
 [Data structures on Java](https://github.com/tcibinan/data-structures-course) :ru:
 
+## Getting started
+
+To get your flaxo instance up and running you can follow the [Getting started wiki page](https://github.com/tcibinan/flaxo/wiki/Getting-started).
+
 ## Contributing
 
-Pleas feel free to open issues and ask questions. Contribution to Flaxo is more than welcome.
+Please feel free to open issues and ask questions. Contribution to Flaxo is more than welcome.
 Information on how to build flaxo from sources can be found in the corresponding 
-[wiki page](https://github.com/tcibinan/flaxo/wiki/Build-from-sources).
+[Build from sources wiki page](https://github.com/tcibinan/flaxo/wiki/Build-from-sources).
 
 ## What's inside
 
@@ -60,7 +64,7 @@ Information on how to build flaxo from sources can be found in the corresponding
 - Github
 - Travis CI
 - Codacy
-- [Moss](https://theory.stanford.edu/~aiken/moss/) plagiarism detection system
+- [Moss](https://theory.stanford.edu/~aiken/moss/)
 
 ### Back-end technologies
 
