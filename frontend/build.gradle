@@ -16,7 +16,7 @@ buildscript {
 
 apply plugin: 'kotlin-platform-js'
 apply plugin: 'org.jetbrains.kotlin.frontend'
-//apply plugin: 'kotlin-dce-js'
+apply plugin: 'kotlin-dce-js'
 
 repositories {
     mavenCentral()
@@ -53,6 +53,10 @@ kotlinFrontend {
         dependency('react-notifications', '1.4.3')
         dependency('url-loader', '1.1.1')
         dependency('string-replace-loader', '2.1.1')
+        
+        // Temporary workaround for the bug introduced in here
+        // https://github.com/vuejs/vue-cli/issues/3407#issuecomment-459985313
+        dependency('terser', '3.14')
     }
 
     webpackBundle {
