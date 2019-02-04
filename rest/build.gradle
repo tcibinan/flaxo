@@ -35,4 +35,7 @@ dependencies {
 
     // simple http client
     testCompile "khttp:khttp:0.1.0"
+
+    // database migrations
+    compile "org.flywaydb:flyway-core:5.2.4"
 }
