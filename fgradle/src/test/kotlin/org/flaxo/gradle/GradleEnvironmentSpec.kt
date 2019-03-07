@@ -80,16 +80,14 @@ object GradleEnvironmentSpec : SubjectSpek<GradleBuildTool>({
     }
 })
 
-class EnvironmentFileNotFound(message: String) : RuntimeException(message)
-
 private fun Environment.fileIsNotBlank(fileName: String): Boolean =
         file(fileName)
                 ?.content
                 ?.isNotBlank()
-                ?: throw EnvironmentFileNotFound("$fileName wasn't found in the environment")
+                ?: throw GradleException("$fileName wasn't found in the environment")
 
 private fun Environment.binaryFileIsNotEmpty(fileName: String): Boolean =
         file(fileName)
                 ?.binaryContent
                 ?.isNotEmpty()
-                ?: throw EnvironmentFileNotFound("$fileName wasn't found in the environment")
+                ?: throw GradleException("$fileName wasn't found in the environment")

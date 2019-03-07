@@ -10,7 +10,9 @@ import react.dom.p
 import react.dom.section
 import react.dom.small
 
-
+/**
+ * Adds course preview card.
+ */
 fun RBuilder.courseCard(course: Course, onSelect: (Course) -> Unit) = section(classes = "course-item") {
     div(classes = "card") {
         attrs {

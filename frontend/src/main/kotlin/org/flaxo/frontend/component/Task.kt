@@ -24,6 +24,9 @@ import react.dom.h5
 import react.dom.hr
 import react.setState
 
+/**
+ * Adds task.
+ */
 fun RBuilder.task(course: Course, task: Task) = child(org.flaxo.frontend.component.Task::class) {
     attrs {
         this.course = course
@@ -31,15 +34,11 @@ fun RBuilder.task(course: Course, task: Task) = child(org.flaxo.frontend.compone
     }
 }
 
-class TaskProps(var course: Course,
-                var task: Task
-) : RProps
+private class TaskProps(var course: Course, var task: Task) : RProps
 
-class TaskState(var scores: Map<String, Int>,
-                var reviews: Map<String, SolutionReview>
-) : RState
+private class TaskState(var scores: Map<String, Int>, var reviews: Map<String, SolutionReview>) : RState
 
-class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
+private class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
 
     private companion object {
         // TODO 16.08.18: Id can be non-unique between tabs

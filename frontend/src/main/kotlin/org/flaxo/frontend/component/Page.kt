@@ -11,11 +11,14 @@ import org.flaxo.frontend.wrapper.Cookies
 import org.flaxo.common.data.User
 import org.flaxo.frontend.Notifications
 
-class PageState(var user: User? = null) : RState
-
+/**
+ * Adds application main page.
+ */
 fun RBuilder.page() = child(Page::class) {}
 
-class Page : RComponent<EmptyProps, PageState>() {
+private class PageState(var user: User? = null) : RState
+
+private class Page : RComponent<EmptyProps, PageState>() {
 
     private companion object {
         const val USERNAME_COOKIE: String = "username"

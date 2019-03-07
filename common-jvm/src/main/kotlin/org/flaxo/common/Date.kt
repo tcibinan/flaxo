@@ -3,6 +3,9 @@ package org.flaxo.common
 import com.fasterxml.jackson.annotation.JsonValue
 import java.time.LocalDateTime
 
+/**
+ * JVM implementation of a multiplatform datetime.
+ */
 actual class DateTime(private val dateTime: LocalDateTime) {
 
     actual companion object {
@@ -15,6 +18,5 @@ actual class DateTime(private val dateTime: LocalDateTime) {
 
     actual fun toDateString(): String = toDateTimeString().substring(0, 10)
 
-    actual operator fun compareTo(other: DateTime): Int =
-            dateTime.compareTo(other.dateTime)
+    actual operator fun compareTo(other: DateTime): Int = dateTime.compareTo(other.dateTime)
 }

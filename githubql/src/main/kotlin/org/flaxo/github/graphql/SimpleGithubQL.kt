@@ -10,6 +10,11 @@ import org.flaxo.git.AddReviewRequest
 import org.flaxo.git.PullRequest
 import org.flaxo.git.PullRequestReview
 
+/**
+ * Basic Github GraphQL implementation.
+ *
+ * It uses apollo library to perform graphql calls and parse its results.
+ */
 class SimpleGithubQL(private val client: ApolloClient) : GithubQL {
 
     companion object {

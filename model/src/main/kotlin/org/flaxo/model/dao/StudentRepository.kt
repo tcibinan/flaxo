@@ -8,5 +8,9 @@ import org.springframework.data.repository.CrudRepository
  * Crud repository for student entity.
  */
 interface StudentRepository : CrudRepository<Student, Long> {
+
+    /**
+     * Finds all [course] students.
+     */
     fun findByCourse(course: Course): Set<Student>
 }

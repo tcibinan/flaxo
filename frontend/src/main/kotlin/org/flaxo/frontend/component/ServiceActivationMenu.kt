@@ -19,14 +19,18 @@ import react.dom.a
 import react.dom.button
 import react.dom.div
 
+/**
+ * Adds course services activation menu.
+ */
 fun RBuilder.serviceActivationMenu(course: Course) = child(ServiceActivationMenu::class) {
     attrs {
         this.course = course
     }
 }
 
-class ServiceActivationMenuProps(var course: Course) : RProps
-class ServiceActivationMenu(props: ServiceActivationMenuProps)
+private class ServiceActivationMenuProps(var course: Course) : RProps
+
+private class ServiceActivationMenu(props: ServiceActivationMenuProps)
     : RComponent<ServiceActivationMenuProps, EmptyState>(props) {
 
     private companion object {

@@ -11,6 +11,10 @@ import org.flaxo.git.PullRequestReview
 interface GithubQL {
 
     companion object {
+
+        /**
+         * Builds an instance of GithubQL with specified [githubToken].
+         */
         fun from(githubToken: String): GithubQL = DefaultGithubQL(githubToken)
     }
 

@@ -36,7 +36,6 @@ data class Student(
 
     override fun hashCode() = Objects.hash(id)
 
-    override fun equals(other: Any?) =
-            this::class.isInstance(other)
-                    && (other as Identifiable).id == id
+    override fun equals(other: Any?): Boolean = this::class.isInstance(other) && other is Identifiable && other.id == id
+
 }

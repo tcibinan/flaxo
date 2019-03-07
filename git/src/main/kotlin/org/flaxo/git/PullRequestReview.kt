@@ -3,7 +3,7 @@ package org.flaxo.git
 import java.time.LocalDateTime
 
 /**
- * Git pull request review
+ * Git pull request review.
  */
 interface PullRequestReview: GitPayload {
 

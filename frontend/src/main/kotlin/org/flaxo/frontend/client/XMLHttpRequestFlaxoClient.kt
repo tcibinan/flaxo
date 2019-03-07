@@ -16,12 +16,32 @@ import org.flaxo.common.interop.solutionFromDynamic
 import org.flaxo.common.interop.userFromDynamic
 import org.flaxo.frontend.Credentials
 
+/**
+ * Flaxo client implementation based on the [HttpRequest] client.
+ */
 class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
+
+    private companion object {
+        const val COURSE_NAME = "courseName"
+        const val TASK_BRANCH = "taskBranch"
+        const val NICKNAME = "nickname"
+        const val PASSWORD = "password"
+        const val DESCRIPTION = "description"
+        const val LANGUAGE = "language"
+        const val TESTING_LANGUAGE = "testingLanguage"
+        const val TESTING_FRAMEWORK = "testingFramework"
+        const val NUMBER_OF_TASKS = "numberOfTasks"
+        const val COURSE = "course"
+        const val OWNER = "owner"
+        const val DEADLINE = "deadline"
+        const val TOKEN = "token"
+        const val FORMAT = "format"
+    }
 
     override suspend fun registerUser(credentials: Credentials): User =
             post {
                 apiMethod = "/user/register"
-                params = mapOf("nickname" to credentials.username, "password" to credentials.password)
+                params = mapOf(NICKNAME to credentials.username, PASSWORD to credentials.password)
                 onSuccess = { response -> userFromDynamic(JSON.parse<Payload<dynamic>>(response).payload) }
                 errorMessage = "User registering failed."
             }
@@ -37,7 +57,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
     override suspend fun getUserCourses(credentials: Credentials, username: String): List<Course> =
             get {
                 apiMethod = "/course/all"
-                params = mapOf("nickname" to username)
+                params = mapOf(NICKNAME to username)
                 creds = credentials
                 onSuccess = { response ->
                     JSON.parse<Payload<Array<dynamic>>>(response)
@@ -59,12 +79,12 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
     ): Course =
             post {
                 apiMethod = "/course/create"
-                params = mapOf("courseName" to courseName,
-                        "description" to description,
-                        "language" to language,
-                        "testingLanguage" to testingLanguage,
-                        "testingFramework" to testingFramework,
-                        "numberOfTasks" to numberOfTasks)
+                params = mapOf(COURSE_NAME to courseName,
+                        DESCRIPTION to description,
+                        LANGUAGE to language,
+                        TESTING_LANGUAGE to testingLanguage,
+                        TESTING_FRAMEWORK to testingFramework,
+                        NUMBER_OF_TASKS to numberOfTasks)
                 creds = credentials
                 onSuccess = { response -> courseFromDynamic(JSON.parse<Payload<dynamic>>(response).payload) }
                 errorMessage = "Course creation failed."
@@ -89,7 +109,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
     ): CourseStatistics =
             get {
                 apiMethod = "/statistics"
-                params = mapOf("owner" to username, "course" to courseName)
+                params = mapOf(OWNER to username, COURSE to courseName)
                 creds = credentials
                 onSuccess = { response -> courseStatisticsFromDynamic(JSON.parse<Payload<dynamic>>(response).payload) }
                 errorMessage = "Course statistics retrieving failed."
@@ -98,7 +118,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
     override suspend fun startCourse(credentials: Credentials, courseName: String): Course =
             post {
                 apiMethod = "/course/activate"
-                params = mapOf("courseName" to courseName)
+                params = mapOf(COURSE_NAME to courseName)
                 creds = credentials
                 onSuccess = { response -> courseFromDynamic(JSON.parse<Payload<dynamic>>(response).payload) }
                 errorMessage = "Course starting failed."
@@ -111,7 +131,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
     override suspend fun analysePlagiarism(credentials: Credentials, courseName: String, task: String): Unit =
             post {
                 apiMethod = "/moss/analyse"
-                params = mapOf("courseName" to courseName, "taskBranch" to task)
+                params = mapOf(COURSE_NAME to courseName, TASK_BRANCH to task)
                 creds = credentials
                 errorMessage = "Plagiarism analysis failed."
             }
@@ -119,7 +139,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
     override suspend fun syncCourse(credentials: Credentials, courseName: String): Unit =
             post {
                 apiMethod = "/course/sync"
-                params = mapOf("courseName" to courseName)
+                params = mapOf(COURSE_NAME to courseName)
                 creds = credentials
                 errorMessage = "Course synchronization failed."
             }
@@ -131,7 +151,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
     ): Unit =
             post {
                 apiMethod = "/task/update/rules"
-                params = mapOf("courseName" to courseName, "taskBranch" to task, "deadline" to deadline)
+                params = mapOf(COURSE_NAME to courseName, TASK_BRANCH to task, DEADLINE to deadline)
                 creds = credentials
                 errorMessage = "Task rules updating failed."
             }
@@ -143,7 +163,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
     ): Unit =
             post {
                 apiMethod = "/task/update/scores"
-                params = mapOf("courseName" to courseName, "taskBranch" to task)
+                params = mapOf(COURSE_NAME to courseName, TASK_BRANCH to task)
                 creds = credentials
                 body = scores.map { (a, b) -> "\"$a\": $b" }
                         .joinToString(", ", "{", "}")
@@ -154,7 +174,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
     override suspend fun addCodacyToken(credentials: Credentials, codacyToken: String): Unit =
             put {
                 apiMethod = "/codacy/token"
-                params = mapOf("token" to codacyToken)
+                params = mapOf(TOKEN to codacyToken)
                 creds = credentials
                 errorMessage = "Codacy token addition failed."
             }
@@ -162,7 +182,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
     override suspend fun activateCodacy(credentials: Credentials, courseName: String): Unit =
             post {
                 apiMethod = "/course/activate/codacy"
-                params = mapOf("courseName" to courseName)
+                params = mapOf(COURSE_NAME to courseName)
                 creds = credentials
                 errorMessage = "Activating codacy for course failed."
             }
@@ -171,7 +191,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
             post {
                 apiMethod = "/course/activate/travis"
                 creds = credentials
-                params = mapOf("courseName" to courseName)
+                params = mapOf(COURSE_NAME to courseName)
                 errorMessage = "Activating travis for course failed."
             }
 
@@ -179,7 +199,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
             get<Any> {
                 apiMethod = "/statistics/download"
                 creds = credentials
-                params = mapOf("courseName" to courseName, "format" to format)
+                params = mapOf(COURSE_NAME to courseName, FORMAT to format)
                 onSuccess = { response -> response }
                 errorMessage = "Course statistics downloading failed."
             }.asDynamic()
@@ -199,7 +219,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
     ): List<Solution> =
             post {
                 apiMethod = "/task/update/approvals"
-                params = mapOf("courseName" to courseName, "taskBranch" to task)
+                params = mapOf(COURSE_NAME to courseName, TASK_BRANCH to task)
                 creds = credentials
                 // TODO 01.10.18: This is some common logic. It should be moved somewhere and become shared.
                 body = approvals

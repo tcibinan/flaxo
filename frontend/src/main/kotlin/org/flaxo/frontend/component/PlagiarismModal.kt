@@ -7,7 +7,6 @@ import kotlinx.html.role
 import kotlinx.html.tabIndex
 import react.RBuilder
 import react.RComponent
-import react.RProps
 import react.RState
 import react.dom.button
 import react.dom.div
@@ -15,18 +14,18 @@ import react.dom.h5
 import react.dom.iframe
 import react.dom.span
 
+const val PLAGIARISM_MODAL_ID = "plagiarismModal"
+const val PLAGIARISM_IFRAME_ID = "plagiarismIframe"
+
+/**
+ * Adds plagiarism visualization modal.
+ */
 fun RBuilder.plagiarismModal() = child(PlagiarismModal::class) { }
 
-class PlagiarismModalProps : RProps
-class PlagiarismModalState(var plagiarismUrl: String?) : RState
+private class PlagiarismModalState(var plagiarismUrl: String?) : RState
 
-class PlagiarismModal(props: PlagiarismModalProps)
-    : RComponent<PlagiarismModalProps, PlagiarismModalState>(props) {
-
-    companion object {
-        const val PLAGIARISM_MODAL_ID = "plagiarismModal"
-        const val PLAGIARISM_IFRAME_ID = "plagiarismIframe"
-    }
+private class PlagiarismModal(props: EmptyProps)
+    : RComponent<EmptyProps, PlagiarismModalState>(props) {
 
     override fun PlagiarismModalState.init() {
         plagiarismUrl = null
@@ -35,7 +34,7 @@ class PlagiarismModal(props: PlagiarismModalProps)
     override fun RBuilder.render() {
         div("modal fade plagiarism-modal") {
             attrs {
-                id = PlagiarismModal.PLAGIARISM_MODAL_ID
+                id = PLAGIARISM_MODAL_ID
                 tabIndex = "-1"
                 role = "dialog"
                 attributes["aria-hidden"] = "true"

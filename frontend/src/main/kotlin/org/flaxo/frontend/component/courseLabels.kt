@@ -5,6 +5,9 @@ import react.RBuilder
 import react.dom.div
 import react.dom.span
 
+/**
+ * Adds course labels.
+ */
 fun RBuilder.courseLabels(course: Course) = div {
     span(classes = "course-labels") {
         statusLabel(course)

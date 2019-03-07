@@ -4,6 +4,9 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 
+/**
+ * Local file system environment file.
+ */
 class LocalEnvironmentFile(override val localPath: Path,
                            override val path: Path = localPath
 ) : LocalFile {

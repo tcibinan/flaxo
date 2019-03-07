@@ -5,18 +5,24 @@ ENV NODEJS_HOME=/opt/nodejs
 
 # Git
 RUN apt-get update \
-    && apt-get install -y software-properties-common \
+    && apt-get install -y --no-install-recommends software-properties-common \
     && add-apt-repository -y ppa:git-core/ppa \
     && apt-get update \
-    && apt-get install -y git
+    && apt-get install -y --no-install-recommends git \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Java 8
 RUN apt-get update \
-    && apt-get install -y openjdk-8-jre openjdk-8-jdk
+    && apt-get install -y --no-install-recommends openjdk-8-jre openjdk-8-jdk \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Nodejs
 RUN apt-get update \
-    && apt-get install -y wget \
+    && apt-get install -y --no-install-recommends wget  \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
     && mkdir -p $NODEJS_HOME \
     && cd $NODEJS_HOME \
     && wget https://nodejs.org/dist/v10.15.1/node-v10.15.1-linux-x64.tar.xz \
@@ -29,17 +35,14 @@ RUN apt-get update \
 
 # Python 2
 RUN apt-get update \
-    && apt-get install -y python-minimal
+    && apt-get install -y --no-install-recommends python-minimal \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Flaxo
 RUN . /etc/profile.d/nodejs.sh \
-    && mkdir -p $FLAXO_HOME \
-    && cd $FLAXO_HOME \
-    && git clone https://github.com/tcibinan/flaxo.git \
-    && cp -r flaxo/* ./ \
-    && rm -r flaxo \
-    && ./gradlew frontend:npm-install
+    && git clone https://github.com/tcibinan/flaxo.git $FLAXO_HOME \
+    && $FLAXO_HOME/gradlew frontend:npm-install -p $FLAXO_HOME
 
-CMD cd $FLAXO_HOME \
-    && . /etc/profile.d/nodejs.sh \
-    && ./gradlew runFrontend
+CMD . /etc/profile.d/nodejs.sh \
+    && $FLAXO_HOME/gradlew runFrontend -x githubql:loadGithubScheme -p $FLAXO_HOME

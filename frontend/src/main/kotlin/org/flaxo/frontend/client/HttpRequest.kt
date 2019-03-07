@@ -8,17 +8,62 @@ import org.flaxo.frontend.wrapper.btoa
 import org.flaxo.frontend.wrapper.encodeURIComponent
 import org.w3c.xhr.XMLHttpRequest
 
+/**
+ * Http request handler class.
+ *
+ * It can be predefined to perform calls to a specific [url] and [apiMethod]. The response body is transformed
+ * to the required type [T] if the proper [onSuccess] function is provided as well.
+ */
 class HttpRequest<T> {
+
+    /**
+     * API root url.
+     */
     lateinit var url: String
+
+    /**
+     * Request HTTP method.
+     */
     lateinit var httpMethod: String
+
+    /**
+     * Request API method.
+     */
     lateinit var apiMethod: String
+
+    /**
+     * Credentials object.
+     */
     var creds: Credentials? = null
+
+    /**
+     * Error message if something went wrong.
+     */
     var errorMessage: String? = null
+
+    /**
+     * Response body transform function.
+     */
     lateinit var onSuccess: (String) -> T
+
+    /**
+     * Failure side-effect function.
+     */
     var onFailure: ((String?) -> Unit)? = null
+
+    /**
+     * Request parameters map
+     */
     var params: Map<String, Any?> = emptyMap()
+
+    /**
+     * Request body object.
+     */
     var body: Any? = null
 
+    /**
+     * Performs the configured http request and returns its body transformed to type [T].
+     */
     suspend fun execute(): T =
             with(performedRequest()) {
                 if (status.toInt() == 200) {

@@ -61,10 +61,10 @@ object GradleEnvironmentBuildingSpec : SubjectSpek<EnvironmentSupplier>({
             ).environment()
 
             val buildFile = environment.file(gradleBuildFile)
-                    ?: throw EnvironmentFileNotFound("$gradleBuildFile wasn't found in the environment")
+                    ?: throw GradleException("$gradleBuildFile wasn't found in the environment")
 
             val settingsFile = environment.file(gradleSettingsFile)
-                    ?: throw EnvironmentFileNotFound("$gradleSettingsFile wasn't found in the environment")
+                    ?: throw GradleException("$gradleSettingsFile wasn't found in the environment")
 
             it("should create buildable project") {
                 val tempDir: Path = Files.createTempDirectory("$language.$testingLanguage.$framework")

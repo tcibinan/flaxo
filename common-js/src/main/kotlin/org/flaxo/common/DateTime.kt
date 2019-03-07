@@ -1,5 +1,8 @@
 package org.flaxo.common
 
+/**
+ * JavaScript implementation of a multiplatform datetime.
+ */
 actual class DateTime
 private constructor(private val date: kotlin.js.Date) {
 
@@ -14,5 +17,8 @@ private constructor(private val date: kotlin.js.Date) {
 
     actual operator fun compareTo(other: DateTime): Int = date.getTime().compareTo(other.date.getTime())
 
+    /**
+     * Converts current date time to a human readable format string.
+     */
     fun toHumanReadableString(): String = this.date.toDateString()
 }

@@ -33,6 +33,9 @@ import react.dom.label
 import react.dom.span
 import kotlin.browser.document
 
+/**
+ * Adds solution approve checkbox.
+ */
 fun RBuilder.approveCheckBox(task: Task,
                              solution: Solution,
                              onReviewAddition: (String, SolutionReview) -> Unit

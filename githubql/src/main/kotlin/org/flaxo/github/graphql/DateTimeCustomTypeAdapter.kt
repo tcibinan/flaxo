@@ -8,7 +8,7 @@ internal class DateTimeCustomTypeAdapter : CustomTypeAdapter<ZonedDateTime> {
 
     override fun encode(value: ZonedDateTime): CustomTypeValue<Any> = CustomTypeValue.fromRawValue(value)
 
-    override fun decode(value: CustomTypeValue<Any>): ZonedDateTime =
-            ZonedDateTime.parse(value.value as String)
+    override fun decode(value: CustomTypeValue<Any>): ZonedDateTime = ZonedDateTime.parse(
+            value.value as? String ?: throw GithubQLException("There is no value to decode to date"))
 
 }

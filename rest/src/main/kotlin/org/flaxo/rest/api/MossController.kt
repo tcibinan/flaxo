@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
 
+/**
+ * Moss plagiarism analysis controller.
+ */
 @RestController
 @RequestMapping("/rest/moss")
 class MossController(private val dataManager: DataManager,

@@ -35,8 +35,10 @@ enum class TravisBuildStatus(
     UNSUPPORTED;
 
     companion object {
-        fun retrieve(status: String): TravisBuildStatus =
-                values().find { status in it.states }
-                        ?: UNSUPPORTED
+
+        /**
+         * Parses status string and returns a corresponding travis build status.
+         */
+        fun retrieve(status: String): TravisBuildStatus = values().find { status in it.states } ?: UNSUPPORTED
     }
 }

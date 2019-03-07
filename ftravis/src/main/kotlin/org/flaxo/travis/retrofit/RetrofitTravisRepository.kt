@@ -3,6 +3,9 @@ package org.flaxo.travis.retrofit
 import org.flaxo.travis.TravisRepository
 import org.flaxo.travis.TravisUser
 
+/**
+ * Travis repository POJO wrapper.
+ */
 class RetrofitTravisRepository(pojo: RetrofitTravisRepositoryPOJO)
     : TravisRepository {
 

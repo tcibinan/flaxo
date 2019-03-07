@@ -19,15 +19,18 @@ import react.dom.button
 import react.dom.div
 import kotlin.browser.document
 
+/**
+ * Adds course statistics download dropdown.
+ */
 fun RBuilder.courseStatisticsDownloadMenu(course: Course) = child(CourseStatisticsDownloadMenu::class) {
     attrs {
         this.course = course
     }
 }
 
-class CourseStatisticsDownloadMenuProps(var course: Course) : RProps
+private class CourseStatisticsDownloadMenuProps(var course: Course) : RProps
 
-class CourseStatisticsDownloadMenu(props: CourseStatisticsDownloadMenuProps)
+private class CourseStatisticsDownloadMenu(props: CourseStatisticsDownloadMenuProps)
     : RComponent<CourseStatisticsDownloadMenuProps, EmptyState>(props) {
 
     private companion object {

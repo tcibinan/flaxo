@@ -11,30 +11,34 @@ ENV FLAXO_HOME=/opt/flaxo
 
 # Git
 RUN apt-get update \
-    && apt-get install -y software-properties-common \
+    && apt-get install -y --no-install-recommends software-properties-common \
     && add-apt-repository -y ppa:git-core/ppa \
     && apt-get update \
-    && apt-get install -y git
+    && apt-get install -y --no-install-recommends git \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Java 8
 RUN apt-get update \
-    && apt-get install -y openjdk-8-jre openjdk-8-jdk
+    && apt-get install -y --no-install-recommends openjdk-8-jre openjdk-8-jdk \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Travis cli
 RUN apt-get update \
-    && apt-get install -y ruby-full gcc libffi-dev make \
+    && apt-get install -y --no-install-recommends ruby-full gcc libffi-dev make \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
     && gem install travis -v 1.8.8
 
 # Curl
 RUN apt-get update \
-    && apt-get install -y curl
+     && apt-get install -y --no-install-recommends curl \
+     && apt-get clean \
+     && rm -rf /var/lib/apt/lists/*
 
 # Flaxo
-RUN mkdir -p $FLAXO_HOME \
-    && cd $FLAXO_HOME \
-    && git clone https://github.com/tcibinan/flaxo.git \
-    && cp -r flaxo/* ./ \
-    && rm -r flaxo \
-    && ./gradlew rest:build
+RUN git clone https://github.com/tcibinan/flaxo.git $FLAXO_HOME \
+    && $FLAXO_HOME/gradlew rest:build -p $FLAXO_HOME
 
-CMD cd $FLAXO_HOME && ./gradlew bootRun -x githubql:loadGithubScheme
+CMD $FLAXO_HOME/gradlew bootRun -x githubql:loadGithubScheme -p $FLAXO_HOME

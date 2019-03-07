@@ -18,7 +18,9 @@ import react.dom.button
 import react.dom.div
 import react.setState
 
-
+/**
+ * Adds task rules menu.
+ */
 fun RBuilder.rules(course: Course, task: Task) = child(Rules::class) {
     attrs {
         this.course = course
@@ -26,12 +28,11 @@ fun RBuilder.rules(course: Course, task: Task) = child(Rules::class) {
     }
 }
 
-class RulesProps(var course: Course,
-                 var task: Task) : RProps
+private class RulesProps(var course: Course, var task: Task) : RProps
 
-class RulesState(var deadline: DateTime?) : RState
+private class RulesState(var deadline: DateTime?) : RState
 
-class Rules(props: RulesProps) : RComponent<RulesProps, RulesState>(props) {
+private class Rules(props: RulesProps) : RComponent<RulesProps, RulesState>(props) {
 
     private val flaxoClient: FlaxoClient
 

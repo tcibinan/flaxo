@@ -7,6 +7,9 @@ import javax.persistence.GeneratedValue
 import javax.persistence.Id
 import javax.persistence.Table
 
+/**
+ * Course settings entity.
+ */
 @Entity(name = "course_settings")
 @Table(name = "course_settings")
 class CourseSettings(
@@ -33,7 +36,5 @@ class CourseSettings(
 
     override fun hashCode() = Objects.hash(id)
 
-    override fun equals(other: Any?) =
-            this::class.isInstance(other)
-                    && (other as Identifiable).id == id
+    override fun equals(other: Any?): Boolean = this::class.isInstance(other) && other is Identifiable && other.id == id
 }

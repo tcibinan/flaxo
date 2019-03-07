@@ -27,14 +27,17 @@ import react.dom.input
 import react.dom.small
 import react.dom.span
 
+/**
+ * Adds authentication modal.
+ */
 fun RBuilder.authenticationModal(onLogin: (String, String, User) -> Unit) =
         child<AuthenticationModalProps, AuthenticationModal> {
             attrs.onLogin = onLogin
         }
 
-class AuthenticationModalProps(var onLogin: (String, String, User) -> Unit) : RProps
+private class AuthenticationModalProps(var onLogin: (String, String, User) -> Unit) : RProps
 
-class AuthenticationModal(props: AuthenticationModalProps)
+private class AuthenticationModal(props: AuthenticationModalProps)
     : RComponent<AuthenticationModalProps, EmptyState>(props) {
 
     private val flaxoClient: FlaxoClient = Container.flaxoClient

@@ -27,13 +27,16 @@ import react.dom.input
 import react.dom.small
 import react.dom.span
 
+/**
+ * Adds registration modal.
+ */
 fun RBuilder.registrationModal(onLogin: (String, String, User) -> Unit) = child(RegistrationModal::class) {
     attrs.onLogin = onLogin
 }
 
-class RegistrationModalProps(var onLogin: (String, String, User) -> Unit) : RProps
+private class RegistrationModalProps(var onLogin: (String, String, User) -> Unit) : RProps
 
-class RegistrationModal(props: RegistrationModalProps)
+private class RegistrationModal(props: RegistrationModalProps)
     : RComponent<RegistrationModalProps, EmptyState>(props) {
 
     private companion object {
@@ -51,8 +54,8 @@ class RegistrationModal(props: RegistrationModalProps)
         span {
             button(classes = "btn btn-primary", type = ButtonType.button) {
                 attrs {
-                    attributes["data-toggle"] = "modal"
-                    attributes["data-target"] = "#$REGISTRATION_MODAL_ID"
+                    dataToggle = "modal"
+                    dataTarget = "#$REGISTRATION_MODAL_ID"
                 }
                 +"Register"
             }
@@ -62,7 +65,7 @@ class RegistrationModal(props: RegistrationModalProps)
                 id = REGISTRATION_MODAL_ID
                 tabIndex = "-1"
                 role = "dialog"
-                attributes["aria-hidden"] = "true"
+                ariaHidden = true
             }
             div("modal-dialog") {
                 attrs {
@@ -75,8 +78,8 @@ class RegistrationModal(props: RegistrationModalProps)
                         }
                         button(classes = "close", type = ButtonType.button) {
                             attrs {
-                                attributes["data-dismiss"] = "modal"
-                                attributes["aria-label"] = "Close"
+                                dataDismiss = "modal"
+                                ariaLabel = "Close"
                             }
                             span {
                                 attrs {
@@ -98,7 +101,7 @@ class RegistrationModal(props: RegistrationModalProps)
                         button(classes = "btn btn-secondary", type = ButtonType.button) {
                             attrs {
                                 id = REGISTRATION_MODAL_CANCEL_ID
-                                attributes["data-dismiss"] = "modal"
+                                dataDismiss = "modal"
                             }
                             +"Cancel"
                         }
@@ -116,7 +119,7 @@ class RegistrationModal(props: RegistrationModalProps)
                     id = USERNAME_INPUT_ID
                     classes = setOf("form-control")
                     type = InputType.text
-                    attributes["aria-describedby"] = USERNAME_INPUT_HELP_ID
+                    ariaDescribedBy = USERNAME_INPUT_HELP_ID
                 }
             }
             small {
@@ -137,7 +140,7 @@ class RegistrationModal(props: RegistrationModalProps)
                     id = PASSWORD_INPUT_ID
                     classes = setOf("form-control")
                     type = InputType.password
-                    attributes["aria-describedby"] = PASSWORD_INPUT_HELP_ID
+                    ariaDescribedBy = PASSWORD_INPUT_HELP_ID
                 }
             }
             small {

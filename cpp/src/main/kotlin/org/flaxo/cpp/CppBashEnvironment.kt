@@ -37,7 +37,7 @@ private fun file(path: String): EnvironmentFile =
                 path = Paths.get(path)
         )
 
-fun travisYmlFile(travisWebHookUrl: String): EnvironmentFile =
+private fun travisYmlFile(travisWebHookUrl: String): EnvironmentFile =
         with(file(".travis.yml")) {
             StringEnvironmentFile(path, content.replace("\$TRAVIS_WEB_HOOK_URL", travisWebHookUrl))
         }

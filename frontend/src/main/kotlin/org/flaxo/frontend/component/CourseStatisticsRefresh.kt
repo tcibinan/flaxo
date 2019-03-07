@@ -12,7 +12,9 @@ import react.RBuilder
 import react.dom.button
 import react.dom.i
 
-
+/**
+ * Adds course statistics refresh button.
+ */
 fun RBuilder.courseStatisticsRefresh(course: Course) {
     button(classes = "btn btn-outline-info icon-btn") {
         attrs {

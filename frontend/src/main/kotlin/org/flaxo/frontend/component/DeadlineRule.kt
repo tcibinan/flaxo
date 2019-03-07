@@ -17,6 +17,9 @@ import react.dom.div
 import react.dom.input
 import react.dom.small
 
+/**
+ * Adds deadline configurations.
+ */
 fun RBuilder.deadlineRule(task: Task, onDeadlineChange: (DateTime?) -> Unit) =
         child(DeadlineRule::class) {
             attrs {
@@ -25,11 +28,9 @@ fun RBuilder.deadlineRule(task: Task, onDeadlineChange: (DateTime?) -> Unit) =
             }
         }
 
-class DeadlineRuleProps(var task: Task,
-                        var onDeadlineChange: (DateTime?) -> Unit
-) : RProps
+private class DeadlineRuleProps(var task: Task, var onDeadlineChange: (DateTime?) -> Unit) : RProps
 
-class DeadlineRule(props: DeadlineRuleProps) : RComponent<DeadlineRuleProps, EmptyState>(props) {
+private class DeadlineRule(props: DeadlineRuleProps) : RComponent<DeadlineRuleProps, EmptyState>(props) {
 
     private val deadlineRuleInputId = "deadlineRule-" + props.task.branch
     private val deadlineRuleHelpId = "deadlineRuleHelp-" + props.task.branch

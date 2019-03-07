@@ -15,6 +15,9 @@ import react.RComponent
 import react.RProps
 import react.dom.*
 
+/**
+ * Adds navigation bar.
+ */
 fun RBuilder.navigationBar(user: User, onLogout: () -> Unit, toCourses: () -> Unit) =
         child(NavigationBar::class) {
             attrs {
@@ -24,11 +27,12 @@ fun RBuilder.navigationBar(user: User, onLogout: () -> Unit, toCourses: () -> Un
             }
         }
 
-class NavigationBarProps(var user: User,
-                         var toCourses: () -> Unit,
-                         var onLogout: () -> Unit) : RProps
+private class NavigationBarProps(var user: User,
+                                 var toCourses: () -> Unit,
+                                 var onLogout: () -> Unit
+) : RProps
 
-class NavigationBar(props: NavigationBarProps) : RComponent<NavigationBarProps, EmptyState>(props) {
+private class NavigationBar(props: NavigationBarProps) : RComponent<NavigationBarProps, EmptyState>(props) {
 
     private companion object {
         const val NAVIGATION_BAR_COLLAPSIBLE_ID = "navbarSupportedContent"

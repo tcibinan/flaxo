@@ -1,6 +1,7 @@
 package org.flaxo.rest.api
 
 import org.apache.logging.log4j.LogManager
+import org.flaxo.common.FlaxoException
 import org.flaxo.common.data.SolutionReview
 import org.flaxo.git.AddReviewRequest
 import org.flaxo.git.PullRequestReviewStatus
@@ -155,7 +156,9 @@ class TaskController(private val dataManager: DataManager,
                     pullRequest.number == solutionPullRequestNumber(task, pullRequest.authorLogin)
                 }
                 .map { pullRequest ->
-                    val solutionReview = approvals[pullRequest.authorLogin]!!
+                    val pullRequestAuthor = pullRequest.authorLogin
+                    val solutionReview = approvals[pullRequestAuthor]
+                            ?: throw FlaxoException("Approval authored by $pullRequestAuthor wasn't found")
                     AddReviewRequest(
                             pullRequestId = pullRequest.id,
                             body = solutionReview.body,

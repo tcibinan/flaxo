@@ -4,7 +4,8 @@ import kotlinx.html.js.onClickFunction
 import org.flaxo.common.data.PlagiarismMatch
 import org.flaxo.common.data.Solution
 import org.flaxo.common.data.Task
-import org.flaxo.frontend.component.PlagiarismModal
+import org.flaxo.frontend.component.PLAGIARISM_IFRAME_ID
+import org.flaxo.frontend.component.PLAGIARISM_MODAL_ID
 import org.w3c.dom.HTMLIFrameElement
 import org.w3c.dom.events.Event
 import react.RBuilder
@@ -29,7 +30,7 @@ fun RBuilder.plagiarismReport(task: Task, solution: Solution) {
                         a {
                             attrs {
                                 attributes["data-toggle"] = "modal"
-                                attributes["data-target"] = "#${PlagiarismModal.PLAGIARISM_MODAL_ID}"
+                                attributes["data-target"] = "#$PLAGIARISM_MODAL_ID"
                                 onClickFunction = showPlagiarismVisualization(task)
                             }
                             +"${matches.size}  "
@@ -71,7 +72,7 @@ fun showPlagiarismVisualization(task: Task): (Event) -> Unit = { _ ->
         val links = allStudentMatches
     }
     val graphJson = JSON.stringify(graph)
-    document.getElementById(PlagiarismModal.PLAGIARISM_IFRAME_ID)
+    document.getElementById(PLAGIARISM_IFRAME_ID)
             ?.let { it as? HTMLIFrameElement }
             ?.src = "plagiarism/index.html?graph=$graphJson"
 }

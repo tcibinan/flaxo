@@ -18,6 +18,9 @@ import react.dom.div
 import react.dom.h2
 import react.dom.small
 
+/**
+ * Adds course section.
+ */
 fun RBuilder.course(selectedCourse: Course, onUpdate: () -> Unit, onDelete: () -> Unit) =
         child(org.flaxo.frontend.component.Course::class) {
             attrs {
@@ -27,11 +30,9 @@ fun RBuilder.course(selectedCourse: Course, onUpdate: () -> Unit, onDelete: () -
             }
         }
 
-class CourseProps(var course: Course,
-                  var onUpdate: () -> Unit,
-                  var onDelete: () -> Unit) : RProps
+private class CourseProps(var course: Course, var onUpdate: () -> Unit, var onDelete: () -> Unit) : RProps
 
-class Course(props: CourseProps) : RComponent<CourseProps, EmptyState>(props) {
+private class Course(props: CourseProps) : RComponent<CourseProps, EmptyState>(props) {
 
     private val flaxoClient: FlaxoClient
 

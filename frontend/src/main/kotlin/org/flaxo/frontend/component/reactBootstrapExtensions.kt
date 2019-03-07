@@ -34,3 +34,4 @@ var <T : Tag> RDOMBuilder<T>.ariaLabel: String by StringReactProperty("aria-labe
 var <T : Tag> RDOMBuilder<T>.ariaLabelledBy: String by StringReactProperty("aria-labelledby")
 var <T : Tag> RDOMBuilder<T>.ariaDescribedBy: String by StringReactProperty("aria-describedby")
 var <T : Tag> RDOMBuilder<T>.ariaHidden: Boolean by BooleanReactProperty("aria-hidden")
+var <T : Tag> RDOMBuilder<T>.defaultValue: String by StringReactProperty("defaultValue")

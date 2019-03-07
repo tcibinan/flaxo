@@ -36,41 +36,43 @@ import react.dom.select
 import react.dom.small
 import react.dom.span
 
+const val COURSE_CREATION_MODAL_ID = "courseCreationModal"
+private const val COURSE_NAME_INPUT_ID = "courseNameInput"
+private const val COURSE_NAME_INPUT_HELP_ID = "courseNameInputHelp"
+private const val COURSE_DESCRIPTION_INPUT_ID = "courseDescriptionInput"
+private const val COURSE_DESCRIPTION_INPUT_HELP_ID = "courseDescriptionInputHelp"
+private const val GENERATE_ENVIRONMENT_CHECKBOX_ID = "generateEnvironmentCheckbox"
+private const val GENERATE_ENVIRONMENT_CHECKBOX_HELP_ID = "generateEnvironmentCheckboxHelp"
+private const val LANGUAGE_SELECT_ID = "languageSelect"
+private const val LANGUAGE_SELECT_HELP_ID = "languageInputHelp"
+private const val TESTING_LANGUAGE_SELECT_ID = "testingLanguageSelect"
+private const val TESTING_LANGUAGE_SELECT_HELP_ID = "testingLanguageSelectHelp"
+private const val TESTING_FRAMEWORK_SELECT_ID = "testingFrameworkSelect"
+private const val TESTING_FRAMEWORK_SELECT_HELP_ID = "testingFrameworkSelectHelp"
+private const val NUMBER_OF_TASKS_INPUT_ID = "numberOfTasksInput"
+private const val NUMBER_OF_TASKS_INPUT_HELP_ID = "numberOfTasksInputHelp"
+private const val COURSE_CREATION_MODAL_CANCEL_ID = "courseCreationModalCancel"
+
+/**
+ * Adds course creation modal.
+ */
 fun RBuilder.courseCreationModal(onCourseCreation: () -> Unit) = child(CourseCreationModal::class) {
     attrs {
         this.onCourseCreation = onCourseCreation
     }
 }
 
-class CourseCreationModalProps(var onCourseCreation: () -> Unit) : RProps
-class CourseCreationModalState(var generateEnvironment: Boolean = false,
-                               var language: String? = null,
-                               var testingLanguage: String? = null,
-                               var testingFramework: String? = null,
-                               var flaxoLanguages: List<Language> = emptyList()
+private class CourseCreationModalProps(var onCourseCreation: () -> Unit) : RProps
+
+private class CourseCreationModalState(var generateEnvironment: Boolean = false,
+                                       var language: String? = null,
+                                       var testingLanguage: String? = null,
+                                       var testingFramework: String? = null,
+                                       var flaxoLanguages: List<Language> = emptyList()
 ) : RState
 
-class CourseCreationModal(props: CourseCreationModalProps)
+private class CourseCreationModal(props: CourseCreationModalProps)
     : RComponent<CourseCreationModalProps, CourseCreationModalState>(props) {
-
-    companion object {
-        const val COURSE_CREATION_MODAL_ID = "courseCreationModal"
-        private const val COURSE_NAME_INPUT_ID = "courseNameInput"
-        private const val COURSE_NAME_INPUT_HELP_ID = "courseNameInputHelp"
-        private const val COURSE_DESCRIPTION_INPUT_ID = "courseDescriptionInput"
-        private const val COURSE_DESCRIPTION_INPUT_HELP_ID = "courseDescriptionInputHelp"
-        private const val GENERATE_ENVIRONMENT_CHECKBOX_ID = "generateEnvironmentCheckbox"
-        private const val GENERATE_ENVIRONMENT_CHECKBOX_HELP_ID = "generateEnvironmentCheckboxHelp"
-        private const val LANGUAGE_SELECT_ID = "languageSelect"
-        private const val LANGUAGE_SELECT_HELP_ID = "languageInputHelp"
-        private const val TESTING_LANGUAGE_SELECT_ID = "testingLanguageSelect"
-        private const val TESTING_LANGUAGE_SELECT_HELP_ID = "testingLanguageSelectHelp"
-        private const val TESTING_FRAMEWORK_SELECT_ID = "testingFrameworkSelect"
-        private const val TESTING_FRAMEWORK_SELECT_HELP_ID = "testingFrameworkSelectHelp"
-        private const val NUMBER_OF_TASKS_INPUT_ID = "numberOfTasksInput"
-        private const val NUMBER_OF_TASKS_INPUT_HELP_ID = "numberOfTasksInputHelp"
-        private const val COURSE_CREATION_MODAL_CANCEL_ID = "courseCreationModalCancel"
-    }
 
     private val flaxoClient: FlaxoClient
 
@@ -102,7 +104,7 @@ class CourseCreationModal(props: CourseCreationModalProps)
                 id = COURSE_CREATION_MODAL_ID
                 tabIndex = "-1"
                 role = "dialog"
-                attributes["aria-hidden"] = "true"
+                ariaHidden = true
             }
             div("modal-dialog") {
                 attrs {
@@ -115,8 +117,8 @@ class CourseCreationModal(props: CourseCreationModalProps)
                         }
                         button(classes = "close", type = ButtonType.button) {
                             attrs {
-                                attributes["data-dismiss"] = "modal"
-                                attributes["aria-label"] = "Close"
+                                dataDismiss = "modal"
+                                ariaLabel = "Close"
                             }
                             span {
                                 attrs {
@@ -147,7 +149,7 @@ class CourseCreationModal(props: CourseCreationModalProps)
                         button(classes = "btn btn-secondary", type = ButtonType.button) {
                             attrs {
                                 id = COURSE_CREATION_MODAL_CANCEL_ID
-                                attributes["data-dismiss"] = "modal"
+                                dataDismiss = "modal"
                             }
                             +"Cancel"
                         }
@@ -165,7 +167,7 @@ class CourseCreationModal(props: CourseCreationModalProps)
                     id = COURSE_NAME_INPUT_ID
                     classes = setOf("form-control")
                     type = InputType.text
-                    attributes["aria-describedby"] = COURSE_NAME_INPUT_HELP_ID
+                    ariaDescribedBy = COURSE_NAME_INPUT_HELP_ID
                 }
             }
             small {
@@ -186,7 +188,7 @@ class CourseCreationModal(props: CourseCreationModalProps)
                     id = COURSE_DESCRIPTION_INPUT_ID
                     classes = setOf("form-control")
                     type = InputType.text
-                    attributes["aria-describedby"] = COURSE_DESCRIPTION_INPUT_HELP_ID
+                    ariaDescribedBy = COURSE_DESCRIPTION_INPUT_HELP_ID
                 }
             }
             small {
@@ -206,7 +208,7 @@ class CourseCreationModal(props: CourseCreationModalProps)
                     id = GENERATE_ENVIRONMENT_CHECKBOX_ID
                     classes = setOf("form-check-input")
                     type = InputType.checkBox
-                    attributes["aria-describedby"] = GENERATE_ENVIRONMENT_CHECKBOX_HELP_ID
+                    ariaDescribedBy = GENERATE_ENVIRONMENT_CHECKBOX_HELP_ID
                     defaultChecked = state.generateEnvironment
                     onClickFunction = { setState { generateEnvironment = !generateEnvironment } }
                 }
@@ -242,8 +244,8 @@ class CourseCreationModal(props: CourseCreationModalProps)
                                     ?: "not found"
                         }
                     }
-                    attributes["defaultValue"] = state.language ?: ""
-                    attributes["aria-describedby"] = LANGUAGE_SELECT_HELP_ID
+                    defaultValue = state.language ?: ""
+                    ariaDescribedBy = LANGUAGE_SELECT_HELP_ID
                 }
                 state.flaxoLanguages
                         .filter { it.compatibleTestingLanguages.isNotEmpty() }
@@ -277,8 +279,8 @@ class CourseCreationModal(props: CourseCreationModalProps)
                                     ?: "not found"
                         }
                     }
-                    attributes["defaultValue"] = state.testingLanguage ?: ""
-                    attributes["aria-describedby"] = TESTING_LANGUAGE_SELECT_HELP_ID
+                    defaultValue = state.testingLanguage ?: ""
+                    ariaDescribedBy = TESTING_LANGUAGE_SELECT_HELP_ID
                 }
                 state.flaxoLanguages
                         .find { it.name == state.language }
@@ -304,8 +306,8 @@ class CourseCreationModal(props: CourseCreationModalProps)
                 attrs {
                     id = TESTING_FRAMEWORK_SELECT_ID
                     classes = setOf("form-control")
-                    attributes["defaultValue"] = state.testingFramework ?: ""
-                    attributes["aria-describedby"] = TESTING_FRAMEWORK_SELECT_HELP_ID
+                    defaultValue = state.testingFramework ?: ""
+                    ariaDescribedBy = TESTING_FRAMEWORK_SELECT_HELP_ID
                 }
 
                 state.flaxoLanguages
@@ -331,7 +333,7 @@ class CourseCreationModal(props: CourseCreationModalProps)
                     id = NUMBER_OF_TASKS_INPUT_ID
                     classes = setOf("form-control")
                     type = InputType.number
-                    attributes["aria-describedby"] = NUMBER_OF_TASKS_INPUT_HELP_ID
+                    ariaDescribedBy = NUMBER_OF_TASKS_INPUT_HELP_ID
                 }
             }
             small {

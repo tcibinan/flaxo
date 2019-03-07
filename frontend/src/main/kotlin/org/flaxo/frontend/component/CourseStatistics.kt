@@ -20,6 +20,9 @@ import react.dom.li
 import react.dom.ul
 import react.setState
 
+/**
+ * Adds course summary statistics table.
+ */
 fun RBuilder.courseStatistics(course: Course) =
         child(org.flaxo.frontend.component.CourseStatistics::class) {
             attrs {
@@ -27,10 +30,11 @@ fun RBuilder.courseStatistics(course: Course) =
             }
         }
 
-class CourseStatisticsProps(var course: Course) : RProps
-class CourseStatisticsState(var courseStatistics: CourseStatistics?) : RState
+private class CourseStatisticsProps(var course: Course) : RProps
 
-class CourseStatistics(props: CourseStatisticsProps)
+private class CourseStatisticsState(var courseStatistics: CourseStatistics?) : RState
+
+private class CourseStatistics(props: CourseStatisticsProps)
     : RComponent<CourseStatisticsProps, CourseStatisticsState>(props) {
 
     private companion object {

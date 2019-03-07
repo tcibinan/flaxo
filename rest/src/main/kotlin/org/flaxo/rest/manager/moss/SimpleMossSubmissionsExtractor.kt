@@ -12,6 +12,12 @@ import org.flaxo.rest.manager.UnsupportedLanguageException
 import org.flaxo.rest.manager.github.GithubManager
 import java.nio.file.Files
 
+/**
+ * Basic Moss submissions extractor.
+ *
+ * It scans all repositories (both students and tutor) and retrieves files that suits analysis programming language
+ * by extension. After all files are collected locally then a submission is returned.
+ */
 class SimpleMossSubmissionsExtractor(private val githubManager: GithubManager,
                                      private val languages: List<Language>
 ) : MossSubmissionExtractor {

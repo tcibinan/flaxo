@@ -6,13 +6,16 @@ import react.RProps
 import react.dom.*
 import org.flaxo.common.data.User
 
+/**
+ * Adds Flaxo welcome desk.
+ */
 fun RBuilder.welcomeDesk(onLogin: (String, String, User) -> Unit) = child(WelcomeDesk::class) {
     attrs.onLogin = onLogin
 }
 
-class WelcomeDeskProps(var onLogin: (String, String, User) -> Unit) : RProps
+private class WelcomeDeskProps(var onLogin: (String, String, User) -> Unit) : RProps
 
-class WelcomeDesk : RComponent<WelcomeDeskProps, EmptyState>() {
+private class WelcomeDesk : RComponent<WelcomeDeskProps, EmptyState>() {
 
     override fun RBuilder.render() {
         div("jumbotron") {

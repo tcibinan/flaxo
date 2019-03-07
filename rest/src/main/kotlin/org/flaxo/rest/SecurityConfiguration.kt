@@ -21,8 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 class SecurityConfiguration {
 
     @Bean
-    fun userDetailsService(dataManager: DataManager): UserDetailsService =
-            UserDetailsServiceImpl(dataManager)
+    fun userDetailsService(dataManager: DataManager): UserDetailsService = UserDetailsServiceImpl(dataManager)
 
     @Bean
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()

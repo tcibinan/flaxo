@@ -27,6 +27,9 @@ import react.dom.th
 import react.dom.thead
 import react.dom.tr
 
+/**
+ * Adds task statistics table.
+ */
 fun RBuilder.taskStatistics(course: Course,
                             task: Task,
                             onSolutionScoreUpdate: (String, Int) -> Unit,
@@ -40,13 +43,13 @@ fun RBuilder.taskStatistics(course: Course,
     }
 }
 
-class TaskStatisticsProps(var course: Course,
-                          var task: Task,
-                          var onStudentScoreUpdate: (String, Int) -> Unit,
-                          var onReviewAddition: (String, SolutionReview) -> Unit
+private class TaskStatisticsProps(var course: Course,
+                                  var task: Task,
+                                  var onStudentScoreUpdate: (String, Int) -> Unit,
+                                  var onReviewAddition: (String, SolutionReview) -> Unit
 ) : RProps
 
-class TaskStatistics(props: TaskStatisticsProps) : RComponent<TaskStatisticsProps, EmptyState>(props) {
+private class TaskStatistics(props: TaskStatisticsProps) : RComponent<TaskStatisticsProps, EmptyState>(props) {
 
     override fun RBuilder.render() {
         div(classes = "task-results") {

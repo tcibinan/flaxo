@@ -4,6 +4,9 @@ import org.flaxo.travis.TravisBuildStatus
 import org.flaxo.travis.TravisPullRequestBuild
 import java.time.LocalDateTime
 
+/**
+ * Travis build POJO wrapper.
+ */
 class RetrofitTravisBuild(pojo: RetrofitTravisBuildPOJO) : TravisPullRequestBuild {
 
     // Workaround on repository minimal representation

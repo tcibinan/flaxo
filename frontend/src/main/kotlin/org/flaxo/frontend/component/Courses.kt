@@ -21,6 +21,9 @@ import react.dom.button
 import react.dom.div
 import react.dom.p
 
+/**
+ * Adds courses list.
+ */
 fun RBuilder.courses(user: User, onLogout: () -> Unit) = child(Courses::class) {
     attrs {
         this.user = user
@@ -28,12 +31,11 @@ fun RBuilder.courses(user: User, onLogout: () -> Unit) = child(Courses::class) {
     }
 }
 
-class CoursesProps(var user: User, var onLogout: () -> Unit) : RProps
+private class CoursesProps(var user: User, var onLogout: () -> Unit) : RProps
 
-class CoursesState(var courses: List<Course> = emptyList(),
-                   var selectedCourse: Course? = null) : RState
+private class CoursesState(var courses: List<Course> = emptyList(), var selectedCourse: Course? = null) : RState
 
-class Courses(props: CoursesProps) : RComponent<CoursesProps, CoursesState>(props) {
+private class Courses(props: CoursesProps) : RComponent<CoursesProps, CoursesState>(props) {
 
     private val flaxoClient: FlaxoClient
 
@@ -57,7 +59,7 @@ class Courses(props: CoursesProps) : RComponent<CoursesProps, CoursesState>(prop
                 button(classes = "btn btn-outline-primary btn-block", type = ButtonType.button) {
                     attrs {
                         attributes["data-toggle"] = "modal"
-                        attributes["data-target"] = "#${CourseCreationModal.COURSE_CREATION_MODAL_ID}"
+                        attributes["data-target"] = "#$COURSE_CREATION_MODAL_ID"
                         disabled = !props.user.isGithubAuthorized
                     }
                     +"Create course"

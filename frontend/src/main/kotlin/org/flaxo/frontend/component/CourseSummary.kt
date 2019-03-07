@@ -11,7 +11,6 @@ import org.flaxo.frontend.github.githubProfileUrl
 import react.RBuilder
 import react.RComponent
 import react.RProps
-import react.RState
 import react.dom.RDOMBuilder
 import react.dom.a
 import react.dom.button
@@ -24,6 +23,9 @@ import react.dom.th
 import react.dom.thead
 import react.dom.tr
 
+/**
+ * Adds course summary.
+ */
 fun RBuilder.courseSummary(course: Course, courseStatistics: CourseStatistics) =
         child(CourseSummary::class) {
             attrs {
@@ -32,12 +34,9 @@ fun RBuilder.courseSummary(course: Course, courseStatistics: CourseStatistics) =
             }
         }
 
-class CourseSummaryProps(var course: Course,
-                         var courseStatistics: CourseStatistics) : RProps
+private class CourseSummaryProps(var course: Course, var courseStatistics: CourseStatistics) : RProps
 
-class CourseSummaryState : RState
-
-class CourseSummary(props: CourseSummaryProps) : RComponent<CourseSummaryProps, CourseSummaryState>(props) {
+private class CourseSummary(props: CourseSummaryProps) : RComponent<CourseSummaryProps, EmptyState>(props) {
 
     override fun RBuilder.render() {
         div(classes = "course-summary") {

@@ -7,7 +7,7 @@ executable=$output_dir/test
 
 echo "Compiling everything under $src_dir"
 mkdir -p $output_dir
-`cd $src_dir && g++ * -o $executable -std=c++11`
+$(cd $src_dir && g++ * -o $executable -std=c++11)
 
 if [ $? != 0 ]
 then

@@ -11,7 +11,7 @@ module.exports["module"]["rules"].push({
 var execSync = require('child_process').execSync;
 var projectVersion = execSync("../../gradlew -q -p ../.. version").toString();
 
-module.exports["module"]["rules"].push({
+module.exports['module']['rules'].push({
     test: /\.js$/,
     loader: 'string-replace-loader',
     options: {
