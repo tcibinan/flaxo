@@ -20,7 +20,7 @@ RUN apt-get update \
 
 # Nodejs
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends wget  \
+    && apt-get install -y --no-install-recommends wget xz-utils \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p $NODEJS_HOME \
