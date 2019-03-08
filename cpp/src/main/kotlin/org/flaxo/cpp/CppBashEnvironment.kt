@@ -39,5 +39,5 @@ private fun file(path: String): EnvironmentFile =
 
 private fun travisYmlFile(travisWebHookUrl: String): EnvironmentFile =
         with(file(".travis.yml")) {
-            StringEnvironmentFile(path, content.replace("\$TRAVIS_WEB_HOOK_URL", travisWebHookUrl))
+            StringEnvironmentFile(path, content.replace("{{flaxo.travis.hook.url}}", travisWebHookUrl))
         }

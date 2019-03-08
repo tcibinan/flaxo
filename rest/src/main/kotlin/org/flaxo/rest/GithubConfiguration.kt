@@ -16,7 +16,7 @@ class GithubConfiguration {
 
     @Bean
     fun githubManager(dataManager: DataManager,
-                      @Value("\${GITHUB_WEB_HOOK_URL}") githubWebHookUrl: String
+                      @Value("\${flaxo.github.hook.url}") githubWebHookUrl: String
     ): GithubManager =
             SimpleGithubManager(dataManager, githubWebHookUrl)
 

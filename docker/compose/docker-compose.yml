@@ -1,7 +1,7 @@
 version: '3'
 services:
   backend:
-    image: flaxo/backend:${tag:-latest}
+    image: flaxo/backend:${tag}
     ports:
       - 8080:8080
     volumes:
@@ -10,16 +10,15 @@ services:
       REST_URL:
       GITHUB_ID:
       GITHUB_SECRET:
-      GITHUB_WEB_HOOK_URL:
-      TRAVIS_WEB_HOOK_URL:
       MOSS_USER_ID:
       POSTGRES_USER:
       POSTGRES_PASSWORD:
       POSTGRES_DB:
+      postgres_host: postgres:5433
   frontend:
-    image: flaxo/frontend:${tag:-latest}
+    image: flaxo/frontend:${tag}
     ports:
-      - 8088:8088
+      - 80:8088
     environment:
       REST_URL:
   postgres:

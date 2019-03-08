@@ -65,13 +65,13 @@ class CoreConfiguration {
     )
 
     @Bean
-    fun travisEnvironmentSupplier(@Value("\${TRAVIS_WEB_HOOK_URL}") travisWebHookUrl: String
+    fun travisEnvironmentSupplier(@Value("\${flaxo.travis.hook.url}") travisWebHookUrl: String
     ): TravisEnvironmentSupplier =
             SimpleTravisEnvironmentSupplier(travisWebHookUrl = travisWebHookUrl)
 
     @Bean
     fun defaultEnvironmentSupplier(travisEnvironmentSupplier: TravisEnvironmentSupplier,
-                                   @Value("\${TRAVIS_WEB_HOOK_URL}") travisWebHookUrl: String
+                                   @Value("\${flaxo.travis.hook.url}") travisWebHookUrl: String
     ): Map<Language, EnvironmentSupplier> =
             mapOf(
                     JavaLang to GradleBuildTool(travisEnvironmentSupplier),
