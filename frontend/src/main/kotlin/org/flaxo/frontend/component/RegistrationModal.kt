@@ -1,5 +1,6 @@
 package org.flaxo.frontend.component
 
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import kotlinx.html.ButtonType
 import kotlinx.html.InputType
@@ -95,7 +96,7 @@ private class RegistrationModal(props: RegistrationModalProps)
                     }
                     div("modal-footer") {
                         button(classes = "btn btn-primary", type = ButtonType.button) {
-                            attrs.onClickFunction = { launch { registerUser() } }
+                            attrs.onClickFunction = { GlobalScope.launch { registerUser() } }
                             +"Register"
                         }
                         button(classes = "btn btn-secondary", type = ButtonType.button) {

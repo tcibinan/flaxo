@@ -1,5 +1,6 @@
 package org.flaxo.frontend.component
 
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import kotlinx.html.ButtonType
 import org.flaxo.frontend.Container
@@ -42,7 +43,7 @@ private class Courses(props: CoursesProps) : RComponent<CoursesProps, CoursesSta
     init {
         flaxoClient = Container.flaxoClient
         state = CoursesState()
-        launch { updateCoursesList() }
+        GlobalScope.launch { updateCoursesList() }
     }
 
     override fun RBuilder.render() {
@@ -66,13 +67,13 @@ private class Courses(props: CoursesProps) : RComponent<CoursesProps, CoursesSta
                 }
             }
         } else {
-            course(selectedCourse, onUpdate = { launch { updateCoursesList() } }, onDelete = ::deselectCourse)
+            course(selectedCourse, onUpdate = { GlobalScope.launch { updateCoursesList() } }, onDelete = ::deselectCourse)
         }
         githubModal(props.user)
         travisModal(props.user)
         codacyModal(props.user)
         plagiarismModal()
-        courseCreationModal(onCourseCreation = { launch { updateCoursesList() } })
+        courseCreationModal(onCourseCreation = { GlobalScope.launch { updateCoursesList() } })
     }
 
     private suspend fun updateCoursesList() {

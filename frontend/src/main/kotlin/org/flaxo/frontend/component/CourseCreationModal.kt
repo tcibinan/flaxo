@@ -1,5 +1,6 @@
 package org.flaxo.frontend.component
 
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
@@ -79,7 +80,7 @@ private class CourseCreationModal(props: CourseCreationModalProps)
     init {
         state = CourseCreationModalState()
         flaxoClient = Container.flaxoClient
-        launch {
+        GlobalScope.launch {
             flaxoClient.getAvailableLanguages().also { languages ->
                 setState {
                     val defaultLanguage = languages.firstOrNull()
@@ -142,7 +143,7 @@ private class CourseCreationModal(props: CourseCreationModalProps)
                     div("modal-footer") {
                         button(classes = "btn btn-primary", type = ButtonType.button) {
                             attrs {
-                                onClickFunction = { launch { createCourse() } }
+                                onClickFunction = { GlobalScope.launch { createCourse() } }
                             }
                             +"Create"
                         }

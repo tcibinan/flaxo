@@ -1,5 +1,6 @@
 package org.flaxo.frontend.component.services
 
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import kotlinx.html.ButtonType
 import kotlinx.html.hidden
@@ -72,7 +73,7 @@ fun RBuilder.githubModal(user: User) =
                         } else {
                             button(classes = "btn btn-primary") {
                                 attrs {
-                                    onClickFunction = { launch { authWithGithub() } }
+                                    onClickFunction = { GlobalScope.launch { authWithGithub() } }
                                 }
                                 +"Sing in with Github"
                             }

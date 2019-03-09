@@ -1,5 +1,6 @@
 package org.flaxo.frontend.component
 
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import kotlinx.html.id
 import kotlinx.html.js.onClickFunction
@@ -62,7 +63,7 @@ private class CourseStatisticsDownloadMenu(props: CourseStatisticsDownloadMenuPr
                     attrs { attributes["aria-labelledby"] = DOWNLOAD_AS_DROPDOWN_ID }
                     supportedFormats.forEach { format ->
                         a(classes = "dropdown-item", href = "#") {
-                            attrs.onClickFunction = { launch { downloadAs(format) } }
+                            attrs.onClickFunction = { GlobalScope.launch { downloadAs(format) } }
                             +format
                         }
                     }

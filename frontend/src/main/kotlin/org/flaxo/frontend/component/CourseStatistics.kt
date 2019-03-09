@@ -1,5 +1,6 @@
 package org.flaxo.frontend.component
 
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import kotlinx.html.id
 import kotlinx.html.role
@@ -55,7 +56,7 @@ private class CourseStatistics(props: CourseStatisticsProps)
         state.apply {
             courseStatistics = null
         }
-        launch {
+        GlobalScope.launch {
             credentials?.also {
                 try {
                     val courseStatistics =

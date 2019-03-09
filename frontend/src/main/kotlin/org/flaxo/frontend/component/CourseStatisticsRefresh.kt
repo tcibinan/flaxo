@@ -1,5 +1,6 @@
 package org.flaxo.frontend.component
 
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import kotlinx.html.js.onClickFunction
 import org.flaxo.frontend.Container
@@ -18,7 +19,7 @@ import react.dom.i
 fun RBuilder.courseStatisticsRefresh(course: Course) {
     button(classes = "btn btn-outline-info icon-btn") {
         attrs {
-            onClickFunction = { launch { synchronizeCourseStatistics(course) } }
+            onClickFunction = { GlobalScope.launch { synchronizeCourseStatistics(course) } }
             disabled = course.state.lifecycle == CourseLifecycle.INIT
         }
         i(classes = "material-icons") { +"refresh" }

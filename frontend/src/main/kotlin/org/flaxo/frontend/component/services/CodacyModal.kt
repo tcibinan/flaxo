@@ -1,5 +1,6 @@
 package org.flaxo.frontend.component.services
 
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import kotlinx.html.ButtonType
 import kotlinx.html.hidden
@@ -81,7 +82,7 @@ fun RBuilder.codacyModal(user: User) =
                             }
                         }
                         button(classes = "btn btn-primary") {
-                            attrs.onClickFunction = { launch { updateCodacyToken() } }
+                            attrs.onClickFunction = { GlobalScope.launch { updateCodacyToken() } }
                             +"Update codacy token"
                         }
                     }

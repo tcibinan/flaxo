@@ -1,5 +1,6 @@
 package org.flaxo.frontend.component
 
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import kotlinx.html.ButtonType
 import kotlinx.html.id
@@ -64,7 +65,7 @@ private class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
                             ?.also { a(classes = "card-link", href = it.url) { +"Plagiarism report" } }
                     button(classes = "btn btn-outline-primary task-btn", type = ButtonType.button) {
                         attrs {
-                            onClickFunction = { launch { analysePlagiarism() } }
+                            onClickFunction = { GlobalScope.launch { analysePlagiarism() } }
                             disabled = !props.course.isRunning()
                                     || !props.task.hasEnoughSolutionsForPlagiarismAnalysis()
                         }
@@ -73,8 +74,8 @@ private class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
                     button(classes = "btn btn-outline-primary task-btn") {
                         attrs {
                             onClickFunction = {
-                                launch { saveScores() }
-                                launch { saveApprovals() }
+                                GlobalScope.launch { saveScores() }
+                                GlobalScope.launch { saveApprovals() }
                             }
                             disabled = state.scores.isEmpty() && state.reviews.isEmpty()
                         }

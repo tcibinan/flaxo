@@ -1,5 +1,6 @@
 package org.flaxo.frontend.component
 
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import kotlinx.html.js.onClickFunction
 import org.flaxo.frontend.Container
@@ -95,7 +96,7 @@ private class AuthenticationModal(props: AuthenticationModalProps)
                         }
                         div("modal-footer") {
                             button(classes = "btn btn-primary", type = ButtonType.button) {
-                                attrs.onClickFunction = { launch { authorizeUser() } }
+                                attrs.onClickFunction = { GlobalScope.launch { authorizeUser() } }
                                 +"Login"
                             }
                             button(classes = "btn btn-secondary", type = ButtonType.button) {

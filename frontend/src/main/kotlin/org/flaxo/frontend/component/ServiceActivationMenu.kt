@@ -1,5 +1,6 @@
 package org.flaxo.frontend.component
 
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import kotlinx.html.classes
 import kotlinx.html.id
@@ -67,7 +68,7 @@ private class ServiceActivationMenu(props: ServiceActivationMenuProps)
                                 in props.course.state.activatedServices -> classes = setOf("dropdown-item", "disabled")
                                 else -> {
                                     classes = setOf("dropdown-item")
-                                    onClickFunction = { launch { activateTravis() } }
+                                    onClickFunction = { GlobalScope.launch { activateTravis() } }
                                 }
                             }
                         }
@@ -79,7 +80,7 @@ private class ServiceActivationMenu(props: ServiceActivationMenuProps)
                                 in props.course.state.activatedServices -> classes = setOf("dropdown-item", "disabled")
                                 else -> {
                                     classes = setOf("dropdown-item")
-                                    onClickFunction = { launch { activateCodacy() } }
+                                    onClickFunction = { GlobalScope.launch { activateCodacy() } }
                                 }
                             }
                         }

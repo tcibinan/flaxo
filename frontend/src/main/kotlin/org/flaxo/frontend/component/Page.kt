@@ -1,5 +1,6 @@
 package org.flaxo.frontend.component
 
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import react.*
 import react.dom.div
@@ -29,7 +30,7 @@ private class Page : RComponent<EmptyProps, PageState>() {
 
     init {
         flaxoClient = Container.flaxoClient
-        launch {
+        GlobalScope.launch {
             credentials?.also {
                 try {
                     val user = flaxoClient.getSelf(it)

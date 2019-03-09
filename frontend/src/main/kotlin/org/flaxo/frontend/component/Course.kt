@@ -1,5 +1,6 @@
 package org.flaxo.frontend.component
 
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import kotlinx.html.ButtonType
 import kotlinx.html.js.onClickFunction
@@ -49,7 +50,7 @@ private class Course(props: CourseProps) : RComponent<CourseProps, EmptyState>(p
             div(classes = "course-controls") {
                 button(classes = "btn btn-outline-primary course-control", type = ButtonType.button) {
                     attrs {
-                        onClickFunction = { launch { startCourse() } }
+                        onClickFunction = { GlobalScope.launch { startCourse() } }
                         disabled = props.course.state.lifecycle == CourseLifecycle.RUNNING
                     }
                     +"Start course"
