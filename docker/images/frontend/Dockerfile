@@ -1,8 +1,7 @@
-ENV FLAXO_HOME=/opt/flaxo
-
 # Build stage
 FROM ubuntu:18.04 as builder
 
+ENV FLAXO_HOME=/opt/flaxo
 ENV NODEJS_HOME=/opt/nodejs
 
 # Java 8
@@ -32,21 +31,31 @@ RUN mkdir -p $NODEJS_HOME \
 ARG TAG
 
 RUN wget https://github.com/tcibinan/flaxo/archive/$TAG.tar.gz -O flaxo-$TAG.tar.gz \
-    && tar -xzf /opt/flaxo-$TAG.tar.gz $FLAXO_HOME \
+    && mkdir -p $FLAXO_HOME \
+    && tar -xzf flaxo-$TAG.tar.gz -C $FLAXO_HOME \
     && rm flaxo-$TAG.tar.gz \
+    && cp -r $FLAXO_HOME/flaxo-${TAG#v}/* $FLAXO_HOME/ \
+    && rm -r $FLAXO_HOME/flaxo-${TAG#v} \
+    && . /etc/profile.d/nodejs.sh \
     && $FLAXO_HOME/gradlew frontend:assembleFrontend -p $FLAXO_HOME
 
 # Production stage
 FROM ubuntu:18.04
 
+ENV FLAXO_HOME=/opt/flaxo
+
 WORKDIR $FLAXO_HOME
 
-# Python
+# Nginx
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends python-minimal \
+    && apt-get install -y --no-install-recommends nginx \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && rm /etc/nginx/sites-enabled/default \
+    && rm /etc/nginx/sites-available/default
+
+COPY ./flaxo.nginx.conf /etc/nginx/sites-enabled/flaxo.nginx.conf
 
 COPY --from=builder $FLAXO_HOME/frontend/build/dist .
 
-CMD python3 -m http.server
+CMD nginx && sleep infinity

@@ -1,7 +1,7 @@
-ENV FLAXO_HOME=/opt/flaxo
-
 # Build stage
-FROM ubuntu:18.04
+FROM ubuntu:18.04 as builder
+
+ENV FLAXO_HOME=/opt/flaxo
 
 # Java 8
 RUN apt-get update \
@@ -32,12 +32,17 @@ ARG CODACY_USER1_TOKEN
 ARG TAG
 
 RUN wget https://github.com/tcibinan/flaxo/archive/$TAG.tar.gz -O flaxo-$TAG.tar.gz \
-    && tar -xzf /opt/flaxo-$TAG.tar.gz $FLAXO_HOME \
+    && mkdir -p $FLAXO_HOME \
+    && tar -xzf flaxo-$TAG.tar.gz -C $FLAXO_HOME \
     && rm flaxo-$TAG.tar.gz \
+    && cp -r $FLAXO_HOME/flaxo-${TAG#v}/* $FLAXO_HOME/ \
+    && rm -r $FLAXO_HOME/flaxo-${TAG#v} \
     && $FLAXO_HOME/gradlew rest:build -p $FLAXO_HOME
 
 # Production stage
 FROM ubuntu:18.04
+
+ENV FLAXO_HOME=/opt/flaxo
 
 WORKDIR $FLAXO_HOME
 
