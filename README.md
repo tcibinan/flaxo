@@ -1,10 +1,13 @@
 # Flaxo
+[![from_flaxo with_♥](https://img.shields.io/badge/from_flaxo-with_♥-blue.svg)](https://github.com/tcibinan/flaxo)
 [![Build Status](https://travis-ci.org/tcibinan/flaxo.svg?branch=dev)](https://travis-ci.org/tcibinan/flaxo)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/5b599e5082814d26b34c778670c9985c)](https://www.codacy.com/app/NameOfTheLaw/flaxo?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tcibinan/flaxo&amp;utm_campaign=Badge_Grade)
+[![Docker Cloud Build Status Frontend](https://img.shields.io/docker/cloud/build/flaxo/frontend.svg?label=frontend%20docker%20build)](https://hub.docker.com/r/flaxo/frontend)
+[![Docker Cloud Build Status Backend](https://img.shields.io/docker/cloud/build/flaxo/backend.svg?label=backend%20docker%20build)](https://hub.docker.com/r/flaxo/backend)
 
 Flaxo educational platform is a pragmatic way to organise, manage and report programming courses.
 
-## Principle
+## Basics
 
 The educational process using flaxo platform can be described in five steps:
 
@@ -14,7 +17,7 @@ The educational process using flaxo platform can be described in five steps:
 4. Flaxo make all the necessary arrangements to evaluate students solutions.
 5. Tutor receives well-formatted statistics of students progress.
 
-## Key features
+## Features
 
 ### Results aggregation
 
@@ -33,13 +36,13 @@ Flaxo knows how to create a git repository with a required gradle project.
 
 ![course-creation-modal](https://github.com/tcibinan/flaxo/raw/dev/screenshots/course-creation-modal.png)
 
-### Statistics export in json, csv and tsv
+### Statistics export
 
 All courses statistics could be retrieved in one of the supported formats: json, csv and tsv.
 
 ### Educational flow
 
-You can create unlimited amount of courses for free. And it is as easy as it can be.
+You can create unlimited amount of public courses for free. And it is as easy as it can be.
 
 ![all-courses](https://github.com/tcibinan/flaxo/raw/dev/screenshots/all-courses.png)
 
