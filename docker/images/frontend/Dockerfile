@@ -43,7 +43,7 @@ RUN apt-get update \
 ARG TAG
 
 RUN git clone https://github.com/tcibinan/flaxo.git $FLAXO_HOME \
-    && git checkout $TAG \
+    && git --git-dir=$FLAXO_HOME/.git checkout $TAG \
     && . /etc/profile.d/nodejs.sh \
     && $FLAXO_HOME/gradlew frontend:npm-install -p $FLAXO_HOME
 
