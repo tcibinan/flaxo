@@ -14,7 +14,7 @@ services:
       POSTGRES_USER:
       POSTGRES_PASSWORD:
       POSTGRES_DB:
-      postgres_host: postgres:5433
+      postgres_host: postgres
   frontend:
     image: flaxo/frontend:${tag}
     ports:
@@ -23,8 +23,6 @@ services:
       REST_URL:
   postgres:
     image: postgres:11.1
-    ports:
-      - 5433:5432
     volumes:
       - ${data_dir}:/var/lib/postgresql/data
     environment:
