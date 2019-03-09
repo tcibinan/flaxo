@@ -5,6 +5,7 @@ import kotlinx.coroutines.experimental.launch
 import kotlinx.html.ButtonType
 import kotlinx.html.id
 import kotlinx.html.js.onClickFunction
+import org.flaxo.common.DateTime
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.credentials
 import org.flaxo.common.data.Course
@@ -23,6 +24,7 @@ import react.dom.button
 import react.dom.div
 import react.dom.h5
 import react.dom.hr
+import react.dom.small
 import react.setState
 
 /**
@@ -59,6 +61,8 @@ private class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
             div(classes = "card") {
                 div(classes = "card-body") {
                     h5(classes = "card-title") { +props.task.branch }
+                    deadlineIndication()
+
                     a(classes = "card-link", href = props.task.url) { +"Git branch" }
                     props.task.plagiarismReports
                             .lastOrNull()
@@ -103,6 +107,28 @@ private class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
                                 setState { reviews += Pair(student, review) }
                             }
                     )
+                }
+            }
+        }
+    }
+
+    private fun RBuilder.deadlineIndication() {
+        props.task.deadline?.also { deadline ->
+            val now = DateTime.now()
+            small(classes = "text-muted task-deadline") {
+                if (now < deadline) {
+                    val days = now.daysUntil(deadline)
+                    when {
+                        days > 1 -> +"Deadline in $days days"
+                        days == 1 -> +"Deadline is tomorrow"
+                        else -> +"Deadline is today"
+                    }
+                } else {
+                    val days = deadline.daysUntil(now)
+                    when {
+                        days >= 1 -> +"Deadline was $days days ago"
+                        else -> +"Deadline was yesterday"
+                    }
                 }
             }
         }

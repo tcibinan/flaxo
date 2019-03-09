@@ -6,11 +6,17 @@ package org.flaxo.common
 expect class DateTime {
 
     companion object {
+
         /**
          * Parse date time from the string of the following format:
          * 2018-03-08T15:00:00.000
          */
         fun fromDateTimeString(string: String): DateTime
+
+        /**
+         * Returns current date time instance.
+         */
+        fun now(): DateTime
     }
 
     /**

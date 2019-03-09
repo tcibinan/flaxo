@@ -9,8 +9,10 @@ import java.time.LocalDateTime
 actual class DateTime(private val dateTime: LocalDateTime) {
 
     actual companion object {
-        actual fun fromDateTimeString(string: String): DateTime =
-                DateTime(LocalDateTime.parse(string))
+
+        actual fun fromDateTimeString(string: String): DateTime = DateTime(LocalDateTime.parse(string))
+
+        actual fun now(): DateTime = DateTime(LocalDateTime.now())
     }
 
     @JsonValue

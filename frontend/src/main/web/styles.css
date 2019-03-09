@@ -192,6 +192,11 @@ a.github-profile:hover {
     line-height: 16px;
 }
 
+.task-card .task-deadline {
+    display: block;
+    margin-bottom: 10px;
+}
+
 .flaxo-version {
     font-size: 10px;
 }
