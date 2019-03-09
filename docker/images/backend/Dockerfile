@@ -38,7 +38,10 @@ RUN apt-get update \
      && rm -rf /var/lib/apt/lists/*
 
 # Flaxo
+ARG TAG
+
 RUN git clone https://github.com/tcibinan/flaxo.git $FLAXO_HOME \
+    && git checkout $TAG \
     && $FLAXO_HOME/gradlew rest:build -p $FLAXO_HOME
 
 CMD $FLAXO_HOME/gradlew bootRun -x githubql:loadGithubScheme -p $FLAXO_HOME

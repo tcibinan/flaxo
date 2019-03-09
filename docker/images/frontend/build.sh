@@ -10,4 +10,5 @@ fi
 tag=$1
 
 docker build . -t flaxo/frontend:$tag \
-               --network=host
+               --network=host \
+               --build-arg TAG=v$tag

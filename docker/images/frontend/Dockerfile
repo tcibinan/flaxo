@@ -40,8 +40,11 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # Flaxo
-RUN . /etc/profile.d/nodejs.sh \
-    && git clone https://github.com/tcibinan/flaxo.git $FLAXO_HOME \
+ARG TAG
+
+RUN git clone https://github.com/tcibinan/flaxo.git $FLAXO_HOME \
+    && git checkout $TAG \
+    && . /etc/profile.d/nodejs.sh \
     && $FLAXO_HOME/gradlew frontend:npm-install -p $FLAXO_HOME
 
 CMD . /etc/profile.d/nodejs.sh \
