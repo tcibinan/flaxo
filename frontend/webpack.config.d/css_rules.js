@@ -16,7 +16,6 @@ module.exports['module']['rules'].push({
     loader: 'string-replace-loader',
     options: {
         multiple: [
-            { search: '{{REST_URL}}', replace: process.env.REST_URL },
             { search: '{{FLAXO_VERSION}}', replace: projectVersion }
         ]
     }

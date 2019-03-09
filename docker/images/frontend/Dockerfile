@@ -1,16 +1,9 @@
-FROM ubuntu:18.04
-
 ENV FLAXO_HOME=/opt/flaxo
-ENV NODEJS_HOME=/opt/nodejs
 
-# Git
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends software-properties-common \
-    && add-apt-repository -y ppa:git-core/ppa \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends git \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+# Build stage
+FROM ubuntu:18.04 as builder
+
+ENV NODEJS_HOME=/opt/nodejs
 
 # Java 8
 RUN apt-get update \
@@ -18,12 +11,14 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Nodejs
+# Utils
 RUN apt-get update \
     && apt-get install -y --no-install-recommends wget xz-utils \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && mkdir -p $NODEJS_HOME \
+    && rm -rf /var/lib/apt/lists/*
+
+# Nodejs
+RUN mkdir -p $NODEJS_HOME \
     && cd $NODEJS_HOME \
     && wget https://nodejs.org/dist/v10.15.1/node-v10.15.1-linux-x64.tar.xz \
     && tar xf node-v10.15.1-linux-x64.tar.xz \
@@ -33,19 +28,25 @@ RUN apt-get update \
     && echo "export PATH=\$NODEJS_HOME/bin:\$PATH" >> /etc/profile.d/nodejs.sh \
     && chmod +x /etc/profile.d/nodejs.sh
 
-# Python 2
+# Flaxo
+ARG TAG
+
+RUN wget https://github.com/tcibinan/flaxo/archive/$TAG.tar.gz -O flaxo-$TAG.tar.gz \
+    && tar -xzf /opt/flaxo-$TAG.tar.gz $FLAXO_HOME \
+    && rm flaxo-$TAG.tar.gz \
+    && $FLAXO_HOME/gradlew frontend:assembleFrontend -p $FLAXO_HOME
+
+# Production stage
+FROM ubuntu:18.04
+
+WORKDIR $FLAXO_HOME
+
+# Python
 RUN apt-get update \
     && apt-get install -y --no-install-recommends python-minimal \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Flaxo
-ARG TAG
+COPY --from=builder $FLAXO_HOME/frontend/build/dist .
 
-RUN git clone https://github.com/tcibinan/flaxo.git $FLAXO_HOME \
-    && git --git-dir=$FLAXO_HOME/.git checkout $TAG \
-    && . /etc/profile.d/nodejs.sh \
-    && $FLAXO_HOME/gradlew frontend:npm-install -p $FLAXO_HOME
-
-CMD . /etc/profile.d/nodejs.sh \
-    && $FLAXO_HOME/gradlew runFrontend -x githubql:loadGithubScheme -p $FLAXO_HOME
+CMD python3 -m http.server
