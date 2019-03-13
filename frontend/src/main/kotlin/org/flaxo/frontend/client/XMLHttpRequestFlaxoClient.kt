@@ -236,6 +236,17 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
                 errorMessage = "Task approvals updating failed."
             }
 
+    override suspend fun getPlagiarismGraphAccessToken(credentials: Credentials,
+                                                       courseName: String,
+                                                       task: String
+    ): String = post {
+        apiMethod = "/moss/graph/token"
+        params = mapOf(COURSE_NAME to courseName, TASK_BRANCH to task)
+        creds = credentials
+        onSuccess = { response -> JSON.parse<Payload<String>>(response).payload.orEmpty() }
+        errorMessage = "Plagiarism graph access token generation retrieving failed."
+    }
+
     private suspend inline fun <reified T> get(noinline block: HttpRequest<T>.() -> Unit): T = http("GET", block)
 
     private suspend inline fun <reified T> post(noinline block: HttpRequest<T>.() -> Unit): T = http("POST", block)

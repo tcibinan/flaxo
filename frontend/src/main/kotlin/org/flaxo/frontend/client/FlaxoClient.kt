@@ -114,4 +114,12 @@ interface FlaxoClient {
                                         task: String,
                                         approvals: Map<String, SolutionReview>
     ): List<Solution>
+
+    /**
+     * Retrieves [task] latest plagiarism graph access token for the course with the given [courseName].
+     */
+    suspend fun getPlagiarismGraphAccessToken(credentials: Credentials,
+                                              courseName: String,
+                                              task: String
+    ): String
 }

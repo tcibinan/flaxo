@@ -95,5 +95,5 @@ task runFrontend(type: Exec) {
 
     dependsOn assembleFrontend
     workingDir "$projectDir/build/dist"
-    commandLine "python3", "-m", "http.server"
+    commandLine "python3", "-m", "http.server", "8000"
 }

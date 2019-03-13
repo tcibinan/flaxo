@@ -7,7 +7,6 @@ import kotlinx.html.role
 import kotlinx.html.tabIndex
 import react.RBuilder
 import react.RComponent
-import react.RState
 import react.dom.button
 import react.dom.div
 import react.dom.h5
@@ -22,14 +21,7 @@ const val PLAGIARISM_IFRAME_ID = "plagiarismIframe"
  */
 fun RBuilder.plagiarismModal() = child(PlagiarismModal::class) { }
 
-private class PlagiarismModalState(var plagiarismUrl: String?) : RState
-
-private class PlagiarismModal(props: EmptyProps)
-    : RComponent<EmptyProps, PlagiarismModalState>(props) {
-
-    override fun PlagiarismModalState.init() {
-        plagiarismUrl = null
-    }
+private class PlagiarismModal(props: EmptyProps) : RComponent<EmptyProps, EmptyState>(props) {
 
     override fun RBuilder.render() {
         div("modal fade plagiarism-modal") {
@@ -37,21 +29,19 @@ private class PlagiarismModal(props: EmptyProps)
                 id = PLAGIARISM_MODAL_ID
                 tabIndex = "-1"
                 role = "dialog"
-                attributes["aria-hidden"] = "true"
+                ariaHidden = true
             }
-            div("modal-dialog modal-lg") {
-                attrs {
-                    role = "document"
-                }
+            div("modal-dialog modal-lg modal-full-screen") {
+                attrs.role = "document"
                 div("modal-content") {
                     div("modal-header") {
                         h5("modal-title") {
-                            +"Plagiarism visualization"
+                            +"Plagiarism graph"
                         }
                         button(classes = "close", type = ButtonType.button) {
                             attrs {
-                                attributes["data-dismiss"] = "modal"
-                                attributes["aria-label"] = "Close"
+                                dataDismiss = "modal"
+                                ariaLabel = "Close"
                             }
                             span {
                                 attrs {
@@ -65,14 +55,13 @@ private class PlagiarismModal(props: EmptyProps)
                         iframe {
                             attrs {
                                 id = PLAGIARISM_IFRAME_ID
-                                height = "1000px"
                             }
                         }
                     }
                     div("modal-footer") {
                         button(classes = "btn btn-secondary", type = ButtonType.button) {
                             attrs {
-                                attributes["data-dismiss"] = "modal"
+                                dataDismiss = "modal"
                             }
                             +"Close"
                         }

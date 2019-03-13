@@ -106,11 +106,6 @@ a.github-profile:hover {
     font-weight: bold;
 }
 
-.valid-plagiarism-report,
-.invalid-plagiarism-report {
-    cursor: pointer;
-}
-
 .plagiarism-marker {
     vertical-align: middle;
 }
@@ -195,6 +190,41 @@ a.github-profile:hover {
 .task-card .task-deadline {
     display: block;
     margin-bottom: 10px;
+}
+
+.card-link.rows-link {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.card-link.rows-link small {
+    font-size: 60%;
+}
+
+.modal-full-screen {
+    margin: 0 !important;
+    padding: 0;
+    height: 100%;
+    width: 100% !important;
+    max-width: unset !important;
+}
+
+.modal-full-screen .modal-content {
+    height: auto;
+    min-height: 100%;
+    border-radius: 0;
+}
+
+.plagiarism-modal .modal-body {
+    display: flex;
+    flex-direction: row;
+    padding: 0;
+}
+
+.plagiarism-modal .modal-body iframe {
+    width: 100%;
+    border: none;
 }
 
 .flaxo-version {

@@ -6,15 +6,17 @@ import kotlinx.html.ButtonType
 import kotlinx.html.id
 import kotlinx.html.js.onClickFunction
 import org.flaxo.common.DateTime
-import org.flaxo.frontend.Container
-import org.flaxo.frontend.credentials
 import org.flaxo.common.data.Course
 import org.flaxo.common.data.CourseLifecycle
 import org.flaxo.common.data.SolutionReview
 import org.flaxo.common.data.Task
+import org.flaxo.frontend.Configuration
+import org.flaxo.frontend.Container
 import org.flaxo.frontend.Notifications
 import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.frontend.client.FlaxoHttpException
+import org.flaxo.frontend.credentials
+import org.w3c.dom.HTMLIFrameElement
 import react.RBuilder
 import react.RComponent
 import react.RProps
@@ -26,6 +28,7 @@ import react.dom.h5
 import react.dom.hr
 import react.dom.small
 import react.setState
+import kotlin.browser.document
 
 /**
  * Adds task.
@@ -66,7 +69,22 @@ private class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
                     a(classes = "card-link", href = props.task.url) { +"Git branch" }
                     props.task.plagiarismReports
                             .lastOrNull()
-                            ?.also { a(classes = "card-link", href = it.url) { +"Plagiarism report" } }
+                            ?.also {
+                                a(classes = "card-link rows-link", href = it.url) {
+                                    +"Plagiarism report"
+                                    small { +"valid 14 days only" }
+                                }
+                                a(classes = "card-link", href="") {
+                                    attrs {
+                                        dataToggle = "modal"
+                                        dataTarget = "#$PLAGIARISM_MODAL_ID"
+                                        onClickFunction = {
+                                            GlobalScope.launch { showPlagiarismGraph(props.course, props.task) }
+                                        }
+                                    }
+                                    +"Plagiarism graph"
+                                }
+                            }
                     button(classes = "btn btn-outline-primary task-btn", type = ButtonType.button) {
                         attrs {
                             onClickFunction = { GlobalScope.launch { analysePlagiarism() } }
@@ -87,8 +105,8 @@ private class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
                     }
                     button(classes = "btn btn-outline-secondary task-btn") {
                         attrs {
-                            attributes["data-toggle"] = "collapse"
-                            attributes["data-target"] = "#$RULES_DROPDOWN_ID"
+                            dataToggle = "collapse"
+                            dataTarget = "#$RULES_DROPDOWN_ID"
                             attributes["aria-expanded"] = "false"
                             attributes["aria-controls"] = RULES_DROPDOWN_ID
                         }
@@ -152,7 +170,7 @@ private class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
                 ?.takeIf { state.scores.isNotEmpty() }
                 ?.also { credentials ->
                     try {
-                        Container.flaxoClient.updateScores(credentials,
+                        flaxoClient.updateScores(credentials,
                                 courseName = props.course.name,
                                 task = props.task.branch,
                                 scores = state.scores)
@@ -170,7 +188,7 @@ private class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
                 ?.takeIf { state.reviews.isNotEmpty() }
                 ?.also { credentials ->
                     try {
-                        Container.flaxoClient.updateSolutionApprovals(credentials,
+                        flaxoClient.updateSolutionApprovals(credentials,
                                 courseName = props.course.name,
                                 task = props.task.branch,
                                 approvals = state.reviews
@@ -182,6 +200,22 @@ private class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
                         Notifications.error("Error occurred while saving task approvals", e)
                     }
                 }
+    }
+
+    private suspend fun showPlagiarismGraph(course: Course, task: Task) {
+        credentials?.also { credentials ->
+            try {
+                val data2GraphUrl = Configuration.DATA2GRAPH_URL
+                val restUrl = Configuration.SERVER_URL
+                val graphToken = flaxoClient.getPlagiarismGraphAccessToken(credentials, course.name, task.branch)
+                document.getElementById(PLAGIARISM_IFRAME_ID)
+                        ?.let { it as? HTMLIFrameElement }
+                        ?.src = "$data2GraphUrl/?graph_url=$restUrl/moss/graph/$graphToken"
+            } catch (e: FlaxoHttpException) {
+                console.log(e)
+                Notifications.error("Error occurred while loading plagiarism graph", e)
+            }
+        }
     }
 
 }
