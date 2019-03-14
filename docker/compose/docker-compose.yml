@@ -27,3 +27,7 @@ services:
       POSTGRES_USER:
       POSTGRES_PASSWORD:
       POSTGRES_DB:
+  data2graph:
+    image: flaxo/data2graph:${data2graph_tag}
+    ports:
+      - 8088:80
