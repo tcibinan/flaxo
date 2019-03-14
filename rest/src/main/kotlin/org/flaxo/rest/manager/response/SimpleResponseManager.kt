@@ -8,16 +8,16 @@ import org.springframework.http.HttpStatus
 class SimpleResponseManager : ResponseManager {
 
     override fun <T> userNotFound(username: String): Response<T> =
-            notFound("User $username not found")
+            notFound("User $username not found.")
 
     override fun <T> courseNotFound(username: String, courseName: String): Response<T> =
             notFound("Course $courseName wasn't found for user $username.")
 
     override fun <T> taskNotFound(username: String, courseName: String, taskBranch: String): Response<T> =
-            notFound("Task $taskBranch wasn't found for $username/$courseName")
+            notFound("Task $taskBranch wasn't found for $username/$courseName.")
 
     override fun <T> githubTokenNotFound(username: String): Response<T> =
-            bad("There is no github auth for $username")
+            bad("There is no github auth for $username.")
 
     override fun <T> githubIdNotFound(username: String): Response<T> =
             notFound("Github id for $username is not set.")

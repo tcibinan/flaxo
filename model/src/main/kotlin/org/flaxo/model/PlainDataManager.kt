@@ -6,11 +6,11 @@ import org.flaxo.model.dao.BuildReportRepository
 import org.flaxo.model.dao.CodeStyleReportRepository
 import org.flaxo.model.dao.CommitRepository
 import org.flaxo.model.dao.CourseRepository
-import org.flaxo.model.dao.SettingsRepository
 import org.flaxo.model.dao.CredentialsRepository
 import org.flaxo.model.dao.PlagiarismReportRepository
-import org.flaxo.model.dao.StudentRepository
+import org.flaxo.model.dao.SettingsRepository
 import org.flaxo.model.dao.SolutionRepository
+import org.flaxo.model.dao.StudentRepository
 import org.flaxo.model.dao.TaskRepository
 import org.flaxo.model.dao.UserRepository
 import org.flaxo.model.data.BuildReport
@@ -22,8 +22,8 @@ import org.flaxo.model.data.CourseState
 import org.flaxo.model.data.Credentials
 import org.flaxo.model.data.PlagiarismMatch
 import org.flaxo.model.data.PlagiarismReport
-import org.flaxo.model.data.Student
 import org.flaxo.model.data.Solution
+import org.flaxo.model.data.Student
 import org.flaxo.model.data.Task
 import org.flaxo.model.data.User
 import org.springframework.transaction.annotation.Transactional
@@ -221,6 +221,10 @@ open class PlainDataManager(private val userRepository: UserRepository,
             plagiarismReportRepository
                     .save(PlagiarismReport(task = task, date = date, url = url, matches = matches))
                     .also { updateTask(task.copy(plagiarismReports = task.plagiarismReports + it)) }
+
+    @Transactional(readOnly = true)
+    override fun getPlagiarismReport(id: Long): PlagiarismReport? =
+            plagiarismReportRepository.findById(id).orElse(null)
 
     @Transactional
     override fun addCommit(solution: Solution, pullRequestNumber: Int, commitSha: String): Commit =

@@ -8,8 +8,8 @@ import org.flaxo.model.data.Commit
 import org.flaxo.model.data.Course
 import org.flaxo.model.data.PlagiarismMatch
 import org.flaxo.model.data.PlagiarismReport
-import org.flaxo.model.data.Student
 import org.flaxo.model.data.Solution
+import org.flaxo.model.data.Student
 import org.flaxo.model.data.Task
 import org.flaxo.model.data.User
 import java.time.LocalDateTime
@@ -123,7 +123,7 @@ interface DataManager {
     fun getSolutions(student: Student): Set<Solution>
 
     /**
-     * Returns a solutions set for a given task.
+     * Returns a set of solutions for a given task.
      */
     fun getSolutions(task: Task): Set<Solution>
 
@@ -193,5 +193,10 @@ interface DataManager {
      * Deletes user.
      */
     fun deleteUser(username: String): User
+
+    /**
+     * Retrieves plagiarism report by its [id].
+     */
+    fun getPlagiarismReport(id: Long): PlagiarismReport?
 
 }
