@@ -3,7 +3,7 @@ package org.flaxo.rest.manager.moss
 import org.flaxo.model.data.Task
 
 /**
- * Moss manager.
+ * Moss plagiarism analysis manager.
  */
 interface MossManager {
 
@@ -12,5 +12,5 @@ interface MossManager {
      *
      * @return Task with an updated plagiarism reports list.
      */
-    fun analysePlagiarism(task: Task): Task
+    fun analyse(task: Task): Task
 }
