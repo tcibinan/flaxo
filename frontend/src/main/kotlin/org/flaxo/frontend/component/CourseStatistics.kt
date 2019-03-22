@@ -4,13 +4,13 @@ import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import kotlinx.html.id
 import kotlinx.html.role
-import org.flaxo.frontend.Container
-import org.flaxo.frontend.client.FlaxoClient
-import org.flaxo.frontend.credentials
 import org.flaxo.common.data.Course
 import org.flaxo.common.data.CourseStatistics
+import org.flaxo.frontend.Container
 import org.flaxo.frontend.Notifications
+import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.frontend.client.FlaxoHttpException
+import org.flaxo.frontend.credentials
 import react.RBuilder
 import react.RComponent
 import react.RProps
@@ -60,7 +60,7 @@ private class CourseStatistics(props: CourseStatisticsProps)
             credentials?.also {
                 try {
                     val courseStatistics =
-                            flaxoClient.getCourseStatistics(it, props.course.user.nickname, props.course.name)
+                            flaxoClient.getCourseStatistics(it, props.course.user.name, props.course.name)
                     setState { this.courseStatistics = courseStatistics }
                 } catch (e: FlaxoHttpException) {
                     console.log(e)

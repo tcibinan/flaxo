@@ -1,12 +1,12 @@
 package org.flaxo.gradle
 
-import org.flaxo.common.NamedEntity
+import org.flaxo.common.data.Named
 
 internal data class GradlePlugin(val id: String,
                                  val version: String? = null,
                                  val dependencies: Set<GradleDependency> = emptySet(),
                                  val pluginManagement: GradlePluginManagement? = null
-) : NamedEntity {
+) : Named {
 
     override val name = id
 }

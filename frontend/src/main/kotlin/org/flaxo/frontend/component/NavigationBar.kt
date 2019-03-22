@@ -5,15 +5,23 @@ import kotlinx.html.classes
 import kotlinx.html.id
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.role
+import org.flaxo.common.data.User
+import org.flaxo.frontend.Configuration
 import org.flaxo.frontend.component.services.CODACY_MODAL_ID
 import org.flaxo.frontend.component.services.GITHUB_MODAL_ID
 import org.flaxo.frontend.component.services.TRAVIS_MODAL_ID
-import org.flaxo.frontend.Configuration
-import org.flaxo.common.data.User
 import react.RBuilder
 import react.RComponent
 import react.RProps
-import react.dom.*
+import react.dom.a
+import react.dom.button
+import react.dom.div
+import react.dom.form
+import react.dom.i
+import react.dom.li
+import react.dom.nav
+import react.dom.span
+import react.dom.ul
 
 /**
  * Adds navigation bar.
@@ -122,7 +130,7 @@ private class NavigationBar(props: NavigationBarProps) : RComponent<NavigationBa
                         }
                     }
                 }
-                a(classes = "nav-link") { +"Signed as ${props.user.nickname}" }
+                a(classes = "nav-link") { +"Signed as ${props.user.name}" }
                 form(classes = "form-inline my-2 my-lg-0") {
                     button(classes = "btn btn-outline-secondary my-2 my-sm-0", type = ButtonType.submit) {
                         attrs { onClickFunction = { props.onLogout() } }

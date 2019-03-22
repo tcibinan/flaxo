@@ -2,6 +2,7 @@ package org.flaxo.model.data
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import org.flaxo.common.DateTime
+import org.flaxo.common.data.Identifiable
 import org.flaxo.model.UserView
 import java.time.LocalDateTime
 import java.util.Objects
@@ -30,6 +31,9 @@ data class User(
         @GeneratedValue
         override val id: Long = -1,
 
+        // TODO 23.03.19: Add date field.
+
+        // TODO 23.03.19: Rename to name.
         val nickname: String = "",
 
         val githubId: String? = null,
@@ -43,7 +47,6 @@ data class User(
     override fun view(): UserView = UserView(
             id = id,
             name = nickname,
-            // TODO 23.03.19: Add date field to user entity.
             date = DateTime(LocalDateTime.now()),
             githubId = githubId,
             isGithubAuthorized = credentials.githubToken != null,

@@ -1,5 +1,6 @@
 package org.flaxo.model.data
 
+import org.flaxo.common.data.Identifiable
 import java.util.Objects
 import javax.persistence.Entity
 import javax.persistence.FetchType
@@ -20,6 +21,7 @@ data class Student(
         @GeneratedValue
         override val id: Long = -1,
 
+        // TODO 23.03.19: Rename to name.
         val nickname: String = "",
 
         @ManyToOne(optional = false, fetch = FetchType.LAZY)

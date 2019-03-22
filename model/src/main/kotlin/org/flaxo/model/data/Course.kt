@@ -1,6 +1,8 @@
 package org.flaxo.model.data
 
 import org.flaxo.common.DateTime
+import org.flaxo.common.data.Identifiable
+import org.flaxo.common.data.Named
 import org.flaxo.model.CourseView
 import java.time.LocalDateTime
 import java.util.Objects
@@ -25,10 +27,11 @@ data class Course(
         @GeneratedValue
         override val id: Long = -1,
 
-        val name: String = "",
+        override val name: String = "",
 
         val description: String? = null,
 
+        // TODO 23.03.19: Rename to date.
         val createdDate: LocalDateTime = LocalDateTime.MIN,
 
         @OneToOne(cascade = [CascadeType.ALL], optional = false, fetch = FetchType.LAZY)
@@ -48,7 +51,7 @@ data class Course(
         @OneToMany(mappedBy = "course", orphanRemoval = true)
         val tasks: Set<Task> = mutableSetOf()
 
-) : Identifiable, Viewable<CourseView> {
+) : Identifiable, Named, Viewable<CourseView> {
 
     override fun view(): CourseView = CourseView(
             id = id,

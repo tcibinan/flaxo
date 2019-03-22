@@ -19,12 +19,6 @@ data class User(
         val githubId: String?,
 
         /**
-         * User nickname.
-         */
-        @Deprecated("Should be replaced with just a name.", replaceWith = ReplaceWith("name"))
-        val nickname: String = name,
-
-        /**
          * Specifies if user is authorized in github using flaxo.
          */
         val isGithubAuthorized: Boolean,

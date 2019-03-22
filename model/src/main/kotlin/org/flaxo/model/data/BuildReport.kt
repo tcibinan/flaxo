@@ -1,6 +1,7 @@
 package org.flaxo.model.data
 
 import org.flaxo.common.DateTime
+import org.flaxo.common.data.Identifiable
 import org.flaxo.model.BuildReportView
 import java.time.LocalDateTime
 import java.util.Objects
@@ -22,14 +23,14 @@ data class BuildReport(
         @GeneratedValue
         override val id: Long = -1,
 
-        override val date: LocalDateTime = LocalDateTime.MIN,
+        val date: LocalDateTime = LocalDateTime.MIN,
 
         @ManyToOne(optional = false, fetch = FetchType.LAZY)
         val solution: Solution = Solution(),
 
         val succeed: Boolean = false
 
-) : Identifiable, Report, Viewable<BuildReportView> {
+) : Identifiable, Viewable<BuildReportView> {
 
     override fun view(): BuildReportView = BuildReportView(
             id = id,

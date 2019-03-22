@@ -1,9 +1,9 @@
 package org.flaxo.gradle
 
-import org.flaxo.common.NamedEntity
+import org.flaxo.common.data.Named
 import org.flaxo.common.env.Environment
-import org.flaxo.common.env.file.EnvironmentFile
 import org.flaxo.common.env.EnvironmentSupplier
+import org.flaxo.common.env.file.EnvironmentFile
 import org.flaxo.common.framework.JUnitTestingFramework
 import org.flaxo.common.framework.SpekTestingFramework
 import org.flaxo.common.framework.TestingFramework
@@ -16,7 +16,7 @@ data class GradleBuildTool internal constructor(
         private val dependencies: Set<GradleDependency>,
         private val plugins: Set<GradlePlugin>,
         private val repositories: Set<GradleRepository>
-) : NamedEntity, EnvironmentSupplier {
+) : Named, EnvironmentSupplier {
 
     constructor(travis: EnvironmentSupplier) : this(
             travis = travis,

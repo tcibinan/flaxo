@@ -1,6 +1,7 @@
 package org.flaxo.model.data
 
 import org.flaxo.common.DateTime
+import org.flaxo.common.data.Identifiable
 import org.flaxo.model.TaskView
 import java.time.LocalDateTime
 import java.util.Objects
@@ -23,6 +24,8 @@ data class Task(
         @GeneratedValue
         override val id: Long = -1,
 
+        // TODO 23.03.19: Add name field.
+
         val branch: String = "",
 
         val url: String = "",
@@ -42,6 +45,7 @@ data class Task(
 
     override fun view(): TaskView = TaskView(
             id = id,
+            name = branch,
             branch = branch,
             url = url,
             deadline = deadline?.let { DateTime(it) },

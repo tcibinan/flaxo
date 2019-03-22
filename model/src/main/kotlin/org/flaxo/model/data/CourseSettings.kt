@@ -1,5 +1,6 @@
 package org.flaxo.model.data
 
+import org.flaxo.common.data.Identifiable
 import org.flaxo.model.CourseSettingsView
 import java.util.Objects
 import javax.persistence.Entity

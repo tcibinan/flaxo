@@ -1,6 +1,7 @@
 package org.flaxo.model.data
 
 import org.flaxo.common.DateTime
+import org.flaxo.common.data.Identifiable
 import org.flaxo.model.PlagiarismReportView
 import java.time.LocalDateTime
 import java.util.Objects
@@ -24,7 +25,7 @@ data class PlagiarismReport(
         @GeneratedValue
         override val id: Long = -1,
 
-        override val date: LocalDateTime = LocalDateTime.MIN,
+        val date: LocalDateTime = LocalDateTime.MIN,
 
         @ManyToOne(optional = false, fetch = FetchType.LAZY)
         val task: Task = Task(),
@@ -34,7 +35,7 @@ data class PlagiarismReport(
         @OneToMany(cascade = [CascadeType.ALL])
         val matches: List<PlagiarismMatch> = mutableListOf()
 
-) : Identifiable, Report, Viewable<PlagiarismReportView> {
+) : Identifiable, Viewable<PlagiarismReportView> {
 
     override fun view(): PlagiarismReportView = PlagiarismReportView(
             id = id,

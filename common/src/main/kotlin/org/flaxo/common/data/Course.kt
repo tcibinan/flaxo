@@ -23,12 +23,6 @@ data class Course(
         val description: String?,
 
         /**
-         * Course creation date time.
-         */
-        @Deprecated(message = "Should be replaced with just a date.", replaceWith = ReplaceWith("date"))
-        val createdDate: DateTime = date,
-
-        /**
          * Course settings.
          */
         val settings: CourseSettings,

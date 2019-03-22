@@ -1,12 +1,12 @@
 package org.flaxo.common.lang
 
-import org.flaxo.common.NamedEntity
+import org.flaxo.common.data.Named
 import org.flaxo.common.framework.TestingFramework
 
 /**
  * Programming language.
  */
-interface Language : NamedEntity {
+interface Language : Named {
 
     /**
      * Extensions of the files written on the language.

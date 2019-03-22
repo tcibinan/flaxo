@@ -3,17 +3,16 @@ package org.flaxo.frontend.component
 import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import kotlinx.html.ButtonType
+import org.flaxo.common.data.Course
+import org.flaxo.common.data.User
 import org.flaxo.frontend.Container
+import org.flaxo.frontend.Notifications
 import org.flaxo.frontend.client.FlaxoClient
+import org.flaxo.frontend.client.FlaxoHttpException
 import org.flaxo.frontend.component.services.codacyModal
 import org.flaxo.frontend.component.services.githubModal
 import org.flaxo.frontend.component.services.travisModal
 import org.flaxo.frontend.credentials
-import org.flaxo.common.data.Course
-import org.flaxo.common.data.User
-import org.flaxo.frontend.Notifications
-import org.flaxo.frontend.client.FlaxoHttpException
-import react.setState
 import react.RBuilder
 import react.RComponent
 import react.RProps
@@ -21,6 +20,7 @@ import react.RState
 import react.dom.button
 import react.dom.div
 import react.dom.p
+import react.setState
 
 /**
  * Adds courses list.
@@ -79,7 +79,7 @@ private class Courses(props: CoursesProps) : RComponent<CoursesProps, CoursesSta
     private suspend fun updateCoursesList() {
         credentials?.also { credentials ->
             try {
-                val courses = flaxoClient.getUserCourses(credentials, props.user.nickname)
+                val courses = flaxoClient.getUserCourses(credentials, props.user.name)
                 val selectedCourse = state.selectedCourse?.let { previouslySelectedCourse ->
                     courses.find { it.name == previouslySelectedCourse.name }
                 }

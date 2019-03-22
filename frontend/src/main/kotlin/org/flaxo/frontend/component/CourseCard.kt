@@ -31,7 +31,7 @@ fun RBuilder.courseCard(course: Course, onSelect: (Course) -> Unit) = section(cl
             }
             p(classes = "card-text") {
                 small(classes = "text-muted") {
-                    +"Created at ${course.createdDate.toHumanReadableString()}"
+                    +"Created at ${course.date.toHumanReadableString()}"
                 }
             }
         }

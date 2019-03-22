@@ -11,12 +11,12 @@ data class Task(
 
         override val id: Long,
 
+        override val name: String,
+
         /**
          * Associated git branch name.
          */
         val branch: String,
-
-        override val name: String = branch,
 
         /**
          * Task deadline.
