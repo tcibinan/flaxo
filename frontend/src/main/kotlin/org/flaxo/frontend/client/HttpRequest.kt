@@ -1,7 +1,7 @@
 package org.flaxo.frontend.client
 
-import kotlinx.coroutines.experimental.CompletableDeferred
-import kotlinx.coroutines.experimental.Deferred
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Deferred
 import org.flaxo.common.data.Payload
 import org.flaxo.frontend.Credentials
 import org.flaxo.frontend.wrapper.btoa

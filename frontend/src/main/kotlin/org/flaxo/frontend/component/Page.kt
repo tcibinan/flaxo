@@ -1,16 +1,19 @@
 package org.flaxo.frontend.component
 
-import kotlinx.coroutines.experimental.GlobalScope
-import kotlinx.coroutines.experimental.launch
-import react.*
-import react.dom.div
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import org.flaxo.common.data.User
 import org.flaxo.frontend.Container
+import org.flaxo.frontend.Notifications
 import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.frontend.client.FlaxoHttpException
 import org.flaxo.frontend.credentials
 import org.flaxo.frontend.wrapper.Cookies
-import org.flaxo.common.data.User
-import org.flaxo.frontend.Notifications
+import react.RBuilder
+import react.RComponent
+import react.RState
+import react.dom.div
+import react.setState
 
 /**
  * Adds application main page.

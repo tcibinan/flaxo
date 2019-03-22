@@ -1,7 +1,7 @@
 package org.flaxo.github
 
 import arrow.core.getOrHandle
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import org.flaxo.git.AddReviewRequest
 import org.flaxo.git.Branch
 import org.flaxo.git.PullRequest

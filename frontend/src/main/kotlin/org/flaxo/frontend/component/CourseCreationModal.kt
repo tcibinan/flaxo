@@ -1,24 +1,24 @@
 package org.flaxo.frontend.component
 
-import kotlinx.coroutines.experimental.GlobalScope
-import kotlinx.coroutines.experimental.launch
-import kotlinx.html.js.onChangeFunction
-import kotlinx.html.js.onClickFunction
-import org.flaxo.frontend.Container
-import org.flaxo.frontend.client.FlaxoClient
-import org.flaxo.common.data.Language
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.html.ButtonType
 import kotlinx.html.InputType
 import kotlinx.html.classes
 import kotlinx.html.hidden
 import kotlinx.html.id
+import kotlinx.html.js.onChangeFunction
+import kotlinx.html.js.onClickFunction
 import kotlinx.html.role
 import kotlinx.html.tabIndex
-import org.flaxo.frontend.credentials
+import org.flaxo.common.data.Language
+import org.flaxo.frontend.Container
 import org.flaxo.frontend.Notifications
 import org.flaxo.frontend.checkBoxValue
 import org.flaxo.frontend.clickOnButton
+import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.frontend.client.FlaxoHttpException
+import org.flaxo.frontend.credentials
 import org.flaxo.frontend.inputValue
 import org.flaxo.frontend.selectValue
 import org.flaxo.frontend.validatedInputValue
@@ -27,7 +27,6 @@ import react.RBuilder
 import react.RComponent
 import react.RProps
 import react.RState
-import react.setState
 import react.dom.button
 import react.dom.div
 import react.dom.h5
@@ -36,6 +35,7 @@ import react.dom.option
 import react.dom.select
 import react.dom.small
 import react.dom.span
+import react.setState
 
 const val COURSE_CREATION_MODAL_ID = "courseCreationModal"
 private const val COURSE_NAME_INPUT_ID = "courseNameInput"

@@ -1,19 +1,19 @@
 package org.flaxo.frontend.component.services
 
-import kotlinx.coroutines.experimental.GlobalScope
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.html.ButtonType
 import kotlinx.html.hidden
 import kotlinx.html.id
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.role
 import kotlinx.html.tabIndex
-import org.flaxo.frontend.Container
-import org.flaxo.frontend.credentials
 import org.flaxo.common.data.User
-import org.flaxo.frontend.github.githubProfileUrl
+import org.flaxo.frontend.Container
 import org.flaxo.frontend.Notifications
 import org.flaxo.frontend.client.FlaxoHttpException
+import org.flaxo.frontend.credentials
+import org.flaxo.frontend.github.githubProfileUrl
 import org.w3c.dom.url.URLSearchParams
 import react.RBuilder
 import react.dom.a

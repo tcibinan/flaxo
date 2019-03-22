@@ -1,7 +1,7 @@
 package org.flaxo.frontend.component
 
-import kotlinx.coroutines.experimental.GlobalScope
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.html.ButtonType
 import org.flaxo.common.data.Course
 import org.flaxo.common.data.User
