@@ -3,7 +3,10 @@ package org.flaxo.common.data
 /**
  * Course settings.
  */
-class CourseSettings(
+data class CourseSettings(
+
+        override val id: Long,
+
         /**
          * Main programming language.
          */
@@ -18,4 +21,4 @@ class CourseSettings(
          * Testing programming language framework.
          */
         val testingFramework: String?
-)
+) : Identifiable

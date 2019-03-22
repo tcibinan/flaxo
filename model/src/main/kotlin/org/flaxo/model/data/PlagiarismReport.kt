@@ -37,6 +37,7 @@ data class PlagiarismReport(
 ) : Identifiable, Report, Viewable<PlagiarismReportView> {
 
     override fun view(): PlagiarismReportView = PlagiarismReportView(
+            id = id,
             url = url,
             date = DateTime(date),
             matches = matches.views()

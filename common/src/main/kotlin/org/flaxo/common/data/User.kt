@@ -1,9 +1,18 @@
 package org.flaxo.common.data
 
+import org.flaxo.common.DateTime
+
 /**
  * Flaxo user.
  */
-class User(
+data class User(
+
+        override val id: Long,
+
+        override val name: String,
+
+        override val date: DateTime,
+
         /**
          * User github nickname.
          */
@@ -12,7 +21,8 @@ class User(
         /**
          * User nickname.
          */
-        val nickname: String,
+        @Deprecated("Should be replaced with just a name.", replaceWith = ReplaceWith("name"))
+        val nickname: String = name,
 
         /**
          * Specifies if user is authorized in github using flaxo.
@@ -28,4 +38,4 @@ class User(
          * Specifies if user is authorized in codacy using flaxo.
          */
         val isCodacyAuthorized: Boolean
-)
+) : Identifiable, Named, Dated

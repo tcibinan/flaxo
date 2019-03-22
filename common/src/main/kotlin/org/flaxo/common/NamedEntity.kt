@@ -1,12 +1,9 @@
 package org.flaxo.common
 
+import org.flaxo.common.data.Named
+
 /**
  * Named entity interface.
  */
-interface NamedEntity {
-
-    /**
-     * Name of the entity.
-     */
-    val name: String
-}
+@Deprecated("Should be replace with just a Named interface", ReplaceWith("Named", "org.flaxo.common.data.Named"))
+interface NamedEntity: Named

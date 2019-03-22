@@ -3,7 +3,10 @@ package org.flaxo.common.data
 /**
  * Course state.
  */
-class CourseState(
+data class CourseState(
+
+        override val id: Long,
+
         /**
          * Course lifecycle status.
          */
@@ -13,4 +16,4 @@ class CourseState(
          * Course activated external services.
          */
         val activatedServices: List<ExternalService>
-)
+): Identifiable

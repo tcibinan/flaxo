@@ -1,16 +1,16 @@
 // todo: Replace with kotlinx.serialization features
 package org.flaxo.common.interop
 
+import org.flaxo.common.DateTime
 import org.flaxo.common.data.BuildReport
-import org.flaxo.common.data.CodeStyleReport
 import org.flaxo.common.data.CodeStyleGrade
+import org.flaxo.common.data.CodeStyleReport
 import org.flaxo.common.data.Commit
 import org.flaxo.common.data.Course
 import org.flaxo.common.data.CourseLifecycle
+import org.flaxo.common.data.CourseSettings
 import org.flaxo.common.data.CourseState
 import org.flaxo.common.data.CourseStatistics
-import org.flaxo.common.DateTime
-import org.flaxo.common.data.CourseSettings
 import org.flaxo.common.data.ExternalService
 import org.flaxo.common.data.GithubAuthData
 import org.flaxo.common.data.Language
@@ -37,15 +37,17 @@ fun languageFromDynamic(languageJson: dynamic): Language =
  * Converts a JS dynamic object to course.
  */
 fun courseFromDynamic(courseJson: dynamic): Course =
-        Course(name = courseJson.name,
+        Course(id=courseJson.id,
+                name = courseJson.name,
                 state = courseStateFromDynamic(courseJson.state),
                 settings = CourseSettings(
+                        id = courseJson.settings.id,
                         language = courseJson.settings.language,
                         testingLanguage = courseJson.settings.testingLanguage,
                         testingFramework = courseJson.settings.testingFramework
                 ),
                 description = courseJson.description,
-                createdDate = DateTime.fromDateTimeString(courseJson.createdDate as? String ?: FALLBACK_DATE),
+                date = DateTime.fromDateTimeString(courseJson.date as? String ?: FALLBACK_DATE),
                 tasks = (courseJson.tasks as Array<String>).toList(),
                 students = (courseJson.students as Array<String>).toList(),
                 url = courseJson.url,
@@ -55,8 +57,10 @@ fun courseFromDynamic(courseJson: dynamic): Course =
  * Converts a JS dynamic object to user.
  */
 fun userFromDynamic(userJson: dynamic): User =
-        User(githubId = userJson.githubId,
-                nickname = userJson.nickname,
+        User(id = userJson.id,
+                githubId = userJson.githubId,
+                name = userJson.name,
+                date = DateTime.fromDateTimeString(userJson.date as? String ?: FALLBACK_DATE),
                 isGithubAuthorized = userJson.githubAuthorized,
                 isTravisAuthorized = userJson.travisAuthorized,
                 isCodacyAuthorized = userJson.codacyAuthorized)
@@ -66,6 +70,7 @@ fun userFromDynamic(userJson: dynamic): User =
  */
 fun courseStateFromDynamic(courseStateJson: dynamic): CourseState {
     return CourseState(
+            id = courseStateJson.id,
             lifecycle = CourseLifecycle.valueOf(courseStateJson.lifecycle),
             activatedServices = (courseStateJson.activatedServices as? Array<String> ?: emptyArray())
                     .toList()
@@ -88,6 +93,8 @@ fun courseStatisticsFromDynamic(courseStatisticsJson: dynamic): CourseStatistics
  */
 fun taskFromDynamic(taskJson: dynamic): Task =
         Task(
+                id = taskJson.id,
+                name = taskJson.name,
                 branch = taskJson.branch,
                 deadline = nullableDateFromDynamic(taskJson.deadline),
                 plagiarismReports = (taskJson.plagiarismReports as? Array<dynamic> ?: emptyArray())
@@ -104,6 +111,7 @@ fun taskFromDynamic(taskJson: dynamic): Task =
  */
 fun solutionFromDynamic(solutionJson: dynamic): Solution =
         Solution(
+                id = solutionJson.id,
                 task = solutionJson.task,
                 student = solutionJson.student,
                 score = solutionJson.score,
@@ -124,6 +132,7 @@ fun solutionFromDynamic(solutionJson: dynamic): Solution =
  */
 fun codeStyleReportFromDynamic(codeStyleReportJson: dynamic): CodeStyleReport =
         CodeStyleReport(
+                id = codeStyleReportJson.id,
                 grade = CodeStyleGrade.valueOf(codeStyleReportJson.grade),
                 date = DateTime.fromDateTimeString(codeStyleReportJson.date as String)
         )
@@ -133,6 +142,7 @@ fun codeStyleReportFromDynamic(codeStyleReportJson: dynamic): CodeStyleReport =
  */
 fun buildReportFromDynamic(buildReportJson: dynamic): BuildReport =
         BuildReport(
+                id = buildReportJson.id,
                 succeed = buildReportJson.succeed,
                 date = DateTime.fromDateTimeString(buildReportJson.date as? String ?: FALLBACK_DATE)
         )
@@ -142,6 +152,7 @@ fun buildReportFromDynamic(buildReportJson: dynamic): BuildReport =
  */
 fun commitFromDynamic(commitJson: dynamic): Commit =
         Commit(
+                id = commitJson.id,
                 sha = commitJson.sha,
                 pullRequestId = commitJson.pullRequestId,
                 date = nullableDateFromDynamic(commitJson.date)
@@ -152,6 +163,7 @@ fun commitFromDynamic(commitJson: dynamic): Commit =
  */
 fun plagiarismReportFromDynamic(plagiarismReportJson: dynamic): PlagiarismReport =
         PlagiarismReport(
+                id = plagiarismReportJson.id,
                 url = plagiarismReportJson.url,
                 date = DateTime.fromDateTimeString(plagiarismReportJson.date as? String ?: FALLBACK_DATE),
                 matches = (plagiarismReportJson.matches as? Array<dynamic> ?: emptyArray())
@@ -164,6 +176,7 @@ fun plagiarismReportFromDynamic(plagiarismReportJson: dynamic): PlagiarismReport
  */
 fun plagiarismMatchFromDynamic(plagiarismMatchJson: dynamic): PlagiarismMatch =
         PlagiarismMatch(
+                id = plagiarismMatchJson.id,
                 url = plagiarismMatchJson.url,
                 student1 = plagiarismMatchJson.student1,
                 student2 = plagiarismMatchJson.student2,

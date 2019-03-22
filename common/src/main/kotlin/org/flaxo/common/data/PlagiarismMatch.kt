@@ -5,14 +5,23 @@ package org.flaxo.common.data
  *
  * It is a detected plagiarism match between two students solutions.
  */
-class PlagiarismMatch(
+data class PlagiarismMatch(
+
+        override val id: Long,
+
         /**
          * Plagiarism match source url.
          */
         val url: String,
 
+        /**
+         * First of the plagiarism match students.
+         */
         val student1: String,
 
+        /**
+         * Second of the plagiarism match students.
+         */
         val student2: String,
 
         /**
@@ -24,4 +33,4 @@ class PlagiarismMatch(
          * Percentage of matched lines between two solutions.
          */
         val percentage: Int
-)
+): Identifiable

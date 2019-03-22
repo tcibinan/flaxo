@@ -4,9 +4,9 @@ import org.flaxo.common.data.BuildReport
 import org.flaxo.common.data.CodeStyleReport
 import org.flaxo.common.data.Commit
 import org.flaxo.common.data.Course
+import org.flaxo.common.data.CourseSettings
 import org.flaxo.common.data.CourseState
 import org.flaxo.common.data.CourseStatistics
-import org.flaxo.common.data.CourseSettings
 import org.flaxo.common.data.Language
 import org.flaxo.common.data.PlagiarismMatch
 import org.flaxo.common.data.PlagiarismReport

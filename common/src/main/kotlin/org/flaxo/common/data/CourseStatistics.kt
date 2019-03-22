@@ -3,7 +3,8 @@ package org.flaxo.common.data
 /**
  * Course statistics.
  */
-class CourseStatistics(
+data class CourseStatistics(
+
         /**
          * Task statistics.
          */

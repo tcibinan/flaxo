@@ -7,11 +7,13 @@ import org.flaxo.common.DateTime
  *
  * Each course is associated with a git repository.
  */
-class Course(
-        /**
-         * Course and repository name.
-         */
-        val name: String,
+data class Course(
+
+        override val id: Long,
+
+        override val name: String,
+
+        override val date: DateTime,
 
         /**
          * Course description.
@@ -23,7 +25,8 @@ class Course(
         /**
          * Course creation date time.
          */
-        val createdDate: DateTime,
+        @Deprecated(message = "Should be replaced with just a date.", replaceWith = ReplaceWith("date"))
+        val createdDate: DateTime = date,
 
         /**
          * Course settings.
@@ -54,4 +57,4 @@ class Course(
          * Course tasks (branches) names.
          */
         val tasks: List<String>
-)
+) : Identifiable, Named, Dated

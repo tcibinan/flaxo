@@ -5,19 +5,19 @@ import org.flaxo.common.DateTime
 /**
  * Plagiarism report.
  */
-class PlagiarismReport(
+data class PlagiarismReport(
+
+        override val id: Long,
+
+        override val date: DateTime,
+
         /**
          * Plagiarism report source url.
          */
         val url: String,
 
         /**
-         * Plagiarism report creation date time.
-         */
-        val date: DateTime,
-
-        /**
          * Plagiarism report matches.
          */
         val matches: List<PlagiarismMatch>
-)
+) : Identifiable, Dated

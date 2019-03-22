@@ -3,11 +3,9 @@ package org.flaxo.common.data
 /**
  * Programming language.
  */
-class Language(
-        /**
-         * Language name.
-         */
-        val name: String,
+data class Language(
+
+        override val name: String,
 
         /**
          * List of compatible testing language names.
@@ -18,4 +16,4 @@ class Language(
          * List of compatible testing framework names.
          */
         val compatibleTestingFrameworks: List<String>
-)
+): Named

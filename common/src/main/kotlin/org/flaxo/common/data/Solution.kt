@@ -6,6 +6,9 @@ package org.flaxo.common.data
  * Each task represent a relationship between a single student and a single course task.
  */
 data class Solution(
+
+        override val id: Long,
+
         /**
          * Task name.
          */
@@ -47,4 +50,4 @@ data class Solution(
          * If set to true than solution score is frozen in its current state.
          */
         val approved: Boolean
-)
+) : Identifiable

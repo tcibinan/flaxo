@@ -35,6 +35,7 @@ class Commit(
 ) : Identifiable, Viewable<CommitView> {
 
     override fun view(): CommitView = CommitView(
+            id = id,
             sha = sha,
             pullRequestId = pullRequestId,
             date = date?.let { DateTime(date) }

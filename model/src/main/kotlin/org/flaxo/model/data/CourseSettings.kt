@@ -27,6 +27,7 @@ class CourseSettings(
 ) : Identifiable, Viewable<CourseSettingsView> {
 
     override fun view() = CourseSettingsView(
+            id = id,
             language = language,
             testingLanguage = testingLanguage,
             testingFramework = testingFramework

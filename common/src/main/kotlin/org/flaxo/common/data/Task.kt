@@ -8,10 +8,15 @@ import org.flaxo.common.DateTime
  * Each task is associated with a git branch.
  */
 data class Task(
+
+        override val id: Long,
+
         /**
          * Associated git branch name.
          */
         val branch: String,
+
+        override val name: String = branch,
 
         /**
          * Task deadline.
@@ -32,4 +37,4 @@ data class Task(
          * Task solutions.
          */
         val solutions: List<Solution>
-)
+) : Identifiable, Named

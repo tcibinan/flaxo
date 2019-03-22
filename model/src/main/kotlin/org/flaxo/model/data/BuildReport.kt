@@ -32,6 +32,7 @@ data class BuildReport(
 ) : Identifiable, Report, Viewable<BuildReportView> {
 
     override fun view(): BuildReportView = BuildReportView(
+            id = id,
             date = DateTime(date),
             succeed = succeed
     )

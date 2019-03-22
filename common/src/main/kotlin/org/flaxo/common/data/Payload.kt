@@ -1,6 +1,12 @@
 package org.flaxo.common.data
 
 /**
- * Http response payload.
+ * Flaxo http response object.
  */
-class Payload<T>(val payload: T?)
+data class Payload<T>(
+
+        /**
+         * Response payload.
+         */
+        val payload: T?
+)

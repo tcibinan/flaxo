@@ -3,11 +3,14 @@ package org.flaxo.common.data
 import org.flaxo.common.DateTime
 
 /**
- * Pull request commit.
+ * Solution commit.
  *
  * Each commit is associated with a single pull request.
  */
-class Commit(
+data class Commit(
+
+        override val id: Long,
+
         /**
          * Sha of the commit. Git identifier
          */
@@ -24,4 +27,4 @@ class Commit(
          * Commit creation date time.
          */
         val date: DateTime?
-)
+) : Identifiable

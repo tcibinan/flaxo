@@ -43,6 +43,7 @@ data class Solution(
 ) : Identifiable, Viewable<SolutionView> {
 
     override fun view(): SolutionView = SolutionView(
+            id = id,
             task = task.branch,
             student = student.nickname,
             score = score,

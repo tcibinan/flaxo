@@ -5,14 +5,14 @@ import org.flaxo.common.DateTime
 /**
  * Solution build report.
  */
-class BuildReport(
+data class BuildReport(
+
+        override val id: Long,
+
+        override val date: DateTime,
+
         /**
          * Specifies if the build report was succeed.
          */
-        val succeed: Boolean,
-
-        /**
-         * Build report creation date time.
-         */
-        val date: DateTime
-)
+        val succeed: Boolean
+): Identifiable, Dated

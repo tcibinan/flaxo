@@ -1,7 +1,7 @@
 package org.flaxo.model.data
 
-import org.flaxo.common.data.CodeStyleGrade
 import org.flaxo.common.DateTime
+import org.flaxo.common.data.CodeStyleGrade
 import org.flaxo.model.CodeStyleReportView
 import java.time.LocalDateTime
 import java.util.Objects
@@ -33,6 +33,7 @@ data class CodeStyleReport(
 ) : Identifiable, Report, Viewable<CodeStyleReportView> {
 
     override fun view(): CodeStyleReportView = CodeStyleReportView(
+            id = id,
             date = DateTime(date),
             grade = grade
     )

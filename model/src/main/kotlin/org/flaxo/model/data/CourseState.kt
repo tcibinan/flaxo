@@ -30,6 +30,7 @@ data class CourseState(
 ) : Identifiable, Viewable<CourseStateView> {
 
     override fun view(): CourseStateView = CourseStateView(
+            id = id,
             lifecycle = lifecycle,
             activatedServices = activatedServices.toList()
     )

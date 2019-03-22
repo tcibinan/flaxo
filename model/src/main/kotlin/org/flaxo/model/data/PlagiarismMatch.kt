@@ -31,6 +31,7 @@ data class PlagiarismMatch(
 ) : Identifiable, Viewable<PlagiarismMatchView> {
 
     override fun view(): PlagiarismMatchView = PlagiarismMatchView(
+            id = id,
             url = url,
             student1 = student1,
             student2 = student2,

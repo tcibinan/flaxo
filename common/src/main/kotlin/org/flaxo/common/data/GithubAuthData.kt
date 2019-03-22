@@ -3,7 +3,15 @@ package org.flaxo.common.data
 /**
  * Github authentication parameters.
  */
-class GithubAuthData(
+data class GithubAuthData(
+
+        /**
+         * GitHub authorization url.
+         */
         val redirectUrl: String,
+
+        /**
+         * GitHub authorization requests parameters.
+         */
         val requestParams: Map<String, String>
 )
