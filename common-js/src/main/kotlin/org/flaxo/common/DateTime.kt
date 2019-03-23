@@ -1,5 +1,8 @@
 package org.flaxo.common
 
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Serializer
+import kotlinx.serialization.Transient
 import kotlin.math.floor
 import kotlin.math.roundToInt
 
@@ -8,9 +11,11 @@ private const val MILLIS_IN_DAY = 1000 * 60 * 60 * 24
 /**
  * JavaScript implementation of a multiplatform datetime.
  */
-actual class DateTime private constructor(private val date: kotlin.js.Date) {
+@Serializable
+actual class DateTime private constructor(@Transient private val date: kotlin.js.Date = kotlin.js.Date()) {
 
-    actual companion object {
+    @Serializer(forClass = DateTime::class)
+    actual companion object : DateTimeSerializer {
 
         actual fun fromDateTimeString(string: String): DateTime = DateTime(kotlin.js.Date(string))
 

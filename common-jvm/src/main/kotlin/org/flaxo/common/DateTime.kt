@@ -1,14 +1,19 @@
 package org.flaxo.common
 
 import com.fasterxml.jackson.annotation.JsonValue
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Serializer
+import kotlinx.serialization.Transient
 import java.time.LocalDateTime
 
 /**
  * JVM implementation of a multiplatform datetime.
  */
-actual class DateTime(private val dateTime: LocalDateTime) {
+@Serializable
+actual class DateTime(@Transient private val dateTime: LocalDateTime = LocalDateTime.now()) {
 
-    actual companion object {
+    @Serializer(forClass = DateTime::class)
+    actual companion object : DateTimeSerializer {
 
         actual fun fromDateTimeString(string: String): DateTime = DateTime(LocalDateTime.parse(string))
 

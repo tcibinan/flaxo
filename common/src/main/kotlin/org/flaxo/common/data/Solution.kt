@@ -1,10 +1,13 @@
 package org.flaxo.common.data
 
+import kotlinx.serialization.Serializable
+
 /**
  * Course task solution.
  *
  * Each task represent a relationship between a single student and a single course task.
  */
+@Serializable
 data class Solution(
 
         override val id: Long,

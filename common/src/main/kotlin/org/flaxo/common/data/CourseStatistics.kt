@@ -1,8 +1,11 @@
 package org.flaxo.common.data
 
+import kotlinx.serialization.Serializable
+
 /**
  * Course statistics.
  */
+@Serializable
 data class CourseStatistics(
 
         /**

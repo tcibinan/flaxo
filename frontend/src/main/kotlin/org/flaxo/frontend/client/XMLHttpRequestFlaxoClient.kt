@@ -1,5 +1,10 @@
 package org.flaxo.frontend.client
 
+import kotlinx.serialization.ImplicitReflectionSerializer
+import kotlinx.serialization.json.JSON
+import kotlinx.serialization.list
+import kotlinx.serialization.serializer
+import kotlinx.serialization.stringify
 import org.flaxo.common.data.Course
 import org.flaxo.common.data.CourseStatistics
 import org.flaxo.common.data.GithubAuthData
@@ -8,12 +13,6 @@ import org.flaxo.common.data.Payload
 import org.flaxo.common.data.Solution
 import org.flaxo.common.data.SolutionReview
 import org.flaxo.common.data.User
-import org.flaxo.common.interop.courseFromDynamic
-import org.flaxo.common.interop.courseStatisticsFromDynamic
-import org.flaxo.common.interop.githubAuthDataFromDynamic
-import org.flaxo.common.interop.languageFromDynamic
-import org.flaxo.common.interop.solutionFromDynamic
-import org.flaxo.common.interop.userFromDynamic
 import org.flaxo.frontend.Credentials
 
 /**
@@ -42,7 +41,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
             post {
                 apiMethod = "/user/register"
                 params = mapOf(NICKNAME to credentials.username, PASSWORD to credentials.password)
-                onSuccess = { response -> userFromDynamic(JSON.parse<Payload<dynamic>>(response).payload) }
+                onSuccess = { response -> JSON.parse(Payload.serializer(User.serializer()), response).payload!! }
                 errorMessage = "User registering failed."
             }
 
@@ -50,7 +49,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
             get {
                 apiMethod = "/user"
                 creds = credentials
-                onSuccess = { response -> userFromDynamic(JSON.parse<Payload<dynamic>>(response).payload) }
+                onSuccess = { response -> JSON.parse(Payload.serializer(User.serializer()), response).payload!! }
                 errorMessage = "Current user retrieving failed."
             }
 
@@ -59,13 +58,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
                 apiMethod = "/course/all"
                 params = mapOf(NICKNAME to username)
                 creds = credentials
-                onSuccess = { response ->
-                    JSON.parse<Payload<Array<dynamic>>>(response)
-                            .payload
-                            ?.toList()
-                            ?.map { courseFromDynamic(it) }
-                            ?: throw FlaxoHttpException("There are no courses in the server response.")
-                }
+                onSuccess = { response -> JSON.parse(Payload.serializer(Course.serializer().list), response).payload!! }
                 errorMessage = "User courses retrieving failed."
             }
 
@@ -86,7 +79,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
                         TESTING_FRAMEWORK to testingFramework,
                         NUMBER_OF_TASKS to numberOfTasks)
                 creds = credentials
-                onSuccess = { response -> courseFromDynamic(JSON.parse<Payload<dynamic>>(response).payload) }
+                onSuccess = { response -> JSON.parse(Payload.serializer(Course.serializer()), response).payload!! }
                 errorMessage = "Course creation failed."
             }
 
@@ -94,11 +87,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
             get {
                 apiMethod = "/settings/languages"
                 onSuccess = { response ->
-                    JSON.parse<Payload<Array<dynamic>>>(response)
-                            .payload
-                            ?.toList()
-                            ?.map { languageFromDynamic(it) }
-                            ?: emptyList()
+                    JSON.parse(Payload.serializer(Language.serializer().list), response).payload!!
                 }
                 errorMessage = "Available languages retrieving failed."
             }
@@ -111,7 +100,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
                 apiMethod = "/statistics"
                 params = mapOf(OWNER to username, COURSE to courseName)
                 creds = credentials
-                onSuccess = { response -> courseStatisticsFromDynamic(JSON.parse<Payload<dynamic>>(response).payload) }
+                onSuccess = { response -> JSON.parse(Payload.serializer(CourseStatistics.serializer()), response).payload!! }
                 errorMessage = "Course statistics retrieving failed."
             }
 
@@ -120,12 +109,12 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
                 apiMethod = "/course/activate"
                 params = mapOf(COURSE_NAME to courseName)
                 creds = credentials
-                onSuccess = { response -> courseFromDynamic(JSON.parse<Payload<dynamic>>(response).payload) }
+                onSuccess = { response -> JSON.parse(Payload.serializer(Course.serializer()), response).payload!! }
                 errorMessage = "Course starting failed."
             }
 
-    override suspend fun deleteCourse(credentials: Credentials, courseName: String): Unit {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override suspend fun deleteCourse(credentials: Credentials, courseName: String) {
+        // TODO 23.03.19: Delete course but not the repository.
     }
 
     override suspend fun analysePlagiarism(credentials: Credentials, courseName: String, task: String): Unit =
@@ -156,6 +145,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
                 errorMessage = "Task rules updating failed."
             }
 
+    @ImplicitReflectionSerializer
     override suspend fun updateScores(credentials: Credentials,
                                       courseName: String,
                                       task: String,
@@ -165,9 +155,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
                 apiMethod = "/task/update/scores"
                 params = mapOf(COURSE_NAME to courseName, TASK_BRANCH to task)
                 creds = credentials
-                body = scores.map { (a, b) -> "\"$a\": $b" }
-                        .joinToString(", ", "{", "}")
-                        .let { JSON.parse<Map<String, Int>>(it) }
+                body = JSON.stringify(scores)
                 errorMessage = "Task scores updating failed."
             }
 
@@ -208,10 +196,12 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
             get {
                 apiMethod = "/github/auth"
                 creds = credentials
-                onSuccess = { response -> githubAuthDataFromDynamic(JSON.parse<Payload<dynamic>>(response).payload) }
+                onSuccess = { response ->
+                    JSON.parse(Payload.serializer(GithubAuthData.serializer()), response).payload!! }
                 errorMessage = "Github auth data retrieving failed."
             }
 
+    @ImplicitReflectionSerializer
     override suspend fun updateSolutionApprovals(credentials: Credentials,
                                                  courseName: String,
                                                  task: String,
@@ -221,17 +211,9 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
                 apiMethod = "/task/update/approvals"
                 params = mapOf(COURSE_NAME to courseName, TASK_BRANCH to task)
                 creds = credentials
-                // TODO 01.10.18: This is some common logic. It should be moved somewhere and become shared.
-                body = approvals
-                        .mapValues { (_, b) -> JSON.stringify(b) }
-                        .map { (a, b) -> "\"$a\": $b" }
-                        .joinToString(", ", "{", "}")
-                        .let { JSON.parse<Map<String, SolutionReview>>(it) }
+                body = JSON.stringify(approvals)
                 onSuccess = { response ->
-                    // TODO 01.10.18: Think about how to write tests for such a logic
-                    JSON.parse<Payload<Array<dynamic>>>(response).payload?.toList()
-                            ?.map { solutionFromDynamic(it) }
-                            .orEmpty()
+                    JSON.parse(Payload.serializer(Solution.serializer().list), response).payload!!
                 }
                 errorMessage = "Task approvals updating failed."
             }
@@ -243,7 +225,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
         apiMethod = "/moss/graph/token"
         params = mapOf(COURSE_NAME to courseName, TASK_BRANCH to task)
         creds = credentials
-        onSuccess = { response -> JSON.parse<Payload<String>>(response).payload.orEmpty() }
+        onSuccess = { response -> JSON.parse(Payload.serializer(String.serializer()), response).payload!! }
         errorMessage = "Plagiarism graph access token generation retrieving failed."
     }
 

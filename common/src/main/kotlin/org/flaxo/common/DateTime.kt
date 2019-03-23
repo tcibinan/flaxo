@@ -1,11 +1,21 @@
 package org.flaxo.common
 
+import kotlinx.serialization.Decoder
+import kotlinx.serialization.Encoder
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.SerialDescriptor
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Serializer
+import kotlinx.serialization.internal.StringDescriptor
+
 /**
  * Multiplatform date time class.
  */
+@Serializable
 expect class DateTime {
 
-    companion object {
+    @Serializer(forClass = DateTime::class)
+    companion object : DateTimeSerializer {
 
         /**
          * Parse date time from the string of the following format:
@@ -32,4 +42,13 @@ expect class DateTime {
     fun toDateString(): String
 
     operator fun compareTo(other: DateTime): Int
+}
+
+interface DateTimeSerializer : KSerializer<DateTime> {
+
+    override val descriptor: SerialDescriptor get() = StringDescriptor
+
+    override fun deserialize(input: Decoder): DateTime = DateTime.fromDateTimeString(input.decodeString())
+
+    override fun serialize(output: Encoder, obj: DateTime) = output.encodeString(obj.toDateTimeString())
 }

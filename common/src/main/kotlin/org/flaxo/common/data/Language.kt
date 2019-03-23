@@ -1,8 +1,11 @@
 package org.flaxo.common.data
 
+import kotlinx.serialization.Serializable
+
 /**
  * Programming language.
  */
+@Serializable
 data class Language(
 
         override val name: String,

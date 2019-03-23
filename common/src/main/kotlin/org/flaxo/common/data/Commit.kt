@@ -1,5 +1,6 @@
 package org.flaxo.common.data
 
+import kotlinx.serialization.Serializable
 import org.flaxo.common.DateTime
 
 /**
@@ -7,6 +8,7 @@ import org.flaxo.common.DateTime
  *
  * Each commit is associated with a single pull request.
  */
+@Serializable
 data class Commit(
 
         override val id: Long,

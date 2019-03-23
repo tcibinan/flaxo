@@ -1,10 +1,12 @@
 package org.flaxo.common.data
 
+import kotlinx.serialization.Serializable
 import org.flaxo.common.DateTime
 
 /**
  * Solution code style report.
  */
+@Serializable
 data class CodeStyleReport(
 
         override val id: Long,

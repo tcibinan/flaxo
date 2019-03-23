@@ -1,10 +1,12 @@
 package org.flaxo.common.data
 
+import kotlinx.serialization.Serializable
 import org.flaxo.common.DateTime
 
 /**
  * Flaxo user.
  */
+@Serializable
 data class User(
 
         override val id: Long,

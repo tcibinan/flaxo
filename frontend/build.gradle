@@ -10,10 +10,13 @@ buildscript {
     }
 
     dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
         classpath 'org.jetbrains.kotlin:kotlin-frontend-plugin:0.0.37'
     }
 }
 
+apply plugin: 'kotlinx-serialization'
 apply plugin: 'kotlin-platform-js'
 apply plugin: 'org.jetbrains.kotlin.frontend'
 apply plugin: 'kotlin-dce-js'
@@ -22,6 +25,7 @@ repositories {
     mavenCentral()
     maven { url 'http://dl.bintray.com/kotlin/kotlin-js-wrappers' }
     maven { url 'http://dl.bintray.com/kotlin/kotlinx.html' }
+    maven { url "https://kotlin.bintray.com/kotlinx" }
 }
 
 dependencies {
@@ -31,6 +35,7 @@ dependencies {
     compile "org.jetbrains:kotlin-react:16.6.0-pre.69-kotlin-$kotlin_version",
             "org.jetbrains:kotlin-react-dom:16.6.0-pre.69-kotlin-$kotlin_version"
     compile 'org.jetbrains.kotlinx:kotlinx-coroutines-core-js:0.27.0-eap13'
+    compile 'org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:0.9.0'
 }
 
 compileKotlin2Js {

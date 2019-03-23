@@ -1,8 +1,11 @@
 package org.flaxo.common.data
 
+import kotlinx.serialization.Serializable
+
 /**
  * Course state.
  */
+@Serializable
 data class CourseState(
 
         override val id: Long,

@@ -1,10 +1,13 @@
 package org.flaxo.common.data
 
+import kotlinx.serialization.Serializable
+
 /**
  * Plagiarism match.
  *
  * It is a detected plagiarism match between two students solutions.
  */
+@Serializable
 data class PlagiarismMatch(
 
         override val id: Long,

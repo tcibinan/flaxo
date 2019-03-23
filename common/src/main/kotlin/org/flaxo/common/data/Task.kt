@@ -1,5 +1,6 @@
 package org.flaxo.common.data
 
+import kotlinx.serialization.Serializable
 import org.flaxo.common.DateTime
 
 /**
@@ -7,6 +8,7 @@ import org.flaxo.common.DateTime
  *
  * Each task is associated with a git branch.
  */
+@Serializable
 data class Task(
 
         override val id: Long,

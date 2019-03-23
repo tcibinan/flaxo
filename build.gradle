@@ -19,6 +19,7 @@ configure(javaProjects) {
         mavenCentral()
         jcenter()
         maven { url "http://dl.bintray.com/jetbrains/spek" }
+        maven { url "https://kotlin.bintray.com/kotlinx" }
     }
 
     dependencies {
@@ -41,9 +42,10 @@ configure(javaProjects) {
         // Mock
         testCompile "com.nhaarman:mockito-kotlin:1.5.0"
 
-        // Json
+        // Serialization
         compile 'com.fasterxml.jackson.module:jackson-module-kotlin:2.9.4.1'
         compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.4'
+        compile 'org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.9.0'
         
         // Log4j
         compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.1'

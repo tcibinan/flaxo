@@ -1,12 +1,31 @@
+buildscript {
+    ext.kotlin_version = '1.3.21'
+    
+    repositories {
+        mavenCentral()
+        maven {
+            url 'https://dl.bintray.com/kotlin/kotlin-eap'
+        }
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
+    }
+}
+
 apply plugin: 'kotlin-platform-js'
+apply plugin: 'kotlinx-serialization'
 
 repositories {
     mavenCentral()
+    maven { url "https://kotlin.bintray.com/kotlinx" }
 }
 
 dependencies {
     expectedBy project(":common")
     compile "org.jetbrains.kotlin:kotlin-stdlib-js:1.3.21"
+    compile 'org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:0.9.0'
 }
 
 compileKotlin2Js {
