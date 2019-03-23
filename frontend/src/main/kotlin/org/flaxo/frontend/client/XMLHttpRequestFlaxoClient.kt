@@ -9,7 +9,6 @@ import org.flaxo.common.data.Course
 import org.flaxo.common.data.CourseStatistics
 import org.flaxo.common.data.GithubAuthData
 import org.flaxo.common.data.Language
-import org.flaxo.common.data.Payload
 import org.flaxo.common.data.Solution
 import org.flaxo.common.data.SolutionReview
 import org.flaxo.common.data.User
@@ -41,7 +40,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
             post {
                 apiMethod = "/user/register"
                 params = mapOf(NICKNAME to credentials.username, PASSWORD to credentials.password)
-                onSuccess = { response -> JSON.parse(Payload.serializer(User.serializer()), response).payload!! }
+                onSuccess = { response -> JSON.parse(User.serializer(), response) }
                 errorMessage = "User registering failed."
             }
 
@@ -49,7 +48,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
             get {
                 apiMethod = "/user"
                 creds = credentials
-                onSuccess = { response -> JSON.parse(Payload.serializer(User.serializer()), response).payload!! }
+                onSuccess = { response -> JSON.parse(User.serializer(), response) }
                 errorMessage = "Current user retrieving failed."
             }
 
@@ -58,7 +57,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
                 apiMethod = "/course/all"
                 params = mapOf(NICKNAME to username)
                 creds = credentials
-                onSuccess = { response -> JSON.parse(Payload.serializer(Course.serializer().list), response).payload!! }
+                onSuccess = { response -> JSON.parse(Course.serializer().list, response) }
                 errorMessage = "User courses retrieving failed."
             }
 
@@ -79,16 +78,14 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
                         TESTING_FRAMEWORK to testingFramework,
                         NUMBER_OF_TASKS to numberOfTasks)
                 creds = credentials
-                onSuccess = { response -> JSON.parse(Payload.serializer(Course.serializer()), response).payload!! }
+                onSuccess = { response -> JSON.parse(Course.serializer(), response) }
                 errorMessage = "Course creation failed."
             }
 
     override suspend fun getAvailableLanguages(): List<Language> =
             get {
                 apiMethod = "/settings/languages"
-                onSuccess = { response ->
-                    JSON.parse(Payload.serializer(Language.serializer().list), response).payload!!
-                }
+                onSuccess = { response -> JSON.parse(Language.serializer().list, response) }
                 errorMessage = "Available languages retrieving failed."
             }
 
@@ -100,7 +97,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
                 apiMethod = "/statistics"
                 params = mapOf(OWNER to username, COURSE to courseName)
                 creds = credentials
-                onSuccess = { response -> JSON.parse(Payload.serializer(CourseStatistics.serializer()), response).payload!! }
+                onSuccess = { response -> JSON.parse(CourseStatistics.serializer(), response) }
                 errorMessage = "Course statistics retrieving failed."
             }
 
@@ -109,7 +106,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
                 apiMethod = "/course/activate"
                 params = mapOf(COURSE_NAME to courseName)
                 creds = credentials
-                onSuccess = { response -> JSON.parse(Payload.serializer(Course.serializer()), response).payload!! }
+                onSuccess = { response -> JSON.parse(Course.serializer(), response) }
                 errorMessage = "Course starting failed."
             }
 
@@ -196,8 +193,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
             get {
                 apiMethod = "/github/auth"
                 creds = credentials
-                onSuccess = { response ->
-                    JSON.parse(Payload.serializer(GithubAuthData.serializer()), response).payload!! }
+                onSuccess = { response -> JSON.parse(GithubAuthData.serializer(), response) }
                 errorMessage = "Github auth data retrieving failed."
             }
 
@@ -212,9 +208,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
                 params = mapOf(COURSE_NAME to courseName, TASK_BRANCH to task)
                 creds = credentials
                 body = JSON.stringify(approvals)
-                onSuccess = { response ->
-                    JSON.parse(Payload.serializer(Solution.serializer().list), response).payload!!
-                }
+                onSuccess = { response -> JSON.parse(Solution.serializer().list, response) }
                 errorMessage = "Task approvals updating failed."
             }
 
@@ -225,7 +219,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
         apiMethod = "/moss/graph/token"
         params = mapOf(COURSE_NAME to courseName, TASK_BRANCH to task)
         creds = credentials
-        onSuccess = { response -> JSON.parse(Payload.serializer(String.serializer()), response).payload!! }
+        onSuccess = { response -> JSON.parse(String.serializer(), response) }
         errorMessage = "Plagiarism graph access token generation retrieving failed."
     }
 

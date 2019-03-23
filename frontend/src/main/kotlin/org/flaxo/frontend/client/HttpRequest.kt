@@ -2,7 +2,8 @@ package org.flaxo.frontend.client
 
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
-import org.flaxo.common.data.Payload
+import kotlinx.serialization.json.JSON
+import kotlinx.serialization.serializer
 import org.flaxo.frontend.Credentials
 import org.flaxo.frontend.wrapper.btoa
 import org.flaxo.frontend.wrapper.encodeURIComponent
@@ -110,7 +111,7 @@ class HttpRequest<T> {
                 }
                 if (body != null) {
                     setRequestHeader("Content-Type", "application/json")
-                    send(JSON.stringify(body))
+                    send(body)
                 } else {
                     send()
                 }
@@ -124,7 +125,7 @@ class HttpRequest<T> {
 
     private fun errorPayload(request: XMLHttpRequest): String? =
             try {
-                JSON.parse<Payload<String>>(request.responseText).payload
+                JSON.parse(String.serializer(), request.responseText)
             } catch (e: Throwable) {
                 onFailure?.invoke(null)
                 throw FlaxoHttpException(errorMessage + "\n" + request.responseText)

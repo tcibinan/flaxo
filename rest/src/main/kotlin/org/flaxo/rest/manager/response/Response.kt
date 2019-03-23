@@ -1,6 +1,5 @@
 package org.flaxo.rest.manager.response
 
-import org.flaxo.common.data.Payload
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 
@@ -8,6 +7,6 @@ import org.springframework.http.ResponseEntity
  * Http response.
  */
 class Response<T> : ResponseEntity<Any> {
-    constructor(body: T?, status: HttpStatus): super(Payload(body), status)
-    constructor(message: String, status: HttpStatus): super(Payload(message), status)
+    constructor(body: T?, status: HttpStatus): super(body, status)
+    constructor(message: String, status: HttpStatus): super(message, status)
 }
