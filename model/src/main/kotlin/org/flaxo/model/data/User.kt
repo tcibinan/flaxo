@@ -49,9 +49,9 @@ data class User(
             name = nickname,
             date = DateTime(LocalDateTime.now()),
             githubId = githubId,
-            isGithubAuthorized = credentials.githubToken != null,
-            isTravisAuthorized = credentials.travisToken != null,
-            isCodacyAuthorized = credentials.codacyToken != null
+            githubAuthorized = credentials.githubToken != null,
+            travisAuthorized = credentials.travisToken != null,
+            codacyAuthorized = credentials.codacyToken != null
     )
 
     override fun toString() = "${this::class.simpleName}(id=$id)"

@@ -5,17 +5,15 @@ import kotlinx.serialization.Encoder
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialDescriptor
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Serializer
 import kotlinx.serialization.internal.StringDescriptor
 
 /**
  * Multiplatform date time class.
  */
-@Serializable
+@Serializable(with = DateTimeSerializer::class)
 expect class DateTime {
 
-    @Serializer(forClass = DateTime::class)
-    companion object : DateTimeSerializer {
+    companion object {
 
         /**
          * Parse date time from the string of the following format:
@@ -44,11 +42,12 @@ expect class DateTime {
     operator fun compareTo(other: DateTime): Int
 }
 
-interface DateTimeSerializer : KSerializer<DateTime> {
+class DateTimeSerializer : KSerializer<DateTime> {
 
-    override val descriptor: SerialDescriptor get() = StringDescriptor
+    override val descriptor: SerialDescriptor = StringDescriptor
 
     override fun deserialize(input: Decoder): DateTime = DateTime.fromDateTimeString(input.decodeString())
 
     override fun serialize(output: Encoder, obj: DateTime) = output.encodeString(obj.toDateTimeString())
+
 }

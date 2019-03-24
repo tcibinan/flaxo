@@ -23,15 +23,15 @@ data class User(
         /**
          * Specifies if user is authorized in github using flaxo.
          */
-        val isGithubAuthorized: Boolean,
+        val githubAuthorized: Boolean,
 
         /**
          * Specifies if user is authorized in travis using flaxo.
          */
-        val isTravisAuthorized: Boolean,
+        val travisAuthorized: Boolean,
 
         /**
          * Specifies if user is authorized in codacy using flaxo.
          */
-        val isCodacyAuthorized: Boolean
+        val codacyAuthorized: Boolean
 ) : Identifiable, Named, Dated

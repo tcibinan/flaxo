@@ -62,7 +62,7 @@ fun RBuilder.codacyModal(user: User) =
                         }
                     }
                     div(classes = "modal-body") {
-                        if (user.isCodacyAuthorized) {
+                        if (user.codacyAuthorized) {
                             p { b { +"You are already authorized with codacy." } }
                         }
                         div(classes = "form-group") {

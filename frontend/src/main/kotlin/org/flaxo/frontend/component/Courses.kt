@@ -61,7 +61,7 @@ private class Courses(props: CoursesProps) : RComponent<CoursesProps, CoursesSta
                     attrs {
                         attributes["data-toggle"] = "modal"
                         attributes["data-target"] = "#$COURSE_CREATION_MODAL_ID"
-                        disabled = !props.user.isGithubAuthorized
+                        disabled = !props.user.githubAuthorized
                     }
                     +"Create course"
                 }

@@ -97,13 +97,13 @@ private class NavigationBar(props: NavigationBarProps) : RComponent<NavigationBa
                             }
                             a(href = "#") {
                                 attrs {
-                                    classes = if (props.user.isGithubAuthorized) setOf("dropdown-item")
+                                    classes = if (props.user.githubAuthorized) setOf("dropdown-item")
                                     else setOf("dropdown-item", "pending-service")
                                     attributes["data-toggle"] = "modal"
                                     attributes["data-target"] = "#$GITHUB_MODAL_ID"
                                 }
                                 span { +"Github" }
-                                if (!props.user.isGithubAuthorized) {
+                                if (!props.user.githubAuthorized) {
                                     i(classes = "material-icons pending-service-label") { +"radio_button_unchecked" }
                                 }
                             }
@@ -117,13 +117,13 @@ private class NavigationBar(props: NavigationBarProps) : RComponent<NavigationBa
                             }
                             a(href = "#") {
                                 attrs {
-                                    classes = if (props.user.isCodacyAuthorized) setOf("dropdown-item")
+                                    classes = if (props.user.codacyAuthorized) setOf("dropdown-item")
                                     else setOf("dropdown-item", "pending-service")
                                     attributes["data-toggle"] = "modal"
                                     attributes["data-target"] = "#$CODACY_MODAL_ID"
                                 }
                                 span { +"Codacy" }
-                                if (!props.user.isCodacyAuthorized) {
+                                if (!props.user.codacyAuthorized) {
                                     i(classes = "material-icons pending-service-label") { +"radio_button_unchecked" }
                                 }
                             }

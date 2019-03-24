@@ -47,7 +47,7 @@ fun RBuilder.travisModal(user: User) =
                         }
                     }
                     div(classes = "modal-body") {
-                        if (user.isTravisAuthorized) {
+                        if (user.travisAuthorized) {
                             p {
                                 b { +"You are already authorized with travis. " }
                                 +"Flaxo retrieved travis token in background using your github token."

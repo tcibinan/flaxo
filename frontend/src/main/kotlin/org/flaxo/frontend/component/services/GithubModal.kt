@@ -56,7 +56,7 @@ fun RBuilder.githubModal(user: User) =
                         }
                     }
                     div(classes = "modal-body") {
-                        if (user.isGithubAuthorized) {
+                        if (user.githubAuthorized) {
                             p {
                                 +"Your github account is "
                                 a(href = user.githubId?.let { githubProfileUrl(it) } ?: "") {
