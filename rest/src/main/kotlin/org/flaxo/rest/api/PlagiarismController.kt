@@ -21,8 +21,7 @@ import java.util.concurrent.TimeUnit
  * Moss plagiarism analysis controller.
  */
 @RestController
-// TODO 14.03.19: Change endpoint to /rest/plagiarism.
-@RequestMapping("/rest/moss")
+@RequestMapping("/rest/plagiarism")
 class PlagiarismController(private val plagiarismManager: PlagiarismManager,
                            private val responseManager: ResponseManager) {
     /**

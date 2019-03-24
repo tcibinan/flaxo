@@ -210,7 +210,7 @@ private class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
                 val graphToken = flaxoClient.getPlagiarismGraphAccessToken(credentials, course.name, task.branch)
                 document.getElementById(PLAGIARISM_IFRAME_ID)
                         ?.let { it as? HTMLIFrameElement }
-                        ?.src = "$data2GraphUrl/?graph_url=$restUrl/moss/graph/$graphToken"
+                        ?.src = "$data2GraphUrl/?graph_url=$restUrl/plagiarism/graph/$graphToken"
             } catch (e: FlaxoHttpException) {
                 console.log(e)
                 Notifications.error("Error occurred while loading plagiarism graph", e)
