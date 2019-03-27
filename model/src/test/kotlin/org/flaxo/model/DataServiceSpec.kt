@@ -19,8 +19,8 @@ import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.subject.SubjectSpek
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.transaction.PlatformTransactionManager
-import org.springframework.transaction.support.DefaultTransactionDefinition
 import org.springframework.transaction.TransactionStatus
+import org.springframework.transaction.support.DefaultTransactionDefinition
 
 class DataServiceSpec : SubjectSpek<DataManager>({
     val nickname = "nickname"
@@ -34,6 +34,9 @@ class DataServiceSpec : SubjectSpek<DataManager>({
     val language = "language"
     val testLanguage = "testLanguage"
     val testingFramework = "testingFramework"
+    val anotherLanguage = "anotherLanguage"
+    val anotherTestingLanguage = "anotherTestingLanuage"
+    val anotherTestingFramework = "anotherTestingFramework"
     val tasksPrefix = "task-"
     val numberOfTasks = 4
     val student = "student"
@@ -231,7 +234,7 @@ class DataServiceSpec : SubjectSpek<DataManager>({
                     ?: throw EntityNotFound("User $nickname")
             val course = subject.getCourse(courseName, owner)
                     ?: throw EntityNotFound("Course $courseName")
-            val updatedCourse = course
+            val updatingCourse = course
                     .copy(
                             state = course.state.copy(
                                     lifecycle = CourseLifecycle.RUNNING,
@@ -239,9 +242,15 @@ class DataServiceSpec : SubjectSpek<DataManager>({
                                             ExternalService.GITHUB,
                                             ExternalService.TRAVIS
                                     )
+                            ),
+                            settings = course.settings.copy(
+                                    language = anotherLanguage,
+                                    testingLanguage = anotherTestingLanguage,
+                                    testingFramework = anotherTestingFramework
                             )
                     )
-                    .also { subject.updateCourse(it) }
+            subject.updateCourse(updatingCourse)
+            val updatedCourse = subject.getCourse(courseName, owner)!!
 
             it("should change its state lifecycle") {
                 updatedCourse.state.lifecycle shouldEqual CourseLifecycle.RUNNING
@@ -255,6 +264,12 @@ class DataServiceSpec : SubjectSpek<DataManager>({
                 updatedCourse.state.activatedServices shouldContainNone listOf(
                         ExternalService.CODACY
                 )
+            }
+
+            it("should change its settings") {
+                updatedCourse.settings.language shouldEqual anotherLanguage
+                updatedCourse.settings.testingLanguage shouldEqual anotherTestingLanguage
+                updatedCourse.settings.testingFramework shouldEqual anotherTestingFramework
             }
         }
 

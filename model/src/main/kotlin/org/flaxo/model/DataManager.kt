@@ -99,6 +99,11 @@ interface DataManager {
     fun getCourse(name: String, owner: User): Course?
 
     /**
+     * Retrieves a course by its [id].
+     */
+    fun getCourse(id: Long): Course?
+
+    /**
      * Retrieves all courses of the user with [userNickname].
      */
     fun getCourses(userNickname: String): Set<Course>

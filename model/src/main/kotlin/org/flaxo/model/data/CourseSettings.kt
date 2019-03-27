@@ -13,7 +13,7 @@ import javax.persistence.Table
  */
 @Entity(name = "course_settings")
 @Table(name = "course_settings")
-class CourseSettings(
+data class CourseSettings(
 
         @Id
         @GeneratedValue
@@ -40,3 +40,10 @@ class CourseSettings(
 
     override fun equals(other: Any?): Boolean = this::class.isInstance(other) && other is Identifiable && other.id == id
 }
+
+fun CourseSettingsView.model(): CourseSettings = CourseSettings(
+        id = id,
+        language = language,
+        testingLanguage = testingLanguage,
+        testingFramework = testingFramework
+)

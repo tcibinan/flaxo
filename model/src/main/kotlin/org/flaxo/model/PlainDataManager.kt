@@ -26,6 +26,7 @@ import org.flaxo.model.data.Solution
 import org.flaxo.model.data.Student
 import org.flaxo.model.data.Task
 import org.flaxo.model.data.User
+import org.springframework.data.repository.CrudRepository
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
@@ -131,6 +132,9 @@ open class PlainDataManager(private val userRepository: UserRepository,
     @Transactional(readOnly = true)
     override fun getCourse(name: String, owner: User): Course? = courseRepository.findByNameAndUser(name, owner)
 
+    @Transactional
+    override fun getCourse(id: Long): Course? = courseRepository.find(id)
+
     @Transactional(readOnly = true)
     override fun getCourses(userNickname: String): Set<Course> =
             getUser(userNickname)
@@ -223,8 +227,7 @@ open class PlainDataManager(private val userRepository: UserRepository,
                     .also { updateTask(task.copy(plagiarismReports = task.plagiarismReports + it)) }
 
     @Transactional(readOnly = true)
-    override fun getPlagiarismReport(id: Long): PlagiarismReport? =
-            plagiarismReportRepository.findById(id).orElse(null)
+    override fun getPlagiarismReport(id: Long): PlagiarismReport? = plagiarismReportRepository.find(id)
 
     @Transactional
     override fun addCommit(solution: Solution, pullRequestNumber: Int, commitSha: String): Commit =
@@ -233,4 +236,7 @@ open class PlainDataManager(private val userRepository: UserRepository,
                             sha = commitSha
                     ))
                     .also { updateSolution(solution.copy(commits = solution.commits + it)) }
+
+    private fun <T, ID> CrudRepository<T, ID>.find(id: ID) = findById(id).orElse(null)
+
 }

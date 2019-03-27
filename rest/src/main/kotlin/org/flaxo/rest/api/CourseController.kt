@@ -4,6 +4,7 @@ import arrow.core.Try
 import arrow.core.getOrElse
 import org.apache.logging.log4j.LogManager
 import org.flaxo.common.data.CourseLifecycle
+import org.flaxo.common.data.CourseSettings
 import org.flaxo.common.data.ExternalService
 import org.flaxo.common.stringStackTrace
 import org.flaxo.model.CourseView
@@ -12,6 +13,7 @@ import org.flaxo.model.data.views
 import org.flaxo.rest.friendlyId
 import org.flaxo.rest.manager.ValidationManager
 import org.flaxo.rest.manager.codacy.CodacyManager
+import org.flaxo.rest.manager.course.CourseManager
 import org.flaxo.rest.manager.environment.EnvironmentManager
 import org.flaxo.rest.manager.github.GithubManager
 import org.flaxo.rest.manager.response.Response
@@ -21,7 +23,10 @@ import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -30,6 +35,7 @@ import java.security.Principal
 /**
  * Courses handling controller.
  */
+// TODO 28.03.19: Move all controller methods business logic to CourseManager.
 @RestController
 @RequestMapping("/rest/course")
 class CourseController(private val dataManager: DataManager,
@@ -38,7 +44,8 @@ class CourseController(private val dataManager: DataManager,
                        private val travisManager: TravisManager,
                        private val codacyManager: CodacyManager,
                        private val githubManager: GithubManager,
-                       private val courseValidations: Map<ExternalService, ValidationManager>
+                       private val courseValidations: Map<ExternalService, ValidationManager>,
+                       private val courseManager: CourseManager
 ) {
 
     private val tasksPrefix = "task-"
@@ -48,6 +55,8 @@ class CourseController(private val dataManager: DataManager,
      * Imports a course from an existing git repository or the [principal] by its [repositoryName].
      */
     @PostMapping("/import")
+    @PreAuthorize("hasAuthority('USER')")
+    @Transactional
     fun import(@RequestParam repositoryName: String,
                @RequestParam(required = false) description: String?,
                @RequestParam(required = false)  language: String?,
@@ -193,6 +202,20 @@ class CourseController(private val dataManager: DataManager,
             } else {
                 responseManager.forbidden()
             }
+
+    /**
+     * Updates course settings.
+     *
+     * @param id Course id to update settings for.
+     * @param settings Updated course settings.
+     */
+    @PutMapping("/{id}/settings")
+    @PreAuthorize("hasAuthority('USER')")
+    @Transactional
+    fun updateSettings(@PathVariable id: Long,
+                       @RequestBody settings: CourseSettings,
+                       principal: Principal
+    ): Response<CourseView> = responseManager.ok(courseManager.updateSettings(principal.name, id, settings))
 
     /**
      * Deletes a current user course from the flaxo system and delete git repository as well.
