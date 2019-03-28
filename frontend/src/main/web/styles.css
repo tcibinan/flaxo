@@ -230,3 +230,11 @@ a.github-profile:hover {
 .flaxo-version {
     font-size: 10px;
 }
+
+.checkbox-label {
+    margin-bottom: 4px;
+}
+
+.checkbox-help {
+    margin-top: 0px;
+}

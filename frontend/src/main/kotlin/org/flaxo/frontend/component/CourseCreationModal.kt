@@ -7,7 +7,6 @@ import kotlinx.html.InputType
 import kotlinx.html.classes
 import kotlinx.html.hidden
 import kotlinx.html.id
-import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.role
 import kotlinx.html.tabIndex
@@ -18,21 +17,20 @@ import org.flaxo.frontend.checkBoxValue
 import org.flaxo.frontend.clickOnButton
 import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.frontend.client.FlaxoHttpException
+import org.flaxo.frontend.component.bootstrap.selectComponent
 import org.flaxo.frontend.credentials
 import org.flaxo.frontend.inputValue
 import org.flaxo.frontend.selectValue
 import org.flaxo.frontend.validatedInputValue
-import org.w3c.dom.HTMLSelectElement
 import react.RBuilder
 import react.RComponent
 import react.RProps
 import react.RState
+import react.dom.b
 import react.dom.button
 import react.dom.div
 import react.dom.h5
 import react.dom.input
-import react.dom.option
-import react.dom.select
 import react.dom.small
 import react.dom.span
 import react.setState
@@ -45,11 +43,8 @@ private const val COURSE_DESCRIPTION_INPUT_HELP_ID = "courseDescriptionInputHelp
 private const val GENERATE_ENVIRONMENT_CHECKBOX_ID = "generateEnvironmentCheckbox"
 private const val GENERATE_ENVIRONMENT_CHECKBOX_HELP_ID = "generateEnvironmentCheckboxHelp"
 private const val LANGUAGE_SELECT_ID = "languageSelect"
-private const val LANGUAGE_SELECT_HELP_ID = "languageInputHelp"
 private const val TESTING_LANGUAGE_SELECT_ID = "testingLanguageSelect"
-private const val TESTING_LANGUAGE_SELECT_HELP_ID = "testingLanguageSelectHelp"
 private const val TESTING_FRAMEWORK_SELECT_ID = "testingFrameworkSelect"
-private const val TESTING_FRAMEWORK_SELECT_HELP_ID = "testingFrameworkSelectHelp"
 private const val NUMBER_OF_TASKS_INPUT_ID = "numberOfTasksInput"
 private const val NUMBER_OF_TASKS_INPUT_HELP_ID = "numberOfTasksInputHelp"
 private const val COURSE_CREATION_MODAL_CANCEL_ID = "courseCreationModalCancel"
@@ -133,9 +128,9 @@ private class CourseCreationModal(props: CourseCreationModalProps)
                         courseNameInput()
                         courseDescriptionInput()
                         tasksNumberInput()
+                        languageSelect()
                         generateEnvironmentCheckbox()
                         if (state.generateEnvironment) {
-                            languageSelect()
                             testingLanguageSelect()
                             testingFrameworkSelect()
                         }
@@ -203,128 +198,102 @@ private class CourseCreationModal(props: CourseCreationModalProps)
     }
 
     private fun RBuilder.generateEnvironmentCheckbox() {
-        div("form-check") {
-            input {
-                attrs {
-                    id = GENERATE_ENVIRONMENT_CHECKBOX_ID
-                    classes = setOf("form-check-input")
-                    type = InputType.checkBox
-                    ariaDescribedBy = GENERATE_ENVIRONMENT_CHECKBOX_HELP_ID
-                    defaultChecked = state.generateEnvironment
-                    onClickFunction = { setState { generateEnvironment = !generateEnvironment } }
-                }
-            }
-            label("Enable environment generation (experimental)", GENERATE_ENVIRONMENT_CHECKBOX_ID)
-        }
-    }
-
-    private fun RBuilder.languageSelect() {
+        val isDisabled = state.flaxoLanguages
+                .find { it.name == state.language }
+                ?.compatibleTestingLanguages
+                .isNullOrEmpty()
         div("form-group") {
-            label("Language", LANGUAGE_SELECT_ID)
-            select {
-                attrs {
-                    id = LANGUAGE_SELECT_ID
-                    classes = setOf("form-control")
-                    onChangeFunction = { event ->
-                        val target = event.target as HTMLSelectElement
-                        setState {
-                            language = target.value
-                            testingLanguage = state.flaxoLanguages
-                                    .find { it.name == language }
-                                    ?.compatibleTestingLanguages.orEmpty()
-                                    .mapNotNull { testingLanguageName ->
-                                        state.flaxoLanguages.find { it.name == testingLanguageName }
-                                    }
-                                    .firstOrNull { it.compatibleTestingFrameworks.isNotEmpty() }
-                                    ?.name
-                                    ?: "not found"
-                            testingFramework = state.flaxoLanguages
-                                    .find { it.name == testingLanguage }
-                                    ?.compatibleTestingFrameworks
-                                    ?.firstOrNull()
-                                    ?: "not found"
-                        }
+            div("form-check") {
+                input {
+                    attrs {
+                        id = GENERATE_ENVIRONMENT_CHECKBOX_ID
+                        classes = setOf("form-check-input")
+                        type = InputType.checkBox
+                        ariaDescribedBy = GENERATE_ENVIRONMENT_CHECKBOX_HELP_ID
+                        defaultChecked = state.generateEnvironment
+                        disabled = isDisabled
+                        onClickFunction = { setState { generateEnvironment = !generateEnvironment } }
                     }
-                    defaultValue = state.language ?: ""
-                    ariaDescribedBy = LANGUAGE_SELECT_HELP_ID
                 }
-                state.flaxoLanguages
-                        .filter { it.compatibleTestingLanguages.isNotEmpty() }
-                        .forEach { option { +it.name } }
+                val checkboxLabels =
+                        if (isDisabled) setOf("checkbox-label", "text-muted")
+                        else setOf("checkbox-label")
+                label("Generate environment", GENERATE_ENVIRONMENT_CHECKBOX_ID, classes = checkboxLabels)
             }
             small {
                 attrs {
-                    id = LANGUAGE_SELECT_HELP_ID
-                    classes = setOf("form-text", "text-muted")
+                    id = GENERATE_ENVIRONMENT_CHECKBOX_HELP_ID
+                    classes = setOf("form-text", "text-muted", "checkbox-help")
                 }
-                +"Language solutions will be written on"
+                +"Environment generation is an "
+                b { +"experiment feature " }
+                +"that is available only for several languages and frameworks."
             }
         }
     }
 
-    private fun RBuilder.testingLanguageSelect() {
-        div("form-group") {
-            label("Testing language", TESTING_LANGUAGE_SELECT_ID)
-            select {
-                attrs {
-                    id = TESTING_LANGUAGE_SELECT_ID
-                    classes = setOf("form-control")
-                    onChangeFunction = { event ->
-                        val target = event.target as HTMLSelectElement
-                        setState {
-                            testingLanguage = target.value
-                            testingFramework = state.flaxoLanguages
-                                    .find { it.name == testingLanguage }
-                                    ?.compatibleTestingFrameworks
-                                    ?.firstOrNull()
-                                    ?: "not found"
-                        }
-                    }
-                    defaultValue = state.testingLanguage ?: ""
-                    ariaDescribedBy = TESTING_LANGUAGE_SELECT_HELP_ID
+    private fun RBuilder.languageSelect(): Unit = selectComponent(
+            selectId = LANGUAGE_SELECT_ID,
+            name = "Language",
+            description = "Programming language that will be used by the course students in their solutions. "
+                    + "It should be specified in order to perform plagiarism analysis.",
+            default = state.language,
+            options = state.flaxoLanguages
+                    .filter { it.compatibleTestingLanguages.isNotEmpty() || !state.generateEnvironment }
+                    .map { it.name },
+            onUpdate = {
+                setState {
+                    language = it
+                    testingLanguage = state.flaxoLanguages
+                            .find { it.name == language }
+                            ?.compatibleTestingLanguages.orEmpty()
+                            .mapNotNull { testingLanguageName ->
+                                state.flaxoLanguages.find { it.name == testingLanguageName }
+                            }
+                            .firstOrNull { it.compatibleTestingFrameworks.isNotEmpty() }
+                            ?.name
+                    testingFramework = state.flaxoLanguages
+                            .find { it.name == testingLanguage }
+                            ?.compatibleTestingFrameworks
+                            ?.firstOrNull()
                 }
-                state.flaxoLanguages
-                        .find { it.name == state.language }
-                        ?.compatibleTestingLanguages.orEmpty()
-                        .mapNotNull { testingLanguageName -> state.flaxoLanguages.find { it.name == testingLanguageName } }
-                        .map { it.name }
-                        .forEach { option { +it } }
             }
-            small {
-                attrs {
-                    id = TESTING_LANGUAGE_SELECT_HELP_ID
-                    classes = setOf("form-text", "text-muted")
-                }
-                +"Language tests will be written on"
-            }
-        }
-    }
+    )
 
-    private fun RBuilder.testingFrameworkSelect() {
-        div("form-group") {
-            label("Testing framework", TESTING_FRAMEWORK_SELECT_ID)
-            select {
-                attrs {
-                    id = TESTING_FRAMEWORK_SELECT_ID
-                    classes = setOf("form-control")
-                    defaultValue = state.testingFramework ?: ""
-                    ariaDescribedBy = TESTING_FRAMEWORK_SELECT_HELP_ID
+    private fun RBuilder.testingLanguageSelect(): Unit = selectComponent(
+            selectId = TESTING_LANGUAGE_SELECT_ID,
+            name = "Testing language",
+            description = "Programming language that will be used by the course author in task specifications. "
+                    + "It should be specified in order to autobuild project infrastructure.",
+            default = state.testingLanguage,
+            options = state.flaxoLanguages
+                    .find { it.name == state.language }
+                    ?.compatibleTestingLanguages.orEmpty()
+                    .mapNotNull { testingLanguageName -> state.flaxoLanguages.find { it.name == testingLanguageName } }
+                    .map { it.name },
+            onUpdate = {
+                setState {
+                    testingLanguage = it
+                    testingFramework = state.flaxoLanguages
+                            .find { it.name == testingLanguage }
+                            ?.compatibleTestingFrameworks
+                            ?.firstOrNull()
                 }
+            }
+    )
 
-                state.flaxoLanguages
-                        .find { it.name == state.testingLanguage }
-                        ?.compatibleTestingFrameworks
-                        ?.forEach { option { +it } }
-            }
-            small {
-                attrs {
-                    id = TESTING_FRAMEWORK_SELECT_HELP_ID
-                    classes = setOf("form-text", "text-muted")
-                }
-                +"Test framework to use in course"
-            }
-        }
-    }
+    private fun RBuilder.testingFrameworkSelect() = selectComponent(
+            selectId = TESTING_FRAMEWORK_SELECT_ID,
+            name = "Testing framework",
+            description = "Testing framework that will be used with the corresponding testing language " +
+                    "by the course author in task specifications. It should be specified in order to autobuild an " +
+                    "associated repository infrastructure.",
+            default = state.testingFramework,
+            options = state.flaxoLanguages
+                    .find { it.name == state.testingLanguage }
+                    ?.compatibleTestingFrameworks
+                    ?: emptyList()
+    )
 
     private fun RBuilder.tasksNumberInput() {
         div("form-group") {
@@ -363,7 +332,7 @@ private class CourseCreationModal(props: CourseCreationModalProps)
                     flaxoClient.createCourse(it,
                             courseName = courseName,
                             description = description,
-                            language = language?.filter { generateEnvironment },
+                            language = language,
                             testingLanguage = testingLanguage?.filter { generateEnvironment },
                             testingFramework = testingFramework?.filter { generateEnvironment },
                             numberOfTasks = numberOfTasks)
