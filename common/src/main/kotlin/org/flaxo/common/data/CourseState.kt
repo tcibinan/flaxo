@@ -1,6 +1,7 @@
 package org.flaxo.common.data
 
 import kotlinx.serialization.Serializable
+import org.flaxo.common.Identifiable
 
 /**
  * Course state.

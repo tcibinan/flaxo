@@ -1,4 +1,4 @@
-package org.flaxo.common.data
+package org.flaxo.common
 
 /**
  * Uniquely identifiable object.

@@ -1,38 +1,11 @@
 package org.flaxo.common
 
 /**
- * Language name constants.
- */
-private object Names {
-    const val KOTLIN = "kotlin"
-    const val JAVA = "java"
-    const val BASH = "bash"
-    const val CPP = "c++"
-    const val C = "c"
-    const val SCALA = "scala"
-    const val R = "R"
-    const val PYTHON = "python"
-    const val HASKELL = "haskell"
-    const val JAVASCRIPT = "javascript"
-    const val RUST = "rust"
-    const val PASCAL = "pascal"
-    const val FORTRAN = "fortran"
-    const val LISP = "lisp"
-    const val PERL = "perl"
-    const val MATLAB = "matlab"
-    const val PROLOG = "prolog"
-    const val PLSQL = "plsql"
-}
-
-/**
  * Programming languages enum.
  */
 enum class Language(
 
-        /**
-         * Language human-readable name.
-         */
-        val alias: String,
+        override val alias: String,
 
         /**
          * Extensions of the files written on the language.
@@ -49,11 +22,8 @@ enum class Language(
         /**
          * Compatible testing frameworks that can be used for writing tests with the language.
          */
-        val testingFrameworks: Set<Framework> = emptySet(),
-
-        @Deprecated("Use testingFrameworks instead", replaceWith = ReplaceWith("testingFrameworks"))
-        val compatibleTestingFrameworks: Set<Framework> = testingFrameworks
-) {
+        val testingFrameworks: Set<Framework> = emptySet()
+): Named, Aliased {
     Kotlin(Names.KOTLIN, setOf("kt", "kts"),
             testingLanguageNames = setOf(Names.KOTLIN),
             testingFrameworks = setOf(Framework.JUnit, Framework.Spek)),
@@ -102,6 +72,30 @@ enum class Language(
     infix fun worksWith(testingFramework: Framework): Boolean = testingFramework in testingFrameworks
 
     companion object {
+
+        /**
+         * Language name constants.
+         */
+        object Names {
+            const val KOTLIN = "kotlin"
+            const val JAVA = "java"
+            const val BASH = "bash"
+            const val CPP = "c++"
+            const val C = "c"
+            const val SCALA = "scala"
+            const val R = "R"
+            const val PYTHON = "python"
+            const val HASKELL = "haskell"
+            const val JAVASCRIPT = "javascript"
+            const val RUST = "rust"
+            const val PASCAL = "pascal"
+            const val FORTRAN = "fortran"
+            const val LISP = "lisp"
+            const val PERL = "perl"
+            const val MATLAB = "matlab"
+            const val PROLOG = "prolog"
+            const val PLSQL = "plsql"
+        }
 
         /**
          * Returns an associated language instance.

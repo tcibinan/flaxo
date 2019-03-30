@@ -2,7 +2,7 @@ package org.flaxo.gradle
 
 import org.flaxo.common.Framework
 import org.flaxo.common.Language
-import org.flaxo.common.data.Named
+import org.flaxo.common.Named
 import org.flaxo.common.env.Environment
 import org.flaxo.common.env.EnvironmentSupplier
 import org.flaxo.common.env.file.EnvironmentFile

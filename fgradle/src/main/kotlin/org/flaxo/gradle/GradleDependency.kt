@@ -1,6 +1,6 @@
 package org.flaxo.gradle
 
-import org.flaxo.common.data.Named
+import org.flaxo.common.Named
 
 internal data class GradleDependency(val group: String,
                                      val id: String,

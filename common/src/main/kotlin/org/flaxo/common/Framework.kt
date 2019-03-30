@@ -3,7 +3,7 @@ package org.flaxo.common
 /**
  * Testing frameworks enum.
  */
-enum class Framework(val alias: String) {
+enum class Framework(override val alias: String): Named, Aliased {
     JUnit("junit"),
     Spek("spek"),
     BashIO("bash")

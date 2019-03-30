@@ -5,10 +5,10 @@ import kotlinx.html.id
 import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
 import org.flaxo.common.data.BuildReport
-import org.flaxo.common.data.CodeStyleReport
 import org.flaxo.common.data.CodeStyleGrade
+import org.flaxo.common.data.CodeStyleReport
 import org.flaxo.common.data.Commit
-import org.flaxo.common.DateTime
+import org.flaxo.common.data.DateTime
 import org.flaxo.common.data.Solution
 import org.flaxo.common.data.Task
 import org.w3c.dom.HTMLInputElement

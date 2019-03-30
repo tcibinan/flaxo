@@ -1,4 +1,4 @@
-package org.flaxo.common.data
+package org.flaxo.common
 
 /**
  * Object with some non-unique name.
@@ -6,7 +6,7 @@ package org.flaxo.common.data
 interface Named {
 
     /**
-     * Non unique name of the object.
+     * Non-unique name of the object.
      */
     val name: String
 }

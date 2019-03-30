@@ -1,8 +1,8 @@
 package org.flaxo.model.data
 
-import org.flaxo.common.DateTime
-import org.flaxo.common.data.Identifiable
-import org.flaxo.common.data.Named
+import org.flaxo.common.Identifiable
+import org.flaxo.common.Named
+import org.flaxo.common.data.DateTime
 import org.flaxo.model.CourseView
 import java.time.LocalDateTime
 import java.util.Objects

@@ -1,7 +1,9 @@
 package org.flaxo.common.data
 
 import kotlinx.serialization.Serializable
-import org.flaxo.common.DateTime
+import org.flaxo.common.Dated
+import org.flaxo.common.Identifiable
+import org.flaxo.common.Named
 
 /**
  * Flaxo user.

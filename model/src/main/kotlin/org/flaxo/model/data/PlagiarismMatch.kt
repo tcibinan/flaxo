@@ -1,6 +1,6 @@
 package org.flaxo.model.data
 
-import org.flaxo.common.data.Identifiable
+import org.flaxo.common.Identifiable
 import org.flaxo.model.PlagiarismMatchView
 import java.util.Objects
 import javax.persistence.Entity

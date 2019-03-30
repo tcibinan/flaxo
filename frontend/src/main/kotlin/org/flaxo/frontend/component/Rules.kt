@@ -3,8 +3,8 @@ package org.flaxo.frontend.component
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.html.js.onClickFunction
-import org.flaxo.common.DateTime
 import org.flaxo.common.data.Course
+import org.flaxo.common.data.DateTime
 import org.flaxo.common.data.Task
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.Notifications

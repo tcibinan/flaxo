@@ -1,4 +1,4 @@
-package org.flaxo.common
+package org.flaxo.common.data
 
 import com.fasterxml.jackson.annotation.JsonValue
 import kotlinx.serialization.Serializable
@@ -13,9 +13,9 @@ actual class DateTime(@Transient private val dateTime: LocalDateTime = LocalDate
 
     actual companion object {
 
-        actual fun fromDateTimeString(string: String): DateTime = DateTime(LocalDateTime.parse(string))
+        actual fun fromDateTimeString(string: String): DateTime = org.flaxo.common.data.DateTime(LocalDateTime.parse(string))
 
-        actual fun now(): DateTime = DateTime(LocalDateTime.now())
+        actual fun now(): DateTime = org.flaxo.common.data.DateTime(LocalDateTime.now())
     }
 
     @JsonValue

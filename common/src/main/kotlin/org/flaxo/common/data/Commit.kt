@@ -1,7 +1,7 @@
 package org.flaxo.common.data
 
 import kotlinx.serialization.Serializable
-import org.flaxo.common.DateTime
+import org.flaxo.common.Identifiable
 
 /**
  * Solution commit.

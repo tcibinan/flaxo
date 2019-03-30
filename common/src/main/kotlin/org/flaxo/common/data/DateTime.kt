@@ -1,4 +1,4 @@
-package org.flaxo.common
+package org.flaxo.common.data
 
 import kotlinx.serialization.Decoder
 import kotlinx.serialization.Encoder

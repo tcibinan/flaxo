@@ -1,8 +1,8 @@
 package org.flaxo.model.data
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import org.flaxo.common.DateTime
-import org.flaxo.common.data.Identifiable
+import org.flaxo.common.Identifiable
+import org.flaxo.common.data.DateTime
 import org.flaxo.model.UserView
 import java.time.LocalDateTime
 import java.util.Objects

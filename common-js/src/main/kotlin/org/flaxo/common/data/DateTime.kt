@@ -1,7 +1,8 @@
-package org.flaxo.common
+package org.flaxo.common.data
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import kotlin.js.Date
 import kotlin.math.floor
 import kotlin.math.roundToInt
 
@@ -15,9 +16,9 @@ actual class DateTime private constructor(@Transient private val date: kotlin.js
 
     actual companion object {
 
-        actual fun fromDateTimeString(string: String): DateTime = DateTime(kotlin.js.Date(string))
+        actual fun fromDateTimeString(string: String): DateTime = org.flaxo.common.data.DateTime(Date(string))
 
-        actual fun now(): DateTime = DateTime(kotlin.js.Date())
+        actual fun now(): DateTime = org.flaxo.common.data.DateTime(Date())
     }
 
     actual fun toDateTimeString(): String = date.toISOString()
