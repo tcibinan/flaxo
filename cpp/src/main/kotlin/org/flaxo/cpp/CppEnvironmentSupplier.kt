@@ -1,19 +1,16 @@
 package org.flaxo.cpp
 
+import org.flaxo.common.Framework
+import org.flaxo.common.Language
 import org.flaxo.common.env.Environment
-import org.flaxo.common.lang.CppLang
 import org.flaxo.common.env.EnvironmentSupplier
-import org.flaxo.common.framework.BashInputOutputTestingFramework
-import org.flaxo.common.framework.TestingFramework
-import org.flaxo.common.lang.BashLang
-import org.flaxo.common.lang.Language
 
 /**
  * C++ environment supplier.
  */
 class CppEnvironmentSupplier(private val language: Language,
                              private val testingLanguage: Language,
-                             private val testingFramework: TestingFramework,
+                             private val testingFramework: Framework,
                              private val travisWebHookUrl: String
 ) : EnvironmentSupplier {
 
@@ -24,9 +21,9 @@ class CppEnvironmentSupplier(private val language: Language,
         }
     }
 
-    private fun isCppAndBashIOEnvironment(): Boolean =
-            language == CppLang && testingLanguage == BashLang
-                    && testingFramework == BashInputOutputTestingFramework
+    private fun isCppAndBashIOEnvironment(): Boolean = language == Language.Cpp
+            && testingLanguage == Language.Bash
+            && testingFramework == Framework.BashIO
 
     override fun environment(): Environment =
             if (isCppAndBashIOEnvironment()) CppBashEnvironment(travisWebHookUrl)
@@ -35,7 +32,7 @@ class CppEnvironmentSupplier(private val language: Language,
 
     override fun with(language: Language?,
                       testingLanguage: Language?,
-                      testingFramework: TestingFramework?
+                      testingFramework: Framework?
     ): EnvironmentSupplier =
             CppEnvironmentSupplier(
                     language = language ?: this.language,
@@ -43,5 +40,4 @@ class CppEnvironmentSupplier(private val language: Language,
                     testingFramework = testingFramework ?: this.testingFramework,
                     travisWebHookUrl = travisWebHookUrl
             )
-
 }

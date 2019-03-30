@@ -6,6 +6,7 @@ import com.nhaarman.mockito_kotlin.verify
 import org.amshove.kluent.shouldEqual
 import org.amshove.kluent.shouldNotBeNullOrBlank
 import org.amshove.kluent.shouldThrow
+import org.flaxo.common.NotFoundException
 import org.flaxo.common.data.plagiarism.PlagiarismGraph
 import org.flaxo.common.data.plagiarism.PlagiarismLink
 import org.flaxo.common.data.plagiarism.PlagiarismNode
@@ -16,7 +17,6 @@ import org.flaxo.model.data.PlagiarismReport
 import org.flaxo.model.data.Task
 import org.flaxo.model.data.User
 import org.flaxo.rest.manager.CourseNotFoundException
-import org.flaxo.rest.manager.NotFoundException
 import org.flaxo.rest.manager.PlagiarismReportNotFoundException
 import org.flaxo.rest.manager.TaskNotFoundException
 import org.flaxo.rest.manager.UserNotFoundException

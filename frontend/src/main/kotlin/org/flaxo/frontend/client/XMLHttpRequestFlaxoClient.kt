@@ -8,7 +8,6 @@ import kotlinx.serialization.stringify
 import org.flaxo.common.data.Course
 import org.flaxo.common.data.CourseStatistics
 import org.flaxo.common.data.GithubAuthData
-import org.flaxo.common.data.Language
 import org.flaxo.common.data.Solution
 import org.flaxo.common.data.SolutionReview
 import org.flaxo.common.data.User
@@ -80,13 +79,6 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
                 creds = credentials
                 onSuccess = { response -> JSON.parse(Course.serializer(), response) }
                 errorMessage = "Course creation failed."
-            }
-
-    override suspend fun getAvailableLanguages(): List<Language> =
-            get {
-                apiMethod = "/settings/languages"
-                onSuccess = { response -> JSON.parse(Language.serializer().list, response) }
-                errorMessage = "Available languages retrieving failed."
             }
 
     override suspend fun getCourseStatistics(credentials: Credentials,

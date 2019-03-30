@@ -4,7 +4,7 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import org.amshove.kluent.shouldEqual
 import org.amshove.kluent.shouldNotBeBlank
-import org.flaxo.common.lang.JavaLang
+import org.flaxo.common.Language
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
@@ -24,7 +24,7 @@ object MossSubmissionsAnalyserSpec : SubjectSpek<MossSubmissionAnalyser>({
             user = "user",
             course = "course",
             task = "branch",
-            language = JavaLang,
+            language = Language.Java,
             students = emptyList(),
             base = emptyList(),
             solutions = emptyList(),
@@ -39,9 +39,7 @@ object MossSubmissionsAnalyserSpec : SubjectSpek<MossSubmissionAnalyser>({
         on { get() }.thenReturn(Jsoup.parse(mossAnswerHtml))
     }
 
-    subject {
-        SimpleMossSubmissionsAnalyser({ moss }, { connection })
-    }
+    subject { SimpleMossSubmissionsAnalyser({ moss }, { connection }) }
 
     describe("Moss submissions analyser") {
 

@@ -4,7 +4,6 @@ import kotlinx.html.classes
 import kotlinx.html.id
 import kotlinx.html.js.onChangeFunction
 import org.flaxo.frontend.component.ariaDescribedBy
-import org.flaxo.frontend.component.defaultValue
 import org.flaxo.frontend.component.label
 import org.w3c.dom.HTMLSelectElement
 import react.RBuilder
@@ -30,10 +29,17 @@ fun RBuilder.selectComponent(selectId: String,
                 id = selectId
                 classes = setOf("form-control")
                 onChangeFunction = { event -> onUpdate((event.target as HTMLSelectElement).value) }
-                if (default != null) defaultValue = default
                 ariaDescribedBy = selectorHelpId
             }
-            options.forEach { option { +it } }
+            options.forEach {
+                option {
+                    attrs {
+                        value = it
+                        selected = it == default
+                    }
+                    +it
+                }
+            }
         }
         small {
             attrs {

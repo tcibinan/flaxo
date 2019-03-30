@@ -1,6 +1,5 @@
 package org.flaxo.rest
 
-import org.flaxo.common.lang.Language
 import org.flaxo.model.DataManager
 import org.flaxo.moss.MossSubmissionAnalyser
 import org.flaxo.moss.SimpleMoss
@@ -22,13 +21,12 @@ import org.springframework.context.annotation.Configuration
 class MossConfiguration {
 
     @Bean
-    fun mossSubmissionsExtractor(githubManager: GithubManager, languages: List<Language>): MossSubmissionExtractor =
-            SimpleMossSubmissionsExtractor(githubManager, languages)
+    fun mossSubmissionsExtractor(githubManager: GithubManager): MossSubmissionExtractor =
+            SimpleMossSubmissionsExtractor(githubManager)
 
     @Bean
     fun mossSubmissionsAnalyser(@Value("\${MOSS_USER_ID}") userId: String,
-                                githubManager: GithubManager,
-                                languages: List<Language>
+                                githubManager: GithubManager
     ): MossSubmissionAnalyser =
             SimpleMossSubmissionsAnalyser(
                     mossSupplier = { language -> SimpleMoss.of(userId, language) },

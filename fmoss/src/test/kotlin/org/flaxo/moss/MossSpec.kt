@@ -7,16 +7,15 @@ import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import it.zielke.moji.SocketClient
 import org.amshove.kluent.shouldEqual
+import org.flaxo.common.Language
 import org.flaxo.common.env.file.LocalEnvironmentFile
 import org.flaxo.common.env.file.LocalFile
-import org.flaxo.common.lang.JavaLang
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.subject.SubjectSpek
 import java.net.URL
 import java.nio.file.Files
-import java.nio.file.Paths
 
 object MossSpec : SubjectSpek<Moss>({
     val mossResultUrl = URL("http://test.url.com/results/2312432")
@@ -32,7 +31,7 @@ object MossSpec : SubjectSpek<Moss>({
             user = "user",
             course = "course",
             task = "branch",
-            language = JavaLang,
+            language = Language.Java,
             students = emptyList(),
             base = base,
             solutions = solutions,

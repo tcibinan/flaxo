@@ -1,7 +1,7 @@
 package org.flaxo.common.env
 
-import org.flaxo.common.framework.TestingFramework
-import org.flaxo.common.lang.Language
+import org.flaxo.common.Framework
+import org.flaxo.common.Language
 
 /**
  * Environment supplier.
@@ -23,6 +23,6 @@ interface EnvironmentSupplier {
      */
     fun with(language: Language? = null,
              testingLanguage: Language? = null,
-             testingFramework: TestingFramework? = null
+             testingFramework: Framework? = null
     ): EnvironmentSupplier
 }

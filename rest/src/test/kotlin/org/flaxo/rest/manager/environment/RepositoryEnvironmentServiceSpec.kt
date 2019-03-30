@@ -1,12 +1,7 @@
 package org.flaxo.rest.manager.environment
 
 import org.amshove.kluent.shouldThrow
-import org.flaxo.common.framework.JUnitTestingFramework
-import org.flaxo.common.framework.SpekTestingFramework
-import org.flaxo.common.framework.TestingFramework
-import org.flaxo.common.lang.JavaLang
-import org.flaxo.common.lang.KotlinLang
-import org.flaxo.common.lang.Language
+import org.flaxo.common.Language
 import org.flaxo.gradle.GradleBuildTool
 import org.flaxo.rest.manager.IncompatibleLanguageException
 import org.flaxo.rest.manager.IncompatibleTestingFrameworkException
@@ -23,16 +18,14 @@ object RepositoryEnvironmentServiceSpec : SubjectSpek<EnvironmentManager>({
     val firstTestingFramework = "junit"
     val secondTestingFramework = "spek"
 
-    val languages: List<Language> = listOf(JavaLang, KotlinLang)
-    val testingFrameworks: List<TestingFramework> = listOf(JUnitTestingFramework, SpekTestingFramework)
     val travisEnvironmentSupplier: TravisEnvironmentSupplier =
             SimpleTravisEnvironmentSupplier(travisWebHookUrl = "travisWebHookUrl")
     val defaultBuildTools: Map<Language, GradleBuildTool> = mapOf(
-            JavaLang to GradleBuildTool(travisEnvironmentSupplier),
-            KotlinLang to GradleBuildTool(travisEnvironmentSupplier)
+            Language.Java to GradleBuildTool(travisEnvironmentSupplier),
+            Language.Kotlin to GradleBuildTool(travisEnvironmentSupplier)
     )
 
-    subject { SimpleEnvironmentManager(languages, testingFrameworks, defaultBuildTools) }
+    subject { SimpleEnvironmentManager(defaultBuildTools) }
 
     describe("repository environment service") {
 

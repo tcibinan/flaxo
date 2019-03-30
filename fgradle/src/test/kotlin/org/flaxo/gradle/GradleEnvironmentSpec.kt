@@ -3,12 +3,12 @@ package org.flaxo.gradle
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import org.amshove.kluent.shouldNotBeNull
+import org.flaxo.common.Framework
+import org.flaxo.common.Language
 import org.flaxo.common.env.Environment
 import org.flaxo.common.env.EnvironmentSupplier
 import org.flaxo.common.env.SimpleEnvironment
 import org.flaxo.common.env.file.StringEnvironmentFile
-import org.flaxo.common.framework.JUnitTestingFramework
-import org.flaxo.common.lang.JavaLang
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
@@ -17,8 +17,8 @@ import kotlin.test.assertTrue
 
 object GradleEnvironmentSpec : SubjectSpek<GradleBuildTool>({
 
-    val language = JavaLang
-    val framework = JUnitTestingFramework
+    val language = Language.Java
+    val framework = Framework.JUnit
     val gradleFileName = "build.gradle"
     val travisFiles = setOf(
             StringEnvironmentFile("travisfile1", "travisfile1content"),
@@ -28,11 +28,7 @@ object GradleEnvironmentSpec : SubjectSpek<GradleBuildTool>({
         on { with(any(), any(), any()) }.thenReturn(it)
         on { environment() }.thenReturn(SimpleEnvironment(travisFiles))
     }
-    subject {
-        GradleBuildTool(travis)
-                .with(JavaLang, JavaLang, JUnitTestingFramework)
-                as GradleBuildTool
-    }
+    subject { GradleBuildTool(travis).with(language, language, framework) as GradleBuildTool }
 
     describe("gradle environment") {
 

@@ -1,14 +1,12 @@
 package org.flaxo.travis.env
 
+import org.flaxo.common.Framework
+import org.flaxo.common.Language
 import org.flaxo.common.env.Environment
-import org.flaxo.common.env.file.EnvironmentFile
 import org.flaxo.common.env.EnvironmentSupplier
 import org.flaxo.common.env.SimpleEnvironment
+import org.flaxo.common.env.file.EnvironmentFile
 import org.flaxo.common.env.file.StringEnvironmentFile
-import org.flaxo.common.framework.TestingFramework
-import org.flaxo.common.lang.JavaLang
-import org.flaxo.common.lang.KotlinLang
-import org.flaxo.common.lang.Language
 import org.flaxo.travis.TravisException
 import org.flaxo.travis.UnsupportedLanguageException
 
@@ -19,15 +17,15 @@ import org.flaxo.travis.UnsupportedLanguageException
  */
 data class SimpleTravisEnvironmentSupplier(private val language: Language? = null,
                                            private val testingLanguage: Language? = null,
-                                           private val testingFramework: TestingFramework? = null,
+                                           private val testingFramework: Framework? = null,
                                            private val travisWebHookUrl: String
 ) : TravisEnvironmentSupplier {
 
-    private val jvmLanguages = setOf(JavaLang, KotlinLang)
+    private val jvmLanguages = setOf(Language.Java, Language.Kotlin)
 
     override fun with(language: Language?,
                       testingLanguage: Language?,
-                      testingFramework: TestingFramework?
+                      testingFramework: Framework?
     ): EnvironmentSupplier =
             withLanguage(language)
                     .withTestingLanguage(testingLanguage)
@@ -50,7 +48,7 @@ data class SimpleTravisEnvironmentSupplier(private val language: Language? = nul
                     ?: this
 
     // currently where is no validations for testing frameworks
-    private fun withTestingFramework(testingFramework: TestingFramework?): SimpleTravisEnvironmentSupplier =
+    private fun withTestingFramework(testingFramework: Framework?): SimpleTravisEnvironmentSupplier =
             testingFramework
                     ?.let {
                         copy(testingFramework = testingFramework)

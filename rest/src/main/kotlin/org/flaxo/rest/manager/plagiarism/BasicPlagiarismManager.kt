@@ -2,6 +2,7 @@ package org.flaxo.rest.manager.plagiarism
 
 import org.apache.commons.collections4.map.PassiveExpiringMap
 import org.apache.logging.log4j.LogManager
+import org.flaxo.common.NotFoundException
 import org.flaxo.common.data.plagiarism.PlagiarismGraph
 import org.flaxo.common.data.plagiarism.PlagiarismLink
 import org.flaxo.common.data.plagiarism.PlagiarismNode
@@ -9,7 +10,6 @@ import org.flaxo.common.of
 import org.flaxo.model.DataManager
 import org.flaxo.model.data.PlagiarismReport
 import org.flaxo.rest.manager.CourseNotFoundException
-import org.flaxo.rest.manager.NotFoundException
 import org.flaxo.rest.manager.PlagiarismReportNotFoundException
 import org.flaxo.rest.manager.TaskNotFoundException
 import org.flaxo.rest.manager.UserNotFoundException
@@ -30,7 +30,7 @@ class BasicPlagiarismManager(private val dataManager: DataManager,
     private val analyses: MutableMap<String, Long> = PassiveExpiringMap(1 of TimeUnit.HOURS)
 
     override fun analyse(userName: String, courseName: String, taskBranch: String) {
-        logger.info("Trying to start plagiarism analysis for ${userName}/$courseName")
+        logger.info("Trying to start plagiarism analysis for $userName/$courseName")
         val user = dataManager.getUser(userName)
                 ?: throw UserNotFoundException(userName)
         val course = dataManager.getCourse(courseName, user)
@@ -42,7 +42,7 @@ class BasicPlagiarismManager(private val dataManager: DataManager,
     }
 
     override fun generateGraphAccessToken(userName: String, courseName: String, taskBranch: String): String {
-        logger.info("Trying to generate plagiarism report graph access token for task" +
+        logger.info("Trying to generate plagiarism report graph access token for task " +
                 "$userName/$courseName/$taskBranch.")
         val user = dataManager.getUser(userName)
                 ?: throw UserNotFoundException(userName)

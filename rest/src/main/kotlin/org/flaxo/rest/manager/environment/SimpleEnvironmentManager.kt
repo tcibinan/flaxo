@@ -1,9 +1,9 @@
 package org.flaxo.rest.manager.environment
 
+import org.flaxo.common.Framework
+import org.flaxo.common.Language
 import org.flaxo.common.env.Environment
 import org.flaxo.common.env.EnvironmentSupplier
-import org.flaxo.common.framework.TestingFramework
-import org.flaxo.common.lang.Language
 import org.flaxo.rest.manager.IncompatibleLanguageException
 import org.flaxo.rest.manager.IncompatibleTestingFrameworkException
 import org.flaxo.rest.manager.NoDefaultBuildToolException
@@ -12,8 +12,6 @@ import org.flaxo.rest.manager.NoDefaultBuildToolException
  * Environment manager implementation.
  */
 class SimpleEnvironmentManager(
-        private val languages: List<Language>,
-        private val testingFrameworks: List<TestingFramework>,
         private val defaultBuildTools: Map<Language, EnvironmentSupplier>
 ) : EnvironmentManager {
 
@@ -21,14 +19,14 @@ class SimpleEnvironmentManager(
                                     testingLanguage: String?,
                                     testingFramework: String?
     ): Environment = produceEnvironment(
-            language = languages.find { it.name == language },
-            testingLanguage = languages.find { it.name == testingLanguage },
-            testingFramework = testingFrameworks.find { it.name == testingFramework }
+            language = language?.let { Language.from(it) },
+            testingLanguage = testingLanguage?.let { Language.from(it) },
+            testingFramework = testingFramework?.let { Framework.from(it) }
     )
 
     private fun produceEnvironment(language: Language?,
                                    testingLanguage: Language?,
-                                   testingFramework: TestingFramework?
+                                   testingFramework: Framework?
     ): Environment {
         if (language == null
                 || testingLanguage == null
@@ -47,7 +45,7 @@ class SimpleEnvironmentManager(
                 .environment()
     }
 
-    private infix fun TestingFramework.shouldSuit(testingLanguage: Language) {
+    private infix fun Framework.shouldSuit(testingLanguage: Language) {
         testingLanguage.takeIf { it worksWith this }
                 ?: throw IncompatibleTestingFrameworkException(this, testingLanguage)
     }

@@ -3,7 +3,6 @@ package org.flaxo.frontend.client
 import org.flaxo.common.data.Course
 import org.flaxo.common.data.CourseStatistics
 import org.flaxo.common.data.GithubAuthData
-import org.flaxo.common.data.Language
 import org.flaxo.common.data.Solution
 import org.flaxo.common.data.SolutionReview
 import org.flaxo.common.data.User
@@ -40,11 +39,6 @@ interface FlaxoClient {
                              testingFramework: String? = null,
                              numberOfTasks: Int
     ): Course
-
-    /**
-     * Retrieves all languages available for automated course generation.
-     */
-    suspend fun getAvailableLanguages(): List<Language>
 
     /**
      * Retrieves statistics of the course with the given [courseName] and owner [username].

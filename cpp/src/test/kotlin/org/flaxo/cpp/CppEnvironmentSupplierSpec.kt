@@ -3,11 +3,8 @@ package org.flaxo.cpp
 import org.amshove.kluent.shouldBeInstanceOf
 import org.amshove.kluent.shouldNotThrow
 import org.amshove.kluent.shouldThrow
-import org.flaxo.common.framework.BashInputOutputTestingFramework
-import org.flaxo.common.framework.JUnitTestingFramework
-import org.flaxo.common.lang.BashLang
-import org.flaxo.common.lang.JavaLang
-import org.flaxo.common.lang.CppLang
+import org.flaxo.common.Framework
+import org.flaxo.common.Language
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
@@ -20,7 +17,7 @@ object CppEnvironmentSupplierSpec : Spek({
         on("initialization with an unsupported language") {
             it("should throw an exception") {
                 {
-                    CppEnvironmentSupplier(JavaLang, BashLang, BashInputOutputTestingFramework, travisWebHookUrl)
+                    CppEnvironmentSupplier(Language.Java, Language.Bash, Framework.BashIO, travisWebHookUrl)
                 } shouldThrow CppEnvironmentException::class
             }
         }
@@ -28,7 +25,7 @@ object CppEnvironmentSupplierSpec : Spek({
         on("initialization with an unsupported testing language") {
             it("should throw an exception") {
                 {
-                    CppEnvironmentSupplier(CppLang, JavaLang, BashInputOutputTestingFramework, travisWebHookUrl)
+                    CppEnvironmentSupplier(Language.Cpp, Language.Java, Framework.BashIO, travisWebHookUrl)
                 } shouldThrow CppEnvironmentException::class
             }
         }
@@ -36,7 +33,7 @@ object CppEnvironmentSupplierSpec : Spek({
         on("initialization with an unsupported testing framework") {
             it("should throw an exception") {
                 {
-                    CppEnvironmentSupplier(CppLang, BashLang, JUnitTestingFramework, travisWebHookUrl)
+                    CppEnvironmentSupplier(Language.Cpp, Language.Bash, Framework.JUnit, travisWebHookUrl)
                 } shouldThrow CppEnvironmentException::class
             }
         }
@@ -44,13 +41,13 @@ object CppEnvironmentSupplierSpec : Spek({
         on("initialization with supported technologies") {
             it("should no throw exception") {
                 {
-                    CppEnvironmentSupplier(CppLang, BashLang, BashInputOutputTestingFramework, travisWebHookUrl)
+                    CppEnvironmentSupplier(Language.Cpp, Language.Bash, Framework.BashIO, travisWebHookUrl)
                 } shouldNotThrow CppEnvironmentException::class
             }
         }
 
         on("getting environment for C++, Bash, IO tests") {
-            val supplier = CppEnvironmentSupplier(CppLang, BashLang, BashInputOutputTestingFramework,
+            val supplier = CppEnvironmentSupplier(Language.Cpp, Language.Bash, Framework.BashIO,
                     travisWebHookUrl)
             val environment = supplier.environment()
 

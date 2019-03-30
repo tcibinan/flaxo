@@ -1,9 +1,8 @@
 package org.flaxo.moss
 
 import it.zielke.moji.SocketClient
+import org.flaxo.common.Language
 import org.flaxo.common.env.file.LocalFile
-import org.flaxo.common.lang.CppLang
-import org.flaxo.common.lang.Language
 import java.net.URL
 
 /**
@@ -15,9 +14,23 @@ class SimpleMoss(private val client: SocketClient) : Moss {
         fun using(client: SocketClient): Moss = SimpleMoss(client)
         fun of(userId: String, language: Language): Moss = using(SocketClient().apply {
             this.userID = userId
-            this.language = when(language) {
-                CppLang -> "cc"
-                else -> language.name
+            this.language = when (language) {
+                Language.C -> "c"
+                Language.Cpp -> "cc"
+                Language.Java -> "java"
+                Language.Pascal -> "pascal"
+                Language.Lisp -> "lisp"
+                Language.Haskell -> "haskell"
+                Language.Fortran -> "fortran"
+                Language.Perl -> "perl"
+                Language.Matlab -> "matlab"
+                Language.Python -> "python"
+                Language.Prolog -> "prolog"
+                Language.Javascript -> "javascript"
+                Language.PlSql -> "plsql"
+                else ->
+                    if (language.alias in supportedLanguages) language.alias
+                    else throw MossException("Language ${language.alias} is not supported by MOSS.")
             }
         })
     }

@@ -1,7 +1,7 @@
 package org.flaxo.travis.env
 
-import org.flaxo.common.framework.JUnitTestingFramework
-import org.flaxo.common.lang.JavaLang
+import org.flaxo.common.Framework
+import org.flaxo.common.Language
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
@@ -13,7 +13,7 @@ object TravisEnvironmentSpec : SubjectSpek<TravisEnvironmentSupplier>({
     val travisWebHookUrl = "http://example.com/travis/web/hook"
 
     subject {
-        SimpleTravisEnvironmentSupplier(JavaLang, JavaLang, JUnitTestingFramework, travisWebHookUrl)
+        SimpleTravisEnvironmentSupplier(Language.Java, Language.Java, Framework.JUnit, travisWebHookUrl)
     }
 
     describe("travis environment") {

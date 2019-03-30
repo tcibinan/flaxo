@@ -1,8 +1,8 @@
 package org.flaxo.moss
 
 import org.apache.logging.log4j.LogManager
+import org.flaxo.common.Language
 import org.flaxo.common.deleteDirectoryRecursively
-import org.flaxo.common.lang.Language
 import org.jsoup.Connection
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements

@@ -1,15 +1,11 @@
 package org.flaxo.gradle
 
+import org.flaxo.common.Framework
+import org.flaxo.common.Language
 import org.flaxo.common.data.Named
 import org.flaxo.common.env.Environment
 import org.flaxo.common.env.EnvironmentSupplier
 import org.flaxo.common.env.file.EnvironmentFile
-import org.flaxo.common.framework.JUnitTestingFramework
-import org.flaxo.common.framework.SpekTestingFramework
-import org.flaxo.common.framework.TestingFramework
-import org.flaxo.common.lang.JavaLang
-import org.flaxo.common.lang.KotlinLang
-import org.flaxo.common.lang.Language
 
 data class GradleBuildTool internal constructor(
         private val travis: EnvironmentSupplier,
@@ -29,7 +25,7 @@ data class GradleBuildTool internal constructor(
 
     override fun with(language: Language?,
                       testingLanguage: Language?,
-                      testingFramework: TestingFramework?
+                      testingFramework: Framework?
     ): EnvironmentSupplier =
             withLanguage(language)
                     .withTestingLanguage(testingLanguage)
@@ -50,10 +46,10 @@ data class GradleBuildTool internal constructor(
             when (language) {
                 null -> this
 
-                JavaLang ->
+                Language.Java ->
                     addPlugin(javaPlugin())
 
-                KotlinLang ->
+                Language.Kotlin ->
                     addPlugin(kotlinGradleJvmPlugin())
                             .addDependency(kotlinJreDependency())
 
@@ -64,10 +60,10 @@ data class GradleBuildTool internal constructor(
             when (testingLanguage) {
                 null -> this
 
-                JavaLang ->
+                Language.Java ->
                     addPlugin(junitPlatformPlugin())
 
-                KotlinLang ->
+                Language.Kotlin ->
                     addPlugin(kotlinGradleJvmPlugin())
                             .addPlugin(junitPlatformPlugin())
                             .addDependency(kotlinJreDependency())
@@ -76,18 +72,18 @@ data class GradleBuildTool internal constructor(
                 else -> throw UnsupportedLanguageException(testingLanguage)
             }
 
-    private fun withTestingFramework(testingFramework: TestingFramework?): GradleBuildTool =
+    private fun withTestingFramework(testingFramework: Framework?): GradleBuildTool =
             when (testingFramework) {
                 null -> this
 
-                SpekTestingFramework ->
+                Framework.Spek ->
                     addPlugin(junitPlatformPlugin())
                             .addDependency(spekApiDependency())
                             .addDependency(spekDataDrivenDependency())
                             .addDependency(spekSubjectDependency())
                             .addDependency(spekJunitRunnerDependency())
 
-                JUnitTestingFramework ->
+                Framework.JUnit ->
                     addPlugin(junitPlatformPlugin())
                             .addDependency(jupiterApiDependency())
                             .addDependency(jupiterEngineDependency())

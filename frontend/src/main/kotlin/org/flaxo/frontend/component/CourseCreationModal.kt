@@ -10,7 +10,8 @@ import kotlinx.html.id
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.role
 import kotlinx.html.tabIndex
-import org.flaxo.common.data.Language
+import org.flaxo.common.Framework
+import org.flaxo.common.Language
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.Notifications
 import org.flaxo.frontend.checkBoxValue
@@ -61,10 +62,9 @@ fun RBuilder.courseCreationModal(onCourseCreation: () -> Unit) = child(CourseCre
 private class CourseCreationModalProps(var onCourseCreation: () -> Unit) : RProps
 
 private class CourseCreationModalState(var generateEnvironment: Boolean = false,
-                                       var language: String? = null,
-                                       var testingLanguage: String? = null,
-                                       var testingFramework: String? = null,
-                                       var flaxoLanguages: List<Language> = emptyList()
+                                       var language: Language? = null,
+                                       var testingLanguage: Language? = null,
+                                       var testingFramework: Framework? = null
 ) : RState
 
 private class CourseCreationModal(props: CourseCreationModalProps)
@@ -73,25 +73,9 @@ private class CourseCreationModal(props: CourseCreationModalProps)
     private val flaxoClient: FlaxoClient
 
     init {
-        state = CourseCreationModalState()
+        state = CourseCreationModalState(language = Language.Java, testingLanguage = Language.Java,
+                testingFramework = Framework.JUnit)
         flaxoClient = Container.flaxoClient
-        GlobalScope.launch {
-            flaxoClient.getAvailableLanguages().also { languages ->
-                setState {
-                    val defaultLanguage = languages.firstOrNull()
-                    val defaultTestingLanguage = defaultLanguage?.compatibleTestingLanguages?.firstOrNull()
-
-                    flaxoLanguages = languages
-                    language = defaultLanguage?.name ?: "not found"
-                    testingLanguage = defaultTestingLanguage ?: "not found"
-                    testingFramework = defaultTestingLanguage
-                            ?.let { testingLanguageName -> languages.find { it.name == testingLanguageName } }
-                            ?.compatibleTestingFrameworks
-                            ?.firstOrNull()
-                            ?: "not found"
-                }
-            }
-        }
     }
 
     override fun RBuilder.render() {
@@ -198,10 +182,7 @@ private class CourseCreationModal(props: CourseCreationModalProps)
     }
 
     private fun RBuilder.generateEnvironmentCheckbox() {
-        val isDisabled = state.flaxoLanguages
-                .find { it.name == state.language }
-                ?.compatibleTestingLanguages
-                .isNullOrEmpty()
+        val isDisabled = state.language?.testingLanguages.isNullOrEmpty()
         div("form-group") {
             div("form-check") {
                 input {
@@ -237,25 +218,16 @@ private class CourseCreationModal(props: CourseCreationModalProps)
             name = "Language",
             description = "Programming language that will be used by the course students in their solutions. "
                     + "It should be specified in order to perform plagiarism analysis.",
-            default = state.language,
-            options = state.flaxoLanguages
-                    .filter { it.compatibleTestingLanguages.isNotEmpty() || !state.generateEnvironment }
-                    .map { it.name },
+            default = state.language?.alias,
+            options = Language.values()
+                    .filter { it.testingLanguages.isNotEmpty() || !state.generateEnvironment }
+                    .map { it.alias },
             onUpdate = {
                 setState {
-                    language = it
-                    testingLanguage = state.flaxoLanguages
-                            .find { it.name == language }
-                            ?.compatibleTestingLanguages.orEmpty()
-                            .mapNotNull { testingLanguageName ->
-                                state.flaxoLanguages.find { it.name == testingLanguageName }
-                            }
-                            .firstOrNull { it.compatibleTestingFrameworks.isNotEmpty() }
-                            ?.name
-                    testingFramework = state.flaxoLanguages
-                            .find { it.name == testingLanguage }
-                            ?.compatibleTestingFrameworks
-                            ?.firstOrNull()
+                    language = Language.from(it)
+                    testingLanguage = language?.testingLanguages.orEmpty()
+                            .firstOrNull { it.testingFrameworks.isNotEmpty() }
+                    testingFramework = testingLanguage?.testingFrameworks?.firstOrNull()
                 }
             }
     )
@@ -265,19 +237,12 @@ private class CourseCreationModal(props: CourseCreationModalProps)
             name = "Testing language",
             description = "Programming language that will be used by the course author in task specifications. "
                     + "It should be specified in order to autobuild project infrastructure.",
-            default = state.testingLanguage,
-            options = state.flaxoLanguages
-                    .find { it.name == state.language }
-                    ?.compatibleTestingLanguages.orEmpty()
-                    .mapNotNull { testingLanguageName -> state.flaxoLanguages.find { it.name == testingLanguageName } }
-                    .map { it.name },
+            default = state.testingLanguage?.alias,
+            options = state.language?.testingLanguages.orEmpty().map { it.alias },
             onUpdate = {
                 setState {
-                    testingLanguage = it
-                    testingFramework = state.flaxoLanguages
-                            .find { it.name == testingLanguage }
-                            ?.compatibleTestingFrameworks
-                            ?.firstOrNull()
+                    testingLanguage = Language.from(it)
+                    testingFramework = testingLanguage?.testingFrameworks?.firstOrNull()
                 }
             }
     )
@@ -288,11 +253,8 @@ private class CourseCreationModal(props: CourseCreationModalProps)
             description = "Testing framework that will be used with the corresponding testing language " +
                     "by the course author in task specifications. It should be specified in order to autobuild an " +
                     "associated repository infrastructure.",
-            default = state.testingFramework,
-            options = state.flaxoLanguages
-                    .find { it.name == state.testingLanguage }
-                    ?.compatibleTestingFrameworks
-                    ?: emptyList()
+            default = state.testingFramework?.alias,
+            options = state.testingLanguage?.testingFrameworks.orEmpty().map { it.alias }
     )
 
     private fun RBuilder.tasksNumberInput() {

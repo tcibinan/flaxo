@@ -8,8 +8,6 @@ import org.amshove.kluent.shouldEqual
 import org.flaxo.common.env.file.EnvironmentFile
 import org.flaxo.common.env.file.LocalFile
 import org.flaxo.common.env.file.RemoteEnvironmentFile
-import org.flaxo.common.lang.JavaLang
-import org.flaxo.common.lang.Language
 import org.flaxo.git.Branch
 import org.flaxo.git.Git
 import org.flaxo.git.Repository
@@ -17,8 +15,8 @@ import org.flaxo.model.data.BuildReport
 import org.flaxo.model.data.Course
 import org.flaxo.model.data.CourseSettings
 import org.flaxo.model.data.Credentials
-import org.flaxo.model.data.Student
 import org.flaxo.model.data.Solution
+import org.flaxo.model.data.Student
 import org.flaxo.model.data.Task
 import org.flaxo.model.data.User
 import org.flaxo.moss.MossSubmission
@@ -44,7 +42,6 @@ object MossSubmissionsExtractorSpec : SubjectSpek<MossSubmissionExtractor>({
     val student2SolutionFile = "another/package/student2Solution.java"
     val branchName = "branch1"
 
-    val supportedLanguages: List<Language> = listOf(JavaLang)
     val student1Solutions: Set<Solution> = setOf(
             Solution(
                     task = Task(branch = branchName),
@@ -95,7 +92,7 @@ object MossSubmissionsExtractorSpec : SubjectSpek<MossSubmissionExtractor>({
         on { with(any()) }.thenReturn(git)
     }
 
-    subject { SimpleMossSubmissionsExtractor(githubManager, supportedLanguages) }
+    subject { SimpleMossSubmissionsExtractor(githubManager) }
 
     describe("Moss service") {
 

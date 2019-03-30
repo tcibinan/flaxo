@@ -2,13 +2,11 @@ package org.flaxo.gradle
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
+import org.flaxo.common.Framework
+import org.flaxo.common.Language
 import org.flaxo.common.cmd.CmdExecutor
 import org.flaxo.common.env.EnvironmentSupplier
 import org.flaxo.common.env.SimpleEnvironment
-import org.flaxo.common.framework.TestingFramework
-import org.flaxo.common.lang.JavaLang
-import org.flaxo.common.lang.KotlinLang
-import org.flaxo.common.lang.Language
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.data_driven.Data3
@@ -22,17 +20,17 @@ object GradleEnvironmentBuildingSpec : SubjectSpek<EnvironmentSupplier>({
 
     val gradleBuildFile = "build.gradle"
     val gradleSettingsFile = "settings.gradle"
-    val supportedLanguages: Set<Language> = setOf(JavaLang, KotlinLang)
+    val supportedLanguages: Set<Language> = setOf(Language.Java, Language.Kotlin)
 
-    val instrumentsCombinations: Array<Data3<Language, Language, TestingFramework, Unit>> =
+    val instrumentsCombinations: Array<Data3<Language, Language, Framework, Unit>> =
             supportedLanguages
                     .flatMap { language ->
-                        language.compatibleTestingLanguages.map { testingLanguage ->
+                        language.testingLanguages.map { testingLanguage ->
                             language to testingLanguage
                         }
                     }
                     .flatMap { (language, testingLanguage) ->
-                        testingLanguage.compatibleTestingFrameworks.map { testingFramework ->
+                        testingLanguage.testingFrameworks.map { testingFramework ->
                             Triple(language, testingLanguage, testingFramework)
                         }
                     }
@@ -51,7 +49,7 @@ object GradleEnvironmentBuildingSpec : SubjectSpek<EnvironmentSupplier>({
         on("building supplied environment for %s, %s, %s", *instrumentsCombinations)
         { language: Language,
           testingLanguage: Language,
-          framework: TestingFramework,
+          framework: Framework,
           _: Unit ->
 
             val environment = subject.with(

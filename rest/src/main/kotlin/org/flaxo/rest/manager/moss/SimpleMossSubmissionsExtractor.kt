@@ -1,9 +1,9 @@
 package org.flaxo.rest.manager.moss
 
 import org.apache.logging.log4j.LogManager
+import org.flaxo.common.Language
 import org.flaxo.common.env.file.EnvironmentFile
 import org.flaxo.common.env.file.LocalFile
-import org.flaxo.common.lang.Language
 import org.flaxo.model.ModelException
 import org.flaxo.model.data.Task
 import org.flaxo.moss.MossSubmission
@@ -18,9 +18,7 @@ import java.nio.file.Files
  * It scans all repositories (both students and tutor) and retrieves files that suits analysis programming language
  * by extension. After all files are collected locally then a submission is returned.
  */
-class SimpleMossSubmissionsExtractor(private val githubManager: GithubManager,
-                                     private val languages: List<Language>
-) : MossSubmissionExtractor {
+class SimpleMossSubmissionsExtractor(private val githubManager: GithubManager) : MossSubmissionExtractor {
 
     companion object {
         private val logger = LogManager.getLogger(SimpleMossSubmissionsExtractor::class.java)
@@ -40,7 +38,8 @@ class SimpleMossSubmissionsExtractor(private val githubManager: GithubManager,
 
         val git = githubManager.with(githubToken)
 
-        val language = languages.find { it.name == course.settings.language }
+        val language = course.settings.language
+                ?.let { Language.from(it) }
                 ?: throw UnsupportedLanguageException("Language ${course.settings.language} is not supported " +
                         "for plagiarism analysis yet.")
 

@@ -1,7 +1,7 @@
 package org.flaxo.moss
 
+import org.flaxo.common.Language
 import org.flaxo.common.env.file.LocalFile
-import org.flaxo.common.lang.Language
 import java.nio.file.Path
 
 /**
@@ -10,7 +10,7 @@ import java.nio.file.Path
 data class MossSubmission(
 
         val user: String,
-        
+
         val course: String,
 
         val task: String,

@@ -1,8 +1,9 @@
 package org.flaxo.rest.manager
 
 import org.flaxo.common.FlaxoException
-import org.flaxo.common.framework.TestingFramework
-import org.flaxo.common.lang.Language
+import org.flaxo.common.Framework
+import org.flaxo.common.Language
+import org.flaxo.common.NotFoundException
 
 /**
  * Unsupported by flaxo testing framework exception.
@@ -25,7 +26,7 @@ class NoDefaultBuildToolException(language: Language)
 /**
  * Incompatible testing framework for testing language exception.
  */
-class IncompatibleTestingFrameworkException(testingFramework: TestingFramework,
+class IncompatibleTestingFrameworkException(testingFramework: Framework,
                                             testingLanguage: Language
 ) : Exception("$testingLanguage doesn't support $testingFramework as testing framework")
 
@@ -35,11 +36,6 @@ class IncompatibleTestingFrameworkException(testingFramework: TestingFramework,
 class IncompatibleLanguageException(language: Language,
                                     testingLanguage: Language
 ) : Exception("$language doesn't support $testingLanguage as language for tests")
-
-/**
- * Basic not found exception.
- */
-open class NotFoundException(message: String? = null, cause: Throwable? = null) : FlaxoException(message, cause)
 
 /**
  * User not found exception.
