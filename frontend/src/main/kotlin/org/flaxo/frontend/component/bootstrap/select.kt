@@ -20,6 +20,7 @@ fun RBuilder.selectComponent(selectId: String,
                              description: String = "",
                              default: String? = null,
                              options: List<String> = emptyList(),
+                             emptyOption: Boolean = false,
                              onUpdate: (String) -> Unit = {}) {
     val selectorHelpId = "$selectId-help"
     div("form-group") {
@@ -31,6 +32,7 @@ fun RBuilder.selectComponent(selectId: String,
                 onChangeFunction = { event -> onUpdate((event.target as HTMLSelectElement).value) }
                 ariaDescribedBy = selectorHelpId
             }
+            if (emptyOption) option { attrs.selected = default == null }
             options.forEach {
                 option {
                     attrs {

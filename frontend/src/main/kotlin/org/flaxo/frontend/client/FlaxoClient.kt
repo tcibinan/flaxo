@@ -1,6 +1,7 @@
 package org.flaxo.frontend.client
 
 import org.flaxo.common.data.Course
+import org.flaxo.common.data.CourseSettings
 import org.flaxo.common.data.CourseStatistics
 import org.flaxo.common.data.GithubAuthData
 import org.flaxo.common.data.Solution
@@ -49,6 +50,11 @@ interface FlaxoClient {
      * Starts a course with the given [courseName].
      */
     suspend fun startCourse(credentials: Credentials, courseName: String): Course
+
+    /**
+     * Updates course with [id] settings.
+     */
+    suspend fun updateCourseSetting(credentials: Credentials, id: Long, settings: CourseSettings): Course
 
     /**
      * Deletes a course with the given [courseName] from flaxo system.

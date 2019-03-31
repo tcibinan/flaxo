@@ -1,11 +1,11 @@
 package org.flaxo.frontend.client
 
-import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.json.JSON
 import kotlinx.serialization.list
+import kotlinx.serialization.map
 import kotlinx.serialization.serializer
-import kotlinx.serialization.stringify
 import org.flaxo.common.data.Course
+import org.flaxo.common.data.CourseSettings
 import org.flaxo.common.data.CourseStatistics
 import org.flaxo.common.data.GithubAuthData
 import org.flaxo.common.data.Solution
@@ -102,6 +102,15 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
                 errorMessage = "Course starting failed."
             }
 
+    override suspend fun updateCourseSetting(credentials: Credentials, id: Long, settings: CourseSettings): Course =
+            put {
+                apiMethod = "/course/$id/settings"
+                body = JSON.stringify(CourseSettings.serializer(), settings)
+                creds = credentials
+                onSuccess = { response -> JSON.parse(Course.serializer(), response) }
+                errorMessage = "Course settings update has failed."
+            }
+
     override suspend fun deleteCourse(credentials: Credentials, courseName: String) {
         // TODO 23.03.19: Delete course but not the repository.
     }
@@ -134,7 +143,6 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
                 errorMessage = "Task rules updating failed."
             }
 
-    @ImplicitReflectionSerializer
     override suspend fun updateScores(credentials: Credentials,
                                       courseName: String,
                                       task: String,
@@ -144,7 +152,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
                 apiMethod = "/task/update/scores"
                 params = mapOf(COURSE_NAME to courseName, TASK_BRANCH to task)
                 creds = credentials
-                body = JSON.stringify(scores)
+                body = JSON.stringify((String.serializer() to Int.serializer()).map, scores)
                 errorMessage = "Task scores updating failed."
             }
 
@@ -189,7 +197,6 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
                 errorMessage = "Github auth data retrieving failed."
             }
 
-    @ImplicitReflectionSerializer
     override suspend fun updateSolutionApprovals(credentials: Credentials,
                                                  courseName: String,
                                                  task: String,
@@ -199,7 +206,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
                 apiMethod = "/task/update/approvals"
                 params = mapOf(COURSE_NAME to courseName, TASK_BRANCH to task)
                 creds = credentials
-                body = JSON.stringify(approvals)
+                body = JSON.stringify((String.serializer() to SolutionReview.serializer()).map, approvals)
                 onSuccess = { response -> JSON.parse(Solution.serializer().list, response) }
                 errorMessage = "Task approvals updating failed."
             }

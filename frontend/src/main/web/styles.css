@@ -177,9 +177,20 @@ a.github-profile:hover {
 
 .task-card .icon-btn,
 .task-card .task-btn,
+.course-summary .course-btn,
 .course-summary .save-results-btn,
 .course-summary .icon-btn {
     margin-left: 20px;
+}
+
+.course-summary .card-controls,
+.task-card .card-controls {
+    display: flex;
+    align-items: center;
+}
+
+.card-controls .separated-control {
+    margin-left: auto;
 }
 
 .task-card .icon-btn,
@@ -236,5 +247,5 @@ a.github-profile:hover {
 }
 
 .checkbox-help {
-    margin-top: 0px;
+    margin-top: 0;
 }

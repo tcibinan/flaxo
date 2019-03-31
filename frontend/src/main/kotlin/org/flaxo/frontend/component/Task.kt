@@ -65,52 +65,53 @@ private class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
                 div(classes = "card-body") {
                     h5(classes = "card-title") { +props.task.branch }
                     deadlineIndication()
-
-                    a(classes = "card-link", href = props.task.url) { +"Git branch" }
-                    props.task.plagiarismReports
-                            .lastOrNull()
-                            ?.also {
-                                a(classes = "card-link rows-link", href = it.url) {
-                                    +"Plagiarism report"
-                                    small { +"valid 14 days only" }
-                                }
-                                a(classes = "card-link", href="") {
-                                    attrs {
-                                        dataToggle = "modal"
-                                        dataTarget = "#$PLAGIARISM_MODAL_ID"
-                                        onClickFunction = {
-                                            GlobalScope.launch { showPlagiarismGraph(props.course, props.task) }
-                                        }
+                    div(classes = "card-controls") {
+                        a(classes = "card-link", href = props.task.url) { +"Git branch" }
+                        props.task.plagiarismReports
+                                .lastOrNull()
+                                ?.also {
+                                    a(classes = "card-link rows-link", href = it.url) {
+                                        +"Plagiarism report"
+                                        small { +"valid 14 days only" }
                                     }
-                                    +"Plagiarism graph"
+                                    a(classes = "card-link", href = "") {
+                                        attrs {
+                                            dataToggle = "modal"
+                                            dataTarget = "#$PLAGIARISM_MODAL_ID"
+                                            onClickFunction = {
+                                                GlobalScope.launch { showPlagiarismGraph(props.course, props.task) }
+                                            }
+                                        }
+                                        +"Plagiarism graph"
+                                    }
                                 }
+                        button(classes = "btn btn-outline-primary task-btn", type = ButtonType.button) {
+                            attrs {
+                                onClickFunction = { GlobalScope.launch { analysePlagiarism() } }
+                                disabled = !props.course.isRunning()
+                                        || !props.task.hasEnoughSolutionsForPlagiarismAnalysis()
                             }
-                    button(classes = "btn btn-outline-primary task-btn", type = ButtonType.button) {
-                        attrs {
-                            onClickFunction = { GlobalScope.launch { analysePlagiarism() } }
-                            disabled = !props.course.isRunning()
-                                    || !props.task.hasEnoughSolutionsForPlagiarismAnalysis()
+                            +"Analyse plagiarism"
                         }
-                        +"Analyse plagiarism"
-                    }
-                    button(classes = "btn btn-outline-primary task-btn") {
-                        attrs {
-                            onClickFunction = {
-                                GlobalScope.launch { saveScores() }
-                                GlobalScope.launch { saveApprovals() }
+                        button(classes = "btn btn-outline-primary task-btn") {
+                            attrs {
+                                onClickFunction = {
+                                    GlobalScope.launch { saveScores() }
+                                    GlobalScope.launch { saveApprovals() }
+                                }
+                                disabled = state.scores.isEmpty() && state.reviews.isEmpty()
                             }
-                            disabled = state.scores.isEmpty() && state.reviews.isEmpty()
+                            +"Save results"
                         }
-                        +"Save results"
-                    }
-                    button(classes = "btn btn-outline-secondary task-btn") {
-                        attrs {
-                            dataToggle = "collapse"
-                            dataTarget = "#$RULES_DROPDOWN_ID"
-                            attributes["aria-expanded"] = "false"
-                            attributes["aria-controls"] = RULES_DROPDOWN_ID
+                        button(classes = "btn btn-outline-secondary task-btn separated-control") {
+                            attrs {
+                                dataToggle = "collapse"
+                                dataTarget = "#$RULES_DROPDOWN_ID"
+                                attributes["aria-expanded"] = "false"
+                                attributes["aria-controls"] = RULES_DROPDOWN_ID
+                            }
+                            +"Rules"
                         }
-                        +"Rules"
                     }
                     div(classes = "collapse") {
                         attrs.id = RULES_DROPDOWN_ID

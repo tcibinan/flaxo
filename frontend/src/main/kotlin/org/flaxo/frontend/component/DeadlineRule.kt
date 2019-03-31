@@ -36,7 +36,7 @@ private class DeadlineRule(props: DeadlineRuleProps) : RComponent<DeadlineRulePr
     private val deadlineRuleHelpId = "deadlineRuleHelp-" + props.task.branch
 
     override fun RBuilder.render() {
-        div(classes = "task-deadline-rule") {
+        div {
             div(classes = "form-group") {
                 label("Deadline", forInput = deadlineRuleInputId)
                 input(classes = "form-control", type = InputType.date) {

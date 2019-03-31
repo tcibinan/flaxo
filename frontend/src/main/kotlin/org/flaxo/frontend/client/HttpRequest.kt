@@ -60,7 +60,7 @@ class HttpRequest<T> {
     /**
      * Request body object.
      */
-    var body: Any? = null
+    var body: String? = null
 
     /**
      * Performs the configured http request and returns its body transformed to type [T].
@@ -94,7 +94,7 @@ class HttpRequest<T> {
     private fun httpCall(httpMethod: String,
                          apiMethod: String,
                          parameters: Map<String, Any?> = emptyMap(),
-                         body: Any? = null,
+                         body: String? = null,
                          credentials: Credentials? = null
     ): Deferred<XMLHttpRequest> =
             with(XMLHttpRequest()) {

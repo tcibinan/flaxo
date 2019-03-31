@@ -3,6 +3,7 @@ package org.flaxo.frontend.component
 import kotlinx.html.TABLE
 import kotlinx.html.TR
 import kotlinx.html.ThScope
+import kotlinx.html.id
 import kotlinx.html.js.onClickFunction
 import org.flaxo.common.data.Course
 import org.flaxo.common.data.CourseStatistics
@@ -16,6 +17,7 @@ import react.dom.a
 import react.dom.button
 import react.dom.div
 import react.dom.h5
+import react.dom.hr
 import react.dom.table
 import react.dom.tbody
 import react.dom.td
@@ -38,24 +40,41 @@ private class CourseSummaryProps(var course: Course, var courseStatistics: Cours
 
 private class CourseSummary(props: CourseSummaryProps) : RComponent<CourseSummaryProps, EmptyState>(props) {
 
+    private val SETTINGS_DROPDOWN_ID = "course-settings-dropdown-" + props.course.id
+
     override fun RBuilder.render() {
         div(classes = "course-summary") {
             div(classes = "card") {
                 div(classes = "card-body") {
                     h5(classes = "card-title") { +"Course summary" }
-                    a(classes = "card-link", href = props.course.url) { +"Git repository" }
-                    button(classes = "save-results-btn btn btn-outline-primary") {
-                        attrs.onClickFunction = { saveScores() }
-                        +"Save results"
+                    div(classes = "card-controls") {
+                        a(classes = "card-link", href = props.course.url) { +"Git repository" }
+                        button(classes = "save-results-btn btn btn-outline-primary") {
+                            attrs.onClickFunction = { saveScores() }
+                            +"Save results"
+                        }
+                        courseStatisticsRefresh(props.course)
+                        button(classes = "btn btn-outline-secondary course-btn separated-control") {
+                            attrs {
+                                dataToggle = "collapse"
+                                dataTarget = "#$SETTINGS_DROPDOWN_ID"
+                                attributes["aria-expanded"] = "false"
+                                attributes["aria-controls"] = SETTINGS_DROPDOWN_ID
+                            }
+                            +"Settings"
+                        }
                     }
-                    courseStatisticsRefresh(props.course)
+                    div(classes = "collapse") {
+                        attrs.id = SETTINGS_DROPDOWN_ID
+                        hr {}
+                        courseSettings(props.course)
+                    }
                     div(classes = "course-stats") {
                         table(classes = "table table-sm table-hover") {
                             tableHeader()
                             tableBody()
                         }
                     }
-
                 }
             }
         }

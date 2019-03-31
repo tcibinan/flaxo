@@ -43,7 +43,7 @@ private class Rules(props: RulesProps) : RComponent<RulesProps, RulesState>(prop
     }
 
     override fun RBuilder.render() {
-        div(classes = "rules-list") {
+        div {
             deadlineRule(props.task) { newDeadline -> setState { this.deadline = newDeadline } }
             button(classes = "btn btn-primary") {
                 attrs {
