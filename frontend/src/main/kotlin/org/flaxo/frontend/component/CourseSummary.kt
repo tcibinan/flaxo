@@ -8,6 +8,8 @@ import kotlinx.html.js.onClickFunction
 import org.flaxo.common.data.Course
 import org.flaxo.common.data.CourseStatistics
 import org.flaxo.common.data.Solution
+import org.flaxo.frontend.OnCourseChange
+import org.flaxo.frontend.OnCourseStatisticsChange
 import org.flaxo.frontend.github.githubProfileUrl
 import react.RBuilder
 import react.RComponent
@@ -28,15 +30,24 @@ import react.dom.tr
 /**
  * Adds course summary.
  */
-fun RBuilder.courseSummary(course: Course, courseStatistics: CourseStatistics) =
+fun RBuilder.courseSummary(course: Course,
+                           courseStatistics: CourseStatistics,
+                           onUpdate: OnCourseChange,
+                           onCourseStatisticsUpdate: OnCourseStatisticsChange) =
         child(CourseSummary::class) {
             attrs {
                 this.course = course
                 this.courseStatistics = courseStatistics
+                this.onUpdate = onUpdate
+                this.onCourseStatisticsUpdate = onCourseStatisticsUpdate
             }
         }
 
-private class CourseSummaryProps(var course: Course, var courseStatistics: CourseStatistics) : RProps
+private class CourseSummaryProps(var course: Course,
+                                 var courseStatistics: CourseStatistics,
+                                 var onUpdate: OnCourseChange,
+                                 var onCourseStatisticsUpdate: OnCourseStatisticsChange
+) : RProps
 
 private class CourseSummary(props: CourseSummaryProps) : RComponent<CourseSummaryProps, EmptyState>(props) {
 
@@ -53,7 +64,7 @@ private class CourseSummary(props: CourseSummaryProps) : RComponent<CourseSummar
                             attrs.onClickFunction = { saveScores() }
                             +"Save results"
                         }
-                        courseStatisticsRefresh(props.course)
+                        courseStatisticsRefresh(props.course, props.onCourseStatisticsUpdate)
                         button(classes = "btn btn-outline-secondary course-btn separated-control") {
                             attrs {
                                 dataToggle = "collapse"
@@ -67,7 +78,7 @@ private class CourseSummary(props: CourseSummaryProps) : RComponent<CourseSummar
                     div(classes = "collapse") {
                         attrs.id = SETTINGS_DROPDOWN_ID
                         hr {}
-                        courseSettings(props.course)
+                        courseSettings(props.course, props.onUpdate)
                     }
                     div(classes = "course-stats") {
                         table(classes = "table table-sm table-hover") {
@@ -155,4 +166,3 @@ private class CourseSummary(props: CourseSummaryProps) : RComponent<CourseSummar
 private fun saveScores() {
     TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 }
-

@@ -6,6 +6,7 @@ import org.flaxo.common.data.CourseStatistics
 import org.flaxo.common.data.GithubAuthData
 import org.flaxo.common.data.Solution
 import org.flaxo.common.data.SolutionReview
+import org.flaxo.common.data.Task
 import org.flaxo.common.data.User
 import org.flaxo.frontend.Credentials
 
@@ -69,12 +70,12 @@ interface FlaxoClient {
     /**
      * Synchronizes course statistics with all the external vendors: github, travis, codacy.
      */
-    suspend fun syncCourse(credentials: Credentials, courseName: String)
+    suspend fun syncCourse(credentials: Credentials, courseName: String): CourseStatistics
 
     /**
      * Updates a particular [task] rules ([deadline]) of the course with [courseName].
      */
-    suspend fun updateRules(credentials: Credentials, courseName: String, task: String, deadline: String?)
+    suspend fun updateRules(credentials: Credentials, courseName: String, task: String, deadline: String?): Task
 
     /**
      * Updates [scores] of the [task] of the course with [courseName].

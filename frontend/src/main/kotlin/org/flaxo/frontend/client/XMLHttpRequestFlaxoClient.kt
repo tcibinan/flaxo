@@ -10,6 +10,7 @@ import org.flaxo.common.data.CourseStatistics
 import org.flaxo.common.data.GithubAuthData
 import org.flaxo.common.data.Solution
 import org.flaxo.common.data.SolutionReview
+import org.flaxo.common.data.Task
 import org.flaxo.common.data.User
 import org.flaxo.frontend.Credentials
 
@@ -123,11 +124,12 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
                 errorMessage = "Plagiarism analysis failed."
             }
 
-    override suspend fun syncCourse(credentials: Credentials, courseName: String): Unit =
+    override suspend fun syncCourse(credentials: Credentials, courseName: String): CourseStatistics =
             post {
                 apiMethod = "/course/sync"
                 params = mapOf(COURSE_NAME to courseName)
                 creds = credentials
+                onSuccess = { response -> JSON.parse(CourseStatistics.serializer(), response) }
                 errorMessage = "Course synchronization failed."
             }
 
@@ -135,11 +137,12 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
                                      courseName: String,
                                      task: String,
                                      deadline: String?
-    ): Unit =
+    ): Task =
             post {
                 apiMethod = "/task/update/rules"
                 params = mapOf(COURSE_NAME to courseName, TASK_BRANCH to task, DEADLINE to deadline)
                 creds = credentials
+                onSuccess = { response -> JSON.parse(Task.serializer(), response) }
                 errorMessage = "Task rules updating failed."
             }
 

@@ -34,7 +34,7 @@ fun RBuilder.courses(user: User, onLogout: () -> Unit) = child(Courses::class) {
 
 private class CoursesProps(var user: User, var onLogout: () -> Unit) : RProps
 
-private class CoursesState(var courses: List<Course> = emptyList(), var selectedCourse: Course? = null) : RState
+private class CoursesState(var courses: List<Course> = emptyList(), var selectedCourseId: Long? = null) : RState
 
 private class Courses(props: CoursesProps) : RComponent<CoursesProps, CoursesState>(props) {
 
@@ -46,8 +46,20 @@ private class Courses(props: CoursesProps) : RComponent<CoursesProps, CoursesSta
         GlobalScope.launch { updateCoursesList() }
     }
 
+    private suspend fun updateCoursesList() {
+        credentials?.also { credentials ->
+            try {
+                val courses = flaxoClient.getUserCourses(credentials, props.user.name)
+                setState { this.courses = courses }
+            } catch (e: FlaxoHttpException) {
+                console.log(e)
+                Notifications.error("Error occurred while retrieving courses list.", e)
+            }
+        }
+    }
+
     override fun RBuilder.render() {
-        val selectedCourse = state.selectedCourse
+        val selectedCourse = state.courses.find { it.id == state.selectedCourseId }
         navigationBar(props.user, props.onLogout, ::deselectCourse)
         if (selectedCourse == null) {
             div(classes = "courses-list") {
@@ -67,39 +79,27 @@ private class Courses(props: CoursesProps) : RComponent<CoursesProps, CoursesSta
                 }
             }
         } else {
-            course(selectedCourse, onUpdate = { GlobalScope.launch { updateCoursesList() } }, onDelete = ::deselectCourse)
+            course(selectedCourse, onUpdate = ::updateCourse, onDelete = ::deleteCourse)
         }
         githubModal(props.user)
         travisModal(props.user)
         codacyModal(props.user)
         plagiarismModal()
-        courseCreationModal(onCourseCreation = { GlobalScope.launch { updateCoursesList() } })
+        courseCreationModal(onCreate = ::addCourse)
     }
 
-    private suspend fun updateCoursesList() {
-        credentials?.also { credentials ->
-            try {
-                val courses = flaxoClient.getUserCourses(credentials, props.user.name)
-                val selectedCourse = state.selectedCourse?.let { previouslySelectedCourse ->
-                    courses.find { it.name == previouslySelectedCourse.name }
-                }
-                setState {
-                    this.selectedCourse = selectedCourse
-                    this.courses = courses
-                }
-            } catch (e: FlaxoHttpException) {
-                console.log(e)
-                Notifications.error("Error occurred while retrieving courses list.", e)
-            }
-        }
+    private fun deselectCourse() = setState { selectedCourseId = null }
+
+    private fun selectCourse(course: Course) = setState { selectedCourseId = course.id }
+
+    private fun deleteCourse(course: Course) = setState {
+        selectedCourseId = null
+        courses = courses.filter { it.id != course.id }
     }
 
-    private fun deselectCourse() {
-        setState { selectedCourse = null }
+    private fun updateCourse(course: Course) = setState {
+        courses = courses.map { if (it.id == course.id) course else it }
     }
 
-    private fun selectCourse(course: Course) {
-        setState { selectedCourse = course }
-    }
-
+    private fun addCourse(course: Course) = setState { courses += course }
 }

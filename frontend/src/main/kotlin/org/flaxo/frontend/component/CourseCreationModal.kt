@@ -14,6 +14,7 @@ import org.flaxo.common.Framework
 import org.flaxo.common.Language
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.Notifications
+import org.flaxo.frontend.OnCourseChange
 import org.flaxo.frontend.checkBoxValue
 import org.flaxo.frontend.clickOnButton
 import org.flaxo.frontend.client.FlaxoClient
@@ -53,13 +54,13 @@ private const val COURSE_CREATION_MODAL_CANCEL_ID = "courseCreationModalCancel"
 /**
  * Adds course creation modal.
  */
-fun RBuilder.courseCreationModal(onCourseCreation: () -> Unit) = child(CourseCreationModal::class) {
+fun RBuilder.courseCreationModal(onCreate: OnCourseChange) = child(CourseCreationModal::class) {
     attrs {
-        this.onCourseCreation = onCourseCreation
+        this.onCreate = onCreate
     }
 }
 
-private class CourseCreationModalProps(var onCourseCreation: () -> Unit) : RProps
+private class CourseCreationModalProps(var onCreate: OnCourseChange) : RProps
 
 private class CourseCreationModalState(var generateEnvironment: Boolean = false,
                                        var language: Language? = null,
@@ -291,14 +292,14 @@ private class CourseCreationModal(props: CourseCreationModalProps)
                 if (courseName != null && numberOfTasks != null) {
                     clickOnButton(COURSE_CREATION_MODAL_CANCEL_ID)
                     Notifications.info("Course creation has been started.")
-                    flaxoClient.createCourse(it,
+                    val createdCourse = flaxoClient.createCourse(it,
                             courseName = courseName,
                             description = description,
                             language = language,
                             testingLanguage = testingLanguage?.filter { generateEnvironment },
                             testingFramework = testingFramework?.filter { generateEnvironment },
                             numberOfTasks = numberOfTasks)
-                    props.onCourseCreation()
+                    props.onCreate(createdCourse)
                     Notifications.success("Course has been created.")
                 }
             } catch (e: FlaxoHttpException) {

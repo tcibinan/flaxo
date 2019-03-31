@@ -6,8 +6,10 @@ import kotlinx.html.id
 import kotlinx.html.role
 import org.flaxo.common.data.Course
 import org.flaxo.common.data.CourseStatistics
+import org.flaxo.common.data.Task
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.Notifications
+import org.flaxo.frontend.OnCourseChange
 import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.frontend.client.FlaxoHttpException
 import org.flaxo.frontend.credentials
@@ -24,30 +26,27 @@ import react.setState
 /**
  * Adds course summary statistics table.
  */
-fun RBuilder.courseStatistics(course: Course) =
+fun RBuilder.courseStatistics(course: Course, onUpdate: OnCourseChange) =
         child(org.flaxo.frontend.component.CourseStatistics::class) {
             attrs {
                 this.course = course
+                this.onUpdate = onUpdate
             }
         }
 
-private class CourseStatisticsProps(var course: Course) : RProps
+private class CourseStatisticsProps(var course: Course, var onUpdate: OnCourseChange) : RProps
 
 private class CourseStatisticsState(var courseStatistics: CourseStatistics?) : RState
 
 private class CourseStatistics(props: CourseStatisticsProps)
     : RComponent<CourseStatisticsProps, CourseStatisticsState>(props) {
 
-    private companion object {
-        const val COURSE_STATISTICS_NAVIGATION_ID = "courseStatisticsNavigation"
-        const val COURSE_SUMMARY_TAB_ID = "courseSummaryTab"
-        // TODO 15.08.18: Two courses may have tabs with the same id
-        const val TASK_TAB_ID_TEMPLATE = "taskTab-"
-        const val COURSE_STATISTICS_CONTENT_ID = "courseStatisticsContent"
-        const val COURSE_SUMMARY_CONTENT_ID = "courseSummaryContent"
-        // TODO 15.08.18: Two courses may have tab contents with the same id
-        const val TASK_CONTENT_ID_TEMPLATE = "taskContent-"
-    }
+    private val courseSummaryTab = "courseSummaryTab-${props.course.id}"
+    private val courseStatisticsContent = "courseStatisticsContent-${props.course.id}"
+    private val courseSummaryContent = "courseSummaryContent-${props.course.id}"
+    private val courseStatisticsNavigation = "courseStatisticsNavigation-${props.course.id}"
+    private val taskContentIdTemplate = "taskContent-${props.course.id}"
+    private val taskTabIdTemplate = "taskTab-${props.course.id}"
 
     private val flaxoClient: FlaxoClient
 
@@ -74,16 +73,16 @@ private class CourseStatistics(props: CourseStatisticsProps)
         div(classes = "course-tabs") {
             ul(classes = "nav nav-tabs") {
                 attrs {
-                    id = COURSE_STATISTICS_NAVIGATION_ID
+                    id = courseStatisticsNavigation
                     role = "tablist"
                 }
                 li("nav-item") {
-                    a(classes = "nav-link active", href = "#$COURSE_SUMMARY_CONTENT_ID") {
+                    a(classes = "nav-link active", href = "#$courseSummaryContent") {
                         attrs {
-                            id = COURSE_SUMMARY_TAB_ID
+                            id = courseSummaryTab
                             role = "tab"
                             attributes["data-toggle"] = "tab"
-                            attributes["aria-controls"] = COURSE_SUMMARY_CONTENT_ID
+                            attributes["aria-controls"] = courseSummaryContent
                             attributes["aria-selected"] = "true"
                         }
                         +"Course summary"
@@ -93,12 +92,12 @@ private class CourseStatistics(props: CourseStatisticsProps)
                         ?.sortedBy { it.branch }
                         ?.forEach { task ->
                             li("nav-item") {
-                                a(classes = "nav-link", href = "#${TASK_CONTENT_ID_TEMPLATE + task.branch}") {
+                                a(classes = "nav-link", href = "#${taskContentIdTemplate + task.branch}") {
                                     attrs {
-                                        id = TASK_TAB_ID_TEMPLATE + task.branch
+                                        id = taskTabIdTemplate + task.branch
                                         role = "tab"
                                         attributes["data-toggle"] = "tab"
-                                        attributes["aria-controls"] = TASK_CONTENT_ID_TEMPLATE + task.branch
+                                        attributes["aria-controls"] = taskContentIdTemplate + task.branch
                                         attributes["aria-selected"] = "false"
                                     }
                                     +task.branch
@@ -108,15 +107,15 @@ private class CourseStatistics(props: CourseStatisticsProps)
             }
         }
         div(classes = "tab-content") {
-            attrs { id = COURSE_STATISTICS_CONTENT_ID }
+            attrs { id = courseStatisticsContent }
             div(classes = "tab-pane show active") {
                 attrs {
-                    id = COURSE_SUMMARY_CONTENT_ID
+                    id = courseSummaryContent
                     role = "tabpanel"
-                    attributes["aria-labelledby"] = COURSE_SUMMARY_TAB_ID
+                    attributes["aria-labelledby"] = courseSummaryTab
                 }
                 state.courseStatistics?.also {
-                    courseSummary(props.course, it)
+                    courseSummary(props.course, it, props.onUpdate, ::updateStatistics)
                 }
             }
             state.courseStatistics?.tasks
@@ -124,14 +123,23 @@ private class CourseStatistics(props: CourseStatisticsProps)
                     ?.forEach { task ->
                         div(classes = "tab-pane") {
                             attrs {
-                                id = TASK_CONTENT_ID_TEMPLATE + task.branch
+                                id = taskContentIdTemplate + task.branch
                                 role = "tabpanel"
-                                attributes["aria-labelledby"] = TASK_TAB_ID_TEMPLATE + task.branch
+                                attributes["aria-labelledby"] = taskTabIdTemplate + task.branch
                             }
-                            task(props.course, task)
+                            task(props.course, task, onUpdate = ::updateTask)
                         }
                     }
 
         }
+    }
+
+    private fun updateStatistics(courseStatistics: CourseStatistics) = setState {
+        this.courseStatistics = courseStatistics
+    }
+
+    private fun updateTask(task: Task) = setState {
+        val updatedTasks = courseStatistics?.tasks.orEmpty().map { if (it.id == task.id) task else it }
+        courseStatistics = courseStatistics?.copy(tasks = updatedTasks)
     }
 }

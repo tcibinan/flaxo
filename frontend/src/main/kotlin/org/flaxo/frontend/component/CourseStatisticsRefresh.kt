@@ -7,6 +7,7 @@ import org.flaxo.common.data.Course
 import org.flaxo.common.data.CourseLifecycle
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.Notifications
+import org.flaxo.frontend.OnCourseStatisticsChange
 import org.flaxo.frontend.client.FlaxoHttpException
 import org.flaxo.frontend.credentials
 import react.RBuilder
@@ -16,21 +17,22 @@ import react.dom.i
 /**
  * Adds course statistics refresh button.
  */
-fun RBuilder.courseStatisticsRefresh(course: Course) {
+fun RBuilder.courseStatisticsRefresh(course: Course, onUpdate: OnCourseStatisticsChange) {
     button(classes = "btn btn-outline-info icon-btn") {
         attrs {
-            onClickFunction = { GlobalScope.launch { synchronizeCourseStatistics(course) } }
+            onClickFunction = { GlobalScope.launch { synchronizeCourseStatistics(course, onUpdate) } }
             disabled = course.state.lifecycle == CourseLifecycle.INIT
         }
         i(classes = "material-icons") { +"refresh" }
     }
 }
 
-private suspend fun synchronizeCourseStatistics(course: Course) {
+private suspend fun synchronizeCourseStatistics(course: Course, onUpdate: OnCourseStatisticsChange) {
     credentials?.also {
         try {
             Notifications.info("Course statistics refreshing was initiated.")
-            Container.flaxoClient.syncCourse(it, course.name)
+            val updatedStatistics = Container.flaxoClient.syncCourse(it, course.name)
+            onUpdate(updatedStatistics)
             Notifications.success("Course statistics synchronization has been finished.")
         } catch (e: FlaxoHttpException) {
             console.log(e)

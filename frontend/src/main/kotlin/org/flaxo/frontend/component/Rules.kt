@@ -8,6 +8,7 @@ import org.flaxo.common.data.DateTime
 import org.flaxo.common.data.Task
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.Notifications
+import org.flaxo.frontend.OnTaskChange
 import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.frontend.client.FlaxoHttpException
 import org.flaxo.frontend.credentials
@@ -22,14 +23,15 @@ import react.setState
 /**
  * Adds task rules menu.
  */
-fun RBuilder.rules(course: Course, task: Task) = child(Rules::class) {
+fun RBuilder.rules(course: Course, task: Task, onUpdate: OnTaskChange) = child(Rules::class) {
     attrs {
         this.course = course
         this.task = task
+        this.onUpdate = onUpdate
     }
 }
 
-private class RulesProps(var course: Course, var task: Task) : RProps
+private class RulesProps(var course: Course, var task: Task, var onUpdate: OnTaskChange) : RProps
 
 private class RulesState(var deadline: DateTime?) : RState
 
@@ -58,8 +60,9 @@ private class Rules(props: RulesProps) : RComponent<RulesProps, RulesState>(prop
     private suspend fun submitRulesChanges() {
         credentials?.also { credentials ->
             try {
-                flaxoClient.updateRules(credentials, props.course.name, props.task.branch,
+                val updatedTask = flaxoClient.updateRules(credentials, props.course.name, props.task.branch,
                         state.deadline?.toDateString())
+                props.onUpdate(updatedTask)
                 Notifications.success("Task rules has been updated.")
             } catch (e: FlaxoHttpException) {
                 console.log(e)

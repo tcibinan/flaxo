@@ -13,6 +13,7 @@ import org.flaxo.common.data.Task
 import org.flaxo.frontend.Configuration
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.Notifications
+import org.flaxo.frontend.OnTaskChange
 import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.frontend.client.FlaxoHttpException
 import org.flaxo.frontend.credentials
@@ -33,18 +34,19 @@ import kotlin.browser.document
 /**
  * Adds task.
  */
-fun RBuilder.task(course: Course, task: Task) = child(org.flaxo.frontend.component.Task::class) {
+fun RBuilder.task(course: Course, task: Task, onUpdate: OnTaskChange) = child(TaskComponent::class) {
     attrs {
         this.course = course
         this.task = task
+        this.onUpdate = onUpdate
     }
 }
 
-private class TaskProps(var course: Course, var task: Task) : RProps
+private class TaskProps(var course: Course, var task: Task, var onUpdate: OnTaskChange) : RProps
 
 private class TaskState(var scores: Map<String, Int>, var reviews: Map<String, SolutionReview>) : RState
 
-private class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
+private class TaskComponent(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
 
     private companion object {
         // TODO 16.08.18: Id can be non-unique between tabs
@@ -116,7 +118,7 @@ private class Task(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
                     div(classes = "collapse") {
                         attrs.id = RULES_DROPDOWN_ID
                         hr {}
-                        rules(props.course, props.task)
+                        rules(props.course, props.task, props.onUpdate)
                     }
                     taskStatistics(props.course, props.task,
                             onSolutionScoreUpdate = { student, score ->

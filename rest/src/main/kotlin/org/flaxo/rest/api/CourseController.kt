@@ -7,6 +7,7 @@ import org.flaxo.common.data.CourseLifecycle
 import org.flaxo.common.data.CourseSettings
 import org.flaxo.common.data.ExternalService
 import org.flaxo.common.stringStackTrace
+import org.flaxo.model.CourseStatisticsView
 import org.flaxo.model.CourseView
 import org.flaxo.model.DataManager
 import org.flaxo.model.data.views
@@ -422,7 +423,7 @@ class CourseController(private val dataManager: DataManager,
     @PostMapping("/sync")
     fun synchronize(@RequestParam courseName: String,
                     principal: Principal
-    ): Response<CourseView> {
+    ): Response<CourseStatisticsView> {
         logger.info("Syncing ${principal.name}/$courseName course")
 
         val user = dataManager.getUser(principal.name)
@@ -459,6 +460,6 @@ class CourseController(private val dataManager: DataManager,
         val courseWithRefreshedValidations = dataManager.getCourse(courseWithNewSolutions.name, user)
                 ?: return responseManager.courseNotFound(principal.name, courseWithNewSolutions.name)
 
-        return responseManager.ok(courseWithRefreshedValidations.view())
+        return responseManager.ok(CourseStatisticsView(courseWithRefreshedValidations.tasks.views()))
     }
 }

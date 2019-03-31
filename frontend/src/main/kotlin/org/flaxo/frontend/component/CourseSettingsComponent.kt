@@ -9,6 +9,7 @@ import org.flaxo.common.data.Course
 import org.flaxo.common.data.CourseSettings
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.Notifications
+import org.flaxo.frontend.OnCourseChange
 import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.frontend.client.FlaxoHttpException
 import org.flaxo.frontend.component.bootstrap.selectComponent
@@ -24,11 +25,14 @@ import react.setState
 /**
  * Adds task rules menu.
  */
-fun RBuilder.courseSettings(course: Course) = child(CourseSettingsComponent::class) {
-    attrs.course = course
+fun RBuilder.courseSettings(course: Course, onUpdate: OnCourseChange) = child(CourseSettingsComponent::class) {
+    attrs {
+        this.course = course
+        this.onUpdate = onUpdate
+    }
 }
 
-private class CourseSettingsProps(var course: Course) : RProps
+private class CourseSettingsProps(var course: Course, var onUpdate: OnCourseChange) : RProps
 
 private class CourseSettingsState(var settings: CourseSettings) : RState
 
@@ -101,7 +105,9 @@ private class CourseSettingsComponent(props: CourseSettingsProps)
     private suspend fun submitSettingsChanges() {
         credentials?.also { credentials ->
             try {
-                flaxoClient.updateCourseSetting(credentials, props.course.id, state.settings)
+                val updatedCourse: Course = flaxoClient.updateCourseSetting(credentials, props.course.id,
+                        state.settings)
+                props.onUpdate(updatedCourse)
                 Notifications.success("Course settings have been updated.")
             } catch (e: FlaxoHttpException) {
                 console.log(e)
