@@ -1,0 +1,6 @@
+site_name: Flaxo
+repo_url: https://github.com/tcibinan/flaxo/
+nav:
+  - Introduction: index.md
+  - About: about.md
+theme: readthedocs
