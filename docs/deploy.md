@@ -3,21 +3,32 @@
 Flaxo is is distributed as on-premises solution. It means that the system is *not available not as service* but can be 
 *downloaded and hosted* in your own environment with no restrictions.
 
-The whole system is packaged in several docker container which can be easily deploy with a docker compose approach.
+The whole system is packaged in the several docker containers which can be easily deployed using *docker compose* tool.
 
 ## Prerequisites
 
-Deploying requires a several actions to perform beforehand.
+### Docker
 
-### Github OAuth App
+Docker and docker-compose tools should be installed on the local server. Information on how to install the tools in 
+your environment can be found [here](https://docs.docker.com/install/) and 
+[here](https://docs.docker.com/compose/install/).
+
+### GitHub OAuth App
 
 Github OAuth Application is required to enable GitHub authentication in Flaxo. Therefore, you have to create a 
-GitHub OAuth App and collect its `id` and `secret`. Moreover, you have to set *Homepage URL* and *Authorization 
-callback URL* parameters. *Homepage URL* should be just the public root endpoint of the flaxo deployment and 
-*Authorization callback URL* should be basically *Homepage URL* plus `rest/github/auth/code` suffix.
+GitHub OAuth App and collect its `id` and `secret`. Moreover, you have to configure *Homepage URL* and *Authorization 
+callback URL* GitHub OAuth App settings. 
 
-More information on Github Apps can be found in 
+More information on GitHub Apps can be found in 
 [the official documentation](https://developer.github.com/apps/about-apps/).
+
+#### Homepage URL
+ 
+Root endpoint of the flaxo deployment.
+ 
+#### Authorization callback URL
+
+GitHub OAuth App *Homepage URL* plus `/rest/github/auth/code` suffix.
 
 ### MOSS
 
@@ -27,8 +38,7 @@ process to retrieve personal `userid`. You can do so following the instructions 
 
 ## Configuration
 
-After you've created a GitHub App and get you MOSS user id then you have to configure several flaxo deployment 
-parameters.
+Once a GitHub OAuth App is created and MOSS user id is retrieved then you can resolve flaxo deployment parameters.
 
 ### Parameters
 
@@ -42,13 +52,12 @@ Created GitHub OAuth app `secret`.
 
 #### MOSS_USER_ID
 
-MOSS `userid` which you can find in your email after you request it following the instructions on  
-[the official site](https://theory.stanford.edu/~aiken/moss/).
+Retrieved MOSS `userid`.
 
 #### REST_URL
 
 Public endpoint of the Flaxo application Rest API. The address should be available from the outer network. Rest URL
-consists of a *Homepage URL* or *the deployment root path* and `/rest` suffix. F.e. *http://localhost:8080/rest* or 
+is GitHub OAuth App *Homepage URL* plus `/rest` suffix. F.e. *http://localhost:8080/rest* or 
 *http://8.8.8.8:8080/flaxo/deployment/path/rest*.
 
 #### POSTGRES_USER
@@ -65,12 +74,12 @@ Database name to use in the packaged PostgreSQL DB.
 
 #### tag
 
-Flaxo release to use. It should be specified without `v` prefix, f.e. `v0.3` -> `0.3`. 
+Flaxo release to use. It should be specified without `v` prefix, f.e. `v0.3` becomes `0.3`. 
 Latest release can be found [here](https://github.com/tcibinan/flaxo/releases).
 
 #### data2graph_tag
 
-Data2graph release to use. It should be specified without `v` prefix, f.e. `v0.4` -> `0.4`. 
+Data2graph release to use. It should be specified without `v` prefix, f.e. `v0.4` becomes `0.4`. 
 Latest release can be found [here](https://github.com/tcibinan/data2graph/releases). 
 
 #### data_dir
@@ -107,7 +116,7 @@ Change current directory to the docker compose directory.
 cd docker/compose
 ```
 
-Create `.env` file and fill it with previously resolved deployment parameters.
+Create `.env` file and fill it with the previously resolved deployment parameters.
 
 ```bash
 cat > .env << EOL
