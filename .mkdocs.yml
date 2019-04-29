@@ -4,5 +4,8 @@ nav:
   - Introduction: index.md
   - Deploy: deploy.md
   - Concepts: concepts.md
+  - Getting started:
+      - Creating an account: getting-started/creating-an-account.md
+      - External services: getting-started/external-services.md
   - About: about.md
 theme: material
