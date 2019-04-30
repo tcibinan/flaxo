@@ -24,7 +24,7 @@ More information on GitHub Apps can be found in
 
 #### Homepage URL
  
-Root endpoint of the flaxo deployment.
+Root endpoint of the Flaxo deployment.
  
 #### Authorization callback URL
 
@@ -38,7 +38,7 @@ process to retrieve personal `userid`. You can do so following the instructions 
 
 ## Configuration
 
-Once a GitHub OAuth App is created and MOSS user id is retrieved then you can resolve flaxo deployment parameters.
+Once a GitHub OAuth App is created and MOSS user id is retrieved then you can resolve Flaxo deployment parameters.
 
 ### Parameters
 
@@ -104,7 +104,7 @@ Change current directory to the cloned repository directory.
 cd flaxo
 ```
 
-Checkout to the required flaxo release. Latest release can be found [here](https://github.com/tcibinan/flaxo/releases).
+Checkout to the required Flaxo release. Latest release can be found [here](https://github.com/tcibinan/flaxo/releases).
 
 ```bash
 git checkout v0.3
