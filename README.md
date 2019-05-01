@@ -11,42 +11,39 @@ Flaxo educational platform is a pragmatic way to organise, manage and report pro
 
 ## Basics
 
-The educational process using flaxo platform can be described in five steps:
+The educational process using Flaxo platform can be described in five steps:
 
-1. Tutor creates a course with flaxo which is basically a simple git repository.
-2. Tutor fill the course tasks with tests that students are going to write implementations for.
+1. Tutor creates a course which is basically a simple Git repository.
+2. Tutor fills the course tasks with tests that students are going to write implementations for.
 3. Students solve the tasks and create pull requests.
-4. Flaxo make all the necessary arrangements to evaluate students solutions.
-5. Tutor receives well-formatted statistics of students progress.
-
-## Features
-
-### Results aggregation
-
-Flaxo aggregates results for each course task using different metrics including: 
-
-- solutions testing
-- code style analysis
-- plagiarism analysis
+4. Flaxo evaluates students solutions using several metrics.
+5. Tutor receives an interactive dashboard with the students progress.
 
 ![course-task-statistics](https://github.com/tcibinan/flaxo/raw/dev/screenshots/course-task.png)
 
-### Course generation
+## Features
 
-You can create a course from scratch just selecting languages and framework for testing.
-Flaxo knows how to create a git repository with a required gradle project.
+### Validations
 
-![course-creation-modal](https://github.com/tcibinan/flaxo/raw/dev/screenshots/course-creation-modal.png)
+Flaxo uses several integrated services including *Travis*, *Codacy* and *MOSS* to collect different metrics for
+all the solutions. It includes **testing**, **code quality analysis** and **plagiarism analysis**.
 
-### Statistics export
+### Plagiarism
 
-All courses statistics could be retrieved in one of the supported formats: json, csv and tsv.
+All the solutions for a single course can be analysed for plagiarism.
+Plagiarism analysis results can be viewed in a graph viewer tool and their minified representation is 
+listed in the course dashboard.
 
-### Educational flow
+### Generation
 
-You can create unlimited amount of public courses for free. And it is as easy as it can be.
+Flaxo can generate course\repositories with a preconfigured environment for several languages and testing frameworks.
+F.e. gradle project with all the required dependencies can be generated for *java* language and *junit* testing 
+framework.
 
-![all-courses](https://github.com/tcibinan/flaxo/raw/dev/screenshots/all-courses.png)
+### Export
+
+Course dashboard can be exported in one of the supported formats: json, csv and tsv. 
+It makes all kinds of integrations with the Flaxo possible.
 
 ## Examples
 
@@ -69,7 +66,7 @@ Flaxo is entirely an opensource project and only the community can make a differ
 So please feel free to open new issues asking questions, suggesting new features or reporting bugs.
 
 If you intend to contribute to Flaxo project then you can found information on how to build Flaxo from sources 
-in the corresponding [documentation page](https://flaxo.readthedocs.io/en/latest/contribution/).
+in the corresponding documentation [page](https://flaxo.readthedocs.io/en/latest/contribution/).
 
 ## Credits
 
@@ -85,7 +82,9 @@ in the corresponding [documentation page](https://flaxo.readthedocs.io/en/latest
 }
 ```
 
-It will be great if you add flaxo badge [![from_flaxo with_♥](https://img.shields.io/badge/from_flaxo-with_♥-blue.svg)](https://github.com/tcibinan/flaxo) to your course README.md.
+It will be great if you add Flaxo badge
+[![from_flaxo with_♥](https://img.shields.io/badge/from_flaxo-with_♥-blue.svg)](https://github.com/tcibinan/flaxo) 
+to your course README.md.
 
 ```markdown
 [![from_flaxo with_♥](https://img.shields.io/badge/from_flaxo-with_♥-blue.svg)](https://github.com/tcibinan/flaxo)
