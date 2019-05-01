@@ -76,10 +76,14 @@ Database name to use in the packaged PostgreSQL DB.
 
 #### tag
 
+![Flaxo latest pre-release](https://img.shields.io/github/release-pre/tcibinan/flaxo.svg?label=pre-release)
+
 Flaxo release to use. It should be specified without `v` prefix, f.e. `v0.3` becomes `0.3`. 
 Latest release can be found [here](https://github.com/tcibinan/flaxo/releases).
 
 #### data2graph_tag
+
+![Data2Graph latest pre-release](https://img.shields.io/github/release-pre/tcibinan/data2graph.svg?label=pre-release)
 
 Data2graph release to use. It should be specified without `v` prefix, f.e. `v0.4` becomes `0.4`. 
 Latest release can be found [here](https://github.com/tcibinan/data2graph/releases). 

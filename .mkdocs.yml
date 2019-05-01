@@ -8,5 +8,7 @@ nav:
       - Create an account: getting-started/creating-an-account.md
       - External services: getting-started/external-services.md
       - Create a course: getting-started/course-creation.md
+  - Docker: docker.md
+  - Contribution: contribution.md
   - About: about.md
 theme: material

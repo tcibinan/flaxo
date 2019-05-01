@@ -5,6 +5,7 @@
 [![Docker Cloud Build Status Frontend](https://img.shields.io/docker/cloud/build/flaxo/frontend.svg?label=frontend%20docker)](https://hub.docker.com/r/flaxo/frontend)
 [![Docker Cloud Build Status Backend](https://img.shields.io/docker/cloud/build/flaxo/backend.svg?label=backend%20docker)](https://hub.docker.com/r/flaxo/backend)
 [![Documentation Status](https://readthedocs.org/projects/flaxo/badge/?version=latest)](https://flaxo.readthedocs.io/en/latest/?badge=latest)
+![Flaxo latest pre-release](https://img.shields.io/github/release-pre/tcibinan/flaxo.svg?label=pre-release)
 
 Flaxo educational platform is a pragmatic way to organise, manage and report programming courses.
 
@@ -47,19 +48,28 @@ You can create unlimited amount of public courses for free. And it is as easy as
 
 ![all-courses](https://github.com/tcibinan/flaxo/raw/dev/screenshots/all-courses.png)
 
-## Course examples
+## Examples
 
-[Data structures on Java](https://github.com/tcibinan/data-structures-course) :ru:
+Several University courses and a few developer trainings were hosted using Flaxo.
+Some of them are listed below.
 
-## Getting started
+- [Data structures on Java](https://github.com/tcibinan/data-structures-course) `Russian`
+- [Java basics](https://github.com/thejerome/IFMO_JAVA_Basics_20182009) `Russian`
+- [C++ basics](https://github.com/thejerome/IFMO_CPP_programming_20180910) `Russian`
 
-To get your flaxo instance up and running you can follow the [Getting started wiki page](https://github.com/tcibinan/flaxo/wiki/Getting-started).
+## Documentation
 
-## Contributing
+Flaxo documentation is still in progress. 
+Nevertheless some useful information on how to deploy your Flaxo instance and get started is already present.
+Documentation can be found [here](https://flaxo.readthedocs.io/en/latest/).
 
-Please feel free to open issues and ask questions. Contribution to Flaxo is more than welcome.
-Information on how to build flaxo from sources can be found in the corresponding 
-[Build from sources wiki page](https://github.com/tcibinan/flaxo/wiki/Build-from-sources).
+## Contribution
+
+Flaxo is entirely an opensource project and only the community can make a difference. 
+So please feel free to open new issues asking questions, suggesting new features or reporting bugs.
+
+If you intend to contribute to Flaxo project then you can found information on how to build Flaxo from sources 
+in the corresponding [documentation page](https://flaxo.readthedocs.io/en/latest/contribution/).
 
 ## What's inside
 
