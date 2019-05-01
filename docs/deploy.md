@@ -9,32 +9,34 @@ The whole system is packaged in the several docker containers which can be easil
 
 ### Docker
 
-Docker and docker-compose tools should be installed on the local server. Information on how to install the tools in 
-your environment can be found [here](https://docs.docker.com/install/) and 
+Docker and docker-compose tools should be installed on the local server. 
+Information on how to install the tools in your environment can be found [here](https://docs.docker.com/install/) and 
 [here](https://docs.docker.com/compose/install/).
 
 ### GitHub OAuth App
 
-Github OAuth Application is required to enable GitHub authentication in Flaxo. Therefore, you have to create a 
-GitHub OAuth App and collect its `id` and `secret`. Moreover, you have to configure *Homepage URL* and *Authorization 
-callback URL* GitHub OAuth App settings. 
+Github OAuth Application is required to enable GitHub authentication in Flaxo. 
+Therefore, you have to create a GitHub OAuth App and collect its `id` and `secret`. 
+Moreover, you have to configure *Homepage URL* and *Authorization callback URL* GitHub OAuth App settings. 
 
 More information on GitHub Apps can be found in 
 [the official documentation](https://developer.github.com/apps/about-apps/).
 
 #### Homepage URL
  
-Root endpoint of the Flaxo deployment.
+Root endpoint of the Flaxo deployment. 
+F.e. `http://8.8.8.8`.
  
 #### Authorization callback URL
 
-GitHub OAuth App *Homepage URL* plus `/rest/github/auth/code` suffix.
+GitHub Authorization endpoint of the Flaxo deployment. 
+F.e. `http://8.8.8.8:8080/rest/github/auth/code`.
 
 ### MOSS
 
 If you are planning to analyse student submissions for plagiarism you have to get through the MOSS email registration 
-process to retrieve personal `userid`. You can do so following the instructions from 
-[the official site](https://theory.stanford.edu/~aiken/moss/).
+process to retrieve personal `userid`. 
+You can do so following the instructions from [the official site](https://theory.stanford.edu/~aiken/moss/).
 
 ## Configuration
 
@@ -56,9 +58,9 @@ Retrieved MOSS `userid`.
 
 #### REST_URL
 
-Public endpoint of the Flaxo application Rest API. The address should be available from the outer network. Rest URL
-is GitHub OAuth App *Homepage URL* plus `/rest` suffix. F.e. *http://localhost:8080/rest* or 
-*http://8.8.8.8:8080/flaxo/deployment/path/rest*.
+Rest endpoint of the Flaxo deployment.
+The endpoint should be available from the outer network. 
+F.e. `http://8.8.8.8:8080/rest`. 
 
 #### POSTGRES_USER
 
@@ -104,7 +106,8 @@ Change current directory to the cloned repository directory.
 cd flaxo
 ```
 
-Checkout to the required Flaxo release. Latest release can be found [here](https://github.com/tcibinan/flaxo/releases).
+Checkout to the required Flaxo release. 
+Latest release can be found [here](https://github.com/tcibinan/flaxo/releases).
 
 ```bash
 git checkout v0.3
