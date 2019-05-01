@@ -71,29 +71,6 @@ So please feel free to open new issues asking questions, suggesting new features
 If you intend to contribute to Flaxo project then you can found information on how to build Flaxo from sources 
 in the corresponding [documentation page](https://flaxo.readthedocs.io/en/latest/contribution/).
 
-## What's inside
-
-### Integrated external services
-
-- Github
-- Travis CI
-- Codacy
-- [Moss](https://theory.stanford.edu/~aiken/moss/)
-
-### Back-end technologies
-
-- Kotlin
-- Gradle
-- Spring
-- Spek
-
-### Front-end technologies
-
-- Kotlin
-- Webpack
-- React
-- Bootstrap
-
 ## Credits
 
 ```json
