@@ -1,7 +1,8 @@
 # Deploy
 
-Flaxo is is distributed as on-premises solution. It means that the system is *not available not as service* but can be 
-*downloaded and hosted* in your own environment with no restrictions.
+Flaxo is is distributed as on-premises solution. 
+It means that the system is *not available as a service* but can be *downloaded and hosted* in your own environment 
+with no restrictions.
 
 The whole system is packaged in the several docker containers which can be easily deployed using *docker compose* tool.
 
