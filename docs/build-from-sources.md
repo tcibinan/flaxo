@@ -59,17 +59,7 @@ To run Flaxo instance locally you should do the following:
 4. Install [ruby](https://www.ruby-lang.org/en/documentation/installation/) and 
 [travis cli client](https://github.com/travis-ci/travis.rb#installation).
 5. Install [python 3](https://www.python.org/downloads/).
-
-| Variable | Description |
-|---|---|
-| REST_URL | Outer flaxo REST api endpoint. F.e. `http://localhost:8080/rest`. |
-| GITHUB_ID | Github OAuth App id. |
-| GITHUB_SECRET | Github OAuth App secret. |
-| MOSS_USER_ID | Moss system userid. |
-| POSTGRES_USER | PostgreSQL user name. |
-| POSTGRES_PASSWORD | PostgreSQL user password. |
-| POSTGRES_DB | PostgreSQL database name. |
-| data_dir | PostgreSQL database mount path. Flaxo database runs in a container. This way `data_dir` is used to store database files in the host machine's directory rather then in a container's one. |
+6. Configure environment variables described in the [configuration section](https://flaxo.readthedocs.io/en/latest/deploy/#configuration) excluding `tag`, `data2graph_tag` and `logs_dir`.
 
 Once the environment is set then the Flaxo services can be launched one by one.
 

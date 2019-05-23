@@ -2,15 +2,17 @@
 [![Docker Cloud Build Status Backend](https://img.shields.io/docker/cloud/build/flaxo/backend.svg?label=backend)](https://hub.docker.com/r/flaxo/backend)
 [![Docker Cloud Build Status data2graph](https://img.shields.io/docker/cloud/build/flaxo/data2graph.svg?label=data2graph)](https://hub.docker.com/r/flaxo/data2graph)
 
-Flaxo is a complex system which consists of several independent services. 
-Each one of them has its own docker image.
+Flaxo is distributed as a set of docker images. Each release or pre-release should have a corresponding docker images 
+pushed to DockerHub.
+
+## Repositories
 
 - backend server, [flaxo/backend](https://hub.docker.com/r/flaxo/backend)
 - web client server, [flaxo/frontend](https://hub.docker.com/r/flaxo/frontend)
 - data2graph tool, [flaxo/data2graph](https://hub.docker.com/r/flaxo/data2graph)
 
-## Autobuilds
+## Autobuild
 
-Flaxo docker hub organization is configured to automatically build Flaxo services. 
+Flaxo DockerHub repositories are configured to autobuild Flaxo versions. 
 Each time a new version of the Flaxo platform is pushed to the repository then an automated build is triggered. 
-New Flaxo version is basically a git tag starts with `v`. Some version examples are `v1`, `v1.2`, `v1.2.34`.
+*Flaxo version is basically a git tag which starts with `v`, f.e. `v1`, `v1.2` and etc.*

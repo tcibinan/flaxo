@@ -11,4 +11,4 @@ open-source solution for programming courses in universities and different progr
 ## Contributors
 
 - Nikita Stepochkin, [@nikita715](https://github.com/nikita715), contributes to the 
-[data2graph](https://github.com/data2graph) tool.
+[data2graph](https://github.com/tcibinan/data2graph) tool.

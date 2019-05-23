@@ -2,13 +2,14 @@ site_name: Flaxo
 repo_url: https://github.com/tcibinan/flaxo/
 nav:
   - Introduction: index.md
-  - Deploy: deploy.md
   - Concepts: concepts.md
   - Getting started:
-      - Create an account: getting-started/creating-an-account.md
-      - External services: getting-started/external-services.md
-      - Create a course: getting-started/course-creation.md
-  - Docker: docker.md
-  - Contribution: contribution.md
+    - Deploy: getting-started/deploy.md
+    - Flaxo account: getting-started/account.md
+    - External authorizations: getting-started/external-services.md
+    - Course: getting-started/course.md
+  - Contribution:
+    - Build from sources: build-from-sources.md
+    - Docker: docker.md
   - About: about.md
 theme: material
