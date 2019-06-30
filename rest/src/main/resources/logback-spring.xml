@@ -7,7 +7,7 @@
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>../logs/flaxo.log</file>
+        <file>logs/flaxo.log</file>
 
         <encoder>
             <pattern>%d [%thread] %-5level %logger{36} - %msg%n</pattern>
