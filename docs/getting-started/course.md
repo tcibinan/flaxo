@@ -86,6 +86,39 @@ Techonology labels describes what languages and frameworks are used in by the co
 
 ![course-tech-labels](../images/course-tech-labels.jpg)
 
+## Activation
+
+Once a course is created it can be filled with tasks. 
+It means that the tutor configure the required infrastructure and creates tests in the corresponding git repository 
+branches.
+Once it is done course has to be activated. 
+Course activation enables all the supported external service validations: automated testing, code static analysis and 
+etc.
+
+To activate course click *Start course* button on the course page.
+
+![course-start-btn](../images/course-start-btn.png)
+
+After the course has been activated additional labels will be added and the course will change its state to `running`.
+From that point onward course can be accessed by students that will create forks, solve the tasks and create pull 
+requests.
+
+![course-started-header](../images/course-started-header.png)
+
+If some of the services weren't activated for any reason you can activate them manually using *Activate service* button.
+
+### Codacy
+
+> See the [corresponding issue](https://github.com/tcibinan/flaxo/issues/39) for the latest information.
+
+**IMPORTANT:** There is a pretty harmful issue regarding Flaxo integration with Codacy.
+No automated code static analysis will be performed for the course pull request unless the corresponding Codacy project 
+is not recreated.
+To recreate a Codacy project please **delete the project and then create project with the same name manually using the 
+Codacy wizard**.
+
+![codacy-wizard](../images/codacy-wizard.png)
+
 ## Summary
 
 First tab in the course dashboard is course summary tab.
