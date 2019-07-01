@@ -1,8 +1,8 @@
 buildscript {
-    ext.apollo_version = '1.0.0-alpha2'
+    ext.apollo_version = '1.0.1'
     ext.kotlin_version = '1.3.40'
     repositories {
-        jcenter()
+        google()
     }
     dependencies {
         classpath "com.apollographql.apollo:apollo-gradle-plugin:$apollo_version"

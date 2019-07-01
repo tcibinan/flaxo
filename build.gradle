@@ -60,10 +60,6 @@ configure(javaProjects) {
     compileTestKotlin { kotlinOptions.jvmTarget = "1.8" }
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.9'
-}
-
 task version{
     doFirst {
         print project.version
