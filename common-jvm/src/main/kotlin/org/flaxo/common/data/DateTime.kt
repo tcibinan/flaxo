@@ -1,21 +1,30 @@
 package org.flaxo.common.data
 
 import com.fasterxml.jackson.annotation.JsonValue
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.Decoder
+import kotlinx.serialization.Encoder
+import kotlinx.serialization.Serializer
 import kotlinx.serialization.Transient
 import java.time.LocalDateTime
 
 /**
  * JVM implementation of a multiplatform datetime.
  */
-@Serializable(with = DateTimeSerializer::class)
 actual class DateTime(@Transient private val dateTime: LocalDateTime = LocalDateTime.now()) {
 
-    actual companion object {
+    /**
+     * Serialization methods has to be overridden explicitly due to a serialization compiler bug.
+     */
+    @Serializer(forClass = DateTime::class)
+    actual companion object : DateTimeSerializer() {
 
-        actual fun fromDateTimeString(string: String): DateTime = org.flaxo.common.data.DateTime(LocalDateTime.parse(string))
+        override fun deserialize(decoder: Decoder): DateTime = super.deserialize(decoder)
 
-        actual fun now(): DateTime = org.flaxo.common.data.DateTime(LocalDateTime.now())
+        override fun serialize(encoder: Encoder, obj: DateTime) = super.serialize(encoder, obj)
+
+        actual fun fromDateTimeString(string: String): DateTime = DateTime(LocalDateTime.parse(string))
+
+        actual fun now(): DateTime = DateTime(LocalDateTime.now())
     }
 
     @JsonValue

@@ -1,6 +1,6 @@
 buildscript {
     ext.apollo_version = '1.0.0-alpha2'
-    ext.kotlin_version = '1.3.21'
+    ext.kotlin_version = '1.3.40'
     repositories {
         jcenter()
     }
@@ -30,7 +30,7 @@ dependencies {
     compile "com.apollographql.apollo:apollo-runtime:$apollo_version"
 
     // Coroutines
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.27.0-eap13'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0-M2'
 }
 
 task loadGithubScheme(type: Exec) {
