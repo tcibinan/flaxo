@@ -50,7 +50,7 @@ class SimpleMossSubmissionsExtractor(private val githubManager: GithubManager) :
         val completedTaskStudents = task.solutions.asSequence()
                 .filter { it.buildReports.lastOrNull()?.succeed ?: false }
                 .map { it.student }
-                .map { it.nickname }
+                .map { it.name }
                 .toList()
 
         val solutionFiles: List<LocalFile> =

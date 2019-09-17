@@ -64,7 +64,7 @@ data class Course(
             state = state.view(),
             user = user.view(),
             url = url,
-            students = students.map { it.nickname },
+            students = students.map { it.name },
             tasks = tasks.map { it.branch }
     )
 

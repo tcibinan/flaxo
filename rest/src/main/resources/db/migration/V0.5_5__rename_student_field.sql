@@ -1,0 +1,1 @@
+ALTER TABLE student RENAME COLUMN nickname to name;

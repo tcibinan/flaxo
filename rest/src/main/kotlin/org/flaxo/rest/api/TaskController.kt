@@ -101,7 +101,7 @@ class TaskController(private val dataManager: DataManager,
 
         val updatedSolutions: List<SolutionView> = task.solutions
                 .asSequence()
-                .map { it to scores[it.student.nickname] }
+                .map { it to scores[it.student.name] }
                 .filter { (_, updatedScore) -> updatedScore != null }
                 .filter { (_, updatedScore) -> updatedScore in 0..100 }
                 .filter { (solution, updatedScore) -> solution.score != updatedScore }
@@ -171,8 +171,8 @@ class TaskController(private val dataManager: DataManager,
 
         val updatedSolutions: List<SolutionView> =
                 task.solutions.asSequence()
-                        .filter { it.student.nickname in approvals }
-                        .map { it.copy(approved = approvals[it.student.nickname]?.approved!!) }
+                        .filter { it.student.name in approvals }
+                        .map { it.copy(approved = approvals[it.student.name]?.approved!!) }
                         .map { dataManager.updateSolution(it) }
                         .map { it.view() }
                         .toList()
@@ -181,7 +181,7 @@ class TaskController(private val dataManager: DataManager,
     }
 
     private fun solutionPullRequestNumber(task: Task, student: String): Int? =
-            task.solutions.find { it.student.nickname == student }
+            task.solutions.find { it.student.name == student }
                     ?.commits
                     ?.lastOrNull()
                     ?.pullRequestNumber

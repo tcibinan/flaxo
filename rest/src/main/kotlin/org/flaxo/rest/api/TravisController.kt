@@ -1,16 +1,16 @@
 package org.flaxo.rest.api
 
-import org.flaxo.model.DataManager
-import org.flaxo.rest.manager.github.GithubManager
-import org.flaxo.rest.manager.travis.TravisManager
-import org.flaxo.travis.TravisException
-import org.flaxo.travis.TravisBuildStatus
-import org.flaxo.travis.TravisBuild
-import org.flaxo.travis.TravisPullRequestBuild
 import org.apache.logging.log4j.LogManager
 import org.flaxo.common.data.ExternalService
+import org.flaxo.model.DataManager
+import org.flaxo.rest.manager.github.GithubManager
 import org.flaxo.rest.manager.response.Response
 import org.flaxo.rest.manager.response.ResponseManager
+import org.flaxo.rest.manager.travis.TravisManager
+import org.flaxo.travis.TravisBuild
+import org.flaxo.travis.TravisBuildStatus
+import org.flaxo.travis.TravisException
+import org.flaxo.travis.TravisPullRequestBuild
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.transaction.annotation.Transactional
@@ -88,13 +88,13 @@ class TravisController @Autowired constructor(private val travisManager: TravisM
                         .getPullRequest(hook.pullRequestNumber)
 
                 val student = course.students
-                        .find { it.nickname == pullRequest.authorLogin }
+                        .find { it.name == pullRequest.authorLogin }
                         ?: throw TravisException("Student ${pullRequest.authorLogin} wasn't found " +
                                 "in course ${hook.repositoryOwner}/${hook.repositoryName}.")
 
                 val solution = student.solutions
                         .find { it.task.branch == hook.branch }
-                        ?: throw TravisException("Student task ${hook.branch} wasn't found for student ${student.nickname} " +
+                        ?: throw TravisException("Student task ${hook.branch} wasn't found for student ${student.name} " +
                                 "in course ${hook.repositoryOwner}/${hook.repositoryName}.")
 
                 when (hook.buildStatus) {

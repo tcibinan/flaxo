@@ -183,10 +183,10 @@ open class SimpleTravisManager(private val client: TravisClient,
                 .filter { it.commits.isNotEmpty() }
                 .mapNotNull { solution ->
                     val pullRequest: PullRequest? = pullRequests
-                            .filter { it.authorLogin == solution.student.nickname }
+                            .filter { it.authorLogin == solution.student.name }
                             .firstOrNull { it.targetBranch == solution.task.branch }
                     if (pullRequest == null) {
-                        logger.warn("Pull request solution of ${solution.student.nickname}/${solution.task.branch} " +
+                        logger.warn("Pull request solution of ${solution.student.name}/${solution.task.branch} " +
                                 "student for ${user.nickname}/${course.name} course was not found")
                     }
                     pullRequest?.let { Pair(solution, it) }
@@ -215,7 +215,7 @@ open class SimpleTravisManager(private val client: TravisClient,
                             }
                             ?.also {
                                 logger.info(
-                                        "Updating ${solution.student.nickname} student build report " +
+                                        "Updating ${solution.student.name} student build report " +
                                                 "for ${solution.task.branch} branch " +
                                                 "of ${user.nickname}/${course.name} course"
                                 )

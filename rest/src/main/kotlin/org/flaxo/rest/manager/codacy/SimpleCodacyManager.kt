@@ -143,7 +143,7 @@ open class SimpleCodacyManager(private val client: CodacyClient,
                             }
                             ?.also { codacyCommit ->
                                 logger.info(
-                                        "Updating ${solution.student.nickname} student code style report " +
+                                        "Updating ${solution.student.name} student code style report " +
                                                 "for ${solution.task.branch} branch " +
                                                 "of ${user.nickname}/${course.name} course"
                                 )

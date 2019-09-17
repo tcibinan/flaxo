@@ -2,7 +2,7 @@ package org.flaxo.model.data
 
 import org.flaxo.common.Identifiable
 import org.flaxo.model.SolutionView
-import java.util.Objects
+import java.util.*
 import javax.persistence.Entity
 import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
@@ -46,7 +46,7 @@ data class Solution(
     override fun view(): SolutionView = SolutionView(
             id = id,
             task = task.branch,
-            student = student.nickname,
+            student = student.name,
             score = score,
             commits = commits.views(),
             buildReports = buildReports.views(),

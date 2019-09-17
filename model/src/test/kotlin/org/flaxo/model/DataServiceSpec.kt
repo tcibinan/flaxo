@@ -222,7 +222,7 @@ class DataManagerSpec : SubjectSpek<DataManager>({
 
             it("should add all the student to the course") {
                 course.students
-                        .map { it.nickname }
+                        .map { it.name }
                         .toSet() shouldEqual setOf(student, anotherStudent)
             }
 

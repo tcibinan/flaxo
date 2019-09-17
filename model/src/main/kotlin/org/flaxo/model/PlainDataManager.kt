@@ -147,7 +147,7 @@ open class PlainDataManager(private val userRepository: UserRepository,
 
     @Transactional
     override fun addStudent(nickname: String, course: Course): Student {
-        val student = studentRepository.save(Student(nickname = nickname, course = course))
+        val student = studentRepository.save(Student(name = nickname, course = course))
 
         return taskRepository
                 .findAllByCourse(course)

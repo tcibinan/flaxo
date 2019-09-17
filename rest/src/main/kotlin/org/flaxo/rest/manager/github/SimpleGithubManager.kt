@@ -43,9 +43,9 @@ class SimpleGithubManager(private val dataManager: DataManager,
                         "for user ${user.nickname}.")
 
         val student = course.students
-                .find { it.nickname == pullRequest.authorLogin }
+                .find { it.name == pullRequest.authorLogin }
                 ?: dataManager.addStudent(pullRequest.authorLogin, course).also {
-                    logger.info("Student ${it.nickname} was initialised " +
+                    logger.info("Student ${it.name} was initialised " +
                             "for course ${user.nickname}/${course.name}.")
                 }
 
@@ -53,7 +53,7 @@ class SimpleGithubManager(private val dataManager: DataManager,
                 .find { it.task.branch == pullRequest.targetBranch }
                 ?.takeIf { it.commits.lastOrNull()?.sha != pullRequest.lastCommitSha }
                 ?.also { solution ->
-                    logger.info("Add ${pullRequest.lastCommitSha} commit to ${student.nickname} student solution " +
+                    logger.info("Add ${pullRequest.lastCommitSha} commit to ${student.name} student solution " +
                             "for course ${user.nickname}/${course.name}.")
                     dataManager.addCommit(solution, pullRequest.number, pullRequest.lastCommitSha)
                 }

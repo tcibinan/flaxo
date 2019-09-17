@@ -46,18 +46,18 @@ object MossSubmissionsExtractorSpec : SubjectSpek<MossSubmissionExtractor>({
             Solution(
                     task = Task(branch = branchName),
                     buildReports = listOf(BuildReport(succeed = true)),
-                    student = Student(nickname = student1Name)
+                    student = Student(name = student1Name)
             )
     )
-    val student1 = Student(nickname = student1Name, solutions = student1Solutions)
+    val student1 = Student(name = student1Name, solutions = student1Solutions)
     val student2Solutions: Set<Solution> = setOf(
             Solution(
                     task = Task(branch = branchName),
                     buildReports = listOf(BuildReport(succeed = false)),
-                    student = Student(nickname = student2Name)
+                    student = Student(name = student2Name)
             )
     )
-    val student2 = Student(nickname = student2Name, solutions = student2Solutions)
+    val student2 = Student(name = student2Name, solutions = student2Solutions)
     val user = User(nickname = userName, githubId = userGithubId,
             credentials = Credentials(githubToken = "userGithubToken")
     )

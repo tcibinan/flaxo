@@ -1,7 +1,8 @@
 package org.flaxo.model.data
 
 import org.flaxo.common.Identifiable
-import java.util.Objects
+import org.flaxo.common.Named
+import java.util.*
 import javax.persistence.Entity
 import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
@@ -21,8 +22,7 @@ data class Student(
         @GeneratedValue
         override val id: Long = -1,
 
-        // TODO 23.03.19: Rename to name.
-        val nickname: String = "",
+        override val name: String = "",
 
         @ManyToOne(optional = false, fetch = FetchType.LAZY)
         val course: Course = Course(),
@@ -30,9 +30,9 @@ data class Student(
         @OneToMany(mappedBy = "student", orphanRemoval = true)
         val solutions: Set<Solution> = mutableSetOf()
 
-) : Identifiable, Viewable<String> {
+) : Identifiable, Named, Viewable<String> {
 
-    override fun view(): String = nickname
+    override fun view(): String = name
 
     override fun toString() = "${this::class.simpleName}(id=$id)"
 
