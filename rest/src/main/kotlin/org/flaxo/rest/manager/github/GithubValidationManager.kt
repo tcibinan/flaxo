@@ -27,9 +27,9 @@ class GithubValidationManager(private val githubManager: GithubManager,
         val user = course.user
 
         val githubToken = user.credentials.githubToken
-                ?: throw ModelException("Github token is not specified for ${user.nickname}")
+                ?: throw ModelException("Github token is not specified for ${user.name}")
 
-        logger.info("Github reviews refreshing is started for ${user.nickname}/${course.name} course")
+        logger.info("Github reviews refreshing is started for ${user.name}/${course.name} course")
 
         val repository = githubManager.with(githubToken).getRepository(course.name)
 
@@ -46,6 +46,6 @@ class GithubValidationManager(private val githubManager: GithubManager,
                             ?.let { dataManager.updateSolution(it) }
                 }
 
-        logger.info("Github reviews refreshing has finished for ${user.nickname}/${course.name} course")
+        logger.info("Github reviews refreshing has finished for ${user.name}/${course.name} course")
     }
 }

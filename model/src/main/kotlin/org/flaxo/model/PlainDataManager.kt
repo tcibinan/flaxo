@@ -50,7 +50,7 @@ open class PlainDataManager(private val userRepository: UserRepository,
     override fun addUser(nickname: String, password: String): User =
             userRepository.findByNickname(nickname)
                     ?.also { throw EntityAlreadyExistsException("User $nickname") }
-                    ?: userRepository.save(User(nickname = nickname, credentials = Credentials(password = password)))
+                    ?: userRepository.save(User(name = nickname, credentials = Credentials(password = password)))
 
     @Transactional(readOnly = true)
     override fun getUser(nickname: String): User? = userRepository.findByNickname(nickname)

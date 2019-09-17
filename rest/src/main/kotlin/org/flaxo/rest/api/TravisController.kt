@@ -55,7 +55,7 @@ class TravisController @Autowired constructor(private val travisManager: TravisM
             return responseManager.bad("Given travis token is invalid")
         }
 
-        dataManager.addToken(user.nickname, ExternalService.TRAVIS, token)
+        dataManager.addToken(user.name, ExternalService.TRAVIS, token)
         logger.info("Travis token was added for ${principal.name}")
         return responseManager.ok()
     }
@@ -76,12 +76,12 @@ class TravisController @Autowired constructor(private val travisManager: TravisM
                         ?: throw TravisException("User with the required nickname ${hook.repositoryOwner} wasn't found.")
 
                 val githubCredentials = user.credentials.githubToken
-                        ?: throw TravisException("User ${user.nickname} doesn't have github credentials " +
+                        ?: throw TravisException("User ${user.name} doesn't have github credentials " +
                                 "to get pull request information.")
 
                 val course = dataManager.getCourse(hook.repositoryName, user)
                         ?: throw TravisException("Course with name ${hook.repositoryName} wasn't found " +
-                                "for user ${user.nickname}.")
+                                "for user ${user.name}.")
 
                 val pullRequest = githubManager.with(githubCredentials)
                         .getRepository(course.name)

@@ -34,7 +34,7 @@ class SimpleMossSubmissionsExtractor(private val githubManager: GithubManager) :
                         "Plagiarism analysis cannot be performed.")
 
         val githubToken = user.credentials.githubToken
-                ?: throw ModelException("Github credentials wasn't found for user ${user.nickname}.")
+                ?: throw ModelException("Github credentials wasn't found for user ${user.name}.")
 
         val git = githubManager.with(githubToken)
 
@@ -85,7 +85,7 @@ class SimpleMossSubmissionsExtractor(private val githubManager: GithubManager) :
         logger.info("Task ${course.friendlyId} bases were aggregated successfully")
 
         return MossSubmission(
-                user = user.nickname,
+                user = user.name,
                 course = course.name,
                 task = task.branch,
                 language = language,

@@ -71,10 +71,10 @@ class CourseController(private val dataManager: DataManager,
                 ?: return responseManager.userNotFound(principal.name)
 
         val githubId = user.githubId
-                ?: return responseManager.githubIdNotFound(user.nickname)
+                ?: return responseManager.githubIdNotFound(user.name)
 
         val githubToken = user.credentials.githubToken
-                ?: return responseManager.githubTokenNotFound(user.nickname)
+                ?: return responseManager.githubTokenNotFound(user.name)
 
         return githubManager.with(githubToken)
                 .getRepository(repositoryName)
@@ -286,8 +286,8 @@ class CourseController(private val dataManager: DataManager,
 
         val user = dataManager.getUser(principal.name)
                 ?.also {
-                    it.credentials.githubToken ?: return responseManager.githubTokenNotFound(it.nickname)
-                    it.githubId ?: return responseManager.githubIdNotFound(it.nickname)
+                    it.credentials.githubToken ?: return responseManager.githubTokenNotFound(it.name)
+                    it.githubId ?: return responseManager.githubIdNotFound(it.name)
                 }
                 ?: return responseManager.userNotFound(principal.name)
 
@@ -299,14 +299,14 @@ class CourseController(private val dataManager: DataManager,
                     Try { service.activate(course) }
                             .map { serviceType }
                             .getOrElse {
-                                logger.info("$serviceType activation went bad for ${user.nickname}/$courseName " +
+                                logger.info("$serviceType activation went bad for ${user.name}/$courseName " +
                                         "course due to: ${it.stringStackTrace()}")
                                 null
                             }
                 }
                 .toSet()
 
-        logger.info("Changing course ${user.nickname}/$courseName status to running " +
+        logger.info("Changing course ${user.name}/$courseName status to running " +
                 "with activated services: $activatedServices")
 
         val activatedCourse = dataManager.updateCourse(course.copy(
@@ -316,7 +316,7 @@ class CourseController(private val dataManager: DataManager,
                 )
         ))
 
-        logger.info("Course ${user.nickname}/$courseName has been successfully composed")
+        logger.info("Course ${user.name}/$courseName has been successfully composed")
 
         return responseManager.ok(activatedCourse.view())
     }

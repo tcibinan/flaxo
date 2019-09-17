@@ -58,7 +58,7 @@ object MossSubmissionsExtractorSpec : SubjectSpek<MossSubmissionExtractor>({
             )
     )
     val student2 = Student(name = student2Name, solutions = student2Solutions)
-    val user = User(nickname = userName, githubId = userGithubId,
+    val user = User(name = userName, githubId = userGithubId,
             credentials = Credentials(githubToken = "userGithubToken")
     )
     val settings = CourseSettings(language = language)
