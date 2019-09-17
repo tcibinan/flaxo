@@ -13,15 +13,15 @@ import org.flaxo.model.ModelException
 import org.flaxo.model.data.Course
 import org.flaxo.model.data.User
 import org.flaxo.rest.manager.github.GithubManager
-import org.flaxo.travis.retrofit.RetrofitTravisImpl
 import org.flaxo.travis.Travis
-import org.flaxo.travis.retrofit.TravisClient
-import org.flaxo.travis.TravisException
-import org.flaxo.travis.TravisUser
 import org.flaxo.travis.TravisBuild
 import org.flaxo.travis.TravisBuildStatus
 import org.flaxo.travis.TravisBuildType
+import org.flaxo.travis.TravisException
+import org.flaxo.travis.TravisUser
 import org.flaxo.travis.parseTravisWebHook
+import org.flaxo.travis.retrofit.RetrofitTravisImpl
+import org.flaxo.travis.retrofit.TravisClient
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import java.io.Reader
@@ -38,16 +38,12 @@ open class SimpleTravisManager(private val client: TravisClient,
 
     private val logger = LogManager.getLogger(SimpleTravisManager::class.java)
 
-    override fun retrieveTravisToken(githubUsername: String, githubToken: String): String {
-        CmdExecutor.execute("travis", "login",
-                "-u", githubUsername,
-                "-g", githubToken)
-
-        return CmdExecutor.execute("travis", "token")
-                .first().split(" ").last()
+    protected open fun retrieveTravisToken(githubUsername: String, githubToken: String): String = with(CmdExecutor) {
+        execute("travis", "login", "--com", "-u", githubUsername, "-g", githubToken)
+        execute("travis", "token", "--com").first().split(" ").last()
     }
 
-    override fun travis(travisToken: String): Travis = RetrofitTravisImpl(client, travisToken)
+    private fun travis(travisToken: String): Travis = RetrofitTravisImpl(client, travisToken)
 
     override fun parsePayload(reader: Reader): TravisBuild? = parseTravisWebHook(reader)
 
