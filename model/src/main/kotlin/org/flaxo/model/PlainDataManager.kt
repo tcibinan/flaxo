@@ -110,7 +110,7 @@ open class PlainDataManager(private val userRepository: UserRepository,
                         description = description,
                         private = private,
                         url = "https://github.com/${owner.githubId}/$courseName",
-                        createdDate = LocalDateTime.now(),
+                        date = LocalDateTime.now(),
                         settings = settings,
                         state = CourseState(),
                         user = owner
