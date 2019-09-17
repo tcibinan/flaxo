@@ -42,6 +42,7 @@ interface DataManager {
      *
      * @param courseName git repository name.
      * @param description optional course description.
+     * @param private course private status.
      * @param language main language of the course.
      * @param testingLanguage tests language.
      * @param testingFramework testing framework.
@@ -52,6 +53,7 @@ interface DataManager {
      */
     fun createCourse(courseName: String,
                      description: String? = null,
+                     private: Boolean = false,
                      language: String?,
                      testingLanguage: String?,
                      testingFramework: String?,
@@ -67,6 +69,7 @@ interface DataManager {
      *
      * @param courseName git repository name.
      * @param description optional course description.
+     * @param private course private status.
      * @param language main language of the course.
      * @param testingLanguage tests language.
      * @param testingFramework testing framework.
@@ -76,6 +79,7 @@ interface DataManager {
      */
     fun createCourse(courseName: String,
                      description: String? = null,
+                     private: Boolean = false,
                      language: String?,
                      testingLanguage: String?,
                      testingFramework: String?,

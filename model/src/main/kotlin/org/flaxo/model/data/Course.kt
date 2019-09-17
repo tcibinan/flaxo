@@ -5,7 +5,7 @@ import org.flaxo.common.Named
 import org.flaxo.common.data.DateTime
 import org.flaxo.model.CourseView
 import java.time.LocalDateTime
-import java.util.Objects
+import java.util.*
 import javax.persistence.CascadeType
 import javax.persistence.Entity
 import javax.persistence.FetchType
@@ -30,6 +30,8 @@ data class Course(
         override val name: String = "",
 
         val description: String? = null,
+
+        val private: Boolean = false,
 
         // TODO 23.03.19: Rename to date.
         val createdDate: LocalDateTime = LocalDateTime.MIN,
@@ -57,6 +59,7 @@ data class Course(
             id = id,
             name = name,
             description = description,
+            private = private,
             date = DateTime(createdDate),
             settings = settings.view(),
             state = state.view(),

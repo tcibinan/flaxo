@@ -88,6 +88,7 @@ class CourseController(private val dataManager: DataManager,
                                 dataManager.createCourse(
                                         repositoryName,
                                         description,
+                                        false,
                                         language,
                                         testingLanguage,
                                         testingFramework,
@@ -106,7 +107,7 @@ class CourseController(private val dataManager: DataManager,
      * @param courseName Name of the course and related git repository.
      * @param description Optional course description.
      * @param language Language of the course.
-     * @param testLanguage Language used for tests.
+     * @param testingLanguage Language used for tests.
      * @param testingFramework Testing framework which is used for testing.
      * @param numberOfTasks Number of tasks in the course and number of tasks branches
      * in the git repository.
@@ -119,6 +120,7 @@ class CourseController(private val dataManager: DataManager,
                      @RequestParam(required = false)  language: String?,
                      @RequestParam(required = false)  testingLanguage: String?,
                      @RequestParam(required = false)  testingFramework: String?,
+                     @RequestParam(required = false)  private: Boolean = false,
                      @RequestParam numberOfTasks: Int,
                      principal: Principal
     ): Response<CourseView> {
@@ -142,7 +144,7 @@ class CourseController(private val dataManager: DataManager,
         logger.info("Creating git repository for course ${principal.name}/$courseName")
 
         githubManager.with(githubToken)
-                .createRepository(courseName).apply {
+                .createRepository(courseName, private).apply {
                     createBranch("prerequisites")
                             .also { branch -> environment.files().forEach { branch.commit(it) } }
                             .createSubBranches(numberOfTasks, tasksPrefix)
@@ -154,6 +156,7 @@ class CourseController(private val dataManager: DataManager,
         val course = dataManager.createCourse(
                 courseName = courseName,
                 description = description,
+                private = private,
                 language = language,
                 testingLanguage = testingLanguage,
                 testingFramework = testingFramework,

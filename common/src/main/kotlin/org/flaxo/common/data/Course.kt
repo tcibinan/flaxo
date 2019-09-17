@@ -27,6 +27,13 @@ data class Course(
         val description: String?,
 
         /**
+         * Course private status.
+         *
+         * Specifies if the course is private or not.
+         */
+        val private: Boolean,
+
+        /**
          * Course settings.
          */
         val settings: CourseSettings,
