@@ -184,7 +184,7 @@ class TaskController(private val dataManager: DataManager,
             task.solutions.find { it.student.nickname == student }
                     ?.commits
                     ?.lastOrNull()
-                    ?.pullRequestId
+                    ?.pullRequestNumber
 
     private fun Boolean.toReviewStatus(): PullRequestReviewStatus =
             if (this) PullRequestReviewStatus.APPROVED

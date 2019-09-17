@@ -1,12 +1,12 @@
 package org.flaxo.rest.manager.github
 
 import org.apache.logging.log4j.LogManager
+import org.flaxo.git.PullRequestReviewStatus.APPROVED
+import org.flaxo.git.PullRequestReviewStatus.CHANGES_REQUESTED
 import org.flaxo.model.DataManager
 import org.flaxo.model.ModelException
 import org.flaxo.model.data.Course
 import org.flaxo.rest.manager.ValidationManager
-import org.flaxo.git.PullRequestReviewStatus.APPROVED
-import org.flaxo.git.PullRequestReviewStatus.CHANGES_REQUESTED
 
 /**
  * GitHub validation manager.
@@ -37,7 +37,7 @@ class GithubValidationManager(private val githubManager: GithubManager,
                 .flatMap { it.solutions }
                 .forEach { solution ->
                     solution.commits.lastOrNull()
-                            ?.pullRequestId
+                            ?.pullRequestNumber
                             ?.let { repository.getPullRequestReviews(it) }
                             ?.filter { it.user == user.githubId }
                             ?.filter { it.status in setOf(APPROVED, CHANGES_REQUESTED) }

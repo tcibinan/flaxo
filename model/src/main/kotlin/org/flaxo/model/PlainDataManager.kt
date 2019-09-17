@@ -236,7 +236,7 @@ open class PlainDataManager(private val userRepository: UserRepository,
     @Transactional
     override fun addCommit(solution: Solution, pullRequestNumber: Int, commitSha: String): Commit =
             commitRepository
-                    .save(Commit(solution = solution, date = LocalDateTime.now(), pullRequestId = pullRequestNumber,
+                    .save(Commit(solution = solution, date = LocalDateTime.now(), pullRequestNumber = pullRequestNumber,
                             sha = commitSha
                     ))
                     .also { updateSolution(solution.copy(commits = solution.commits + it)) }

@@ -15,6 +15,6 @@ fun githubPullRequestUrl(course: Course, solution: Solution): String? {
     val username = course.user.githubId
     val courseName = course.name
     return solution.commits.lastOrNull()
-            ?.pullRequestId
+            ?.pullRequestNumber
             ?.let { pullRequest -> "https://github.com/$username/$courseName/pull/$pullRequest" }
 }
