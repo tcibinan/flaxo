@@ -19,6 +19,11 @@
     color: white;
 }
 
+.label-private {
+    color: #007bff;
+    vertical-align: middle;
+}
+
 .courses-list,
 .selected-course {
     padding-top: 20px;
