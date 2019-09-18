@@ -2,33 +2,23 @@ package org.flaxo.rest.manager.travis
 
 import arrow.core.Either
 import arrow.core.Try
-import com.nhaarman.mockito_kotlin.mock
 import org.amshove.kluent.shouldNotBeBlank
-import org.flaxo.model.DataManager
-import org.flaxo.rest.manager.github.GithubManager
-import org.flaxo.travis.retrofit.TravisClient
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.subject.SubjectSpek
 
-object TravisServiceSpec : SubjectSpek<TravisManager>({
+object TravisTokenSupplierSpec: SubjectSpek<TravisTokenSupplier>({
 
     val githubUsername = System.getenv("GITHUB_USER1_NAME")
     val githubToken = System.getenv("GITHUB_USER1_TOKEN")
 
-    val travisClient = mock<TravisClient> { }
-    val dataService = mock<DataManager> { }
-    val gitService = mock<GithubManager> { }
-
-    subject { SimpleTravisManager(travisClient, dataService, gitService) }
+    subject { TravisTokenSupplier() }
 
     describe("travis service") {
         on("getting travis token") {
 
-            val result: Either<Throwable, String> = Try {
-                subject.retrieveTravisToken(githubUsername, githubToken)
-            }.toEither()
+            val result: Either<Throwable, String> = Try { subject.supply(githubUsername, githubToken) }.toEither()
 
             it("should finish with zero code") {
                 result.mapLeft {

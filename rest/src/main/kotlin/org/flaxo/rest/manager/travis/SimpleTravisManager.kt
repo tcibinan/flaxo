@@ -3,7 +3,6 @@ package org.flaxo.rest.manager.travis
 import arrow.core.getOrHandle
 import arrow.core.orNull
 import org.apache.logging.log4j.LogManager
-import org.flaxo.common.cmd.CmdExecutor
 import org.flaxo.common.data.ExternalService
 import org.flaxo.common.of
 import org.flaxo.common.repeatUntil
@@ -32,16 +31,12 @@ import java.util.concurrent.TimeUnit
  * Travis manager.
  */
 open class SimpleTravisManager(private val client: TravisClient,
+                               private val tokenSupplier: TravisTokenSupplier,
                                private val dataManager: DataManager,
                                private val githubManager: GithubManager
 ) : TravisManager {
 
     private val logger = LogManager.getLogger(SimpleTravisManager::class.java)
-
-    protected open fun retrieveTravisToken(githubUsername: String, githubToken: String): String = with(CmdExecutor) {
-        execute("travis", "login", "--com", "-u", githubUsername, "-g", githubToken)
-        execute("travis", "token", "--com").first().split(" ").last()
-    }
 
     private fun travis(travisToken: String): Travis = RetrofitTravisImpl(client, travisToken)
 
@@ -62,7 +57,7 @@ open class SimpleTravisManager(private val client: TravisClient,
         logger.info("Initialising travis client for ${user.nickname} user")
 
         val travisToken = user.credentials.travisToken
-                ?: retrieveTravisToken(githubId, githubToken)
+                ?: tokenSupplier.supply(githubId, githubToken)
                         .also {
                             logger.info("Adding newely retrieved travis token to ${user.nickname} user")
                             dataManager.addToken(user.nickname, ExternalService.TRAVIS, it)
@@ -252,9 +247,9 @@ open class SimpleTravisManager(private val client: TravisClient,
                         " due to: ${errorBody.string()}")
             }
 
-}
+    private fun performAfter(millis: Long, block: () -> Unit) {
+        Thread.sleep(millis)
+        block()
+    }
 
-private fun performAfter(millis: Long, block: () -> Unit) {
-    Thread.sleep(millis)
-    block()
 }
