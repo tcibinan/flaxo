@@ -72,7 +72,6 @@ data class SimpleTravisEnvironmentSupplier(private val language: Language? = nul
                         before_install:
                           - chmod +x gradlew
 
-                        # disabling email notifications
                         notifications:
                           email: false
                           webhooks: $travisWebHookUrl
