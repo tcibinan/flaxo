@@ -4,11 +4,9 @@ jdk:
 
 install: gem install travis -v 1.8.10
 
-# disabling email notifications
 notifications:
   email: false
 
-# gradle caching configuration
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
