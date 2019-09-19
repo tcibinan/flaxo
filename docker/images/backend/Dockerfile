@@ -14,7 +14,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends ruby-full gcc libffi-dev make libc6-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
-    && gem install travis -v 1.8.8
+    && gem install travis -v 1.8.10
 
 # Utils
 RUN apt-get update \
@@ -57,7 +57,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends ruby-full gcc libffi-dev make libc6-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
-    && gem install travis -v 1.8.8
+    && gem install travis -v 1.8.10
 
 COPY --from=builder $FLAXO_HOME/rest/build/libs/rest.jar .
 
