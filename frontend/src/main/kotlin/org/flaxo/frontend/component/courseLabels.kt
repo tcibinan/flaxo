@@ -3,6 +3,7 @@ package org.flaxo.frontend.component
 import org.flaxo.common.data.Course
 import react.RBuilder
 import react.dom.div
+import react.dom.i
 import react.dom.span
 
 /**
@@ -10,10 +11,15 @@ import react.dom.span
  */
 fun RBuilder.courseLabels(course: Course) = div {
     span(classes = "course-labels") {
+        privateLabel(course)
         statusLabel(course)
         servicesLabels(course)
         techLabels(course)
     }
+}
+
+private fun RBuilder.privateLabel(course: Course) {
+    if (course.private) i(classes = "material-icons label-private") { +"lock" }
 }
 
 private fun RBuilder.servicesLabels(course: Course) =

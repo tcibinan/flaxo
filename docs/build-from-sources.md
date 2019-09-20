@@ -10,6 +10,8 @@ Moreover you should do the following:
 
 1. Install [Java 8 jdk and jre](https://openjdk.java.net/install/).
 2. Install [docker](https://docs.docker.com/install/) and [docker-compose](https://docs.docker.com/compose/install/).
+3. Install curl, gcc.
+4. Install nodejs.
 
 ## Building
 
@@ -59,20 +61,15 @@ To run Flaxo instance locally you should do the following:
 4. Install [ruby](https://www.ruby-lang.org/en/documentation/installation/) and 
 [travis cli client](https://github.com/travis-ci/travis.rb#installation).
 5. Install [python 3](https://www.python.org/downloads/).
-6. Configure environment variables described in the [configuration section](https://flaxo.readthedocs.io/en/latest/deploy/#configuration) excluding `tag`, `data2graph_tag` and `logs_dir`.
+6. Configure environment variables described in 
+[configuration section](https://flaxo.readthedocs.io/en/latest/getting-started/deploy/#configuration) 
+of deploy documentation. 
 
 Once the environment is set then the Flaxo services can be launched one by one.
 
 At first, start the database container.
 ```bash
-cd docker/docker-compose
-docker-compose run -p 5433:5432 postgres
-```
-
-Then start data2graph container.
-```bash
-cd docker/docker-compose
-docker-compose up data2graph
+docker run -p 5432:5432 postgres:11.1
 ```
 
 Boot up backend using packaged gradle build tool.

@@ -1,6 +1,7 @@
 package org.flaxo.model
 
 import org.amshove.kluent.shouldBeEmpty
+import org.amshove.kluent.shouldBeFalse
 import org.amshove.kluent.shouldBeNull
 import org.amshove.kluent.shouldContain
 import org.amshove.kluent.shouldContainAll
@@ -22,7 +23,7 @@ import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.TransactionStatus
 import org.springframework.transaction.support.DefaultTransactionDefinition
 
-class DataServiceSpec : SubjectSpek<DataManager>({
+class DataManagerSpec : SubjectSpek<DataManager>({
     val nickname = "nickname"
     val password = "password"
     val githubId = "githubId"
@@ -168,6 +169,10 @@ class DataServiceSpec : SubjectSpek<DataManager>({
             it("should have default state") {
                 course.state.lifecycle shouldEqual CourseLifecycle.INIT
                 course.state.activatedServices.shouldBeEmpty()
+            }
+
+            it("should be public by default") {
+                course.private.shouldBeFalse()
             }
         }
 

@@ -25,6 +25,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
         const val NICKNAME = "nickname"
         const val PASSWORD = "password"
         const val DESCRIPTION = "description"
+        const val PRIVATE = "private"
         const val LANGUAGE = "language"
         const val TESTING_LANGUAGE = "testingLanguage"
         const val TESTING_FRAMEWORK = "testingFramework"
@@ -65,6 +66,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
     override suspend fun createCourse(credentials: Credentials,
                                       courseName: String,
                                       description: String?,
+                                      private: Boolean,
                                       language: String?,
                                       testingLanguage: String?,
                                       testingFramework: String?,
@@ -74,6 +76,7 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
                 apiMethod = "/course/create"
                 params = mapOf(COURSE_NAME to courseName,
                         DESCRIPTION to description,
+                        PRIVATE to private,
                         LANGUAGE to language,
                         TESTING_LANGUAGE to testingLanguage,
                         TESTING_FRAMEWORK to testingFramework,

@@ -6,7 +6,7 @@ package org.flaxo.common
 interface Identifiable {
 
     /**
-     * System-wide unique identificator of the object.
+     * System-wide unique identifier of the object.
      */
     val id: Long
 }

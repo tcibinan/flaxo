@@ -3,7 +3,6 @@ package org.flaxo.rest.manager.travis
 import arrow.core.getOrHandle
 import arrow.core.orNull
 import org.apache.logging.log4j.LogManager
-import org.flaxo.common.cmd.CmdExecutor
 import org.flaxo.common.data.ExternalService
 import org.flaxo.common.of
 import org.flaxo.common.repeatUntil
@@ -13,15 +12,15 @@ import org.flaxo.model.ModelException
 import org.flaxo.model.data.Course
 import org.flaxo.model.data.User
 import org.flaxo.rest.manager.github.GithubManager
-import org.flaxo.travis.retrofit.RetrofitTravisImpl
 import org.flaxo.travis.Travis
-import org.flaxo.travis.retrofit.TravisClient
-import org.flaxo.travis.TravisException
-import org.flaxo.travis.TravisUser
 import org.flaxo.travis.TravisBuild
 import org.flaxo.travis.TravisBuildStatus
 import org.flaxo.travis.TravisBuildType
+import org.flaxo.travis.TravisException
+import org.flaxo.travis.TravisUser
 import org.flaxo.travis.parseTravisWebHook
+import org.flaxo.travis.retrofit.RetrofitTravisImpl
+import org.flaxo.travis.retrofit.TravisClient
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import java.io.Reader
@@ -32,22 +31,14 @@ import java.util.concurrent.TimeUnit
  * Travis manager.
  */
 open class SimpleTravisManager(private val client: TravisClient,
+                               private val tokenSupplier: TravisTokenSupplier,
                                private val dataManager: DataManager,
                                private val githubManager: GithubManager
 ) : TravisManager {
 
     private val logger = LogManager.getLogger(SimpleTravisManager::class.java)
 
-    override fun retrieveTravisToken(githubUsername: String, githubToken: String): String {
-        CmdExecutor.execute("travis", "login",
-                "-u", githubUsername,
-                "-g", githubToken)
-
-        return CmdExecutor.execute("travis", "token")
-                .first().split(" ").last()
-    }
-
-    override fun travis(travisToken: String): Travis = RetrofitTravisImpl(client, travisToken)
+    private fun travis(travisToken: String): Travis = RetrofitTravisImpl(client, travisToken)
 
     override fun parsePayload(reader: Reader): TravisBuild? = parseTravisWebHook(reader)
 
@@ -66,7 +57,7 @@ open class SimpleTravisManager(private val client: TravisClient,
         logger.info("Initialising travis client for ${user.nickname} user")
 
         val travisToken = user.credentials.travisToken
-                ?: retrieveTravisToken(githubId, githubToken)
+                ?: tokenSupplier.supply(githubId, githubToken)
                         .also {
                             logger.info("Adding newely retrieved travis token to ${user.nickname} user")
                             dataManager.addToken(user.nickname, ExternalService.TRAVIS, it)
@@ -256,9 +247,9 @@ open class SimpleTravisManager(private val client: TravisClient,
                         " due to: ${errorBody.string()}")
             }
 
-}
+    private fun performAfter(millis: Long, block: () -> Unit) {
+        Thread.sleep(millis)
+        block()
+    }
 
-private fun performAfter(millis: Long, block: () -> Unit) {
-    Thread.sleep(millis)
-    block()
 }

@@ -42,6 +42,8 @@ private const val COURSE_NAME_INPUT_ID = "courseNameInput"
 private const val COURSE_NAME_INPUT_HELP_ID = "courseNameInputHelp"
 private const val COURSE_DESCRIPTION_INPUT_ID = "courseDescriptionInput"
 private const val COURSE_DESCRIPTION_INPUT_HELP_ID = "courseDescriptionInputHelp"
+private const val PRIVATE_COURSE_CHECKBOX_ID = "privateCourseCheckbox"
+private const val PRIVATE_COURSE_CHECKBOX_HELP_ID = "privateCourseCheckboxHelp"
 private const val GENERATE_ENVIRONMENT_CHECKBOX_ID = "generateEnvironmentCheckbox"
 private const val GENERATE_ENVIRONMENT_CHECKBOX_HELP_ID = "generateEnvironmentCheckboxHelp"
 private const val LANGUAGE_SELECT_ID = "languageSelect"
@@ -62,7 +64,8 @@ fun RBuilder.courseCreationModal(onCreate: OnCourseChange) = child(CourseCreatio
 
 private class CourseCreationModalProps(var onCreate: OnCourseChange) : RProps
 
-private class CourseCreationModalState(var generateEnvironment: Boolean = false,
+private class CourseCreationModalState(var private: Boolean = false,
+                                       var generateEnvironment: Boolean = false,
                                        var language: Language? = null,
                                        var testingLanguage: Language? = null,
                                        var testingFramework: Framework? = null
@@ -112,6 +115,7 @@ private class CourseCreationModal(props: CourseCreationModalProps)
                     div("modal-body") {
                         courseNameInput()
                         courseDescriptionInput()
+                        privateCourseCheckbox()
                         tasksNumberInput()
                         languageSelect()
                         generateEnvironmentCheckbox()
@@ -181,6 +185,32 @@ private class CourseCreationModal(props: CourseCreationModalProps)
             }
         }
     }
+
+    private fun RBuilder.privateCourseCheckbox() {
+        div("form-group") {
+            div("form-check") {
+                input {
+                    attrs {
+                        id = PRIVATE_COURSE_CHECKBOX_ID
+                        classes = setOf("form-check-input")
+                        type = InputType.checkBox
+                        ariaDescribedBy = PRIVATE_COURSE_CHECKBOX_HELP_ID
+                        defaultChecked = false
+                        onClickFunction = { setState { private = !private } }
+                    }
+                }
+                label("Private course", PRIVATE_COURSE_CHECKBOX_ID, classes = setOf("checkbox-label"))
+            }
+            small {
+                attrs {
+                    id = PRIVATE_COURSE_CHECKBOX_HELP_ID
+                    classes = setOf("form-text", "text-muted", "checkbox-help")
+                }
+                +"Specifies either the creating course should be private or public (default)."
+            }
+        }
+    }
+
 
     private fun RBuilder.generateEnvironmentCheckbox() {
         val isDisabled = state.language?.testingLanguages.isNullOrEmpty()
@@ -284,6 +314,7 @@ private class CourseCreationModal(props: CourseCreationModalProps)
             try {
                 val courseName = validatedInputValue(COURSE_NAME_INPUT_ID)
                 val description = inputValue(COURSE_NAME_INPUT_ID)
+                val private = checkBoxValue(PRIVATE_COURSE_CHECKBOX_ID)
                 val generateEnvironment = checkBoxValue(GENERATE_ENVIRONMENT_CHECKBOX_ID)
                 val numberOfTasks = validatedInputValue(NUMBER_OF_TASKS_INPUT_ID)?.toInt()
                 val language = selectValue(LANGUAGE_SELECT_ID)
@@ -295,6 +326,7 @@ private class CourseCreationModal(props: CourseCreationModalProps)
                     val createdCourse = flaxoClient.createCourse(it,
                             courseName = courseName,
                             description = description,
+                            private = private,
                             language = language,
                             testingLanguage = testingLanguage?.filter { generateEnvironment },
                             testingFramework = testingFramework?.filter { generateEnvironment },

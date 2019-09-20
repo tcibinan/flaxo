@@ -6,8 +6,9 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.flaxo.model.DataManager
 import org.flaxo.rest.manager.github.GithubManager
-import org.flaxo.rest.manager.travis.TravisManager
 import org.flaxo.rest.manager.travis.SimpleTravisManager
+import org.flaxo.rest.manager.travis.TravisManager
+import org.flaxo.rest.manager.travis.TravisTokenSupplier
 import org.flaxo.travis.retrofit.TravisClient
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -21,7 +22,7 @@ import retrofit2.converter.jackson.JacksonConverterFactory
 class TravisConfiguration {
 
     companion object {
-        private const val baseUrl = "https://api.travis-ci.org/"
+        private const val baseUrl = "https://api.travis-ci.com/"
     }
 
     @Bean
@@ -36,9 +37,14 @@ class TravisConfiguration {
                     .create(TravisClient::class.java)
 
     @Bean
-    fun travisService(travisClient: TravisClient,
-                      dataManager: DataManager,
-                      githubManager: GithubManager
+    fun travisTokenSupplier(): TravisTokenSupplier = TravisTokenSupplier()
+
+    @Bean
+    fun travisService(
+            travisClient: TravisClient,
+            tokenSupplier: TravisTokenSupplier,
+            dataManager: DataManager,
+            githubManager: GithubManager
     ): TravisManager =
-            SimpleTravisManager(travisClient, dataManager, githubManager)
+            SimpleTravisManager(travisClient, tokenSupplier, dataManager, githubManager)
 }
