@@ -8,6 +8,7 @@ import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.subject.SubjectSpek
+import kotlin.random.Random
 import org.kohsuke.github.GitHub as KohsukeGithub
 
 // TODO 01.09.18: Move to an integration tests folder
@@ -15,7 +16,7 @@ object GithubSpec : SubjectSpek<Github>({
 
     val credentials = System.getenv("GITHUB_USER1_TOKEN")
 
-    val repositoryName = "temp-testing-repository"
+    val repositoryName = "temp-testing-repository-" + Random.nextInt(1000)
     val mainBranchName = "main-branch"
     val subBranchName = "sub-branch"
     val fileName = "file-name"
