@@ -44,6 +44,11 @@ interface FlaxoClient {
     ): Course
 
     /**
+     * Imports an existing course by the given [courseName] with the given description.
+     */
+    suspend fun importCourse(credentials: Credentials, courseName: String, description: String?): Course
+
+    /**
      * Retrieves statistics of the course with the given [courseName] and owner [username].
      */
     suspend fun getCourseStatistics(credentials: Credentials, username: String, courseName: String): CourseStatistics

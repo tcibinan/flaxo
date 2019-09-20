@@ -86,6 +86,16 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
                 errorMessage = "Course creation failed."
             }
 
+    override suspend fun importCourse(credentials: Credentials, courseName: String, description: String?): Course =
+            post {
+                apiMethod = "/course/import"
+                params = mapOf(COURSE_NAME to courseName,
+                        DESCRIPTION to description)
+                creds = credentials
+                onSuccess = { response -> json.parse(Course.serializer(), response) }
+                errorMessage = "Course importing failed."
+            }
+
     override suspend fun getCourseStatistics(credentials: Credentials,
                                              username: String,
                                              courseName: String

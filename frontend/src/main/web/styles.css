@@ -42,6 +42,23 @@
     cursor: pointer;
 }
 
+.courses-list .courses-controls {
+    display: flex;
+}
+
+.courses-list .courses-create-btn,
+.courses-list .courses-import-btn {
+    margin: 5px
+}
+
+.courses-list .courses-create-btn {
+    flex-grow: 1;
+}
+
+.courses-list .courses-import-btn {
+    flex-grow: 0.1;
+}
+
 .course-controls {
     display: flex;
     margin-top: 5px;
