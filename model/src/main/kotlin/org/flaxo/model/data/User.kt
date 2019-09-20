@@ -5,7 +5,7 @@ import org.flaxo.common.Identifiable
 import org.flaxo.common.data.DateTime
 import org.flaxo.model.UserView
 import java.time.LocalDateTime
-import java.util.Objects
+import java.util.*
 import javax.persistence.CascadeType
 import javax.persistence.Entity
 import javax.persistence.FetchType
@@ -21,7 +21,7 @@ import javax.persistence.UniqueConstraint
 @Entity(name = "user")
 @Table(name = "flaxo_user",
         uniqueConstraints = [
-            UniqueConstraint(columnNames = ["nickname"]),
+            UniqueConstraint(columnNames = ["name"]),
             UniqueConstraint(columnNames = ["githubId"])
         ]
 )
@@ -33,8 +33,7 @@ data class User(
 
         // TODO 23.03.19: Add date field.
 
-        // TODO 23.03.19: Rename to name.
-        val nickname: String = "",
+        val name: String = "",
 
         val githubId: String? = null,
 
@@ -46,7 +45,7 @@ data class User(
 
     override fun view(): UserView = UserView(
             id = id,
-            name = nickname,
+            name = name,
             date = DateTime(LocalDateTime.now()),
             githubId = githubId,
             githubAuthorized = credentials.githubToken != null,

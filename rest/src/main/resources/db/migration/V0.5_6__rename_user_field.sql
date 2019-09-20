@@ -1,0 +1,1 @@
+ALTER TABLE flaxo_user RENAME COLUMN nickname to name;

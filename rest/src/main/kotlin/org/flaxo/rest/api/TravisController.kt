@@ -1,16 +1,16 @@
 package org.flaxo.rest.api
 
-import org.flaxo.model.DataManager
-import org.flaxo.rest.manager.github.GithubManager
-import org.flaxo.rest.manager.travis.TravisManager
-import org.flaxo.travis.TravisException
-import org.flaxo.travis.TravisBuildStatus
-import org.flaxo.travis.TravisBuild
-import org.flaxo.travis.TravisPullRequestBuild
 import org.apache.logging.log4j.LogManager
 import org.flaxo.common.data.ExternalService
+import org.flaxo.model.DataManager
+import org.flaxo.rest.manager.github.GithubManager
 import org.flaxo.rest.manager.response.Response
 import org.flaxo.rest.manager.response.ResponseManager
+import org.flaxo.rest.manager.travis.TravisManager
+import org.flaxo.travis.TravisBuild
+import org.flaxo.travis.TravisBuildStatus
+import org.flaxo.travis.TravisException
+import org.flaxo.travis.TravisPullRequestBuild
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.transaction.annotation.Transactional
@@ -55,7 +55,7 @@ class TravisController @Autowired constructor(private val travisManager: TravisM
             return responseManager.bad("Given travis token is invalid")
         }
 
-        dataManager.addToken(user.nickname, ExternalService.TRAVIS, token)
+        dataManager.addToken(user.name, ExternalService.TRAVIS, token)
         logger.info("Travis token was added for ${principal.name}")
         return responseManager.ok()
     }
@@ -76,25 +76,25 @@ class TravisController @Autowired constructor(private val travisManager: TravisM
                         ?: throw TravisException("User with the required nickname ${hook.repositoryOwner} wasn't found.")
 
                 val githubCredentials = user.credentials.githubToken
-                        ?: throw TravisException("User ${user.nickname} doesn't have github credentials " +
+                        ?: throw TravisException("User ${user.name} doesn't have github credentials " +
                                 "to get pull request information.")
 
                 val course = dataManager.getCourse(hook.repositoryName, user)
                         ?: throw TravisException("Course with name ${hook.repositoryName} wasn't found " +
-                                "for user ${user.nickname}.")
+                                "for user ${user.name}.")
 
                 val pullRequest = githubManager.with(githubCredentials)
                         .getRepository(course.name)
                         .getPullRequest(hook.pullRequestNumber)
 
                 val student = course.students
-                        .find { it.nickname == pullRequest.authorLogin }
+                        .find { it.name == pullRequest.authorLogin }
                         ?: throw TravisException("Student ${pullRequest.authorLogin} wasn't found " +
                                 "in course ${hook.repositoryOwner}/${hook.repositoryName}.")
 
                 val solution = student.solutions
                         .find { it.task.branch == hook.branch }
-                        ?: throw TravisException("Student task ${hook.branch} wasn't found for student ${student.nickname} " +
+                        ?: throw TravisException("Student task ${hook.branch} wasn't found for student ${student.name} " +
                                 "in course ${hook.repositoryOwner}/${hook.repositoryName}.")
 
                 when (hook.buildStatus) {

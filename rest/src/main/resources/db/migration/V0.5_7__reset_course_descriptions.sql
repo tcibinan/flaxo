@@ -1,0 +1,1 @@
+UPDATE course SET description = NULL;

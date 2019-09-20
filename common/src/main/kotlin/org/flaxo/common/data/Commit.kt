@@ -14,16 +14,14 @@ data class Commit(
         override val id: Long,
 
         /**
-         * Sha of the commit. Git identifier
+         * Sha of the commit. Git identifier.
          */
         val sha: String,
 
         /**
-         * Associated pull request id.
-         *
-         * TODO: The only reason the field is nullable is a deployment purposes.
+         * Associated pull request number.
          */
-        val pullRequestId: Int?,
+        val pullRequestNumber: Int,
 
         /**
          * Commit creation date time.

@@ -44,7 +44,7 @@ class CodacyController(private val dataManager: DataManager,
             return responseManager.bad("Given codacy token is invalid")
         }
 
-        val updatedUser = dataManager.addToken(user.nickname, ExternalService.CODACY, token)
+        val updatedUser = dataManager.addToken(user.name, ExternalService.CODACY, token)
         logger.info("Codacy token was added for ${principal.name}")
         return responseManager.ok(updatedUser.view())
     }

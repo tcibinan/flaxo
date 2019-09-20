@@ -40,21 +40,21 @@ class SimpleGithubManager(private val dataManager: DataManager,
 
         val course = dataManager.getCourse(pullRequest.receiverRepositoryName, user)
                 ?: throw GithubException("Course ${pullRequest.receiverRepositoryName} wasn't found " +
-                        "for user ${user.nickname}.")
+                        "for user ${user.name}.")
 
         val student = course.students
-                .find { it.nickname == pullRequest.authorLogin }
+                .find { it.name == pullRequest.authorLogin }
                 ?: dataManager.addStudent(pullRequest.authorLogin, course).also {
-                    logger.info("Student ${it.nickname} was initialised " +
-                            "for course ${user.nickname}/${course.name}.")
+                    logger.info("Student ${it.name} was initialised " +
+                            "for course ${user.name}/${course.name}.")
                 }
 
         student.solutions
                 .find { it.task.branch == pullRequest.targetBranch }
                 ?.takeIf { it.commits.lastOrNull()?.sha != pullRequest.lastCommitSha }
                 ?.also { solution ->
-                    logger.info("Add ${pullRequest.lastCommitSha} commit to ${student.nickname} student solution " +
-                            "for course ${user.nickname}/${course.name}.")
+                    logger.info("Add ${pullRequest.lastCommitSha} commit to ${student.name} student solution " +
+                            "for course ${user.name}/${course.name}.")
                     dataManager.addCommit(solution, pullRequest.number, pullRequest.lastCommitSha)
                 }
     }

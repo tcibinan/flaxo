@@ -1,6 +1,5 @@
-script: ./run_tests.sh plus minus
+script: chmod +x run_test.sh run_tests.sh && ./run_tests.sh plus minus
 
-# disabling email notifications
 notifications:
   email: false
   webhooks: {{flaxo.travis.hook.url}}

@@ -20,17 +20,17 @@ import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.subject.SubjectSpek
 
 class CourseManagerSpec : SubjectSpek<CourseManager>({
-    val user = User(id = 1, nickname = "user")
+    val user = User(id = 1, name = "user")
     val course = Course(id = 1, name = "course", user = user)
-    val anotherUser = User(id = 2, nickname = "anotherUser")
+    val anotherUser = User(id = 2, name = "anotherUser")
     val settings = CourseSettings(id = 1, language = "language", testingLanguage = "testingLanguage",
             testingFramework = "testingFramework")
     val anotherSettings = CourseSettings(id = 2, language = "anotherLanguage",
             testingLanguage = "anotherTestingLanguage", testingFramework = "anotherTestingFramework")
 
     val dataManager = mock<DataManager> {
-        on { getUser(eq(user.nickname)) }.thenReturn(user)
-        on { getUser(eq(anotherUser.nickname)) }.thenReturn(anotherUser)
+        on { getUser(eq(user.name)) }.thenReturn(user)
+        on { getUser(eq(anotherUser.name)) }.thenReturn(anotherUser)
         on { getCourse(eq(course.id)) }.thenReturn(course)
         on { updateCourse(any()) }.thenAnswer { it.arguments[0] }
     }
@@ -50,7 +50,7 @@ class CourseManagerSpec : SubjectSpek<CourseManager>({
             on("updating course settings for non-existing course") {
                 it("should fail") {
                     {
-                        subject.updateSettings(user.nickname, -1, settings)
+                        subject.updateSettings(user.name, -1, settings)
                     } shouldThrow CourseNotFoundException::class
                 }
             }
@@ -58,13 +58,13 @@ class CourseManagerSpec : SubjectSpek<CourseManager>({
             on("updating course settings for different user's course") {
                 it("should fail") {
                     {
-                        subject.updateSettings(anotherUser.nickname, course.id, settings)
+                        subject.updateSettings(anotherUser.name, course.id, settings)
                     } shouldThrow CourseAccessDeniedException::class
                 }
             }
 
             on("updating course settings") {
-                val updatedCourse = subject.updateSettings(user.nickname, course.id, anotherSettings)
+                val updatedCourse = subject.updateSettings(user.name, course.id, anotherSettings)
 
                 it("should return course with updated settings") {
                     updatedCourse.settings.apply {

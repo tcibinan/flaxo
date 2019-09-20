@@ -313,7 +313,7 @@ private class CourseCreationModal(props: CourseCreationModalProps)
         credentials?.also {
             try {
                 val courseName = validatedInputValue(COURSE_NAME_INPUT_ID)
-                val description = inputValue(COURSE_NAME_INPUT_ID)
+                val description = inputValue(COURSE_DESCRIPTION_INPUT_ID)
                 val private = checkBoxValue(PRIVATE_COURSE_CHECKBOX_ID)
                 val generateEnvironment = checkBoxValue(GENERATE_ENVIRONMENT_CHECKBOX_ID)
                 val numberOfTasks = validatedInputValue(NUMBER_OF_TASKS_INPUT_ID)?.toInt()

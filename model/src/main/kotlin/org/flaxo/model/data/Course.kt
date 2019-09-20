@@ -33,8 +33,7 @@ data class Course(
 
         val private: Boolean = false,
 
-        // TODO 23.03.19: Rename to date.
-        val createdDate: LocalDateTime = LocalDateTime.MIN,
+        val date: LocalDateTime = LocalDateTime.MIN,
 
         @OneToOne(cascade = [CascadeType.ALL], optional = false, fetch = FetchType.LAZY)
         val settings: CourseSettings = CourseSettings(),
@@ -60,12 +59,12 @@ data class Course(
             name = name,
             description = description,
             private = private,
-            date = DateTime(createdDate),
+            date = DateTime(date),
             settings = settings.view(),
             state = state.view(),
             user = user.view(),
             url = url,
-            students = students.map { it.nickname },
+            students = students.map { it.name },
             tasks = tasks.map { it.branch }
     )
 

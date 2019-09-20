@@ -35,18 +35,18 @@ open class SimpleCodacyManager(private val client: CodacyClient,
         val user = course.user
 
         val githubId = user.githubId
-                ?: throw CodacyException("Codacy validations can't be activated because ${user.nickname} user" +
+                ?: throw CodacyException("Codacy validations can't be activated because ${user.name} user" +
                         "doesn't have github id")
 
         val codacyToken = user.credentials.codacyToken
-                ?: throw CodacyException("Codacy token is not set for ${user.nickname} user so codacy " +
+                ?: throw CodacyException("Codacy token is not set for ${user.name} user so codacy " +
                         "service is not activated")
 
-        logger.info("Initialising codacy client for ${user.nickname} user")
+        logger.info("Initialising codacy client for ${user.name} user")
 
         val codacy = codacy(githubId, codacyToken)
 
-        logger.info("Creating codacy project ${course.name} for ${user.nickname} user")
+        logger.info("Creating codacy project ${course.name} for ${user.name} user")
 
         repeatUntil("Codacy project created",
                 attemptsLimit = 5) {
@@ -67,12 +67,12 @@ open class SimpleCodacyManager(private val client: CodacyClient,
         val user = course.user
 
         val githubId = user.githubId
-                ?: throw ModelException("Github id for ${user.nickname} user was not found")
+                ?: throw ModelException("Github id for ${user.name} user was not found")
 
         user.credentials
                 .codacyToken
                 ?.also {
-                    logger.info("Deactivating codacy for ${user.nickname}/${course.name} course")
+                    logger.info("Deactivating codacy for ${user.name}/${course.name} course")
 
                     codacy(githubId, it)
                             .deleteProject(course.name)
@@ -81,11 +81,11 @@ open class SimpleCodacyManager(private val client: CodacyClient,
                                         "deletion went bad due to: ${errorBody.string()}")
                             }
 
-                    logger.info("Codacy deactivation for ${user.nickname}/${course.name} course " +
+                    logger.info("Codacy deactivation for ${user.name}/${course.name} course " +
                             "has finished successfully")
                 }
                 ?.also {
-                    logger.info("Removing codacy from activated services of ${user.nickname}/${course.name} course")
+                    logger.info("Removing codacy from activated services of ${user.name}/${course.name} course")
 
                     dataManager.updateCourse(course.copy(
                             state = course.state.copy(
@@ -93,7 +93,7 @@ open class SimpleCodacyManager(private val client: CodacyClient,
                             )
                     ))
                 }
-                ?: logger.info("Codacy token wasn't found for ${user.nickname} " +
+                ?: logger.info("Codacy token wasn't found for ${user.name} " +
                         "so no codacy project is deleted")
     }
 
@@ -102,13 +102,13 @@ open class SimpleCodacyManager(private val client: CodacyClient,
         val user = course.user
 
         val githubId = user.githubId
-                ?: throw ModelException("Github id for ${user.nickname} user was not found")
+                ?: throw ModelException("Github id for ${user.name} user was not found")
 
         val codacyToken = user.credentials.codacyToken
-                ?: throw CodacyException("Codacy token is not set for ${user.nickname} user so codacy " +
+                ?: throw CodacyException("Codacy token is not set for ${user.name} user so codacy " +
                         "service is not activated")
 
-        logger.info("Codacy analyses results refreshing is started for ${user.nickname}/${course.name} course")
+        logger.info("Codacy analyses results refreshing is started for ${user.name}/${course.name} course")
 
         val codacy = codacy(githubId, codacyToken)
 
@@ -143,9 +143,9 @@ open class SimpleCodacyManager(private val client: CodacyClient,
                             }
                             ?.also { codacyCommit ->
                                 logger.info(
-                                        "Updating ${solution.student.nickname} student code style report " +
+                                        "Updating ${solution.student.name} student code style report " +
                                                 "for ${solution.task.branch} branch " +
-                                                "of ${user.nickname}/${course.name} course"
+                                                "of ${user.name}/${course.name} course"
                                 )
                                 dataManager.addCodeStyleReport(
                                         solution,
@@ -154,7 +154,7 @@ open class SimpleCodacyManager(private val client: CodacyClient,
                             }
                 }
 
-        logger.info("Codacy analyses results were refreshed for ${user.nickname}/${course.name} course")
+        logger.info("Codacy analyses results were refreshed for ${user.name}/${course.name} course")
     }
 
 }

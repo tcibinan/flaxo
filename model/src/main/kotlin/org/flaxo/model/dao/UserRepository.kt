@@ -9,9 +9,9 @@ import org.springframework.data.repository.CrudRepository
 interface UserRepository : CrudRepository<User, Long> {
 
     /**
-     * Finds a user by its [nickname].
+     * Finds a user by its [name].
      */
-    fun findByNickname(nickname: String): User?
+    fun findByName(name: String): User?
 
     /**
      * Finds a user by its [githubId].

@@ -48,12 +48,12 @@ open class PlainDataManager(private val userRepository: UserRepository,
 
     @Transactional
     override fun addUser(nickname: String, password: String): User =
-            userRepository.findByNickname(nickname)
+            userRepository.findByName(nickname)
                     ?.also { throw EntityAlreadyExistsException("User $nickname") }
-                    ?: userRepository.save(User(nickname = nickname, credentials = Credentials(password = password)))
+                    ?: userRepository.save(User(name = nickname, credentials = Credentials(password = password)))
 
     @Transactional(readOnly = true)
-    override fun getUser(nickname: String): User? = userRepository.findByNickname(nickname)
+    override fun getUser(nickname: String): User? = userRepository.findByName(nickname)
 
     @Transactional(readOnly = true)
     override fun getUserByGithubId(githubId: String): User? = userRepository.findByGithubId(githubId)
@@ -110,7 +110,7 @@ open class PlainDataManager(private val userRepository: UserRepository,
                         description = description,
                         private = private,
                         url = "https://github.com/${owner.githubId}/$courseName",
-                        createdDate = LocalDateTime.now(),
+                        date = LocalDateTime.now(),
                         settings = settings,
                         state = CourseState(),
                         user = owner
@@ -147,7 +147,7 @@ open class PlainDataManager(private val userRepository: UserRepository,
 
     @Transactional
     override fun addStudent(nickname: String, course: Course): Student {
-        val student = studentRepository.save(Student(nickname = nickname, course = course))
+        val student = studentRepository.save(Student(name = nickname, course = course))
 
         return taskRepository
                 .findAllByCourse(course)
@@ -236,7 +236,7 @@ open class PlainDataManager(private val userRepository: UserRepository,
     @Transactional
     override fun addCommit(solution: Solution, pullRequestNumber: Int, commitSha: String): Commit =
             commitRepository
-                    .save(Commit(solution = solution, date = LocalDateTime.now(), pullRequestId = pullRequestNumber,
+                    .save(Commit(solution = solution, date = LocalDateTime.now(), pullRequestNumber = pullRequestNumber,
                             sha = commitSha
                     ))
                     .also { updateSolution(solution.copy(commits = solution.commits + it)) }

@@ -1,0 +1,1 @@
+ALTER TABLE course RENAME COLUMN created_date TO date;

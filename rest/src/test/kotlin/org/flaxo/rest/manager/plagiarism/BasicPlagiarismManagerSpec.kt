@@ -27,7 +27,7 @@ import org.jetbrains.spek.api.dsl.on
 import org.jetbrains.spek.subject.SubjectSpek
 
 class BasicPlagiarismManagerSpec : SubjectSpek<PlagiarismManager>({
-    val user = User(nickname = "user")
+    val user = User(name = "user")
     val student1 = "student1"
     val student2 = "student2"
     val student3 = "student3"
@@ -56,7 +56,7 @@ class BasicPlagiarismManagerSpec : SubjectSpek<PlagiarismManager>({
     val course = Course(name = "course", tasks = setOf(task, anotherTask, taskWithoutReports))
 
     val dataManager: DataManager = mock {
-        on { getUser(user.nickname) } doReturn (user)
+        on { getUser(user.name) } doReturn (user)
         on { getCourse(course.name, user) } doReturn (course)
         on { getPlagiarismReport(report.id) } doReturn (report)
         on { getPlagiarismReport(anotherReport.id) } doReturn (anotherReport)
@@ -78,7 +78,7 @@ class BasicPlagiarismManagerSpec : SubjectSpek<PlagiarismManager>({
             on("analysing plagiarism for non existing course") {
                 it("should throw") {
                     {
-                        subject.analyse(user.nickname, "invalid", task.branch)
+                        subject.analyse(user.name, "invalid", task.branch)
                     } shouldThrow CourseNotFoundException::class
                 }
             }
@@ -86,13 +86,13 @@ class BasicPlagiarismManagerSpec : SubjectSpek<PlagiarismManager>({
             on("analysing plagiarism for non existing task") {
                 it("should throw") {
                     {
-                        subject.analyse(user.nickname, course.name, "invalid")
+                        subject.analyse(user.name, course.name, "invalid")
                     } shouldThrow TaskNotFoundException::class
                 }
             }
 
             on("analysing plagiarism") {
-                subject.analyse(user.nickname, course.name, task.branch)
+                subject.analyse(user.name, course.name, task.branch)
                 it("should call delegate analysis to moss plagiarism manager") {
                     verify(mossManager).analyse(task)
                 }
@@ -111,7 +111,7 @@ class BasicPlagiarismManagerSpec : SubjectSpek<PlagiarismManager>({
             on("generating graph access token for non existing course") {
                 it("should throw") {
                     {
-                        subject.generateGraphAccessToken(user.nickname, "invalid", task.branch)
+                        subject.generateGraphAccessToken(user.name, "invalid", task.branch)
                     } shouldThrow CourseNotFoundException::class
                 }
             }
@@ -119,7 +119,7 @@ class BasicPlagiarismManagerSpec : SubjectSpek<PlagiarismManager>({
             on("generating graph access token for non existing task") {
                 it("should throw") {
                     {
-                        subject.generateGraphAccessToken(user.nickname, course.name, "invalid")
+                        subject.generateGraphAccessToken(user.name, course.name, "invalid")
                     } shouldThrow TaskNotFoundException::class
                 }
             }
@@ -127,13 +127,13 @@ class BasicPlagiarismManagerSpec : SubjectSpek<PlagiarismManager>({
             on("generating graph access token if there are no plagiarism reports") {
                 it("should throw") {
                     {
-                        subject.generateGraphAccessToken(user.nickname, course.name, taskWithoutReports.branch)
+                        subject.generateGraphAccessToken(user.name, course.name, taskWithoutReports.branch)
                     } shouldThrow PlagiarismReportNotFoundException::class
                 }
             }
 
             on("generating graph access token") {
-                val token = subject.generateGraphAccessToken(user.nickname, course.name, task.branch)
+                val token = subject.generateGraphAccessToken(user.name, course.name, task.branch)
                 it("should return non-empty access token") {
                     token.shouldNotBeNullOrBlank()
                 }
@@ -152,15 +152,15 @@ class BasicPlagiarismManagerSpec : SubjectSpek<PlagiarismManager>({
             }
 
             on("getting graph by previously generated access token") {
-                val token = subject.generateGraphAccessToken(user.nickname, course.name, task.branch)
+                val token = subject.generateGraphAccessToken(user.name, course.name, task.branch)
                 it("should return graph") {
                     subject.getGraph(token) shouldEqual graph
                 }
             }
 
             on("getting graph by different tokens of the same graph") {
-                val token1 = subject.generateGraphAccessToken(user.nickname, course.name, task.branch)
-                val token2 = subject.generateGraphAccessToken(user.nickname, course.name, task.branch)
+                val token1 = subject.generateGraphAccessToken(user.name, course.name, task.branch)
+                val token2 = subject.generateGraphAccessToken(user.name, course.name, task.branch)
                 it("should return the same graph") {
                     subject.getGraph(token1) shouldEqual graph
                     subject.getGraph(token2) shouldEqual graph
@@ -168,8 +168,8 @@ class BasicPlagiarismManagerSpec : SubjectSpek<PlagiarismManager>({
             }
 
             on("getting graph by different tokens of different graphs") {
-                val token1 = subject.generateGraphAccessToken(user.nickname, course.name, task.branch)
-                val token2 = subject.generateGraphAccessToken(user.nickname, course.name, anotherTask.branch)
+                val token1 = subject.generateGraphAccessToken(user.name, course.name, task.branch)
+                val token2 = subject.generateGraphAccessToken(user.name, course.name, anotherTask.branch)
                 it("should return different graphs") {
                     subject.getGraph(token1) shouldEqual graph
                     subject.getGraph(token2) shouldEqual anotherGraph

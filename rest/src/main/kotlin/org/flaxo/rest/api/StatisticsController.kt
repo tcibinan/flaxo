@@ -5,11 +5,10 @@ import org.flaxo.model.CourseStatisticsView
 import org.flaxo.model.DataManager
 import org.flaxo.model.data.views
 import org.flaxo.rest.manager.response.Response
-import org.flaxo.rest.manager.statistics.StatisticsManager
 import org.flaxo.rest.manager.response.ResponseManager
+import org.flaxo.rest.manager.statistics.StatisticsManager
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -62,7 +61,7 @@ class StatisticsController(private val dataManager: DataManager,
                 .map { it.branch to it.solutions }
                 .toMap()
                 .mapValues { (_, solutions) ->
-                    solutions.map { it.student.nickname to (it.score ?: 0) }
+                    solutions.map { it.student.name to (it.score ?: 0) }
                             .toMap()
                 }
                 .let { statisticsConverter.convert(it) }

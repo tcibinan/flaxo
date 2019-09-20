@@ -68,11 +68,10 @@ data class SimpleTravisEnvironmentSupplier(private val language: Language? = nul
                     """
                         language: java
                         jdk:
-                          - oraclejdk8
+                          - openjdk8
                         before_install:
                           - chmod +x gradlew
 
-                        # disabling email notifications
                         notifications:
                           email: false
                           webhooks: $travisWebHookUrl

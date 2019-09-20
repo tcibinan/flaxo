@@ -4,7 +4,7 @@ import org.flaxo.common.Identifiable
 import org.flaxo.common.data.DateTime
 import org.flaxo.model.CommitView
 import java.time.LocalDateTime
-import java.util.Objects
+import java.util.*
 import javax.persistence.Entity
 import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
@@ -23,8 +23,7 @@ class Commit(
         @GeneratedValue
         override val id: Long = -1,
 
-        // TODO 13.10.18: Rename to pullRequestNumber
-        val pullRequestId: Int? = null,
+        val pullRequestNumber: Int = 0,
 
         val date: LocalDateTime? = null,
 
@@ -38,7 +37,7 @@ class Commit(
     override fun view(): CommitView = CommitView(
             id = id,
             sha = sha,
-            pullRequestId = pullRequestId,
+            pullRequestNumber = pullRequestNumber,
             date = date?.let { DateTime(date) }
     )
 
