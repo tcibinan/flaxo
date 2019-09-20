@@ -5,7 +5,7 @@ plugins {
     id "org.springframework.boot" version "2.0.4.RELEASE" apply false
 }
 
-version '0.4'
+version '0.5'
 
 def javaProjects = subprojects.findAll {
     it.name in ['common-jvm', 'cpp', 'fcodacy', 'fgithub', 'fgradle', 'fmoss', 'ftravis', 'git', 'githubql', 'model',
