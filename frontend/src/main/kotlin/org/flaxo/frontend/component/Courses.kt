@@ -69,13 +69,23 @@ private class Courses(props: CoursesProps) : RComponent<CoursesProps, CoursesSta
                             ?.forEach { courseCard(it, onSelect = ::selectCourse) }
                             ?: p { +"There are no courses yet." }
                 }
-                button(classes = "btn btn-outline-primary btn-block", type = ButtonType.button) {
-                    attrs {
-                        attributes["data-toggle"] = "modal"
-                        attributes["data-target"] = "#$COURSE_CREATION_MODAL_ID"
-                        disabled = !props.user.githubAuthorized
+                div(classes = "courses-controls") {
+                    button(classes = "btn btn-outline-primary courses-create-btn", type = ButtonType.button) {
+                        attrs {
+                            attributes["data-toggle"] = "modal"
+                            attributes["data-target"] = "#$COURSE_CREATION_MODAL_ID"
+                            disabled = !props.user.githubAuthorized
+                        }
+                        +"Create course"
                     }
-                    +"Create course"
+                    button(classes = "btn btn-outline-primary courses-import-btn", type = ButtonType.button) {
+                        attrs {
+                            attributes["data-toggle"] = "modal"
+                            attributes["data-target"] = "#$COURSE_IMPORT_MODAL_ID"
+                            disabled = !props.user.githubAuthorized
+                        }
+                        +"Import existing course"
+                    }
                 }
             }
         } else {
@@ -86,6 +96,7 @@ private class Courses(props: CoursesProps) : RComponent<CoursesProps, CoursesSta
         codacyModal(props.user)
         plagiarismModal()
         courseCreationModal(onCreate = ::addCourse)
+        courseImportModal(onImport = ::addCourse)
     }
 
     private fun deselectCourse() = setState { selectedCourseId = null }

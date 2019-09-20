@@ -53,19 +53,19 @@ class CourseController(private val dataManager: DataManager,
     private val logger = LogManager.getLogger(CourseController::class.java)
 
     /**
-     * Imports a course from an existing git repository or the [principal] by its [repositoryName].
+     * Imports a course from an existing git repository or the [principal] by its [courseName].
      */
     @PostMapping("/import")
     @PreAuthorize("hasAuthority('USER')")
     @Transactional
-    fun import(@RequestParam repositoryName: String,
+    fun import(@RequestParam courseName: String,
                @RequestParam(required = false) description: String?,
                @RequestParam(required = false)  language: String?,
                @RequestParam(required = false)  testingLanguage: String?,
                @RequestParam(required = false)  testingFramework: String?,
                principal: Principal
     ): Response<CourseView> {
-        logger.info("Trying to import course ${principal.name}/$repositoryName from an existing repository")
+        logger.info("Trying to import course ${principal.name}/$courseName from an existing repository")
 
         val user = dataManager.getUser(principal.name)
                 ?: return responseManager.userNotFound(principal.name)
@@ -77,16 +77,17 @@ class CourseController(private val dataManager: DataManager,
                 ?: return responseManager.githubTokenNotFound(user.name)
 
         return githubManager.with(githubToken)
-                .getRepository(repositoryName)
+                .getRepository(courseName)
                 .takeIf { it.exists() }
                 ?.let { repository ->
-                    logger.info("Scanning for tasks of the importing course ${principal.name}/$repositoryName")
+                    logger.info("Scanning for tasks of the importing course ${principal.name}/$courseName")
+                    repository.addWebHook()
                     repository.branches()
                             .map { it.name }
                             .filter { it.startsWith(tasksPrefix) }
                             .let { tasksNames ->
                                 dataManager.createCourse(
-                                        repositoryName,
+                                        courseName,
                                         description,
                                         false,
                                         language,
@@ -98,7 +99,7 @@ class CourseController(private val dataManager: DataManager,
                             }
                 }
                 ?.let { responseManager.ok(it.view()) }
-                ?: responseManager.bad("Github repository $githubId/$repositoryName doesn't exist")
+                ?: responseManager.bad("Github repository $githubId/$courseName doesn't exist")
     }
 
     /**
