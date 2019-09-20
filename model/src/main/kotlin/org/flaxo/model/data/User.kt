@@ -21,7 +21,7 @@ import javax.persistence.UniqueConstraint
 @Entity(name = "user")
 @Table(name = "flaxo_user",
         uniqueConstraints = [
-            UniqueConstraint(columnNames = ["nickname"]),
+            UniqueConstraint(columnNames = ["name"]),
             UniqueConstraint(columnNames = ["githubId"])
         ]
 )
