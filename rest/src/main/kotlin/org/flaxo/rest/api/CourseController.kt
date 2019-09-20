@@ -81,6 +81,7 @@ class CourseController(private val dataManager: DataManager,
                 .takeIf { it.exists() }
                 ?.let { repository ->
                     logger.info("Scanning for tasks of the importing course ${principal.name}/$repositoryName")
+                    repository.addWebHook()
                     repository.branches()
                             .map { it.name }
                             .filter { it.startsWith(tasksPrefix) }
