@@ -10,4 +10,7 @@ dependencies {
 
     // HTML parser
     compile "org.jsoup:jsoup:1.11.2"
+
+    compile "com.squareup.retrofit2:retrofit:2.3.0"
+    compile "com.squareup.retrofit2:converter-jackson:2.3.0"
 }
