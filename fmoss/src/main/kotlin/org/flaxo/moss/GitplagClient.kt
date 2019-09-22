@@ -16,14 +16,14 @@ interface GitplagClient {
      * Analyzes a task of a course.
      */
     @POST("{vcsService}/{username}/{projectName}/analyze")
-    fun commitDetails(@Path("vcsService")
-                      vcsService: String,
-                      @Path("username")
-                      username: String,
-                      @Path("projectName")
-                      projectName: String,
-                      @Body
-                      analysisRequest: AnalysisRequest
+    fun analyse(@Path("vcsService")
+                vcsService: String,
+                @Path("username")
+                username: String,
+                @Path("projectName")
+                projectName: String,
+                @Body
+                analysisRequest: AnalysisRequest
     ): Call<AnalysisResult>
 
 }

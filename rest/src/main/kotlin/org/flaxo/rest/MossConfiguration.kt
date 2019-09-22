@@ -9,6 +9,7 @@ import org.flaxo.rest.manager.moss.MossManager
 import org.flaxo.rest.manager.moss.MossSubmissionExtractor
 import org.flaxo.rest.manager.moss.SimpleMossManager
 import org.flaxo.rest.manager.moss.SimpleMossSubmissionsExtractor
+import org.flaxo.rest.manager.plagiarism.PlagiarismAnalyser
 import org.jsoup.Jsoup
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -35,7 +36,11 @@ class MossConfiguration {
 
     @Bean
     fun mossManager(dataManager: DataManager,
-                    mossSubmissionsExtractor: MossSubmissionExtractor,
-                    mossSubmissionsAnalyser: MossSubmissionAnalyser
-    ): MossManager = SimpleMossManager(dataManager, mossSubmissionsExtractor, mossSubmissionsAnalyser)
+                    plagiarismAnalyser: PlagiarismAnalyser
+    ): MossManager = SimpleMossManager(dataManager, plagiarismAnalyser)
+
+//    @Bean
+//    fun mossPlagiarismAnalyser(mossSubmissionExtractor: MossSubmissionExtractor,
+//                               mossSubmissionAnalyser: MossSubmissionAnalyser
+//    ): MossPlagiarismAnalyser = MossPlagiarismAnalyser(mossSubmissionExtractor, mossSubmissionAnalyser)
 }

@@ -1,6 +1,7 @@
 package org.flaxo.rest
 
 import org.flaxo.moss.GitplagClient
+import org.flaxo.rest.manager.plagiarism.GitplagPlagiarismAnalyser
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import retrofit2.Retrofit
@@ -24,4 +25,7 @@ class GitplagConfiguration {
                     .build()
                     .create(GitplagClient::class.java)
 
+    @Bean
+    fun gitplagPlagiarismAnalyser(gitplagClient: GitplagClient): GitplagPlagiarismAnalyser =
+            GitplagPlagiarismAnalyser(gitplagClient)
 }
