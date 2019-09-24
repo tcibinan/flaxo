@@ -15,9 +15,9 @@ class GitplagPlagiarismAnalyser(
 
         val analyse = gitplagClient.analyse(
                 "github",
-                course.user.nickname,
+                course.user.githubId!!,
                 course.name,
-                AnalysisRequest(task = task.branch, language = task.course.settings.language ?: "text")
+                AnalysisRequest(branch = task.branch, language = task.course.settings.language ?: "text")
         )
 
         val body = analyse.execute().body()!!
@@ -31,7 +31,7 @@ class GitplagPlagiarismAnalyser(
         }.toSet()
 
         return MossResult(
-                url = URL(body.resultLink),
+                url = URL("http://localhost:8090" + body.resultLink),
                 matches = matches,
                 students = course.students.map { it.nickname }
         )

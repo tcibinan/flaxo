@@ -15,7 +15,7 @@ interface GitplagClient {
     /**
      * Analyzes a task of a course.
      */
-    @POST("{vcsService}/{username}/{projectName}/analyze")
+    @POST("/api/repositories/{vcsService}/{username}/{projectName}/analyze")
     fun analyse(@Path("vcsService")
                 vcsService: String,
                 @Path("username")

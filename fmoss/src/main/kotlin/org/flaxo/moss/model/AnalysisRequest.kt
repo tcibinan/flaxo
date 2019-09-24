@@ -1,8 +1,8 @@
 package org.flaxo.moss.model
 
 data class AnalysisRequest(
-        val task: String,
-        val analyzer: String = "moss",
+        val branch: String,
+        val analyzer: String = "jplag",
         val language: String,
         val updateFiles: Boolean = false
 )

@@ -14,7 +14,7 @@ import retrofit2.converter.jackson.JacksonConverterFactory
 class GitplagConfiguration {
 
     companion object {
-        private const val baseUrl = "http://localhost:8090"
+        private const val baseUrl = "http://localhost:8090/"
     }
 
     @Bean
