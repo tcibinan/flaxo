@@ -1,10 +1,12 @@
 package org.flaxo.rest.manager.plagiarism
 
+import io.gitplag.gitplagapi.model.input.AnalysisRequest
+import org.flaxo.common.Language
 import org.flaxo.model.data.Task
 import org.flaxo.moss.GitplagClient
 import org.flaxo.moss.MossMatch
 import org.flaxo.moss.MossResult
-import org.flaxo.moss.model.AnalysisRequest
+import org.flaxo.moss.toGitplagLanguage
 import java.net.URL
 
 class GitplagPlagiarismAnalyser(
@@ -17,7 +19,10 @@ class GitplagPlagiarismAnalyser(
                 "github",
                 course.user.githubId!!,
                 course.name,
-                AnalysisRequest(branch = task.branch, language = task.course.settings.language ?: "text")
+                AnalysisRequest(
+                        branch = task.branch,
+                        language = toGitplagLanguage(Language.from(task.course.settings.language))
+                )
         )
 
         val body = analyse.execute().body()!!

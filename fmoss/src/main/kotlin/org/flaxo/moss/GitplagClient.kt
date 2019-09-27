@@ -1,7 +1,7 @@
 package org.flaxo.moss
 
-import org.flaxo.moss.model.AnalysisRequest
-import org.flaxo.moss.model.AnalysisResult
+import io.gitplag.gitplagapi.model.input.AnalysisRequest
+import io.gitplag.gitplagapi.model.output.analysis.AnalysisResult
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.POST
