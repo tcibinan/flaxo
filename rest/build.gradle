@@ -39,3 +39,19 @@ dependencies {
     // database migrations
     compile "org.flywaydb:flyway-core:5.2.4"
 }
+
+bootJar {
+    // This files should be included in jar because they are used to generate courses environment.
+    from ((Object) project(':cpp').sourceSets.main.resources) {
+        into 'bundle/'
+    }
+    from (file("$rootDir/gradlew")) {
+        into 'bundle/'
+    }
+    from (file("$rootDir/gradlew.bat")) {
+        into 'bundle/'
+    }
+    from (file("$rootDir/gradle")) {
+        into 'bundle/gradle'
+    }
+}

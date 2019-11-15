@@ -12,4 +12,6 @@ class ByteArrayEnvironmentFile(override var path: Path,
 
     constructor(path: String, binaryContent: ByteArray) : this(Paths.get(path), binaryContent)
 
+    override fun toLocalFile(directory: Path): LocalFile =
+            LazyLocalEnvironmentFile(path, directory, binaryContent.inputStream())
 }

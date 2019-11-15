@@ -1,6 +1,8 @@
 package org.flaxo.gradle
 
 import org.flaxo.common.env.file.EnvironmentFile
+import org.flaxo.common.env.file.LazyLocalEnvironmentFile
+import org.flaxo.common.env.file.LocalFile
 import java.nio.file.Path
 import java.nio.file.Paths
 
@@ -34,5 +36,8 @@ internal class GradleSettingsFile(private val plugins: Set<GradlePlugin>,
                 nesting + 1)
         put("}")
     }
+
+    override fun toLocalFile(directory: Path): LocalFile =
+            LazyLocalEnvironmentFile(path, directory, content.byteInputStream())
 
 }

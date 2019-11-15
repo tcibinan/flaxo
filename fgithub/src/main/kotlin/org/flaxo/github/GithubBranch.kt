@@ -24,11 +24,7 @@ class GithubBranch(override val name: String,
     }
 
     private fun createContent(file: EnvironmentFile, commitMessage: String): RawGithubContentUpdateResponse =
-            when (file) {
-                is ByteArrayEnvironmentFile ->
-                    rawRepository.createContent(file.binaryContent, commitMessage, file.path.toString(), name)
-                else -> rawRepository.createContent(file.content, commitMessage, file.path.toString(), name)
-            }
+            rawRepository.createContent(file.binaryContent, commitMessage, file.path.toString(), name)
 
     override fun update(file: EnvironmentFile, commitMessage: String): Commit {
         val content = updateContent(file, commitMessage)
