@@ -1,5 +1,6 @@
 package org.flaxo.frontend.component.report
 
+import org.flaxo.common.data.DateTime
 import org.flaxo.common.data.PlagiarismMatch
 import org.flaxo.common.data.Solution
 import org.flaxo.common.data.Task
@@ -18,19 +19,31 @@ fun RBuilder.plagiarismReport(task: Task, solution: Solution) {
                 val reportIsPositive = matches.all { it.percentage < PLAGIARISM_THRESHOLD }
                 val highestMatchPercentage = matches.map { it.percentage }.max()
 
-                if (matches.isNotEmpty()) {
-                    span(classes = if (reportIsPositive) "valid-plagiarism-report" else "invalid-plagiarism-report") {
-                        +"${matches.size}  "
-                        i(classes = "material-icons plagiarism-marker") { +"remove_red_eye" }
-                        +" ($highestMatchPercentage%)"
+                if (latestCommitDatetime(solution) >= report.date) {
+                    span(classes = "outdated-plagiarism-report") {
+                        i(classes = "material-icons plagiarism-marker") { +"visibility_off" }
                     }
                 } else {
-                    span(classes = "valid-plagiarism-report") {
-                        i(classes = "material-icons plagiarism-marker") { +"visibility_off" }
+                    if (matches.isNotEmpty()) {
+                        span(classes = if (reportIsPositive) "valid-plagiarism-report" else "invalid-plagiarism-report") {
+                            +"${matches.size}  "
+                            i(classes = "material-icons plagiarism-marker") { +"remove_red_eye" }
+                            +" ($highestMatchPercentage%)"
+                        }
+                    } else {
+                        span(classes = "valid-plagiarism-report") {
+                            i(classes = "material-icons plagiarism-marker") { +"visibility_off" }
+                        }
                     }
                 }
             }
             ?: i {}
+}
+
+private fun latestCommitDatetime(solution: Solution): DateTime {
+    return solution.commits.maxBy { it.date ?: DateTime.min() }
+            ?.date
+            ?: DateTime.min()
 }
 
 private val PlagiarismMatch.students: List<String>

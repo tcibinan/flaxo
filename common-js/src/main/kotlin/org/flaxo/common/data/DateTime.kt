@@ -29,6 +29,10 @@ actual class DateTime private constructor(@Transient private val date: Date = Da
         actual fun fromDateTimeString(string: String): DateTime = DateTime(Date(string))
 
         actual fun now(): DateTime = DateTime(Date())
+
+        actual fun min(): DateTime = DateTime(Date(-8640000000000000))
+
+        actual fun max(): DateTime = DateTime(Date(8640000000000000))
     }
 
     actual fun toDateTimeString(): String = date.toISOString()
