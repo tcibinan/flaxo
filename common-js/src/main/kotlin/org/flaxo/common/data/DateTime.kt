@@ -37,10 +37,15 @@ actual class DateTime private constructor(@Transient private val date: Date = Da
     actual operator fun compareTo(other: DateTime): Int = date.getTime().compareTo(other.date.getTime())
 
     /**
-     * Returns a number of days between this and the [other] datetime.
+     * Returns a number of days between this and the [other] datetimes.
      */
     fun daysUntil(other: DateTime): Int =
             floor(((other.date.getTime() - this.date.getTime()) / MILLIS_IN_DAY)).roundToInt()
+
+    /**
+     * Returns a number of days between [other] and this datetimes.
+     */
+    fun daysAfter(other: DateTime): Int = other.daysUntil(this)
 
     /**
      * Converts current date time to a human readable format string.
