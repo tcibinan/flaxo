@@ -57,16 +57,22 @@ class SimpleMossSubmissionsExtractor(private val githubManager: GithubManager) :
                 completedTaskStudents
                         .flatMap { student ->
                             logger.info("Aggregating student task solution ${task.friendlyId}/$student")
-                            val branch = git.getRepository(student, course.name)
-                                    .branches()
-                                    .find { it.name == task.branch }
-                            val studentFilesDirectory = submissionsDirectory.resolve(task.branch).resolve(student)
-                            val files = branch?.files().orEmpty()
-                                    .filter { it.suits(language) }
-                                    .map { it.toLocalFile(studentFilesDirectory) }
-                            logger.info("Student task solution ${task.friendlyId}/$student with ${files.size} files " +
-                                    "was aggregated to $studentFilesDirectory")
-                            files
+                            try {
+                                val branch = git.getRepository(student, course.name)
+                                        .branches()
+                                        .find { it.name == task.branch }
+                                val studentFilesDirectory = submissionsDirectory.resolve(task.branch).resolve(student)
+                                val files = branch?.files().orEmpty()
+                                        .filter { it.suits(language) }
+                                        .map { it.toLocalFile(studentFilesDirectory) }
+                                logger.info("Student task solution ${task.friendlyId}/$student with ${files.size} files " +
+                                        "was aggregated to $studentFilesDirectory")
+                                files
+                            } catch (e: Exception) {
+                                logger.error("Student task solution ${task.friendlyId}/$student aggregation has failed. " +
+                                        "The student solution will be skipped", e)
+                                emptyList<LocalFile>()
+                            }
                         }
 
         logger.info("Task ${task.friendlyId} solutions were aggregated successfully")
