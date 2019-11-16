@@ -7,7 +7,7 @@ import org.amshove.kluent.shouldBeTrue
 import org.amshove.kluent.shouldEqual
 import org.flaxo.common.env.file.EnvironmentFile
 import org.flaxo.common.env.file.LocalFile
-import org.flaxo.common.env.file.RemoteEnvironmentFile
+import org.flaxo.common.env.file.LazyEnvironmentFile
 import org.flaxo.git.Branch
 import org.flaxo.git.Git
 import org.flaxo.git.Repository
@@ -147,7 +147,7 @@ private fun branch(branchName: String, vararg files: EnvironmentFile): Branch = 
 }
 
 private fun file(filePath: String) =
-        RemoteEnvironmentFile(Paths.get(filePath), "files content".byteInputStream())
+        LazyEnvironmentFile(Paths.get(filePath)) { "files content".byteInputStream() }
 
 private fun filesWithFileNameOf(filePath: String): (EnvironmentFile) -> Boolean = {
     it.fileName == Paths.get(filePath).fileName.toString()

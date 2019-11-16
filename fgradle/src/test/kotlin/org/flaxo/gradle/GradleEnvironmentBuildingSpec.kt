@@ -5,6 +5,7 @@ import com.nhaarman.mockito_kotlin.mock
 import org.flaxo.common.Framework
 import org.flaxo.common.Language
 import org.flaxo.common.cmd.CmdExecutor
+import org.flaxo.common.deleteDirectoryRecursively
 import org.flaxo.common.env.EnvironmentSupplier
 import org.flaxo.common.env.SimpleEnvironment
 import org.jetbrains.spek.api.dsl.describe
@@ -18,8 +19,6 @@ import java.nio.file.Path
 
 object GradleEnvironmentBuildingSpec : SubjectSpek<EnvironmentSupplier>({
 
-    val gradleBuildFile = "build.gradle"
-    val gradleSettingsFile = "settings.gradle"
     val supportedLanguages: Set<Language> = setOf(Language.Java, Language.Kotlin)
 
     val instrumentsCombinations: Array<Data3<Language, Language, Framework, Unit>> =
@@ -58,20 +57,17 @@ object GradleEnvironmentBuildingSpec : SubjectSpek<EnvironmentSupplier>({
                     testingFramework = framework
             ).environment()
 
-            val buildFile = environment.file(gradleBuildFile)
-                    ?: throw GradleException("$gradleBuildFile wasn't found in the environment")
-
-            val settingsFile = environment.file(gradleSettingsFile)
-                    ?: throw GradleException("$gradleSettingsFile wasn't found in the environment")
-
             it("should create buildable project") {
                 val tempDir: Path = Files.createTempDirectory("$language.$testingLanguage.$framework")
-
-                CmdExecutor.within(tempDir).execute("touch", gradleBuildFile)
-                tempDir.resolve(gradleBuildFile).fillWith(buildFile.content)
-                CmdExecutor.within(tempDir).execute("touch", gradleSettingsFile)
-                tempDir.resolve(gradleSettingsFile).fillWith(settingsFile.content)
-                GradleCmdExecutor.within(tempDir).build()
+                try {
+                    environment.files().forEach { file -> file.toLocalFile(tempDir).flush() }
+                    with(CmdExecutor.within(tempDir)) {
+                        execute("chmod", "+x", "gradlew")
+                        execute("./gradlew", "build")
+                    }
+                } finally {
+                    deleteDirectoryRecursively(tempDir)
+                }
             }
         }
     }

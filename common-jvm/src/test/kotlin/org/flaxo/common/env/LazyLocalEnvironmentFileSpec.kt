@@ -24,7 +24,7 @@ object LazyLocalEnvironmentFileSpec : Spek({
         afterGroup { deleteDirectoryRecursively(localDirectory) }
 
         on("initialization") {
-            LazyLocalEnvironmentFile(relativePath, localDirectory, content.byteInputStream())
+            LazyLocalEnvironmentFile(relativePath, localDirectory) {content.byteInputStream()}
 
             it("should not create local file") {
                 Files.exists(localPath).shouldNotBeNull()
@@ -32,7 +32,7 @@ object LazyLocalEnvironmentFileSpec : Spek({
         }
 
         on("getting relative path") {
-            val file = LazyLocalEnvironmentFile(relativePath, localDirectory, content.byteInputStream())
+            val file = LazyLocalEnvironmentFile(relativePath, localDirectory) {content.byteInputStream()}
             val storedRelativePath = file.path
 
             it("should not create local file") {
@@ -45,7 +45,7 @@ object LazyLocalEnvironmentFileSpec : Spek({
         }
 
         on("getting local path") {
-            val file = LazyLocalEnvironmentFile(relativePath, localDirectory, content.byteInputStream())
+            val file = LazyLocalEnvironmentFile(relativePath, localDirectory) {content.byteInputStream()}
             val generatedLocalPath = file.localPath
 
             it("should generate local path from the given local directory and relative file path") {
@@ -62,7 +62,7 @@ object LazyLocalEnvironmentFileSpec : Spek({
         }
 
         on("getting content") {
-            val file = LazyLocalEnvironmentFile(relativePath, localDirectory, content.byteInputStream())
+            val file = LazyLocalEnvironmentFile(relativePath, localDirectory) {content.byteInputStream()}
             file.content
 
             it("should create file by the local path") {
@@ -75,7 +75,7 @@ object LazyLocalEnvironmentFileSpec : Spek({
         }
 
         on("getting binary content") {
-            val file = LazyLocalEnvironmentFile(relativePath, localDirectory, content.byteInputStream())
+            val file = LazyLocalEnvironmentFile(relativePath, localDirectory) {content.byteInputStream()}
             file.binaryContent
 
             it("should create file by the local path") {

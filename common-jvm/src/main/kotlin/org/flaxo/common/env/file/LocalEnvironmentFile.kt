@@ -13,14 +13,11 @@ class LocalEnvironmentFile(override val localPath: Path,
 
     constructor(localPath: String) : this(Paths.get(localPath))
 
-    override val content: String by lazy(LazyThreadSafetyMode.NONE) {
-        Files.readAllLines(localPath).joinToString("\n")
+    override val binaryContent: ByteArray by lazy { Files.readAllBytes(localPath) }
+
+    override fun toLocalFile(directory: Path): LocalFile = LazyLocalEnvironmentFile(path, directory) {
+        Files.newInputStream(localPath)
     }
 
-    override fun toLocalFile(directory: Path): LocalFile {
-        val newLocalPath = directory.resolve(path)
-        Files.createDirectories(newLocalPath.parent)
-        Files.copy(localPath, newLocalPath)
-        return LocalEnvironmentFile(newLocalPath, path)
-    }
+    override fun flush(): LocalFile = this
 }

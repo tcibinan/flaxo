@@ -61,12 +61,14 @@ object CppBashEnvironmentSpec : Spek({
         }
 
         on("building project") {
-            environment.files().forEach { it.toLocalFile(tempBuildDirectory) }
+            environment.files().forEach { it.toLocalFile(tempBuildDirectory).flush() }
 
-            val testOutput = CmdExecutor.within(tempBuildDirectory)
-                    .execute("./run_tests.sh", "plus", "minus")
-                    .drop(2)
-                    .joinToString("\n")
+            val testOutput = with(CmdExecutor.within(tempBuildDirectory)) {
+                execute("chmod", "+x", "run_tests.sh", "run_test.sh")
+                execute("./run_tests.sh", "plus", "minus")
+                        .drop(2)
+                        .joinToString("\n")
+            }
 
             it("should return successful log") {
                 testOutput shouldEqual """
