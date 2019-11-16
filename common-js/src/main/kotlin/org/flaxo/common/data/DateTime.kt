@@ -13,7 +13,8 @@ private const val MILLIS_IN_DAY = 1000 * 60 * 60 * 24
 /**
  * JavaScript implementation of a multiplatform datetime.
  */
-actual class DateTime private constructor(@Transient private val date: Date = Date()) {
+actual class DateTime private constructor(@Transient private val date: Date = Date())
+    : Comparable<DateTime> {
 
     /**
      * Serialization methods has to be overridden explicitly due to a serialization compiler bug.
@@ -34,7 +35,7 @@ actual class DateTime private constructor(@Transient private val date: Date = Da
 
     actual fun toDateString(): String = toDateTimeString().substring(0, 10)
 
-    actual operator fun compareTo(other: DateTime): Int = date.getTime().compareTo(other.date.getTime())
+    actual override operator fun compareTo(other: DateTime): Int = date.getTime().compareTo(other.date.getTime())
 
     /**
      * Returns a number of days between this and the [other] datetimes.

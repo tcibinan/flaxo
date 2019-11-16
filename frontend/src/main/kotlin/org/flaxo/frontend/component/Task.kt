@@ -70,7 +70,7 @@ private class TaskComponent(props: TaskProps) : RComponent<TaskProps, TaskState>
                     div(classes = "card-controls") {
                         a(classes = "card-link", href = props.task.url) { +"Git branch" }
                         props.task.plagiarismReports
-                                .lastOrNull()
+                                .maxBy { it.date }
                                 ?.also {
                                     a(classes = "card-link rows-link", href = it.url) {
                                         +"Plagiarism report"
@@ -136,15 +136,16 @@ private class TaskComponent(props: TaskProps) : RComponent<TaskProps, TaskState>
     private fun RBuilder.taskStatus() {
         val now = DateTime.now()
         val deadline = props.task.deadline
+        val latestPlagiarismAnalysisDatetime = props.task.plagiarismReports.maxBy { it.date }?.date
         small(classes = "text-muted task-deadline") {
             if (deadline != null) {
                 deadlineIndication(now, deadline)
-                props.task.plagiarismReports.lastOrNull()?.date?.also { latestAnalysisDate ->
+                latestPlagiarismAnalysisDatetime?.also { latestAnalysisDate ->
                     +", "
                     latestPlagiarismAnalysisIndication(now, latestAnalysisDate, heading = false)
                 }
             } else {
-                props.task.plagiarismReports.lastOrNull()?.date?.also { latestAnalysisDate ->
+                latestPlagiarismAnalysisDatetime?.also { latestAnalysisDate ->
                     latestPlagiarismAnalysisIndication(now, latestAnalysisDate)
                 }
             }
