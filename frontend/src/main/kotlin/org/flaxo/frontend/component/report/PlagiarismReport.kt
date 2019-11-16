@@ -11,7 +11,7 @@ private const val PLAGIARISM_THRESHOLD = 75
 
 fun RBuilder.plagiarismReport(task: Task, solution: Solution) {
     task.plagiarismReports
-            .lastOrNull()
+            .maxBy { it.date }
             ?.takeIf { solution.commits.any() }
             ?.also { report ->
                 val matches = report.matches.filter { match -> solution.student in match.students }

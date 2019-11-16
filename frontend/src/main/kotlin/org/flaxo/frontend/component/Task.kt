@@ -66,11 +66,11 @@ private class TaskComponent(props: TaskProps) : RComponent<TaskProps, TaskState>
             div(classes = "card") {
                 div(classes = "card-body") {
                     h5(classes = "card-title") { +props.task.branch }
-                    deadlineIndication()
+                    taskStatus()
                     div(classes = "card-controls") {
                         a(classes = "card-link", href = props.task.url) { +"Git branch" }
                         props.task.plagiarismReports
-                                .lastOrNull()
+                                .maxBy { it.date }
                                 ?.also {
                                     a(classes = "card-link rows-link", href = it.url) {
                                         +"Plagiarism report"
@@ -133,25 +133,51 @@ private class TaskComponent(props: TaskProps) : RComponent<TaskProps, TaskState>
         }
     }
 
-    private fun RBuilder.deadlineIndication() {
-        props.task.deadline?.also { deadline ->
-            val now = DateTime.now()
-            small(classes = "text-muted task-deadline") {
-                if (now < deadline) {
-                    val days = now.daysUntil(deadline)
-                    when {
-                        days > 1 -> +"Deadline in $days days"
-                        days == 1 -> +"Deadline is tomorrow"
-                        else -> +"Deadline is today"
-                    }
-                } else {
-                    val days = deadline.daysUntil(now)
-                    when {
-                        days >= 1 -> +"Deadline was $days days ago"
-                        else -> +"Deadline was yesterday"
-                    }
+    private fun RBuilder.taskStatus() {
+        val now = DateTime.now()
+        val deadline = props.task.deadline
+        val latestPlagiarismAnalysisDatetime = props.task.plagiarismReports.maxBy { it.date }?.date
+        small(classes = "text-muted task-deadline") {
+            if (deadline != null) {
+                deadlineIndication(now, deadline)
+                latestPlagiarismAnalysisDatetime?.also { latestAnalysisDate ->
+                    +", "
+                    latestPlagiarismAnalysisIndication(now, latestAnalysisDate, heading = false)
+                }
+            } else {
+                latestPlagiarismAnalysisDatetime?.also { latestAnalysisDate ->
+                    latestPlagiarismAnalysisIndication(now, latestAnalysisDate)
                 }
             }
+        }
+    }
+
+    private fun RBuilder.deadlineIndication(now: DateTime, date: DateTime) {
+        +if (now < date) {
+            val days = now.daysUntil(date)
+            when {
+                days > 1 -> "Deadline in $days days"
+                days == 1 -> "Deadline is tomorrow"
+                else -> "Deadline is today"
+            }
+        } else {
+            val days = date.daysUntil(now)
+            when {
+                days >= 1 -> "Deadline was $days days ago"
+                else -> "Deadline was yesterday"
+            }
+        }
+    }
+
+    private fun RBuilder.latestPlagiarismAnalysisIndication(now: DateTime,
+                                                            date: DateTime,
+                                                            heading: Boolean = true) {
+        val days = now.daysAfter(date)
+        +if (heading) "P" else "p"
+        +when {
+            days > 1 -> "lagiarism analysis was $days days ago"
+            days == 1 -> "lagiarism analysis was yesterday"
+            else -> "lagiarism analysis was today"
         }
     }
 
