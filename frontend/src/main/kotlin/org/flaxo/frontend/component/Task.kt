@@ -179,7 +179,15 @@ private class TaskComponent(props: TaskProps) : RComponent<TaskProps, TaskState>
             days == 1 -> "lagiarism analysis was yesterday"
             else -> "lagiarism analysis was today"
         }
+        if (anyCommitSince(date)) {
+            +" and new commits were added since"
+        }
     }
+
+    private fun anyCommitSince(date: DateTime): Boolean = props.task.solutions
+            .mapNotNull { solution -> solution.commits.maxBy { it.date ?: DateTime.min() } }
+            .mapNotNull { commit -> commit.date }
+            .any { it > date }
 
     private suspend fun analysePlagiarism() {
         credentials?.also {

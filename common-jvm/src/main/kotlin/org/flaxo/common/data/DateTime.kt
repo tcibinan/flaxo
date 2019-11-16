@@ -25,6 +25,10 @@ actual class DateTime(@Transient private val dateTime: LocalDateTime = LocalDate
         actual fun fromDateTimeString(string: String): DateTime = DateTime(LocalDateTime.parse(string))
 
         actual fun now(): DateTime = DateTime(LocalDateTime.now())
+
+        actual fun min(): DateTime = DateTime(LocalDateTime.MIN)
+
+        actual fun max(): DateTime = DateTime(LocalDateTime.MAX)
     }
 
     @JsonValue

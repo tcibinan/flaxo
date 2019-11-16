@@ -17,6 +17,16 @@ expect class DateTime {
          * Returns current date time instance.
          */
         fun now(): DateTime
+
+        /**
+         * Returns minimal allowed date time instance.
+         */
+        fun min(): DateTime
+
+        /**
+         * Returns maximal allowed date time instance.
+         */
+        fun max(): DateTime
     }
 
     /**
