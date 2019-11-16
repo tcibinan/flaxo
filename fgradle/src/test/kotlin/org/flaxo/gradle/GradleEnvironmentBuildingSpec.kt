@@ -60,7 +60,7 @@ object GradleEnvironmentBuildingSpec : SubjectSpek<EnvironmentSupplier>({
             it("should create buildable project") {
                 val tempDir: Path = Files.createTempDirectory("$language.$testingLanguage.$framework")
                 try {
-                    environment.files().forEach { file -> file.toLocalFile(tempDir).localPath }
+                    environment.files().forEach { file -> file.toLocalFile(tempDir).flush() }
                     with(CmdExecutor.within(tempDir)) {
                         execute("chmod", "+x", "gradlew")
                         execute("./gradlew", "build")

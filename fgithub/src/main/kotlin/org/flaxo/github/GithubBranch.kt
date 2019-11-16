@@ -1,8 +1,7 @@
 package org.flaxo.github
 
-import org.flaxo.common.env.file.ByteArrayEnvironmentFile
 import org.flaxo.common.env.file.EnvironmentFile
-import org.flaxo.common.env.file.RemoteEnvironmentFile
+import org.flaxo.common.env.file.LazyEnvironmentFile
 import org.flaxo.git.Branch
 import org.flaxo.git.Commit
 import java.nio.file.Paths
@@ -31,13 +30,9 @@ class GithubBranch(override val name: String,
         return GithubCommit(content.commit.shA1, this, github)
     }
 
-    private fun updateContent(file: EnvironmentFile, commitMessage: String): RawGithubContentUpdateResponse {
-        val content = rawRepository.getFileContent(file.path.toString(), name)
-        return when (file) {
-            is ByteArrayEnvironmentFile -> content.update(file.binaryContent, commitMessage, name)
-            else -> content.update(file.content, commitMessage, name)
-        }
-    }
+    private fun updateContent(file: EnvironmentFile, commitMessage: String): RawGithubContentUpdateResponse =
+            rawRepository.getFileContent(file.path.toString(), name)
+                    .update(file.binaryContent, commitMessage, name)
 
     override fun createSubBranch(subBranchName: String): Branch {
         val shA1 = rawRepository.getBranch(name).shA1
@@ -54,7 +49,7 @@ class GithubBranch(override val name: String,
             rawRepository.getTreeRecursive(name, 1)
                     .tree
                     .filter { it.type == "blob" }
-                    .map { RemoteEnvironmentFile(Paths.get(it.path), it.readAsBlob()) }
+                    .map { LazyEnvironmentFile(Paths.get(it.path)) { it.readAsBlob() } }
 
     override fun createPullRequestTo(targetBranch: Branch) {
         client.getUser(targetBranch.repository.owner)

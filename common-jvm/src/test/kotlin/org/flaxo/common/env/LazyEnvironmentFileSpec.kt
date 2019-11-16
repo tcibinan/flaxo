@@ -4,7 +4,7 @@ import org.amshove.kluent.shouldBeTrue
 import org.amshove.kluent.shouldEqual
 import org.flaxo.common.deleteDirectoryRecursively
 import org.flaxo.common.env.file.LazyLocalEnvironmentFile
-import org.flaxo.common.env.file.RemoteEnvironmentFile
+import org.flaxo.common.env.file.LazyEnvironmentFile
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
@@ -12,17 +12,17 @@ import org.jetbrains.spek.api.dsl.on
 import java.nio.file.Files
 import java.nio.file.Paths
 
-object RemoteEnvironmentFileSpec : Spek({
-    val localDirectory = Files.createTempDirectory("remote-environment-file-spec")
+object LazyEnvironmentFileSpec : Spek({
+    val localDirectory = Files.createTempDirectory("lazy-environment-file-spec")
     val path = Paths.get("some/path/to/file")
     val content = "content"
 
-    describe("remote environment file") {
+    describe("lazy environment file") {
 
         afterGroup { deleteDirectoryRecursively(localDirectory) }
 
         on("getting content") {
-            val file = RemoteEnvironmentFile(path, content.byteInputStream())
+            val file = LazyEnvironmentFile(path) { content.byteInputStream() }
 
             it("should return original content") {
                 file.content shouldEqual content
@@ -30,7 +30,7 @@ object RemoteEnvironmentFileSpec : Spek({
         }
 
         on("getting binary content") {
-            val file = RemoteEnvironmentFile(path, content.byteInputStream())
+            val file = LazyEnvironmentFile(path) { content.byteInputStream() }
 
             it("should return original binary content") {
                 file.binaryContent shouldEqual content.toByteArray()
@@ -38,7 +38,7 @@ object RemoteEnvironmentFileSpec : Spek({
         }
 
         on("converting to local path") {
-            val file = RemoteEnvironmentFile(path, content.byteInputStream())
+            val file = LazyEnvironmentFile(path) { content.byteInputStream() }
             val localFile = file.toLocalFile(localDirectory)
 
             it("should return an instance of LazyLocalEnvironmentFile") {

@@ -36,8 +36,6 @@ interface EnvironmentFile  {
     /**
      * Converts environment file to a local file.
      */
-    fun toLocalFile(directory: Path): LocalFile = throw UnsupportedOperationException(
-            "Instances of ${this::class.simpleName} can't be transformed to a local file."
-    )
+    fun toLocalFile(directory: Path): LocalFile
 
 }

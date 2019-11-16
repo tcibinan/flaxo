@@ -33,6 +33,7 @@ internal class GradleBuildFile(private val plugins: Set<GradlePlugin>,
         put("id \"${plugin.id}\" $versionSubstring")
     }
 
-    override fun toLocalFile(directory: Path): LocalFile =
-            LazyLocalEnvironmentFile(path, directory, content.byteInputStream())
+    override fun toLocalFile(directory: Path): LocalFile = LazyLocalEnvironmentFile(path, directory) {
+        content.byteInputStream()
+    }
 }

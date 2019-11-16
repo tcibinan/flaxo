@@ -13,12 +13,10 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 
-typealias NoSuchFileException = java.nio.file.NoSuchFileException
-
-object SimpleEnvironmentFileSpec : Spek({
+object LocalEnvironmentFileSpec : Spek({
     val content = "content"
     val nonExistingPath: Path = Paths.get("/non/existing/path")
-    val existingPath = Files.createTempFile("simple-environment-file", "spec")
+    val existingPath = Files.createTempFile("local-environment-file", "spec")
     Files.copy(content.byteInputStream(), existingPath, StandardCopyOption.REPLACE_EXISTING)
 
     describe("simple environment file based on non-existing path") {
@@ -27,7 +25,7 @@ object SimpleEnvironmentFileSpec : Spek({
             Files.deleteIfExists(nonExistingPath)
 
             it("should not fail") {
-                { LocalEnvironmentFile(nonExistingPath) } shouldNotThrow NoSuchFileException::class
+                { LocalEnvironmentFile(nonExistingPath) } shouldNotThrow java.nio.file.NoSuchFileException::class
             }
 
         }
@@ -37,7 +35,7 @@ object SimpleEnvironmentFileSpec : Spek({
             val file = LocalEnvironmentFile(nonExistingPath)
 
             it("should fail") {
-                { file.content } shouldThrow NoSuchFileException::class
+                { file.content } shouldThrow java.nio.file.NoSuchFileException::class
             }
         }
 
@@ -46,7 +44,7 @@ object SimpleEnvironmentFileSpec : Spek({
             val file = LocalEnvironmentFile(nonExistingPath)
 
             it("should fail") {
-                { file.binaryContent } shouldThrow NoSuchFileException::class
+                { file.binaryContent } shouldThrow java.nio.file.NoSuchFileException::class
             }
         }
     }

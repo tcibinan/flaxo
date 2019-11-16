@@ -8,7 +8,7 @@ import java.nio.file.Path
  *
  * The [classpathPath] can be a relative path to resources directory or a relative path within jar archive.
  */
-open class ClasspathEnvironmentFile(private val classpathPath: Path,
+class ClasspathEnvironmentFile(private val classpathPath: Path,
                                     override val path: Path = classpathPath) : EnvironmentFile {
 
     override val binaryContent: ByteArray by lazy {
@@ -17,6 +17,7 @@ open class ClasspathEnvironmentFile(private val classpathPath: Path,
                 ?: throw NotFoundException("Bundled path $classpathPath doesn't exist.")
     }
 
-    override fun toLocalFile(directory: Path): LocalFile =
-            LazyLocalEnvironmentFile(path, directory, binaryContent.inputStream())
+    override fun toLocalFile(directory: Path): LocalFile = LazyLocalEnvironmentFile(path, directory) {
+        binaryContent.inputStream()
+    }
 }

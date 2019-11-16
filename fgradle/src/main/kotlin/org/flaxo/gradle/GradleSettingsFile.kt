@@ -37,7 +37,7 @@ internal class GradleSettingsFile(private val plugins: Set<GradlePlugin>,
         put("}")
     }
 
-    override fun toLocalFile(directory: Path): LocalFile =
-            LazyLocalEnvironmentFile(path, directory, content.byteInputStream())
-
+    override fun toLocalFile(directory: Path): LocalFile = LazyLocalEnvironmentFile(path, directory) {
+        content.byteInputStream()
+    }
 }
