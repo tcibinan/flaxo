@@ -1,9 +1,11 @@
 package org.flaxo.github
 
+import org.apache.logging.log4j.LogManager
 import org.flaxo.common.env.file.EnvironmentFile
 import org.flaxo.common.env.file.LazyEnvironmentFile
 import org.flaxo.git.Branch
 import org.flaxo.git.Commit
+import java.nio.file.Path
 import java.nio.file.Paths
 
 /**
@@ -13,6 +15,10 @@ class GithubBranch(override val name: String,
                    override val repository: GithubRepository,
                    private val github: Github
 ) : Branch {
+
+    companion object {
+        private val logger = LogManager.getLogger(GithubBranch::class.java)
+    }
 
     val client: RawGithub by lazy { github.client }
     val rawRepository: RawGithubRepository by lazy { client.repository(repository.owner, repository.name) }
@@ -49,7 +55,15 @@ class GithubBranch(override val name: String,
             rawRepository.getTreeRecursive(name, 1)
                     .tree
                     .filter { it.type == "blob" }
-                    .map { LazyEnvironmentFile(Paths.get(it.path)) { it.readAsBlob() } }
+                    .mapNotNull { entry -> path(entry.path)?.let { LazyEnvironmentFile(it) { entry.readAsBlob() } } }
+
+    private fun path(path: String): Path? =
+            try {
+                Paths.get(path)
+            } catch (e: Exception) {
+                logger.error("Invalid file system path $path. It will be skipped", e)
+                null
+            }
 
     override fun createPullRequestTo(targetBranch: Branch) {
         client.getUser(targetBranch.repository.owner)
@@ -61,5 +75,4 @@ class GithubBranch(override val name: String,
                         ""
                 )
     }
-
 }
