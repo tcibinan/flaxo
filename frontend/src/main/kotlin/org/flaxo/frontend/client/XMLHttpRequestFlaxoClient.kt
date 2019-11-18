@@ -164,12 +164,13 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
                                       courseName: String,
                                       task: String,
                                       scores: Map<String, Int>
-    ): Unit =
+    ): List<Solution> =
             post {
                 apiMethod = "/task/update/scores"
                 params = mapOf(COURSE_NAME to courseName, TASK_BRANCH to task)
                 creds = credentials
                 body = json.stringify((String.serializer() to Int.serializer()).map, scores)
+                onSuccess = { response -> json.parse(Solution.serializer().list, response) }
                 errorMessage = "Task scores updating failed."
             }
 

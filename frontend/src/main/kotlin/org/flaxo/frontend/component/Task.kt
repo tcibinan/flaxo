@@ -207,11 +207,12 @@ private class TaskComponent(props: TaskProps) : RComponent<TaskProps, TaskState>
                 ?.takeIf { state.scores.isNotEmpty() }
                 ?.also { credentials ->
                     try {
-                        flaxoClient.updateScores(credentials,
+                        val solutions = flaxoClient.updateScores(credentials,
                                 courseName = props.course.name,
                                 task = props.task.branch,
                                 scores = state.scores)
                         setState { scores = emptyMap() }
+                        props.onUpdate(props.task.copy(solutions = solutions))
                         Notifications.success("Task results were saved")
                     } catch (e: FlaxoHttpException) {
                         console.log(e)

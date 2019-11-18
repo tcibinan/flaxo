@@ -86,7 +86,11 @@ interface FlaxoClient {
     /**
      * Updates [scores] of the [task] of the course with [courseName].
      */
-    suspend fun updateScores(credentials: Credentials, courseName: String, task: String, scores: Map<String, Int>)
+    suspend fun updateScores(credentials: Credentials,
+                             courseName: String,
+                             task: String,
+                             scores: Map<String, Int>
+    ): List<Solution>
 
     /**
      * Adds a [codacyToken] to a user account.
