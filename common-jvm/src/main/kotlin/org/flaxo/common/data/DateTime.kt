@@ -10,7 +10,7 @@ import java.time.LocalDateTime
 /**
  * JVM implementation of a multiplatform datetime.
  */
-actual class DateTime(@Transient private val dateTime: LocalDateTime = LocalDateTime.now()) {
+actual class DateTime(@Transient private val dateTime: LocalDateTime = LocalDateTime.now()): Comparable<DateTime> {
 
     /**
      * Serialization methods has to be overridden explicitly due to a serialization compiler bug.
@@ -36,5 +36,5 @@ actual class DateTime(@Transient private val dateTime: LocalDateTime = LocalDate
 
     actual fun toDateString(): String = toDateTimeString().substring(0, 10)
 
-    actual operator fun compareTo(other: DateTime): Int = dateTime.compareTo(other.dateTime)
+    actual override operator fun compareTo(other: DateTime): Int = dateTime.compareTo(other.dateTime)
 }

@@ -12,6 +12,8 @@ import org.flaxo.frontend.Notifications
 import org.flaxo.frontend.OnCourseChange
 import org.flaxo.frontend.client.FlaxoClient
 import org.flaxo.frontend.client.FlaxoHttpException
+import org.flaxo.frontend.component.bootstrap.flagComponent
+import org.flaxo.frontend.component.bootstrap.inputComponent
 import org.flaxo.frontend.component.bootstrap.selectComponent
 import org.flaxo.frontend.credentials
 import react.RBuilder
@@ -43,6 +45,7 @@ private class CourseSettingsComponent(props: CourseSettingsProps)
     private val courseLanguageSetting = "courseLanguageSetting-" + props.course.id
     private val courseTestingLanguageSetting = "courseTestingLanguageSetting-" + props.course.id
     private val courseTestingFrameworkSetting = "courseTestingFrameworkSetting-" + props.course.id
+    private val scoreChangeNotificationTemplateSetting = "scoreMessageTemplateSetting-" + props.course.id
 
     init {
         flaxoClient = Container.flaxoClient
@@ -55,6 +58,8 @@ private class CourseSettingsComponent(props: CourseSettingsProps)
                 languageSelect()
                 testingLanguageSelect()
                 testingFrameworkSelect()
+                scoreChangeNotificationFlag()
+                scoreChangeNotificationTemplateInput()
             }
             button(classes = "btn btn-primary") {
                 attrs {
@@ -99,6 +104,31 @@ private class CourseSettingsComponent(props: CourseSettingsProps)
                 options = Framework.values().map { it.alias },
                 emptyOption = true,
                 onUpdate = { setState { settings = settings.copy(testingFramework = it.ifBlank { null }) } }
+        )
+    }
+
+    private fun RBuilder.scoreChangeNotificationFlag() {
+        flagComponent(inputId = scoreChangeNotificationTemplateSetting,
+                name = "Enables notifications on score change",
+                description = "Notifications will be sent to students on solutions score change.",
+                default = state.settings.notificationOnScoreChange,
+                onUpdate = { setState { settings = settings.copy(notificationOnScoreChange = it) } }
+        )
+    }
+
+    private fun RBuilder.scoreChangeNotificationTemplateInput() {
+        inputComponent(inputId = scoreChangeNotificationTemplateSetting,
+                name = "Score change notification template",
+                description = "Template of the notification that will be sent to students on solutions score change. " +
+                        "Use any Markdown constructions and a single %s to inject score to notification. " +
+                        "Leave template blank to use a default one.",
+                default = state.settings.scoreChangeNotificationTemplate,
+                disabled = !state.settings.notificationOnScoreChange,
+                onUpdate = {
+                    setState {
+                        settings = settings.copy(scoreChangeNotificationTemplate = it.ifBlank { null })
+                    }
+                }
         )
     }
 

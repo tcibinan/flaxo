@@ -8,8 +8,12 @@ import org.flaxo.git.PullRequestReviewStatus
 import org.flaxo.model.DataManager
 import org.flaxo.model.SolutionView
 import org.flaxo.model.TaskView
+import org.flaxo.model.data.Course
+import org.flaxo.model.data.Solution
 import org.flaxo.model.data.Task
 import org.flaxo.rest.manager.github.GithubManager
+import org.flaxo.rest.manager.notification.NotificationManager
+import org.flaxo.rest.manager.notification.SolutionNotification
 import org.flaxo.rest.manager.response.Response
 import org.flaxo.rest.manager.response.ResponseManager
 import org.springframework.security.access.prepost.PreAuthorize
@@ -30,7 +34,8 @@ import java.time.LocalTime
 @RequestMapping("/rest/task")
 class TaskController(private val dataManager: DataManager,
                      private val githubManager: GithubManager,
-                     private val responseManager: ResponseManager
+                     private val responseManager: ResponseManager,
+                     private val notificationManager: NotificationManager
 ) {
 
     private val logger = LogManager.getLogger(TaskController::class.java)
@@ -99,7 +104,7 @@ class TaskController(private val dataManager: DataManager,
                 .find { it.branch == taskBranch }
                 ?: return responseManager.taskNotFound(principal.name, courseName, taskBranch)
 
-        val updatedSolutions: List<SolutionView> = task.solutions
+        val updatedSolutions = task.solutions
                 .asSequence()
                 .map { it to scores[it.student.name] }
                 .filter { (_, updatedScore) -> updatedScore != null }
@@ -107,11 +112,28 @@ class TaskController(private val dataManager: DataManager,
                 .filter { (solution, updatedScore) -> solution.score != updatedScore }
                 .map { (solution, updatedScore) -> solution.copy(score = updatedScore) }
                 .map { dataManager.updateSolution(it) }
-                .map { it.view() }
-                .toList()
 
-        return responseManager.ok(updatedSolutions)
+        if (course.settings.notificationOnScoreChange) {
+            notificationManager.notify(course, notifications(updatedSolutions, course))
+        }
+
+        return responseManager.ok(mergedSolutions(task.solutions, updatedSolutions))
     }
+
+    private fun notifications(solutions: Sequence<Solution>, course: Course) =
+            solutions.mapNotNull { notification(course, it) }.toList()
+
+    private fun notification(course: Course, solution: Solution): SolutionNotification? = solution.score?.let {
+        val template = course.settings.scoreChangeNotificationTemplate
+                ?: "Solution is accepted. **Your score**: %s / 100."
+        SolutionNotification(solution, template.format(solution.score))
+    }
+
+    private fun mergedSolutions(originalSolutions: Set<Solution>, updatedSolutions: Sequence<Solution>)
+            : List<SolutionView> = originalSolutions.asSequence()
+            .map { originalSolution -> updatedSolutions.find { it.id == originalSolution.id } ?: originalSolution }
+            .map { it.view() }
+            .toList()
 
     /**
      * Update task solution approvals.

@@ -23,7 +23,11 @@ data class CourseSettings(
 
         val testingLanguage: String? = null,
 
-        val testingFramework: String? = null
+        val testingFramework: String? = null,
+
+        val notificationOnScoreChange: Boolean = false,
+
+        val scoreChangeNotificationTemplate: String? = null
 
 ) : Identifiable, Viewable<CourseSettingsView> {
 
@@ -31,7 +35,9 @@ data class CourseSettings(
             id = id,
             language = language,
             testingLanguage = testingLanguage,
-            testingFramework = testingFramework
+            testingFramework = testingFramework,
+            notificationOnScoreChange = notificationOnScoreChange,
+            scoreChangeNotificationTemplate = scoreChangeNotificationTemplate
     )
 
     override fun toString() = "${this::class.simpleName}(id=$id)"
@@ -45,5 +51,7 @@ fun CourseSettingsView.model(): CourseSettings = CourseSettings(
         id = id,
         language = language,
         testingLanguage = testingLanguage,
-        testingFramework = testingFramework
+        testingFramework = testingFramework,
+        notificationOnScoreChange = notificationOnScoreChange,
+        scoreChangeNotificationTemplate = scoreChangeNotificationTemplate
 )

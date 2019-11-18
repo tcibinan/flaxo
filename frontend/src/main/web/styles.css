@@ -212,6 +212,13 @@ a.github-profile:hover {
 .course-summary .card-controls,
 .task-card .card-controls {
     display: flex;
+}
+
+.course-summary .card-controls {
+    align-items: center;
+}
+
+.task-card .card-controls {
     align-items: baseline;
 }
 
