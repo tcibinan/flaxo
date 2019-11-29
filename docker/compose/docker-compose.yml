@@ -2,6 +2,7 @@ version: '3'
 services:
   backend:
     image: flaxo/backend:${tag}
+    container_name: flaxo-backend
     ports:
       - 8080:8080
     volumes:
@@ -17,10 +18,12 @@ services:
       postgres_host: postgres
   frontend:
     image: flaxo/frontend:${tag}
+    container_name: flaxo-frontend
     ports:
       - 80:80
   postgres:
     image: postgres:11.1
+    container_name: flaxo-db
     volumes:
       - ${data_dir}:/var/lib/postgresql/data
     environment:
@@ -29,5 +32,6 @@ services:
       POSTGRES_DB:
   data2graph:
     image: flaxo/data2graph:${data2graph_tag}
+    container_name: flaxo-data2graph
     ports:
       - 8088:80

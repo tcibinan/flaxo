@@ -1,0 +1,99 @@
+name: Build and deploy flaxo release to dev server
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build_and_publish_frontend:
+    name: Build and publish frontend docker image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build and publish image
+        uses: elgohr/Publish-Docker-Github-Action@2.8
+        with:
+          name: "flaxo/frontend:$GITHUB_REF"
+          dockerfile: docker/images/frontend/Dockerfile
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+  build_and_publish_backend:
+    name: Build and publish backend docker image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build and publish image
+        uses: elgohr/Publish-Docker-Github-Action@2.8
+        env:
+          GITHUB_USER1_NAME: ${{ secrets.GITHUB_USER1_NAME }}
+          GITHUB_USER1_TOKEN: ${{ secrets.GITHUB_USER1_TOKEN }}
+          GITHUB_USER2_TOKEN: ${{ secrets.GITHUB_USER2_TOKEN }}
+          GITHUB_USER3_TOKEN: ${{ secrets.GITHUB_USER3_TOKEN }}
+          TRAVIS_USER1_TOKEN: ${{ secrets.TRAVIS_USER1_TOKEN }}
+          CODACY_USER1_TOKEN: ${{ secrets.CODACY_USER1_TOKEN }}
+        with:
+          name: "flaxo/backend:$GITHUB_REF"
+          dockerfile: docker/images/backend/Dockerfile
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          buildargs: GITHUB_USER1_NAME,GITHUB_USER1_TOKEN,GITHUB_USER2_TOKEN,GITHUB_USER3_TOKEN,TRAVIS_USER1_TOKEN,CODACY_USER1_TOKEN
+  dump_database:
+    name: Dump database on dev server
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump database
+        uses: appleboy/ssh-action@v0.0.5
+        with:
+          host: ${{ secrets.DEV_HOST }}
+          port: ${{ secrets.DEV_PORT }}
+          username: ${{ secrets.DEV_USERNAME }}
+          password: ${{ secrets.DEV_PASSWORD }}
+          script: |
+            docker exec flaxo-db pg_dump -U ${{ secrets.POSTGRES_USER }} ${{ secrets.POSTGRES_DB }} > /root/flaxo-automation/dumps/flaxo.$(date +%Y-%m-%d.%H:%M:%S).bak
+  deploy:
+    name: Deploy flaxo to dev server
+    runs-on: ubuntu-latest
+    needs: [build_and_publish_frontend, build_and_publish_backend, dump_database]
+    steps:
+      - name: Deploy flaxo
+        uses: appleboy/ssh-action@v0.0.5
+        env:
+          REST_URL: http://${{ secrets.DEV_HOST }}:${{ secrets.DEV_PORT }}/rest
+          GITHUB_ID: ${{ secrets.GITHUB_ID }}
+          GITHUB_SECRET: ${{ secrets.GITHUB_SECRET }}
+          MOSS_USER_ID: ${{ secrets.MOSS_USER_ID }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          DATA_DIR: /root/flaxo-automation/db
+          LOGS_DIR: /root/flaxo-automation/logs
+          DATA2GRAPH_TAG: 0.4
+          DEPLOY_DIR: /root/flaxo-automation/deploy
+        with:
+          host: ${{ secrets.DEV_HOST }}
+          port: ${{ secrets.DEV_PORT }}
+          username: ${{ secrets.DEV_USERNAME }}
+          password: ${{ secrets.DEV_PASSWORD }}
+          envs: REST_URL,GITHUB_ID,GITHUB_SECRET,MOSS_USER_ID,POSTGRES_USER,POSTGRES_PASSWORD,POSTGRES_DB,DATA_DIR,LOGS_DIR,DATA2GRAPH_TAG,DEPLOY_DIR,GITHUB_REF
+          script: |
+            cd $DEPLOY_DIR
+
+            docker-compose down
+
+            cat > .env << EOL
+            REST_URL=$REST_URL
+            GITHUB_ID=$GITHUB_ID
+            GITHUB_SECRET=$GITHUB_SECRET
+            MOSS_USER_ID=$MOSS_USER_ID
+            POSTGRES_USER=$POSTGRES_USER
+            POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+            POSTGRES_DB=$POSTGRES_DB
+            tag=$GITHUB_REF
+            data_dir=$DATA_DIR
+            logs_dir=$LOGS_DIR
+            data2graph_tag=$DATA2GRAPH_TAG
+            EOL
+
+            wget "https://raw.githubusercontent.com/tcibinan/flaxo/$GITHUB_REF/docker/compose/docker-compose.yml" \
+                 -O docker-compose.yml
+            docker-compose up -d
