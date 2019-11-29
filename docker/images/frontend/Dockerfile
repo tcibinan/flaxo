@@ -27,16 +27,9 @@ RUN mkdir -p $NODEJS_HOME \
     && echo "export PATH=\$NODEJS_HOME/bin:\$PATH" >> /etc/profile.d/nodejs.sh \
     && chmod +x /etc/profile.d/nodejs.sh
 
-# Flaxo
-ARG TAG
+COPY ./ $FLAXO_HOME
 
-RUN wget https://github.com/tcibinan/flaxo/archive/$TAG.tar.gz -O flaxo-$TAG.tar.gz \
-    && mkdir -p $FLAXO_HOME \
-    && tar -xzf flaxo-$TAG.tar.gz -C $FLAXO_HOME \
-    && rm flaxo-$TAG.tar.gz \
-    && cp -r $FLAXO_HOME/flaxo-${TAG#v}/* $FLAXO_HOME/ \
-    && rm -r $FLAXO_HOME/flaxo-${TAG#v} \
-    && . /etc/profile.d/nodejs.sh \
+RUN . /etc/profile.d/nodejs.sh \
     && $FLAXO_HOME/gradlew frontend:assembleFrontend -p $FLAXO_HOME
 
 # Production stage
@@ -54,7 +47,7 @@ RUN apt-get update \
     && rm /etc/nginx/sites-enabled/default \
     && rm /etc/nginx/sites-available/default
 
-COPY ./flaxo.nginx.conf /etc/nginx/sites-enabled/flaxo.nginx.conf
+COPY docker/images/frontend/flaxo.nginx.conf /etc/nginx/sites-enabled/flaxo.nginx.conf
 
 COPY --from=builder $FLAXO_HOME/frontend/build/dist .
 

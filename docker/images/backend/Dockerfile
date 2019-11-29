@@ -29,15 +29,10 @@ ARG GITHUB_USER2_TOKEN
 ARG GITHUB_USER3_TOKEN
 ARG TRAVIS_USER1_TOKEN
 ARG CODACY_USER1_TOKEN
-ARG TAG
 
-RUN wget https://github.com/tcibinan/flaxo/archive/$TAG.tar.gz -O flaxo-$TAG.tar.gz \
-    && mkdir -p $FLAXO_HOME \
-    && tar -xzf flaxo-$TAG.tar.gz -C $FLAXO_HOME \
-    && rm flaxo-$TAG.tar.gz \
-    && cp -r $FLAXO_HOME/flaxo-${TAG#v}/* $FLAXO_HOME/ \
-    && rm -r $FLAXO_HOME/flaxo-${TAG#v} \
-    && $FLAXO_HOME/gradlew rest:build -p $FLAXO_HOME
+COPY ./ $FLAXO_HOME
+
+RUN $FLAXO_HOME/gradlew rest:build -p $FLAXO_HOME
 
 # Production stage
 FROM ubuntu:18.04

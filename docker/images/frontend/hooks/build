@@ -1,4 +1,0 @@
-#!/bin/sh
-
-docker build . -t $IMAGE_NAME \
-               --build-arg TAG=v$DOCKER_TAG
