@@ -5,7 +5,25 @@ plugins {
     id "org.springframework.boot" version "2.0.4.RELEASE" apply false
 }
 
-version '0.6'
+def getCurrentGitTag = { ->
+    def output = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'tag', '-l', '--points-at', 'HEAD'
+        standardOutput = output
+    }
+    return output.toString().trim()
+}
+
+def getLatestGitTag = { ->
+    def output = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'describe', '--abbrev=0', '--tags'
+        standardOutput = output
+    }
+    return output.toString().trim()
+}
+
+version getCurrentGitTag() ?: getLatestGitTag() ?: 'untagged'
 
 def javaProjects = subprojects.findAll {
     it.name in ['common-jvm', 'cpp', 'fcodacy', 'fgithub', 'fgradle', 'fmoss', 'ftravis', 'git', 'githubql', 'model',
