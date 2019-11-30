@@ -15,4 +15,4 @@ pushed to DockerHub.
 
 Flaxo DockerHub repositories are configured to autobuild Flaxo versions. 
 Each time a new version of the Flaxo platform is pushed to the repository then an automated build is triggered. 
-*Flaxo version is basically a git tag which starts with `v`, f.e. `v1`, `v1.2` and etc.*
+*Flaxo version is basically a git tag.*

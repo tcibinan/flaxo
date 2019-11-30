@@ -2,9 +2,8 @@
 [![from_flaxo with_♥](https://img.shields.io/badge/from_flaxo-with_♥-blue.svg)](https://github.com/tcibinan/flaxo)
 [![Build Status](https://travis-ci.org/tcibinan/flaxo.svg?branch=dev)](https://travis-ci.org/tcibinan/flaxo)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/5b599e5082814d26b34c778670c9985c)](https://www.codacy.com/app/NameOfTheLaw/flaxo?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tcibinan/flaxo&amp;utm_campaign=Badge_Grade)
-[![Docker Cloud Build Status Frontend](https://img.shields.io/docker/cloud/build/flaxo/frontend.svg?label=frontend%20docker)](https://hub.docker.com/r/flaxo/frontend)
-[![Docker Cloud Build Status Backend](https://img.shields.io/docker/cloud/build/flaxo/backend.svg?label=backend%20docker)](https://hub.docker.com/r/flaxo/backend)
 [![Documentation Status](https://readthedocs.org/projects/flaxo/badge/?version=latest)](https://flaxo.readthedocs.io/en/latest/?badge=latest)
+![Dev Deploy Status](https://img.shields.io/github/workflow/status/tcibinan/flaxo/Build%20and%20deploy%20flaxo%20release%20to%20dev%20server?label=dev%20deploy)
 ![Flaxo latest pre-release](https://img.shields.io/github/release-pre/tcibinan/flaxo.svg?label=pre-release)
 
 Flaxo educational platform is a pragmatic way to organise, manage and report programming courses.

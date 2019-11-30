@@ -47,7 +47,7 @@ Once a GitHub OAuth App is created and MOSS `userid` is retrieved then you can r
 | POSTGRES_USER | User name to connect to the packaged PostgreSQL DB. |
 | POSTGRES_PASSWORD | User password to connect to the packaged PostgreSQL DB. |
 | POSTGRES_DB | Database name to use in the packaged PostgreSQL DB. |
-| tag | ![Flaxo latest pre-release](https://img.shields.io/github/release-pre/tcibinan/flaxo.svg?label=pre-release) <br> Flaxo release to use. It should be specified without `v` prefix, f.e. `v0.3` becomes `0.3`. Latest release can be found [here](https://github.com/tcibinan/flaxo/releases). |
+| tag | ![Flaxo latest pre-release](https://img.shields.io/github/release-pre/tcibinan/flaxo.svg?label=pre-release) <br> Flaxo release to use. Latest release can be found [here](https://github.com/tcibinan/flaxo/releases). |
 | data2graph_tag | ![Data2Graph latest pre-release](https://img.shields.io/github/release-pre/tcibinan/data2graph.svg?label=pre-release) <br> Data2graph release to use. It should be specified without `v` prefix, f.e. `v0.4` becomes `0.4`. Latest release can be found [here](https://github.com/tcibinan/data2graph/releases). | 
 | data_dir | Host local directory to store packaged PostgreSQL DB files. |
 | logs_dir | Host local directory to store backend logs. |
