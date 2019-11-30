@@ -29,8 +29,10 @@ RUN mkdir -p $NODEJS_HOME \
 
 COPY ./ $FLAXO_HOME
 
+ARG VERSION
+
 RUN . /etc/profile.d/nodejs.sh \
-    && $FLAXO_HOME/gradlew frontend:assembleFrontend -p $FLAXO_HOME
+    && VERSION=$VERSION $FLAXO_HOME/gradlew frontend:assembleFrontend -p $FLAXO_HOME
 
 # Production stage
 FROM ubuntu:18.04

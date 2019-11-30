@@ -5,25 +5,37 @@ plugins {
     id "org.springframework.boot" version "2.0.4.RELEASE" apply false
 }
 
-def getCurrentGitTag = { ->
-    def output = new ByteArrayOutputStream()
-    exec {
-        commandLine 'git', 'tag', '-l', '--points-at', 'HEAD'
-        standardOutput = output
+def getCurrentGitTag() {
+    try {
+        def output = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'tag', '-l', '--points-at', 'HEAD'
+            standardOutput = output
+        }
+        return output.toString().trim()
     }
-    return output.toString().trim()
+    catch (ignored) {
+        logger.warn('Current git tag retrieving has failed.')
+        return ''
+    }
 }
 
-def getLatestGitTag = { ->
-    def output = new ByteArrayOutputStream()
-    exec {
-        commandLine 'git', 'describe', '--abbrev=0', '--tags'
-        standardOutput = output
+def getLatestGitTag() {
+    try {
+        def output = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'describe', '--abbrev=0', '--tags'
+            standardOutput = output
+        }
+        return output.toString().trim()
     }
-    return output.toString().trim()
+    catch (ignored) {
+        logger.warn('Latest git tag retrieving has failed.')
+        return ''
+    }
 }
 
-version getCurrentGitTag() ?: getLatestGitTag() ?: 'untagged'
+version getCurrentGitTag() ?: getLatestGitTag() ?: System.env.VERSION ?: 'untagged'
 
 def javaProjects = subprojects.findAll {
     it.name in ['common-jvm', 'cpp', 'fcodacy', 'fgithub', 'fgradle', 'fmoss', 'ftravis', 'git', 'githubql', 'model',
@@ -64,7 +76,7 @@ configure(javaProjects) {
         compile 'com.fasterxml.jackson.module:jackson-module-kotlin:2.9.4.1'
         compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.4'
         compile 'org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.11.1'
-        
+
         // Log4j
         compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.1'
         compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.1'
@@ -78,7 +90,7 @@ configure(javaProjects) {
     compileTestKotlin { kotlinOptions.jvmTarget = "1.8" }
 }
 
-task version{
+task version {
     doFirst {
         print project.version
     }
