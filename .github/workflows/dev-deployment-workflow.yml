@@ -16,7 +16,7 @@ jobs:
       - name: Build and publish image
         uses: elgohr/Publish-Docker-Github-Action@2.8
         env:
-          VERSION: $RELEASE_TAG
+          VERSION: ${{ RELEASE_TAG }}
         with:
           name: flaxo/frontend
           dockerfile: docker/images/frontend/Dockerfile
@@ -41,7 +41,7 @@ jobs:
           GITHUB_USER3_TOKEN: ${{ secrets.GITHUB_USER3_TOKEN }}
           TRAVIS_USER1_TOKEN: ${{ secrets.TRAVIS_USER1_TOKEN }}
           CODACY_USER1_TOKEN: ${{ secrets.CODACY_USER1_TOKEN }}
-          VERSION: $RELEASE_TAG
+          VERSION: ${{ RELEASE_TAG }}
         with:
           name: flaxo/backend
           dockerfile: docker/images/backend/Dockerfile
