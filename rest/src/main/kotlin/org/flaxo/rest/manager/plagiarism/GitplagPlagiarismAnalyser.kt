@@ -38,7 +38,7 @@ class GitplagPlagiarismAnalyser(
         return MossResult(
                 url = URL("http://localhost:8090" + body.resultLink),
                 matches = matches,
-                students = course.students.map { it.nickname }
+                students = course.students.map { it.name }
         )
     }
 }
