@@ -9,10 +9,14 @@ import org.flaxo.moss.MossResult
 import org.flaxo.moss.toGitplagLanguage
 import java.net.URL
 
+/**
+ * Gitplag plagiarism analyzer.
+ */
 class GitplagPlagiarismAnalyser(
         private val gitplagClient: GitplagClient,
         private val gitplagUiUrl: String
 ) : PlagiarismAnalyser {
+
     override fun analyse(task: Task): MossResult {
         val course = task.course
 

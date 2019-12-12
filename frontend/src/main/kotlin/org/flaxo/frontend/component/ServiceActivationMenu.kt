@@ -132,12 +132,12 @@ private class ServiceActivationMenu(props: ServiceActivationMenuProps)
     private suspend fun activateGitplag() {
         credentials?.also {
             try {
-                Notifications.info("Codacy activation has been started.")
+                Notifications.info("Gitplag activation has been started.")
                 flaxoClient.activateGitplag(it, props.course.name)
-                Notifications.success("Codacy activation has been finished.")
+                Notifications.success("Gitplag activation has been finished.")
             } catch (e: FlaxoHttpException) {
                 console.log(e)
-                Notifications.error("Error occurred during codacy activation.", e)
+                Notifications.error("Error occurred during gitplag activation.", e)
             }
         }
     }

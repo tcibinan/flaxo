@@ -183,7 +183,7 @@ open class PlainDataManager(private val userRepository: UserRepository,
                 ExternalService.GITHUB -> copy(githubToken = accessToken)
                 ExternalService.TRAVIS -> copy(travisToken = accessToken)
                 ExternalService.CODACY -> copy(codacyToken = accessToken)
-                ExternalService.GITPLAG -> copy()
+                ExternalService.GITPLAG -> this
             }
 
     @Transactional

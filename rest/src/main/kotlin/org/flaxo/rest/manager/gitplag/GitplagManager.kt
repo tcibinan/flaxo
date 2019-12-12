@@ -13,9 +13,13 @@ import org.flaxo.moss.toGitplagLanguage
 import org.flaxo.rest.manager.ValidationManager
 import retrofit2.Call
 
+/**
+ * Gitplag manager.
+ */
 class GitplagManager(
         private val gitplagClient: GitplagClient
 ) : ValidationManager {
+
     override fun activate(course: Course) {
         gitplagClient.addRepository(RepositoryInput(
                 id = -1,

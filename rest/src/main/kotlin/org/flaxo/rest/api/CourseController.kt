@@ -424,11 +424,11 @@ class CourseController(private val dataManager: DataManager,
     }
 
     /**
-     * Activates travis validations for specified [courseName].
+     * Activates gitplag validations for specified [courseName].
      *
      * Course should be started.
      *
-     * @param courseName Course name to activate travis for.
+     * @param courseName Course name to activate gitplag for.
      */
     @PostMapping("/activate/gitplag")
     @PreAuthorize("hasAuthority('USER')")

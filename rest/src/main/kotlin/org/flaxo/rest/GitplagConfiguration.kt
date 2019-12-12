@@ -9,7 +9,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
 
 /**
- * Codacy configuration.
+ * Gitplag configuration.
  */
 @Configuration
 class GitplagConfiguration {

@@ -7,6 +7,9 @@ import org.flaxo.moss.MossSubmissionAnalyser
 import org.flaxo.rest.friendlyId
 import org.flaxo.rest.manager.moss.MossSubmissionExtractor
 
+/**
+ * Moss plagiarism analyzer.
+ */
 class MossPlagiarismAnalyser(
         private val submissionExtractor: MossSubmissionExtractor,
         private val submissionAnalyser: MossSubmissionAnalyser
