@@ -2,6 +2,7 @@ package org.flaxo.rest
 
 import org.flaxo.moss.GitplagClient
 import org.flaxo.rest.manager.plagiarism.GitplagPlagiarismAnalyser
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import retrofit2.Retrofit
@@ -13,19 +14,20 @@ import retrofit2.converter.jackson.JacksonConverterFactory
 @Configuration
 class GitplagConfiguration {
 
-    companion object {
-        private const val baseUrl = "http://localhost:8090/"
-    }
-
     @Bean
-    fun gitplagClient(): GitplagClient =
+    fun gitplagClient(
+            @Value("\${flaxo.gitplag.url}") gitplagUrl: String
+    ): GitplagClient =
             Retrofit.Builder()
-                    .baseUrl(baseUrl)
+                    .baseUrl(gitplagUrl)
                     .addConverterFactory(JacksonConverterFactory.create())
                     .build()
                     .create(GitplagClient::class.java)
 
     @Bean
-    fun gitplagPlagiarismAnalyser(gitplagClient: GitplagClient): GitplagPlagiarismAnalyser =
-            GitplagPlagiarismAnalyser(gitplagClient)
+    fun gitplagPlagiarismAnalyser(
+            gitplagClient: GitplagClient,
+            @Value("\${flaxo.gitplag.ui.url}") gitplagUiUrl: String
+    ): GitplagPlagiarismAnalyser =
+            GitplagPlagiarismAnalyser(gitplagClient, gitplagUiUrl)
 }

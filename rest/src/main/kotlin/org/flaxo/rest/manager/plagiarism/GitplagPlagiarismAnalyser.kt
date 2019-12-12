@@ -10,7 +10,8 @@ import org.flaxo.moss.toGitplagLanguage
 import java.net.URL
 
 class GitplagPlagiarismAnalyser(
-        private val gitplagClient: GitplagClient
+        private val gitplagClient: GitplagClient,
+        private val gitplagUiUrl: String
 ) : PlagiarismAnalyser {
     override fun analyse(task: Task): MossResult {
         val course = task.course
@@ -30,13 +31,13 @@ class GitplagPlagiarismAnalyser(
         val matches = body.analysisPairs.map {
             MossMatch(
                     students = it.student1 to it.student2,
-                    link = "",
+                    link = gitplagUiUrl + "/analyzes/" + body.id + "/pairs/" + it.id,
                     percentage = it.percentage,
                     lines = 0)
         }.toSet()
 
         return MossResult(
-                url = URL(body.resultLink),
+                url = URL(gitplagUiUrl + "/analyzes/" + body.id),
                 matches = matches,
                 students = course.students.map { it.name }
         )
