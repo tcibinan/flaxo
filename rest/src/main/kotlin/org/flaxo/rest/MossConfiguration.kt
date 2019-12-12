@@ -1,10 +1,12 @@
 package org.flaxo.rest
 
 import org.flaxo.model.DataManager
+import org.flaxo.moss.GitplagClient
 import org.flaxo.moss.MossSubmissionAnalyser
 import org.flaxo.moss.SimpleMoss
 import org.flaxo.moss.SimpleMossSubmissionsAnalyser
 import org.flaxo.rest.manager.github.GithubManager
+import org.flaxo.rest.manager.gitplag.GitplagManager
 import org.flaxo.rest.manager.moss.MossManager
 import org.flaxo.rest.manager.moss.MossSubmissionExtractor
 import org.flaxo.rest.manager.moss.SimpleMossManager
@@ -38,6 +40,9 @@ class MossConfiguration {
     fun mossManager(dataManager: DataManager,
                     plagiarismAnalyser: PlagiarismAnalyser
     ): MossManager = SimpleMossManager(dataManager, plagiarismAnalyser)
+
+    @Bean
+    fun gitplagManager(gitplagClient: GitplagClient) = GitplagManager(gitplagClient)
 
 //    @Bean
 //    fun mossPlagiarismAnalyser(mossSubmissionExtractor: MossSubmissionExtractor,
