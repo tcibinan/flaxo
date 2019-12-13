@@ -14,6 +14,9 @@ import retrofit2.converter.jackson.JacksonConverterFactory
 @Configuration
 class GitplagConfiguration {
 
+    /**
+     * [GitplagClient] bean
+     */
     @Bean
     fun gitplagClient(
             @Value("\${flaxo.gitplag.url}") gitplagUrl: String
@@ -24,6 +27,9 @@ class GitplagConfiguration {
                     .build()
                     .create(GitplagClient::class.java)
 
+    /**
+     * [GitplagPlagiarismAnalyser] bean
+     */
     @Bean
     fun gitplagPlagiarismAnalyser(
             gitplagClient: GitplagClient,

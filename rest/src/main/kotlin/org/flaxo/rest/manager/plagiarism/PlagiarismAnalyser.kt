@@ -8,6 +8,9 @@ import org.flaxo.moss.MossResult
  */
 interface PlagiarismAnalyser {
 
+    /**
+     * Analyze plagiarism of the [task].
+     */
     fun analyse(task: Task): MossResult
 
 }

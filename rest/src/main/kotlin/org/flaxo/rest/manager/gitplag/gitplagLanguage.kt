@@ -3,6 +3,9 @@ package org.flaxo.rest.manager.gitplag
 import org.flaxo.common.Language
 import org.flaxo.rest.manager.UnsupportedLanguageException
 
+/**
+ * Convert Flaxo language to Gitplag language.
+ */
 fun toGitplagLanguage(language: Language?) =
         when (language) {
             Language.C -> io.gitplag.gitplagapi.model.enums.Language.C
