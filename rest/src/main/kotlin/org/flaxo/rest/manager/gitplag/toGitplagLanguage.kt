@@ -1,6 +1,7 @@
-package org.flaxo.moss
+package org.flaxo.rest.manager.gitplag
 
 import org.flaxo.common.Language
+import org.flaxo.rest.manager.UnsupportedLanguageException
 
 fun toGitplagLanguage(language: Language?) =
         when (language) {
@@ -17,5 +18,5 @@ fun toGitplagLanguage(language: Language?) =
             Language.PlSql -> io.gitplag.gitplagapi.model.enums.Language.PLSQL
             Language.Python -> io.gitplag.gitplagapi.model.enums.Language.PYTHON
             Language.Prolog -> io.gitplag.gitplagapi.model.enums.Language.PROLOG
-            else -> throw RuntimeException()
+            else -> throw UnsupportedLanguageException("Language $language is not supported by Gitplag.")
         }

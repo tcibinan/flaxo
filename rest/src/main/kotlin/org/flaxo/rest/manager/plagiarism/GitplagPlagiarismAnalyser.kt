@@ -2,11 +2,12 @@ package org.flaxo.rest.manager.plagiarism
 
 import io.gitplag.gitplagapi.model.input.AnalysisRequest
 import org.flaxo.common.Language
+import org.flaxo.model.ModelException
 import org.flaxo.model.data.Task
-import org.flaxo.moss.GitplagClient
 import org.flaxo.moss.MossMatch
 import org.flaxo.moss.MossResult
-import org.flaxo.moss.toGitplagLanguage
+import org.flaxo.rest.manager.gitplag.GitplagClient
+import org.flaxo.rest.manager.gitplag.toGitplagLanguage
 import java.net.URL
 
 /**
@@ -22,7 +23,8 @@ class GitplagPlagiarismAnalyser(
 
         val analyse = gitplagClient.analyse(
                 "github",
-                course.user.githubId!!,
+                course.user.githubId
+                        ?: throw ModelException("Github id for ${course.user.name} user was not found"),
                 course.name,
                 AnalysisRequest(
                         branch = task.branch,

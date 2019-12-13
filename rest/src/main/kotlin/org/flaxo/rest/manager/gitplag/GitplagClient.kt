@@ -1,4 +1,4 @@
-package org.flaxo.moss
+package org.flaxo.rest.manager.gitplag
 
 import io.gitplag.gitplagapi.model.input.AnalysisRequest
 import io.gitplag.gitplagapi.model.input.RepositoryInput

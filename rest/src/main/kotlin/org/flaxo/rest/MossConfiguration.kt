@@ -1,19 +1,21 @@
 package org.flaxo.rest
 
 import org.flaxo.model.DataManager
-import org.flaxo.moss.GitplagClient
 import org.flaxo.moss.MossSubmissionAnalyser
 import org.flaxo.moss.SimpleMoss
 import org.flaxo.moss.SimpleMossSubmissionsAnalyser
 import org.flaxo.rest.manager.github.GithubManager
+import org.flaxo.rest.manager.gitplag.GitplagClient
 import org.flaxo.rest.manager.gitplag.GitplagManager
 import org.flaxo.rest.manager.moss.MossManager
 import org.flaxo.rest.manager.moss.MossSubmissionExtractor
 import org.flaxo.rest.manager.moss.SimpleMossManager
 import org.flaxo.rest.manager.moss.SimpleMossSubmissionsExtractor
+import org.flaxo.rest.manager.plagiarism.MossPlagiarismAnalyser
 import org.flaxo.rest.manager.plagiarism.PlagiarismAnalyser
 import org.jsoup.Jsoup
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -44,8 +46,9 @@ class MossConfiguration {
     @Bean
     fun gitplagManager(gitplagClient: GitplagClient) = GitplagManager(gitplagClient)
 
-//    @Bean
-//    fun mossPlagiarismAnalyser(mossSubmissionExtractor: MossSubmissionExtractor,
-//                               mossSubmissionAnalyser: MossSubmissionAnalyser
-//    ): MossPlagiarismAnalyser = MossPlagiarismAnalyser(mossSubmissionExtractor, mossSubmissionAnalyser)
+    @Bean
+    @ConditionalOnExpression("false")
+    fun mossPlagiarismAnalyser(mossSubmissionExtractor: MossSubmissionExtractor,
+                               mossSubmissionAnalyser: MossSubmissionAnalyser
+    ): MossPlagiarismAnalyser = MossPlagiarismAnalyser(mossSubmissionExtractor, mossSubmissionAnalyser)
 }

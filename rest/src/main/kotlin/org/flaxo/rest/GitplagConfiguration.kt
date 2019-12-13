@@ -1,6 +1,6 @@
 package org.flaxo.rest
 
-import org.flaxo.moss.GitplagClient
+import org.flaxo.rest.manager.gitplag.GitplagClient
 import org.flaxo.rest.manager.plagiarism.GitplagPlagiarismAnalyser
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
