@@ -3,29 +3,16 @@ package org.flaxo.rest
 import org.flaxo.rest.manager.gitplag.GitplagClient
 import org.flaxo.rest.manager.plagiarism.GitplagPlagiarismAnalyser
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import retrofit2.Retrofit
-import retrofit2.converter.jackson.JacksonConverterFactory
 
 /**
  * Gitplag configuration.
  */
 @Configuration
+@ConditionalOnProperty(name = ["flaxo.plagiarism.analyser"], havingValue = "gitplag")
 class GitplagConfiguration {
-
-    /**
-     * [GitplagClient] bean
-     */
-    @Bean
-    fun gitplagClient(
-            @Value("\${flaxo.gitplag.url}") gitplagUrl: String
-    ): GitplagClient =
-            Retrofit.Builder()
-                    .baseUrl(gitplagUrl)
-                    .addConverterFactory(JacksonConverterFactory.create())
-                    .build()
-                    .create(GitplagClient::class.java)
 
     /**
      * [GitplagPlagiarismAnalyser] bean

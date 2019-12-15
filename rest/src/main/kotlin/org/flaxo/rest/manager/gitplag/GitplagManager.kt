@@ -16,9 +16,7 @@ import retrofit2.Call
 /**
  * Gitplag manager.
  */
-class GitplagManager(
-        private val gitplagClient: GitplagClient
-) : ValidationManager {
+class GitplagManager(private val gitplagClient: GitplagClient) : ValidationManager {
 
     override fun activate(course: Course) {
         val language = Language.from(course.settings.language)
@@ -26,24 +24,24 @@ class GitplagManager(
         val userGithubId = course.user.githubId
                 ?: throw ModelException("Github id for ${course.user.name} user was not found")
         gitplagClient.addRepository(RepositoryInput(
-                id = -1,
+                id = -1, // any value because id is not nullable in the dto
                 git = GitProperty.GITHUB,
                 language = toGitplagLanguage(language),
-                name = userGithubId + "/" + course.name,
+                name = "$userGithubId/${course.name}",
                 analyzer = AnalyzerProperty.MOSS,
                 filePatterns = language.extensions.map { """.+\.$it""" },
                 analysisMode = AnalysisMode.FULL
         )).callUnit()
-        gitplagClient.updateRepository("github", userGithubId, course.name).callUnit()
+        gitplagClient.updateRepository(
+                vcsService = "github",
+                username = userGithubId,
+                projectName = course.name
+        ).callUnit()
     }
 
-    override fun deactivate(course: Course) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun deactivate(course: Course) = Unit
 
-    override fun refresh(course: Course) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun refresh(course: Course) = Unit
 
     private fun <T> Call<T>.call(): Either<ResponseBody, T> =
             execute().run {

@@ -75,3 +75,9 @@ open class AccessDeniedException(message: String? = null, cause: Throwable? = nu
  */
 class CourseAccessDeniedException(user: String, id: Long)
     : AccessDeniedException("User $user does not have access to course #$id.")
+
+/**
+ * Plagiarism analysis exception.
+ */
+class PlagiarismAnalysisException(user: String, course: String, task: String)
+    : RuntimeException("Error during analysis of task $user/$course/$task")
