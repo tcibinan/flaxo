@@ -1,5 +1,6 @@
 package org.flaxo.rest
 
+import okhttp3.OkHttpClient
 import org.flaxo.model.DataManager
 import org.flaxo.rest.manager.gitplag.GitplagClient
 import org.flaxo.rest.manager.gitplag.GitplagManager
@@ -13,6 +14,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
+import java.util.concurrent.TimeUnit
 
 @Configuration
 class PlagiarismConfiguration {
@@ -34,11 +36,17 @@ class PlagiarismConfiguration {
      */
     @Bean
     fun gitplagClient(
-            @Value("\${flaxo.gitplag.url}") gitplagUrl: String
-    ): GitplagClient =
-            Retrofit.Builder()
-                    .baseUrl(gitplagUrl)
-                    .addConverterFactory(JacksonConverterFactory.create())
-                    .build()
-                    .create(GitplagClient::class.java)
+            @Value("\${flaxo.gitplag.url}") gitplagUrl: String,
+            @Value("\${flaxo.gitplag.timeout.seconds}") timeoutInSeconds: Long
+    ): GitplagClient {
+        val okHttpClient = OkHttpClient.Builder()
+                .readTimeout(timeoutInSeconds, TimeUnit.SECONDS)
+                .build()
+        return Retrofit.Builder()
+                .client(okHttpClient)
+                .baseUrl(gitplagUrl)
+                .addConverterFactory(JacksonConverterFactory.create())
+                .build()
+                .create(GitplagClient::class.java)
+    }
 }
