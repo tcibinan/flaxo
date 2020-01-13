@@ -1,0 +1,49 @@
+name: Build and publish flaxo development docker images
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  build_and_publish_frontend:
+    name: Build and publish frontend docker image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Resolve release tag
+        id: release-tag-resolver
+        run: echo ::set-env name=VERSION::$(echo ${GITHUB_REF:10})
+      - name: Build and publish image
+        uses: elgohr/Publish-Docker-Github-Action@2.8
+        with:
+          name: flaxo/frontend
+          dockerfile: docker/images/frontend/Dockerfile
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          buildargs: VERSION
+          tag_names: true
+  build_and_publish_backend:
+    name: Build and publish backend docker image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Resolve release tag
+        id: release-tag-resolver
+        run: echo ::set-env name=VERSION::$(echo ${GITHUB_REF:10})
+      - name: Build and publish image
+        uses: elgohr/Publish-Docker-Github-Action@2.8
+        env:
+          GITHUB_USER1_NAME: ${{ secrets.GITHUB_USER1_NAME }}
+          GITHUB_USER1_TOKEN: ${{ secrets.GITHUB_USER1_TOKEN }}
+          GITHUB_USER2_TOKEN: ${{ secrets.GITHUB_USER2_TOKEN }}
+          GITHUB_USER3_TOKEN: ${{ secrets.GITHUB_USER3_TOKEN }}
+          TRAVIS_USER1_TOKEN: ${{ secrets.TRAVIS_USER1_TOKEN }}
+          CODACY_USER1_TOKEN: ${{ secrets.CODACY_USER1_TOKEN }}
+        with:
+          name: flaxo/backend
+          dockerfile: docker/images/backend/Dockerfile
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          buildargs: GITHUB_USER1_NAME,GITHUB_USER1_TOKEN,GITHUB_USER2_TOKEN,GITHUB_USER3_TOKEN,TRAVIS_USER1_TOKEN,CODACY_USER1_TOKEN,VERSION
+          tag_names: true
