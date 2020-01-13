@@ -1,4 +1,4 @@
-name: Build and deploy flaxo release to dev server
+name: Build and deploy flaxo release application to the dev server
 
 on:
   release:
