@@ -17,6 +17,7 @@ import org.flaxo.rest.manager.codacy.CodacyManager
 import org.flaxo.rest.manager.course.CourseManager
 import org.flaxo.rest.manager.environment.EnvironmentManager
 import org.flaxo.rest.manager.github.GithubManager
+import org.flaxo.rest.manager.gitplag.GitplagManager
 import org.flaxo.rest.manager.response.Response
 import org.flaxo.rest.manager.response.ResponseManager
 import org.flaxo.rest.manager.travis.TravisManager
@@ -44,6 +45,7 @@ class CourseController(private val dataManager: DataManager,
                        private val environmentManager: EnvironmentManager,
                        private val travisManager: TravisManager,
                        private val codacyManager: CodacyManager,
+                       private val gitplagManager: GitplagManager,
                        private val githubManager: GithubManager,
                        private val courseValidations: Map<ExternalService, ValidationManager>,
                        private val courseManager: CourseManager
@@ -418,6 +420,56 @@ class CourseController(private val dataManager: DataManager,
                     }
                 }
                 ?: return responseManager.bad("Travis is already integrated with " +
+                        "${course.friendlyId} course")
+    }
+
+    /**
+     * Activates gitplag validations for specified [courseName].
+     *
+     * Course should be started.
+     *
+     * @param courseName Course name to activate gitplag for.
+     */
+    @PostMapping("/activate/gitplag")
+    @PreAuthorize("hasAuthority('USER')")
+    @Transactional
+    fun activateGitplag(@RequestParam courseName: String,
+                        principal: Principal
+    ): Response<CourseView> {
+        logger.info("Trying to activate gitplag for course ${principal.name}/$courseName")
+
+        val user = dataManager.getUser(principal.name)
+                ?: return responseManager.userNotFound(principal.name)
+
+        val course = dataManager.getCourse(courseName, user)
+                ?: return responseManager.courseNotFound(principal.name, courseName)
+
+        if (course.state.lifecycle != CourseLifecycle.RUNNING) {
+            return responseManager.bad("Course ${course.friendlyId} is not started yet")
+        }
+
+        course.state
+                .activatedServices
+                .takeUnless { it.contains(ExternalService.GITPLAG) }
+                ?.let {
+                    try {
+                        gitplagManager.activate(course)
+
+                        return dataManager
+                                .updateCourse(course.copy(
+                                        state =
+                                        course.state.copy(
+                                                activatedServices =
+                                                course.state.activatedServices + ExternalService.GITPLAG
+                                        )
+                                ))
+                                .let { responseManager.ok(it.view()) }
+                    } catch (e: Exception) {
+                        logger.info("Gitplag activation failed due to: $e")
+                        return responseManager.bad(e.toString())
+                    }
+                }
+                ?: return responseManager.bad("Gitplag is already integrated with " +
                         "${course.friendlyId} course")
     }
 

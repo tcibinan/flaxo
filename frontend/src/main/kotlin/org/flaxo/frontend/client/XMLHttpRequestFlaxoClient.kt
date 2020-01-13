@@ -198,6 +198,14 @@ class XMLHttpRequestFlaxoClient(private val baseUrl: String) : FlaxoClient {
                 errorMessage = "Activating travis for course failed."
             }
 
+    override suspend fun activateGitplag(credentials: Credentials, courseName: String): Unit =
+            post {
+                apiMethod = "/course/activate/gitplag"
+                creds = credentials
+                params = mapOf(COURSE_NAME to courseName)
+                errorMessage = "Activating gitplag for course failed."
+            }
+
     override suspend fun downloadStatistics(credentials: Credentials, courseName: String, format: String): dynamic =
             get<Any> {
                 apiMethod = "/statistics/download"

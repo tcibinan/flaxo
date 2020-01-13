@@ -50,6 +50,7 @@ configure(javaProjects) {
         jcenter()
         maven { url "http://dl.bintray.com/jetbrains/spek" }
         maven { url "https://kotlin.bintray.com/kotlinx" }
+        maven { url "https://jitpack.io" }
     }
 
     dependencies {

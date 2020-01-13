@@ -108,6 +108,11 @@ interface FlaxoClient {
     suspend fun activateTravis(credentials: Credentials, courseName: String)
 
     /**
+     * Launches gitplag activation for the given [courseName].
+     */
+    suspend fun activateGitplag(credentials: Credentials, courseName: String)
+
+    /**
      * Downloads statistics file for the course with [courseName] in the given [format].
      */
     suspend fun downloadStatistics(credentials: Credentials, courseName: String, format: String): dynamic

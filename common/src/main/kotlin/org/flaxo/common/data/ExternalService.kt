@@ -18,5 +18,10 @@ enum class ExternalService {
     /**
      * Codacy external service.
      */
-    CODACY
+    CODACY,
+
+    /**
+     * Gitplag external service.
+     */
+    GITPLAG
 }

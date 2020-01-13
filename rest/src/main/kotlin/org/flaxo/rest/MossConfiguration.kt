@@ -1,16 +1,15 @@
 package org.flaxo.rest
 
-import org.flaxo.model.DataManager
 import org.flaxo.moss.MossSubmissionAnalyser
 import org.flaxo.moss.SimpleMoss
 import org.flaxo.moss.SimpleMossSubmissionsAnalyser
 import org.flaxo.rest.manager.github.GithubManager
-import org.flaxo.rest.manager.moss.MossManager
 import org.flaxo.rest.manager.moss.MossSubmissionExtractor
-import org.flaxo.rest.manager.moss.SimpleMossManager
 import org.flaxo.rest.manager.moss.SimpleMossSubmissionsExtractor
+import org.flaxo.rest.manager.plagiarism.MossPlagiarismAnalyser
 import org.jsoup.Jsoup
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -18,6 +17,7 @@ import org.springframework.context.annotation.Configuration
  * Moss configuration.
  */
 @Configuration
+@ConditionalOnProperty(name = ["flaxo.plagiarism.analyser"], havingValue = "moss")
 class MossConfiguration {
 
     @Bean
@@ -34,8 +34,7 @@ class MossConfiguration {
             )
 
     @Bean
-    fun mossManager(dataManager: DataManager,
-                    mossSubmissionsExtractor: MossSubmissionExtractor,
-                    mossSubmissionsAnalyser: MossSubmissionAnalyser
-    ): MossManager = SimpleMossManager(dataManager, mossSubmissionsExtractor, mossSubmissionsAnalyser)
+    fun mossPlagiarismAnalyser(mossSubmissionExtractor: MossSubmissionExtractor,
+                               mossSubmissionAnalyser: MossSubmissionAnalyser
+    ): MossPlagiarismAnalyser = MossPlagiarismAnalyser(mossSubmissionExtractor, mossSubmissionAnalyser)
 }

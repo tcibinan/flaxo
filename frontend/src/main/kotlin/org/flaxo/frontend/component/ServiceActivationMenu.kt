@@ -86,6 +86,18 @@ private class ServiceActivationMenu(props: ServiceActivationMenuProps)
                         }
                         +"Codacy"
                     }
+                    a(classes = "dropdown-item", href = "#") {
+                        attrs {
+                            when (ExternalService.GITPLAG) {
+                                in props.course.state.activatedServices -> classes = setOf("dropdown-item", "disabled")
+                                else -> {
+                                    classes = setOf("dropdown-item")
+                                    onClickFunction = { GlobalScope.launch { activateGitplag() } }
+                                }
+                            }
+                        }
+                        +"Gitplag"
+                    }
                 }
             }
         }
@@ -113,6 +125,19 @@ private class ServiceActivationMenu(props: ServiceActivationMenuProps)
             } catch (e: FlaxoHttpException) {
                 console.log(e)
                 Notifications.error("Error occurred during codacy activation.", e)
+            }
+        }
+    }
+
+    private suspend fun activateGitplag() {
+        credentials?.also {
+            try {
+                Notifications.info("Gitplag activation has been started.")
+                flaxoClient.activateGitplag(it, props.course.name)
+                Notifications.success("Gitplag activation has been finished.")
+            } catch (e: FlaxoHttpException) {
+                console.log(e)
+                Notifications.error("Error occurred during gitplag activation.", e)
             }
         }
     }
