@@ -42,15 +42,19 @@ Once a GitHub OAuth App is created and MOSS `userid` is retrieved then you can r
 |----------|-------------|
 | GITHUB_ID | Created GitHub OAuth app `id`. |
 | GITHUB_SECRET | Created GitHub OAuth app `secret`. |
+| GITPLAG_GITHUB_AUTH | Default GitHub authentication token for gitplag. |
 | MOSS_USER_ID | Retrieved MOSS `userid`. |
+| DEPLOYMENT_URL | URL of the Flaxo deployment server or Homepage URL. The endpoint should be available from the outer network.  F.e. `http://8.8.8.8`. |
 | REST_URL | Rest endpoint of the Flaxo deployment. The endpoint should be available from the outer network.  F.e. `http://8.8.8.8:8080/rest`. |
 | POSTGRES_USER | User name to connect to the packaged PostgreSQL DB. |
 | POSTGRES_PASSWORD | User password to connect to the packaged PostgreSQL DB. |
 | POSTGRES_DB | Database name to use in the packaged PostgreSQL DB. |
 | tag | ![Flaxo latest pre-release](https://img.shields.io/github/release-pre/tcibinan/flaxo.svg?label=pre-release) <br> Flaxo release to use. Latest release can be found [here](https://github.com/tcibinan/flaxo/releases). |
-| data2graph_tag | ![Data2Graph latest pre-release](https://img.shields.io/github/release-pre/tcibinan/data2graph.svg?label=pre-release) <br> Data2graph release to use. It should be specified without `v` prefix, f.e. `v0.4` becomes `0.4`. Latest release can be found [here](https://github.com/tcibinan/data2graph/releases). | 
+| data2graph_tag | ![Data2Graph latest pre-release](https://img.shields.io/github/release-pre/tcibinan/data2graph.svg?label=pre-release) <br> Data2graph release to use. It should be specified without `v` prefix, f.e. `v0.4` becomes `0.4`. Latest release can be found [here](https://github.com/tcibinan/data2graph/releases). |
+| gitplag_tag | ![Gitplag latest pre-release](https://img.shields.io/github/release-pre/gitplag/gitplag.svg?label=pre-release) <br> GitPlag release to use. It should be specified without `v` prefix, f.e. `v0.5.2` becomes `0.5.2`. Latest release can be found [here](https://github.com/gitplag/gitplag/releases).
 | data_dir | Host local directory to store packaged PostgreSQL DB files. |
 | logs_dir | Host local directory to store backend logs. |
+| gitplag_dir | Host local directory to store gitplag localized files. |
 
 ## Launch
 
@@ -70,7 +74,7 @@ Checkout to the required Flaxo release.
 Latest release can be found [here](https://github.com/tcibinan/flaxo/releases).
 
 ```bash
-git checkout v0.3
+git checkout 0.7
 ```
 
 Change current directory to the docker compose directory.
@@ -85,15 +89,19 @@ Create `.env` file and fill it with the previously resolved deployment parameter
 cat > .env << EOL
 GITHUB_ID=123456
 GITHUB_SECRET=secretalphanumericstring12345
+GITPLAG_GITHUB_AUTH=anothersecretalphanumericstring12345
 MOSS_USER_ID=123456
+DEPLOYMENT_URL=http://8.8.8.8
 REST_URL=http://8.8.8.8:8080/rest
 POSTGRES_USER=flaxo
 POSTGRES_PASSWORD=tobechanged
 POSTGRES_DB=flaxo
-tag=0.3
+tag=0.7
 data2graph_tag=0.4
+gitplag_tag=0.5.2
 data_dir=/local/path/to/db/files
 logs_dir=/local/path/to/log/files
+gitplag_dir=/local/path/to/gitplag/files
 EOL
 ```
 

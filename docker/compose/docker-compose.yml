@@ -35,3 +35,23 @@ services:
     container_name: flaxo-data2graph
     ports:
       - 8088:80
+  gitplag-ui:
+    image: nikstep/gitplag-ui:${gitplag_tag}
+    container_name: flaxo-gitplag-ui
+    ports:
+      - 8880:80
+  gitplag:
+    image: nikstep/gitplag:${gitplag_tag}
+    container_name: flaxo-gitplag
+    ports:
+      - 8090:8090
+    volumes:
+      - ${gitplag_dir}:/mnt/gitplag
+    environment:
+      GITPLAG_MOSS_ID: ${MOSS_USER_ID}
+      GITPLAG_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      GITPLAG_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      GITPLAG_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      GITPLAG_SERVER_URL: ${DEPLOYMENT_URL}:8090
+      GITPLAG_UI_URL: ${DEPLOYMENT_URL}:8880
+      GITPLAG_GITHUB_AUTH:

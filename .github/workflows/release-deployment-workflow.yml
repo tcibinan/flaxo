@@ -67,6 +67,7 @@ jobs:
       - name: Deploy flaxo
         uses: appleboy/ssh-action@v0.0.5
         env:
+          DEPLOYMENT_URL: http://${{ secrets.DEV_HOST }}
           REST_URL: http://${{ secrets.DEV_HOST }}:${{ secrets.DEV_PORT }}/rest
           GITHUB_ID: ${{ secrets.GITHUB_ID }}
           GITHUB_SECRET: ${{ secrets.GITHUB_SECRET }}
@@ -77,13 +78,15 @@ jobs:
           DATA_DIR: /root/flaxo-automation/db
           LOGS_DIR: /root/flaxo-automation/logs
           DATA2GRAPH_TAG: 0.4
+          GITPLAG_TAG: 0.5.2
+          GITPLAG_DIR: /root/flaxo-automation/gitplag
           DEPLOY_DIR: /root/flaxo-automation/deploy
         with:
           host: ${{ secrets.DEV_HOST }}
           port: ${{ secrets.DEV_PORT }}
           username: ${{ secrets.DEV_USERNAME }}
           password: ${{ secrets.DEV_PASSWORD }}
-          envs: REST_URL,GITHUB_ID,GITHUB_SECRET,MOSS_USER_ID,POSTGRES_USER,POSTGRES_PASSWORD,POSTGRES_DB,DATA_DIR,LOGS_DIR,DATA2GRAPH_TAG,DEPLOY_DIR,GITHUB_SHA,GITHUB_REF
+          envs: REST_URL,GITHUB_ID,GITHUB_SECRET,MOSS_USER_ID,POSTGRES_USER,POSTGRES_PASSWORD,POSTGRES_DB,DATA_DIR,LOGS_DIR,DATA2GRAPH_TAG,GITPLAG_TAG,GITPLAG_DIR,DEPLOY_DIR,GITHUB_SHA,GITHUB_REF
           script: |
             cd $DEPLOY_DIR
 
@@ -101,6 +104,8 @@ jobs:
             data_dir=$DATA_DIR
             logs_dir=$LOGS_DIR
             data2graph_tag=$DATA2GRAPH_TAG
+            gitplag_tag=$GITPLAG_TAG
+            gitplag_dir=$GITPLAG_DIR
             EOL
 
             wget "https://raw.githubusercontent.com/tcibinan/flaxo/$GITHUB_SHA/docker/compose/docker-compose.yml" \
