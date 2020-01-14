@@ -71,14 +71,16 @@ jobs:
           REST_URL: http://${{ secrets.DEV_HOST }}:${{ secrets.DEV_PORT }}/rest
           GITHUB_ID: ${{ secrets.GITHUB_ID }}
           GITHUB_SECRET: ${{ secrets.GITHUB_SECRET }}
+          GITPLAG_GITHUB_AUTH: ${{ secrets.GITPLAG_GITHUB_AUTH }}
           MOSS_USER_ID: ${{ secrets.MOSS_USER_ID }}
           POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-          DATA_DIR: /root/flaxo-automation/db
-          LOGS_DIR: /root/flaxo-automation/logs
+          GITPLAG_POSTGRES_DB: ${{ secrets.GITPLAG_POSTGRES_DB }}
           DATA2GRAPH_TAG: 0.4
           GITPLAG_TAG: 0.5.2
+          DATA_DIR: /root/flaxo-automation/db
+          LOGS_DIR: /root/flaxo-automation/logs
           GITPLAG_DIR: /root/flaxo-automation/gitplag
           DEPLOY_DIR: /root/flaxo-automation/deploy
         with:
@@ -86,28 +88,40 @@ jobs:
           port: ${{ secrets.DEV_PORT }}
           username: ${{ secrets.DEV_USERNAME }}
           password: ${{ secrets.DEV_PASSWORD }}
-          envs: REST_URL,GITHUB_ID,GITHUB_SECRET,MOSS_USER_ID,POSTGRES_USER,POSTGRES_PASSWORD,POSTGRES_DB,DATA_DIR,LOGS_DIR,DATA2GRAPH_TAG,GITPLAG_TAG,GITPLAG_DIR,DEPLOY_DIR,GITHUB_SHA,GITHUB_REF
+          envs: DEPLOYMENT_URL,REST_URL,GITHUB_ID,GITHUB_SECRET,GITPLAG_GITHUB_AUTH,MOSS_USER_ID,POSTGRES_USER,POSTGRES_PASSWORD,POSTGRES_DB,GITPLAG_POSTGRES_DB,DATA2GRAPH_TAG,GITPLAG_TAG,DATA_DIR,LOGS_DIR,GITPLAG_DIR,DEPLOY_DIR,GITHUB_SHA,GITHUB_REF
           script: |
             cd $DEPLOY_DIR
 
             docker-compose down
 
+            mkdir -p "$DATA_DIR"
+            mkdir -p "$LOGS_DIR"
+            mkdir -p "$GITPLAG_DIR"
+            mkdir -p "$DEPLOY_DIR"
+
             cat > .env << EOL
-            REST_URL=$REST_URL
-            GITHUB_ID=$GITHUB_ID
-            GITHUB_SECRET=$GITHUB_SECRET
-            MOSS_USER_ID=$MOSS_USER_ID
-            POSTGRES_USER=$POSTGRES_USER
-            POSTGRES_PASSWORD=$POSTGRES_PASSWORD
-            POSTGRES_DB=$POSTGRES_DB
-            tag=${GITHUB_REF#refs/tags/}
-            data_dir=$DATA_DIR
-            logs_dir=$LOGS_DIR
-            data2graph_tag=$DATA2GRAPH_TAG
-            gitplag_tag=$GITPLAG_TAG
-            gitplag_dir=$GITPLAG_DIR
+            DEPLOYMENT_URL="$DEPLOYMENT_URL"
+            REST_URL="$REST_URL"
+            GITHUB_ID="$GITHUB_ID"
+            GITHUB_SECRET="$GITHUB_SECRET"
+            GITPLAG_GITHUB_AUTH="$GITPLAG_GITHUB_AUTH"
+            MOSS_USER_ID="$MOSS_USER_ID"
+            POSTGRES_USER="$POSTGRES_USER"
+            POSTGRES_PASSWORD="$POSTGRES_PASSWORD"
+            POSTGRES_DB="$POSTGRES_DB"
+            GITPLAG_POSTGRES_DB="$GITPLAG_POSTGRES_DB"
+            tag="${GITHUB_REF#refs/tags/}"
+            data_dir="$DATA_DIR"
+            logs_dir="$LOGS_DIR"
+            data2graph_tag="$DATA2GRAPH_TAG"
+            gitplag_tag="$GITPLAG_TAG"
+            gitplag_dir="$GITPLAG_DIR"
             EOL
 
+            mkdir -p postgres
             wget "https://raw.githubusercontent.com/tcibinan/flaxo/$GITHUB_SHA/docker/compose/docker-compose.yml" \
                  -O docker-compose.yml
+            wget "https://raw.githubusercontent.com/tcibinan/flaxo/$GITHUB_SHA/docker/compose/postgres/init.sh" \
+                 -O postgres/init.sh
+
             docker-compose up -d

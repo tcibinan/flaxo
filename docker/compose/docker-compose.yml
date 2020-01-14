@@ -3,6 +3,9 @@ services:
   backend:
     image: flaxo/backend:${tag}
     container_name: flaxo-backend
+    depends_on:
+      - postgres
+      - gitplag
     ports:
       - 8080:8080
     volumes:
@@ -15,10 +18,16 @@ services:
       POSTGRES_USER:
       POSTGRES_PASSWORD:
       POSTGRES_DB:
+      GITPLAG_URL: "http://gitplag:8090"
+      GITPLAG_UI_URL: "${DEPLOYMENT_URL}:8880"
+      PLAGIARISM_ANALYSER: gitplag
       postgres_host: postgres
   frontend:
     image: flaxo/frontend:${tag}
     container_name: flaxo-frontend
+    depends_on:
+      - backend
+      - data2graph
     ports:
       - 80:80
   postgres:
@@ -26,10 +35,11 @@ services:
     container_name: flaxo-db
     volumes:
       - ${data_dir}:/var/lib/postgresql/data
+      - ./postgres:/docker-entrypoint-initdb.d
     environment:
       POSTGRES_USER:
       POSTGRES_PASSWORD:
-      POSTGRES_DB:
+      POSTGRES_DBS: ${POSTGRES_DB},${GITPLAG_POSTGRES_DB}
   data2graph:
     image: flaxo/data2graph:${data2graph_tag}
     container_name: flaxo-data2graph
@@ -38,18 +48,22 @@ services:
   gitplag-ui:
     image: nikstep/gitplag-ui:${gitplag_tag}
     container_name: flaxo-gitplag-ui
+    depends_on:
+      - gitplag
     ports:
       - 8880:80
   gitplag:
     image: nikstep/gitplag:${gitplag_tag}
     container_name: flaxo-gitplag
+    depends_on:
+      - postgres
     ports:
       - 8090:8090
     volumes:
       - ${gitplag_dir}:/mnt/gitplag
     environment:
       GITPLAG_MOSS_ID: ${MOSS_USER_ID}
-      GITPLAG_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      GITPLAG_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${GITPLAG_POSTGRES_DB}
       GITPLAG_DATASOURCE_USERNAME: ${POSTGRES_USER}
       GITPLAG_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       GITPLAG_SERVER_URL: ${DEPLOYMENT_URL}:8090

@@ -48,7 +48,8 @@ Once a GitHub OAuth App is created and MOSS `userid` is retrieved then you can r
 | REST_URL | Rest endpoint of the Flaxo deployment. The endpoint should be available from the outer network.  F.e. `http://8.8.8.8:8080/rest`. |
 | POSTGRES_USER | User name to connect to the packaged PostgreSQL DB. |
 | POSTGRES_PASSWORD | User password to connect to the packaged PostgreSQL DB. |
-| POSTGRES_DB | Database name to use in the packaged PostgreSQL DB. |
+| POSTGRES_DB | Database name to use by flaxo in the packaged PostgreSQL DB. |
+| GITPLAG_POSTGRES_DB | Database name to use by gitplag in the packaged PostgreSQL DB. |
 | tag | ![Flaxo latest pre-release](https://img.shields.io/github/release-pre/tcibinan/flaxo.svg?label=pre-release) <br> Flaxo release to use. Latest release can be found [here](https://github.com/tcibinan/flaxo/releases). |
 | data2graph_tag | ![Data2Graph latest pre-release](https://img.shields.io/github/release-pre/tcibinan/data2graph.svg?label=pre-release) <br> Data2graph release to use. It should be specified without `v` prefix, f.e. `v0.4` becomes `0.4`. Latest release can be found [here](https://github.com/tcibinan/data2graph/releases). |
 | gitplag_tag | ![Gitplag latest pre-release](https://img.shields.io/github/release-pre/gitplag/gitplag.svg?label=pre-release) <br> GitPlag release to use. It should be specified without `v` prefix, f.e. `v0.5.2` becomes `0.5.2`. Latest release can be found [here](https://github.com/gitplag/gitplag/releases).
@@ -96,6 +97,7 @@ REST_URL=http://8.8.8.8:8080/rest
 POSTGRES_USER=flaxo
 POSTGRES_PASSWORD=tobechanged
 POSTGRES_DB=flaxo
+GITPLAG_POSTGRES_DB=gitplag
 tag=0.7
 data2graph_tag=0.4
 gitplag_tag=0.5.2
