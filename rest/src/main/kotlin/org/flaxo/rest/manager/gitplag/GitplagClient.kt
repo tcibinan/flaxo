@@ -6,8 +6,10 @@ import io.gitplag.gitplagapi.model.output.analysis.AnalysisResult
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
 /**
@@ -36,15 +38,49 @@ interface GitplagClient {
     fun addRepository(@Body repository: RepositoryInput): Call<ResponseBody>
 
     /**
-     * Updates files of a repository in Gitplag.
+     * Updates the repository in Gitplag.
      */
-    @GET("/api/repositories/{vcsService}/{username}/{projectName}/files/update/detached")
+    @PUT("/api/repositories/{vcsService}/{username}/{projectName}")
     fun updateRepository(@Path("vcsService")
                          vcsService: String,
                          @Path("username")
                          username: String,
                          @Path("projectName")
-                         projectName: String): Call<ResponseBody>
+                         projectName: String,
+                         @Body repository: RepositoryInput): Call<ResponseBody>
+
+    /**
+     * Updates files of a repository in Gitplag.
+     */
+    @GET("/api/repositories/{vcsService}/{username}/{projectName}/files/update/detached")
+    fun updateRepositoryFiles(@Path("vcsService")
+                              vcsService: String,
+                              @Path("username")
+                              username: String,
+                              @Path("projectName")
+                              projectName: String): Call<ResponseBody>
+
+    /**
+     * Deletes base files of a repository in Gitplag.
+     */
+    @DELETE("/api/repositories/{vcsService}/{username}/{projectName}/bases/delete")
+    fun deleteBaseFiles(@Path("vcsService")
+                              vcsService: String,
+                              @Path("username")
+                              username: String,
+                              @Path("projectName")
+                              projectName: String): Call<ResponseBody>
+
+    /**
+     * Deletes solution files of a repository in Gitplag.
+     */
+    @DELETE("/api/repositories/{vcsService}/{username}/{projectName}/solutions/delete")
+    fun deleteSolutionFiles(@Path("vcsService")
+                              vcsService: String,
+                              @Path("username")
+                              username: String,
+                              @Path("projectName")
+                              projectName: String): Call<ResponseBody>
 
 }
 

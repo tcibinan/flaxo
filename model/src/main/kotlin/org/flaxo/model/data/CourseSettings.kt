@@ -25,6 +25,8 @@ data class CourseSettings(
 
         val testingFramework: String? = null,
 
+        val filePatterns: String? = null,
+
         val notificationOnScoreChange: Boolean = false,
 
         val scoreChangeNotificationTemplate: String? = null
@@ -36,6 +38,7 @@ data class CourseSettings(
             language = language,
             testingLanguage = testingLanguage,
             testingFramework = testingFramework,
+            filePatterns = filePatterns,
             notificationOnScoreChange = notificationOnScoreChange,
             scoreChangeNotificationTemplate = scoreChangeNotificationTemplate
     )
@@ -52,6 +55,7 @@ fun CourseSettingsView.model(): CourseSettings = CourseSettings(
         language = language,
         testingLanguage = testingLanguage,
         testingFramework = testingFramework,
+        filePatterns = filePatterns,
         notificationOnScoreChange = notificationOnScoreChange,
         scoreChangeNotificationTemplate = scoreChangeNotificationTemplate
 )

@@ -23,7 +23,7 @@ enum class Language(
          * Compatible testing frameworks that can be used for writing tests with the language.
          */
         val testingFrameworks: Set<Framework> = emptySet()
-): Named, Aliased {
+) : Named, Aliased {
     Kotlin(Names.KOTLIN, setOf("kt", "kts"),
             testingLanguageNames = setOf(Names.KOTLIN),
             testingFrameworks = setOf(Framework.JUnit, Framework.Spek)),
@@ -70,6 +70,9 @@ enum class Language(
      * by the current language.
      */
     infix fun worksWith(testingFramework: Framework): Boolean = testingFramework in testingFrameworks
+
+    val extensionsRegexp: String
+        get() = """.+\.""" + extensions.joinToString(separator = "|", prefix = "(", postfix = ")")
 
     companion object {
 

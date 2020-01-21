@@ -45,6 +45,8 @@ private class CourseSettingsComponent(props: CourseSettingsProps)
     private val courseLanguageSetting = "courseLanguageSetting-" + props.course.id
     private val courseTestingLanguageSetting = "courseTestingLanguageSetting-" + props.course.id
     private val courseTestingFrameworkSetting = "courseTestingFrameworkSetting-" + props.course.id
+    private val coursePlagiarismAnalysisFilePatternsSetting =
+            "coursePlagiarismAnalysisFilePatternsSetting-"+ props.course.id
     private val scoreChangeNotificationTemplateSetting = "scoreMessageTemplateSetting-" + props.course.id
 
     init {
@@ -58,6 +60,7 @@ private class CourseSettingsComponent(props: CourseSettingsProps)
                 languageSelect()
                 testingLanguageSelect()
                 testingFrameworkSelect()
+                plagiarismAnalysisFilePatternsInput()
                 scoreChangeNotificationFlag()
                 scoreChangeNotificationTemplateInput()
             }
@@ -104,6 +107,17 @@ private class CourseSettingsComponent(props: CourseSettingsProps)
                 options = Framework.values().map { it.alias },
                 emptyOption = true,
                 onUpdate = { setState { settings = settings.copy(testingFramework = it.ifBlank { null }) } }
+        )
+    }
+
+    private fun RBuilder.plagiarismAnalysisFilePatternsInput() {
+        inputComponent(inputId = coursePlagiarismAnalysisFilePatternsSetting,
+                name = "File patterns for plagiarism analysis",
+                description = "Regular expression of the names of files that will be downloaded from the repository " +
+                        "and used for plagiarism analysis by Gitplag. " +
+                        "Leave the field blank to use only the files with the language of the course.",
+                default = state.settings.filePatterns,
+                onUpdate = { setState { settings = settings.copy(filePatterns = it.ifBlank { null }) } }
         )
     }
 
