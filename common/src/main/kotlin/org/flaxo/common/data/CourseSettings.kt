@@ -29,7 +29,7 @@ data class CourseSettings(
         /**
          * File patterns for plagiarism analysis.
          */
-        val filePatterns: String?,
+        val plagiarismFilePatterns: String?,
 
         /**
          * Flag that enables notifications on solution score update.

@@ -71,9 +71,6 @@ enum class Language(
      */
     infix fun worksWith(testingFramework: Framework): Boolean = testingFramework in testingFrameworks
 
-    val extensionsRegexp: String
-        get() = """.+\.""" + extensions.joinToString(separator = "|", prefix = "(", postfix = ")")
-
     companion object {
 
         /**

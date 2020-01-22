@@ -113,11 +113,11 @@ private class CourseSettingsComponent(props: CourseSettingsProps)
     private fun RBuilder.plagiarismAnalysisFilePatternsInput() {
         inputComponent(inputId = coursePlagiarismAnalysisFilePatternsSetting,
                 name = "File patterns for plagiarism analysis",
-                description = "Regular expression of the names of files that will be downloaded from the repository " +
-                        "and used for plagiarism analysis by Gitplag. " +
-                        "Leave the field blank to use only the files with the language of the course.",
-                default = state.settings.filePatterns,
-                onUpdate = { setState { settings = settings.copy(filePatterns = it.ifBlank { null }) } }
+                description = "Regular expression which will be used to filter repository files " +
+                        "for plagiarism analysis. Leave the pattern blank to use a default one " +
+                        "(course language source file extensions).",
+                default = state.settings.plagiarismFilePatterns,
+                onUpdate = { setState { settings = settings.copy(plagiarismFilePatterns = it.ifBlank { null }) } }
         )
     }
 

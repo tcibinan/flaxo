@@ -1,6 +1,5 @@
 package org.flaxo.model
 
-import org.flaxo.common.Language
 import org.flaxo.common.data.CodeStyleGrade
 import org.flaxo.common.data.ExternalService
 import org.flaxo.model.dao.BuildReportRepository
@@ -102,7 +101,6 @@ open class PlainDataManager(private val userRepository: UserRepository,
                 .save(CourseSettings(
                         language = language,
                         testingLanguage = testingLanguage,
-                        filePatterns = language?.let(Language::valueOf)?.extensionsRegexp,
                         testingFramework = testingFramework
                 ))
 
