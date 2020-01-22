@@ -20,80 +20,69 @@ import retrofit2.Call
 class GitplagManager(private val gitplagClient: GitplagClient) : ValidationManager {
 
     private val github = "github"
+    private val defaultGit = GitProperty.GITHUB
     private val defaultAnalyzer = AnalyzerProperty.MOSS
     private val defaultAnalysisMode = AnalysisMode.FULL
 
     override fun activate(course: Course) {
-        val userGithubId = course.user.githubId
-                ?: throw ModelException("Github id for ${course.user.name} user was not found")
-        addRepository(userGithubId, course)
-        updateRepositoryFiles(userGithubId, course.name)
+        addRepository(course)
+        updateRepositoryFiles(course)
     }
 
     override fun deactivate(course: Course) = Unit
 
     override fun refresh(course: Course) {
-        val userGithubId = course.user.githubId
-                ?: throw ModelException("Github id for ${course.user.name} user was not found")
-        updateRepository(userGithubId, course)
+        updateRepository(course)
     }
 
     /**
      * Deletes course files and then downloads them again
      */
     fun reloadFiles(course: Course) {
-        val userGithubId = course.user.githubId
-                ?: throw ModelException("Github id for ${course.user.name} user was not found")
-        deleteBaseFiles(userGithubId, course.name)
-        deleteSolutionFiles(userGithubId, course.name)
-        updateRepositoryFiles(userGithubId, course.name)
+        deleteBaseFiles(course)
+        deleteSolutionFiles(course)
+        updateRepositoryFiles(course)
     }
 
-    private fun addRepository(userGithubId: String, course: Course) {
-        val language = Language.from(course.settings.language)
-                ?: throw UnsupportedLanguageException("Course ${course.name} does not have language property")
+    private fun addRepository(course: Course) {
         gitplagClient.addRepository(RepositoryInput(
-                git = GitProperty.GITHUB,
-                language = toGitplagLanguage(language),
-                name = "$userGithubId/${course.name}",
+                git = defaultGit,
+                language = toGitplagLanguage(course.language),
+                name = "${course.githubUserId}/${course.name}",
                 analyzer = defaultAnalyzer,
-                filePatterns = listOf(course.settings.plagiarismFilePatterns ?: language.buildExtensionRegexp()),
+                filePatterns = listOf(course.settings.plagiarismFilePatterns ?: course.language.buildExtensionRegexp()),
                 analysisMode = defaultAnalysisMode
         )).callUnit()
     }
 
-    private fun updateRepository(userGithubId: String, course: Course) {
-        val language = Language.from(course.settings.language)
-                ?: throw UnsupportedLanguageException("Course ${course.name} does not have language property")
+    private fun updateRepository(course: Course) {
         gitplagClient.updateRepository(
-                github,
-                userGithubId,
-                course.name,
+                github, course.githubUserId, course.name,
                 RepositoryUpdate(
-                        language = toGitplagLanguage(language),
+                        language = toGitplagLanguage(course.language),
                         analyzer = defaultAnalyzer,
                         filePatterns = listOf(course.settings.plagiarismFilePatterns
-                                ?: language.buildExtensionRegexp()),
+                                ?: course.language.buildExtensionRegexp()),
                         analysisMode = defaultAnalysisMode
                 )).callUnit()
     }
 
-    private fun deleteBaseFiles(username: String, projectName: String) = gitplagClient.deleteBaseFiles(
+    private fun deleteBaseFiles(course: Course) = gitplagClient.deleteBaseFiles(
             vcsService = github,
-            username = username,
-            projectName = projectName
+            username = course.githubUserId,
+            projectName = course.name
     ).callUnit()
 
-    private fun deleteSolutionFiles(username: String, projectName: String) = gitplagClient.deleteSolutionFiles(
+    private fun deleteSolutionFiles(course: Course) = gitplagClient.deleteSolutionFiles(
             vcsService = github,
-            username = username,
-            projectName = projectName
+            username = course.githubUserId,
+            projectName = course.name
     ).callUnit()
 
-    private fun updateRepositoryFiles(username: String, projectName: String) = gitplagClient.updateRepositoryFiles(
+    private fun updateRepositoryFiles(course: Course) = gitplagClient.updateRepositoryFiles(
             vcsService = github,
-            username = username,
-            projectName = projectName
+            username = course.githubUserId,
+            projectName = course.name
     ).callUnit()
 
     private fun <T> Call<T>.call(): Either<ResponseBody, T> =
@@ -101,6 +90,13 @@ class GitplagManager(private val gitplagClient: GitplagClient) : ValidationManag
                 if (isSuccessful) Either.right(body()!!)
                 else Either.left(errorBody()!!)
             }
+
+    private val Course.githubUserId: String
+        get() = user.githubId ?: throw ModelException("Github id for ${user.name} user was not found")
+
+    private val Course.language: Language
+        get() = Language.from(settings.language)
+                ?: throw UnsupportedLanguageException("Course $name does not have language property")
 
     private fun <T> Call<T>.callUnit(): ResponseBody? =
             execute().run { if (isSuccessful) null else errorBody() }
