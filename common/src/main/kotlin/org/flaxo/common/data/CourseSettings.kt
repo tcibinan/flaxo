@@ -27,6 +27,11 @@ data class CourseSettings(
         val testingFramework: String?,
 
         /**
+         * File pattern for plagiarism analysis.
+         */
+        val plagiarismFilePattern: String?,
+
+        /**
          * Flag that enables notifications on solution score update.
          */
         val notificationOnScoreChange: Boolean,

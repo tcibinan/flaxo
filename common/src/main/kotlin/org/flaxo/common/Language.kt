@@ -23,7 +23,7 @@ enum class Language(
          * Compatible testing frameworks that can be used for writing tests with the language.
          */
         val testingFrameworks: Set<Framework> = emptySet()
-): Named, Aliased {
+) : Named, Aliased {
     Kotlin(Names.KOTLIN, setOf("kt", "kts"),
             testingLanguageNames = setOf(Names.KOTLIN),
             testingFrameworks = setOf(Framework.JUnit, Framework.Spek)),

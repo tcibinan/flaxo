@@ -45,6 +45,8 @@ private class CourseSettingsComponent(props: CourseSettingsProps)
     private val courseLanguageSetting = "courseLanguageSetting-" + props.course.id
     private val courseTestingLanguageSetting = "courseTestingLanguageSetting-" + props.course.id
     private val courseTestingFrameworkSetting = "courseTestingFrameworkSetting-" + props.course.id
+    private val coursePlagiarismAnalysisFilePatternSetting =
+            "coursePlagiarismAnalysisFilePatternSetting-"+ props.course.id
     private val scoreChangeNotificationTemplateSetting = "scoreMessageTemplateSetting-" + props.course.id
 
     init {
@@ -58,6 +60,7 @@ private class CourseSettingsComponent(props: CourseSettingsProps)
                 languageSelect()
                 testingLanguageSelect()
                 testingFrameworkSelect()
+                plagiarismAnalysisFilePatternInput()
                 scoreChangeNotificationFlag()
                 scoreChangeNotificationTemplateInput()
             }
@@ -104,6 +107,17 @@ private class CourseSettingsComponent(props: CourseSettingsProps)
                 options = Framework.values().map { it.alias },
                 emptyOption = true,
                 onUpdate = { setState { settings = settings.copy(testingFramework = it.ifBlank { null }) } }
+        )
+    }
+
+    private fun RBuilder.plagiarismAnalysisFilePatternInput() {
+        inputComponent(inputId = coursePlagiarismAnalysisFilePatternSetting,
+                name = "File pattern for plagiarism analysis",
+                description = "Regular expression which will be used to filter repository files " +
+                        "for plagiarism analysis. Leave the pattern blank to use a default one " +
+                        "(course language source file extensions).",
+                default = state.settings.plagiarismFilePattern,
+                onUpdate = { setState { settings = settings.copy(plagiarismFilePattern = it.ifBlank { null }) } }
         )
     }
 
