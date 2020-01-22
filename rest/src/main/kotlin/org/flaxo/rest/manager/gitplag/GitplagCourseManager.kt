@@ -19,7 +19,7 @@ class GitplagCourseManager(private val courseManager: CourseManager,
         val course = dataManager.getCourse(id) ?: throw CourseNotFoundException(id)
         if (course.user != user) throw CourseAccessDeniedException(user.name, id)
 
-        val reloadRepositoryFiles = course.settings.plagiarismFilePatterns != settings.plagiarismFilePatterns
+        val reloadRepositoryFiles = course.settings.plagiarismFilePattern != settings.plagiarismFilePattern
 
         val courseView = courseManager.updateSettings(userName, id, settings)
 

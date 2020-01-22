@@ -25,7 +25,7 @@ data class CourseSettings(
 
         val testingFramework: String? = null,
 
-        val plagiarismFilePatterns: String? = null,
+        val plagiarismFilePattern: String? = null,
 
         val notificationOnScoreChange: Boolean = false,
 
@@ -38,7 +38,7 @@ data class CourseSettings(
             language = language,
             testingLanguage = testingLanguage,
             testingFramework = testingFramework,
-            plagiarismFilePatterns = plagiarismFilePatterns,
+            plagiarismFilePattern = plagiarismFilePattern,
             notificationOnScoreChange = notificationOnScoreChange,
             scoreChangeNotificationTemplate = scoreChangeNotificationTemplate
     )
@@ -55,7 +55,7 @@ fun CourseSettingsView.model(): CourseSettings = CourseSettings(
         language = language,
         testingLanguage = testingLanguage,
         testingFramework = testingFramework,
-        plagiarismFilePatterns = plagiarismFilePatterns,
+        plagiarismFilePattern = plagiarismFilePattern,
         notificationOnScoreChange = notificationOnScoreChange,
         scoreChangeNotificationTemplate = scoreChangeNotificationTemplate
 )

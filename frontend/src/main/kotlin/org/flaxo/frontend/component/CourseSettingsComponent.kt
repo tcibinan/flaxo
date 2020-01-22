@@ -45,8 +45,8 @@ private class CourseSettingsComponent(props: CourseSettingsProps)
     private val courseLanguageSetting = "courseLanguageSetting-" + props.course.id
     private val courseTestingLanguageSetting = "courseTestingLanguageSetting-" + props.course.id
     private val courseTestingFrameworkSetting = "courseTestingFrameworkSetting-" + props.course.id
-    private val coursePlagiarismAnalysisFilePatternsSetting =
-            "coursePlagiarismAnalysisFilePatternsSetting-"+ props.course.id
+    private val coursePlagiarismAnalysisFilePatternSetting =
+            "coursePlagiarismAnalysisFilePatternSetting-"+ props.course.id
     private val scoreChangeNotificationTemplateSetting = "scoreMessageTemplateSetting-" + props.course.id
 
     init {
@@ -60,7 +60,7 @@ private class CourseSettingsComponent(props: CourseSettingsProps)
                 languageSelect()
                 testingLanguageSelect()
                 testingFrameworkSelect()
-                plagiarismAnalysisFilePatternsInput()
+                plagiarismAnalysisFilePatternInput()
                 scoreChangeNotificationFlag()
                 scoreChangeNotificationTemplateInput()
             }
@@ -110,14 +110,14 @@ private class CourseSettingsComponent(props: CourseSettingsProps)
         )
     }
 
-    private fun RBuilder.plagiarismAnalysisFilePatternsInput() {
-        inputComponent(inputId = coursePlagiarismAnalysisFilePatternsSetting,
-                name = "File patterns for plagiarism analysis",
+    private fun RBuilder.plagiarismAnalysisFilePatternInput() {
+        inputComponent(inputId = coursePlagiarismAnalysisFilePatternSetting,
+                name = "File pattern for plagiarism analysis",
                 description = "Regular expression which will be used to filter repository files " +
                         "for plagiarism analysis. Leave the pattern blank to use a default one " +
                         "(course language source file extensions).",
-                default = state.settings.plagiarismFilePatterns,
-                onUpdate = { setState { settings = settings.copy(plagiarismFilePatterns = it.ifBlank { null }) } }
+                default = state.settings.plagiarismFilePattern,
+                onUpdate = { setState { settings = settings.copy(plagiarismFilePattern = it.ifBlank { null }) } }
         )
     }
 

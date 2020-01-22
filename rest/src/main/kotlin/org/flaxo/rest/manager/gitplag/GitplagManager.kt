@@ -50,7 +50,7 @@ class GitplagManager(private val gitplagClient: GitplagClient) : ValidationManag
                 language = toGitplagLanguage(course.language),
                 name = "${course.githubUserId}/${course.name}",
                 analyzer = defaultAnalyzer,
-                filePatterns = listOf(course.settings.plagiarismFilePatterns ?: course.language.buildExtensionRegexp()),
+                filePatterns = listOf(course.settings.plagiarismFilePattern ?: course.language.buildExtensionRegexp()),
                 analysisMode = defaultAnalysisMode
         )).callUnit()
     }
@@ -61,7 +61,7 @@ class GitplagManager(private val gitplagClient: GitplagClient) : ValidationManag
                 RepositoryUpdate(
                         language = toGitplagLanguage(course.language),
                         analyzer = defaultAnalyzer,
-                        filePatterns = listOf(course.settings.plagiarismFilePatterns
+                        filePatterns = listOf(course.settings.plagiarismFilePattern
                                 ?: course.language.buildExtensionRegexp()),
                         analysisMode = defaultAnalysisMode
                 )).callUnit()
