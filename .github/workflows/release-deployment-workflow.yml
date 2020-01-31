@@ -52,15 +52,18 @@ jobs:
     steps:
       - name: Dump database
         uses: appleboy/ssh-action@v0.0.5
+        env:
+          DUMPS_DIR: /root/flaxo-automation/dumps
         with:
           host: ${{ secrets.DEV_HOST }}
           port: ${{ secrets.DEV_PORT }}
           username: ${{ secrets.DEV_USERNAME }}
           password: ${{ secrets.DEV_PASSWORD }}
+          envs: DUMPS_DIR
           script: |
             CURRENT_DATE=$(date +%Y-%m-%d.%H:%M:%S)
-            docker exec flaxo-db pg_dump -U ${{ secrets.POSTGRES_USER }} ${{ secrets.POSTGRES_DB }} > "/root/flaxo-automation/dumps/flaxo.$CURRENT_DATE.bak"
-            docker exec flaxo-db pg_dump -U ${{ secrets.POSTGRES_USER }} ${{ secrets.GITPLAG_POSTGRES_DB }} > "/root/flaxo-automation/dumps/gitplag.$CURRENT_DATE.bak"
+            docker exec flaxo-db pg_dump -U ${{ secrets.POSTGRES_USER }} ${{ secrets.POSTGRES_DB }} > "$DUMPS_DIR/flaxo.$CURRENT_DATE.bak"
+            docker exec flaxo-db pg_dump -U ${{ secrets.POSTGRES_USER }} ${{ secrets.GITPLAG_POSTGRES_DB }} > "$DUMPS_DIR/gitplag.$CURRENT_DATE.bak"
   deploy:
     name: Deploy flaxo to dev server
     runs-on: ubuntu-latest
