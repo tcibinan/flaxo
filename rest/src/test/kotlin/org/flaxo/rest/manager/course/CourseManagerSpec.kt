@@ -25,10 +25,11 @@ class CourseManagerSpec : SubjectSpek<CourseManager>({
     val anotherUser = User(id = 2, name = "anotherUser")
     val settings = CourseSettings(id = 1, language = "language", testingLanguage = "testingLanguage",
             testingFramework = "testingFramework", notificationOnScoreChange = false,
-            scoreChangeNotificationTemplate = null)
+            scoreChangeNotificationTemplate = null, plagiarismFilePattern = null)
     val anotherSettings = CourseSettings(id = 2, language = "anotherLanguage",
             testingLanguage = "anotherTestingLanguage", testingFramework = "anotherTestingFramework",
-            notificationOnScoreChange = false, scoreChangeNotificationTemplate = null)
+            notificationOnScoreChange = false, scoreChangeNotificationTemplate = null,
+            plagiarismFilePattern = null)
 
     val dataManager = mock<DataManager> {
         on { getUser(eq(user.name)) }.thenReturn(user)
