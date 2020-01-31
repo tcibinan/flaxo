@@ -83,3 +83,11 @@ It can run tests in repository branches and pull requests.
 You should be authorized in *Travis* with your *GitHub* account to authorize it in Flaxo.
 Travis account is connected to Flaxo account automatically using the connected *GitHub* account token.
 Flaxo connects *Travis* account when *user starts its first course*.
+
+## Gitplag
+
+*Gitplag* is a web service for plagiarism analysis of git repositories.
+By default Flaxo deployment includes embedded *Gitplag* components and the service is used for plagiarism analysis.
+
+Currently *Gitplag* uses default server *GitHub* authorization which requires additional access rights in case of
+private courses plagiarism analyses.
