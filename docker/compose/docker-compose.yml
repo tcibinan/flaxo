@@ -20,8 +20,8 @@ services:
       POSTGRES_DB:
       GITPLAG_URL: "http://gitplag:8090"
       GITPLAG_UI_URL: "${DEPLOYMENT_URL}:8880"
-      PLAGIARISM_ANALYSER: gitplag
-      postgres_host: postgres
+      PLAGIARISM_ANALYSER: "gitplag"
+      postgres_host: "postgres"
   frontend:
     image: flaxo/frontend:${tag}
     container_name: flaxo-frontend
@@ -39,7 +39,7 @@ services:
     environment:
       POSTGRES_USER:
       POSTGRES_PASSWORD:
-      POSTGRES_DBS: ${POSTGRES_DB},${GITPLAG_POSTGRES_DB}
+      POSTGRES_DBS: "${POSTGRES_DB},${GITPLAG_POSTGRES_DB}"
   data2graph:
     image: flaxo/data2graph:${data2graph_tag}
     container_name: flaxo-data2graph
@@ -62,10 +62,10 @@ services:
     volumes:
       - ${gitplag_dir}:/mnt/gitplag
     environment:
-      GITPLAG_MOSS_ID: ${MOSS_USER_ID}
-      GITPLAG_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${GITPLAG_POSTGRES_DB}
-      GITPLAG_DATASOURCE_USERNAME: ${POSTGRES_USER}
-      GITPLAG_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
-      GITPLAG_SERVER_URL: ${DEPLOYMENT_URL}:8090
-      GITPLAG_UI_URL: ${DEPLOYMENT_URL}:8880
+      GITPLAG_MOSS_ID: "${MOSS_USER_ID}"
+      GITPLAG_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/${GITPLAG_POSTGRES_DB}"
+      GITPLAG_DATASOURCE_USERNAME: "${POSTGRES_USER}"
+      GITPLAG_DATASOURCE_PASSWORD: "${POSTGRES_PASSWORD}"
+      GITPLAG_SERVER_URL: "${DEPLOYMENT_URL}:8090"
+      GITPLAG_UI_URL: "${DEPLOYMENT_URL}:8880"
       GITPLAG_GITHUB_AUTH:
