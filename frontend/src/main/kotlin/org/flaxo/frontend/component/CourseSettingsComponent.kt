@@ -7,6 +7,7 @@ import org.flaxo.common.Framework
 import org.flaxo.common.Language
 import org.flaxo.common.data.Course
 import org.flaxo.common.data.CourseSettings
+import org.flaxo.common.data.PlagiarismBackend
 import org.flaxo.frontend.Container
 import org.flaxo.frontend.Notifications
 import org.flaxo.frontend.OnCourseChange
@@ -47,6 +48,7 @@ private class CourseSettingsComponent(props: CourseSettingsProps)
     private val courseTestingFrameworkSetting = "courseTestingFrameworkSetting-" + props.course.id
     private val coursePlagiarismAnalysisFilePatternSetting =
             "coursePlagiarismAnalysisFilePatternSetting-"+ props.course.id
+    private val coursePlagiarismAnalysisBackendSetting = "coursePlagiarismAnalysisBackendSetting-" + props.course.id
     private val scoreChangeNotificationTemplateSetting = "scoreMessageTemplateSetting-" + props.course.id
 
     init {
@@ -61,6 +63,7 @@ private class CourseSettingsComponent(props: CourseSettingsProps)
                 testingLanguageSelect()
                 testingFrameworkSelect()
                 plagiarismAnalysisFilePatternInput()
+                plagiarismAnalysisBackendSelect()
                 scoreChangeNotificationFlag()
                 scoreChangeNotificationTemplateInput()
             }
@@ -118,6 +121,23 @@ private class CourseSettingsComponent(props: CourseSettingsProps)
                         "(course language source file extensions).",
                 default = state.settings.plagiarismFilePattern,
                 onUpdate = { setState { settings = settings.copy(plagiarismFilePattern = it.ifBlank { null }) } }
+        )
+    }
+
+    private fun RBuilder.plagiarismAnalysisBackendSelect() {
+        selectComponent(selectId = coursePlagiarismAnalysisBackendSetting,
+                name = "Plagiarism analysis backend",
+                description = "Plagiarism analysis backend which will be used for all tasks in the course.",
+                default = state.settings.plagiarismBackend.name,
+                options = PlagiarismBackend.values().map { it.name },
+                emptyOption = false,
+                onUpdate = {
+                    setState {
+                        settings = settings.copy(plagiarismBackend = it.ifBlank { null }
+                                ?.let { PlagiarismBackend.valueOf(it) }
+                                ?: PlagiarismBackend.MOSS)
+                    }
+                }
         )
     }
 

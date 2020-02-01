@@ -32,6 +32,11 @@ data class CourseSettings(
         val plagiarismFilePattern: String?,
 
         /**
+         * Plagiarism analysis backend.
+         */
+        val plagiarismBackend: PlagiarismBackend,
+
+        /**
          * Flag that enables notifications on solution score update.
          */
         val notificationOnScoreChange: Boolean,
