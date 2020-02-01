@@ -72,9 +72,8 @@ private class TaskComponent(props: TaskProps) : RComponent<TaskProps, TaskState>
                         props.task.plagiarismReports
                                 .maxBy { it.date }
                                 ?.also {
-                                    a(classes = "card-link rows-link", href = it.url) {
+                                    a(classes = "card-link", href = it.url) {
                                         +"Plagiarism report"
-                                        small { +"valid 14 days only" }
                                     }
                                     a(classes = "card-link", href = "") {
                                         attrs {

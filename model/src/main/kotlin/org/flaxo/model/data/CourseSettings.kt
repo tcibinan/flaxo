@@ -1,9 +1,12 @@
 package org.flaxo.model.data
 
 import org.flaxo.common.Identifiable
+import org.flaxo.common.data.PlagiarismBackend
 import org.flaxo.model.CourseSettingsView
 import java.util.Objects
 import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import javax.persistence.GeneratedValue
 import javax.persistence.Id
 import javax.persistence.Table
@@ -27,6 +30,9 @@ data class CourseSettings(
 
         val plagiarismFilePattern: String? = null,
 
+        @Enumerated(EnumType.STRING)
+        val plagiarismBackend: PlagiarismBackend = PlagiarismBackend.MOSS,
+
         val notificationOnScoreChange: Boolean = false,
 
         val scoreChangeNotificationTemplate: String? = null
@@ -39,6 +45,7 @@ data class CourseSettings(
             testingLanguage = testingLanguage,
             testingFramework = testingFramework,
             plagiarismFilePattern = plagiarismFilePattern,
+            plagiarismBackend = plagiarismBackend,
             notificationOnScoreChange = notificationOnScoreChange,
             scoreChangeNotificationTemplate = scoreChangeNotificationTemplate
     )
@@ -56,6 +63,7 @@ fun CourseSettingsView.model(): CourseSettings = CourseSettings(
         testingLanguage = testingLanguage,
         testingFramework = testingFramework,
         plagiarismFilePattern = plagiarismFilePattern,
+        plagiarismBackend = plagiarismBackend,
         notificationOnScoreChange = notificationOnScoreChange,
         scoreChangeNotificationTemplate = scoreChangeNotificationTemplate
 )

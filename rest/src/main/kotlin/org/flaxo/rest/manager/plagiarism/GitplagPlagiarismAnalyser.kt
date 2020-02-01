@@ -8,6 +8,7 @@ import org.flaxo.moss.MossMatch
 import org.flaxo.moss.MossResult
 import org.flaxo.rest.manager.PlagiarismAnalysisException
 import org.flaxo.rest.manager.gitplag.GitplagClient
+import org.flaxo.rest.manager.gitplag.toGitplagAnalyser
 import org.flaxo.rest.manager.gitplag.toGitplagLanguage
 import java.net.URL
 
@@ -29,7 +30,8 @@ class GitplagPlagiarismAnalyser(
                 projectName = course.name,
                 analysisRequest = AnalysisRequest(
                         branch = task.branch,
-                        language = toGitplagLanguage(Language.from(task.course.settings.language))
+                        language = toGitplagLanguage(Language.from(course.settings.language)),
+                        analyzer = toGitplagAnalyser(course.settings.plagiarismBackend)
                 )
         )
 
