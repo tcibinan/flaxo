@@ -8,6 +8,7 @@ import kotlinx.html.js.onClickFunction
 import org.flaxo.common.data.Course
 import org.flaxo.common.data.CourseLifecycle
 import org.flaxo.common.data.DateTime
+import org.flaxo.common.data.PlagiarismReport
 import org.flaxo.common.data.SolutionReview
 import org.flaxo.common.data.Task
 import org.flaxo.frontend.Configuration
@@ -44,7 +45,9 @@ fun RBuilder.task(course: Course, task: Task, onUpdate: OnTaskChange) = child(Ta
 
 private class TaskProps(var course: Course, var task: Task, var onUpdate: OnTaskChange) : RProps
 
-private class TaskState(var scores: Map<String, Int>, var reviews: Map<String, SolutionReview>) : RState
+private class TaskState(var scores: Map<String, Int>,
+                        var reviews: Map<String, SolutionReview>,
+                        var plagiarismReport: PlagiarismReport?) : RState
 
 private class TaskComponent(props: TaskProps) : RComponent<TaskProps, TaskState>(props) {
 
@@ -58,6 +61,7 @@ private class TaskComponent(props: TaskProps) : RComponent<TaskProps, TaskState>
     init {
         state.scores = emptyMap()
         state.reviews = emptyMap()
+        state.plagiarismReport = props.task.plagiarismReports.maxBy { it.date }
         flaxoClient = Container.flaxoClient
     }
 
@@ -69,8 +73,7 @@ private class TaskComponent(props: TaskProps) : RComponent<TaskProps, TaskState>
                     taskStatus()
                     div(classes = "card-controls") {
                         a(classes = "card-link", href = props.task.url) { +"Git branch" }
-                        props.task.plagiarismReports
-                                .maxBy { it.date }
+                        state.plagiarismReport
                                 ?.also {
                                     a(classes = "card-link", href = it.url) {
                                         +"Plagiarism report"
@@ -120,6 +123,7 @@ private class TaskComponent(props: TaskProps) : RComponent<TaskProps, TaskState>
                         rules(props.course, props.task, props.onUpdate)
                     }
                     taskStatistics(props.course, props.task,
+                            state.plagiarismReport,
                             onSolutionScoreUpdate = { student, score ->
                                 setState { scores += Pair(student, score) }
                             },
@@ -135,7 +139,7 @@ private class TaskComponent(props: TaskProps) : RComponent<TaskProps, TaskState>
     private fun RBuilder.taskStatus() {
         val now = DateTime.now()
         val deadline = props.task.deadline
-        val latestPlagiarismAnalysisDatetime = props.task.plagiarismReports.maxBy { it.date }?.date
+        val latestPlagiarismAnalysisDatetime = state.plagiarismReport?.date
         small(classes = "text-muted task-deadline") {
             if (deadline != null) {
                 deadlineIndication(now, deadline)
@@ -192,7 +196,8 @@ private class TaskComponent(props: TaskProps) : RComponent<TaskProps, TaskState>
         credentials?.also {
             try {
                 Notifications.info("Task ${props.task.branch} plagiarism analysis has been started.")
-                flaxoClient.analysePlagiarism(it, props.course.name, props.task.branch)
+                val plagiarismReport = flaxoClient.analysePlagiarism(it, props.course.name, props.task.branch)
+                setState { this.plagiarismReport = plagiarismReport }
                 Notifications.success("Task ${props.course.name} plagiarism analysis has finished successfully.")
             } catch (e: FlaxoHttpException) {
                 console.log(e)

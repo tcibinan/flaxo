@@ -4,6 +4,7 @@ import org.flaxo.common.data.Course
 import org.flaxo.common.data.CourseSettings
 import org.flaxo.common.data.CourseStatistics
 import org.flaxo.common.data.GithubAuthData
+import org.flaxo.common.data.PlagiarismReport
 import org.flaxo.common.data.Solution
 import org.flaxo.common.data.SolutionReview
 import org.flaxo.common.data.Task
@@ -69,9 +70,9 @@ interface FlaxoClient {
     suspend fun deleteCourse(credentials: Credentials, courseName: String)
 
     /**
-     * Launches a plagiarism analysis of a particular [task] in the course with [courseName].
+     * Performs a plagiarism analysis of a particular [task] in the course with [courseName].
      */
-    suspend fun analysePlagiarism(credentials: Credentials, courseName: String, task: String)
+    suspend fun analysePlagiarism(credentials: Credentials, courseName: String, task: String): PlagiarismReport
 
     /**
      * Synchronizes course statistics with all the external vendors: github, travis, codacy.

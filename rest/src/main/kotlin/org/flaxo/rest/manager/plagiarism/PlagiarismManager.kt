@@ -1,5 +1,6 @@
 package org.flaxo.rest.manager.plagiarism
 
+import org.flaxo.common.data.PlagiarismReport
 import org.flaxo.common.data.plagiarism.PlagiarismGraph
 
 /**
@@ -12,7 +13,7 @@ interface PlagiarismManager {
      *
      * It is non-blocking and returns immediately.
      */
-    fun analyse(userName: String, courseName: String, taskBranch: String)
+    fun analyse(userName: String, courseName: String, taskBranch: String): PlagiarismReport
 
     /**
      * Generates a plagiarism graph temporary access token.
