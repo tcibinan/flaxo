@@ -55,7 +55,6 @@ private class NavigationBar(props: NavigationBarProps) : RComponent<NavigationBa
                 }
                 +"Flaxo "
                 span(classes = "text-muted align-middle flaxo-version") {
-                    +"v"
                     +Configuration.FLAXO_VERSION
                 }
             }

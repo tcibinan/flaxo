@@ -3,6 +3,7 @@ package org.flaxo.rest.manager.plagiarism
 import org.apache.commons.collections4.map.PassiveExpiringMap
 import org.apache.logging.log4j.LogManager
 import org.flaxo.common.NotFoundException
+import org.flaxo.common.data.PlagiarismReport as PlagiarismReportView
 import org.flaxo.common.data.plagiarism.PlagiarismGraph
 import org.flaxo.common.data.plagiarism.PlagiarismLink
 import org.flaxo.common.data.plagiarism.PlagiarismNode
@@ -29,7 +30,7 @@ class BasicPlagiarismManager(private val dataManager: DataManager,
 
     private val analyses: MutableMap<String, Long> = PassiveExpiringMap(1 of TimeUnit.HOURS)
 
-    override fun analyse(userName: String, courseName: String, taskBranch: String) {
+    override fun analyse(userName: String, courseName: String, taskBranch: String): PlagiarismReportView {
         logger.info("Trying to start plagiarism analysis for $userName/$courseName")
         val user = dataManager.getUser(userName)
                 ?: throw UserNotFoundException(userName)
@@ -38,7 +39,7 @@ class BasicPlagiarismManager(private val dataManager: DataManager,
         val task = course.tasks.find { it.branch == taskBranch }
                 ?: throw TaskNotFoundException(userName, courseName, taskBranch)
 
-        mossManager.analyse(task)
+        return mossManager.analyse(task)
     }
 
     override fun generateGraphAccessToken(userName: String, courseName: String, taskBranch: String): String {

@@ -9,6 +9,7 @@ import org.flaxo.frontend.component.report.deadlineReport
 import org.flaxo.frontend.component.report.plagiarismReport
 import org.flaxo.frontend.component.report.scoreInput
 import org.flaxo.common.data.Course
+import org.flaxo.common.data.PlagiarismReport
 import org.flaxo.common.data.Solution
 import org.flaxo.common.data.SolutionReview
 import org.flaxo.common.data.Task
@@ -32,12 +33,14 @@ import react.dom.tr
  */
 fun RBuilder.taskStatistics(course: Course,
                             task: Task,
+                            plagiarismReport: PlagiarismReport?,
                             onSolutionScoreUpdate: (String, Int) -> Unit,
                             onReviewAddition: (String, SolutionReview) -> Unit
 ) = child(TaskStatistics::class) {
     attrs {
         this.course = course
         this.task = task
+        this.plagiarismReport = plagiarismReport
         this.onStudentScoreUpdate = onSolutionScoreUpdate
         this.onReviewAddition = onReviewAddition
     }
@@ -45,6 +48,7 @@ fun RBuilder.taskStatistics(course: Course,
 
 private class TaskStatisticsProps(var course: Course,
                                   var task: Task,
+                                  var plagiarismReport: PlagiarismReport?,
                                   var onStudentScoreUpdate: (String, Int) -> Unit,
                                   var onReviewAddition: (String, SolutionReview) -> Unit
 ) : RProps
@@ -91,7 +95,7 @@ private class TaskStatistics(props: TaskStatisticsProps) : RComponent<TaskStatis
                                     codeStyleReport(solution)
                                 }
                                 td(classes = "report-cell") {
-                                    plagiarismReport(props.task, solution)
+                                    plagiarismReport(props.plagiarismReport, solution)
                                 }
                                 td(classes = "report-cell") {
                                     deadlineReport(props.task, solution)
