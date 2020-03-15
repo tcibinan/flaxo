@@ -105,22 +105,22 @@ jobs:
             mkdir -p "$DEPLOY_DIR"
 
             cat > .env << EOL
-            DEPLOYMENT_URL="$DEPLOYMENT_URL"
-            REST_URL="$REST_URL"
-            GITHUB_ID="$GITHUB_ID"
-            GITHUB_SECRET="$GITHUB_SECRET"
-            GITPLAG_GITHUB_AUTH="$GITPLAG_GITHUB_AUTH"
-            MOSS_USER_ID="$MOSS_USER_ID"
-            POSTGRES_USER="$POSTGRES_USER"
-            POSTGRES_PASSWORD="$POSTGRES_PASSWORD"
-            POSTGRES_DB="$POSTGRES_DB"
-            GITPLAG_POSTGRES_DB="$GITPLAG_POSTGRES_DB"
-            tag="${GITHUB_REF#refs/tags/}"
-            data_dir="$DATA_DIR"
-            logs_dir="$LOGS_DIR"
-            data2graph_tag="$DATA2GRAPH_TAG"
-            gitplag_tag="$GITPLAG_TAG"
-            gitplag_dir="$GITPLAG_DIR"
+            DEPLOYMENT_URL=$DEPLOYMENT_URL
+            REST_URL=$REST_URL
+            GITHUB_ID=$GITHUB_ID
+            GITHUB_SECRET=$GITHUB_SECRET
+            GITPLAG_GITHUB_AUTH=$GITPLAG_GITHUB_AUTH
+            MOSS_USER_ID=$MOSS_USER_ID
+            POSTGRES_USER=$POSTGRES_USER
+            POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+            POSTGRES_DB=$POSTGRES_DB
+            GITPLAG_POSTGRES_DB=$GITPLAG_POSTGRES_DB
+            tag=${GITHUB_REF#refs/tags/}
+            data_dir=$DATA_DIR
+            logs_dir=$LOGS_DIR
+            data2graph_tag=$DATA2GRAPH_TAG
+            gitplag_tag=$GITPLAG_TAG
+            gitplag_dir=$GITPLAG_DIR
             EOL
 
             mkdir -p postgres
