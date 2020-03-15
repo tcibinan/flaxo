@@ -1,4 +1,4 @@
-package org.flaxo.rest.manager.plagiarism
+package org.flaxo.rest.manager.plag
 
 import org.flaxo.model.data.Task
 import org.flaxo.moss.MossResult

@@ -6,7 +6,7 @@ import org.flaxo.moss.SimpleMossSubmissionsAnalyser
 import org.flaxo.rest.manager.github.GithubManager
 import org.flaxo.rest.manager.moss.MossSubmissionExtractor
 import org.flaxo.rest.manager.moss.SimpleMossSubmissionsExtractor
-import org.flaxo.rest.manager.plagiarism.MossPlagiarismAnalyser
+import org.flaxo.rest.manager.moss.MossPlagiarismAnalyser
 import org.jsoup.Jsoup
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty

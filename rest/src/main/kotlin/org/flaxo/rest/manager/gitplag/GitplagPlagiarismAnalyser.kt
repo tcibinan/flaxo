@@ -1,4 +1,4 @@
-package org.flaxo.rest.manager.plagiarism
+package org.flaxo.rest.manager.gitplag
 
 import io.gitplag.gitplagapi.model.input.AnalysisRequest
 import org.flaxo.common.Language
@@ -7,9 +7,7 @@ import org.flaxo.model.data.Task
 import org.flaxo.moss.MossMatch
 import org.flaxo.moss.MossResult
 import org.flaxo.rest.manager.PlagiarismAnalysisException
-import org.flaxo.rest.manager.gitplag.GitplagClient
-import org.flaxo.rest.manager.gitplag.toGitplagAnalyser
-import org.flaxo.rest.manager.gitplag.toGitplagLanguage
+import org.flaxo.rest.manager.plag.PlagiarismAnalyser
 import java.net.URL
 
 /**

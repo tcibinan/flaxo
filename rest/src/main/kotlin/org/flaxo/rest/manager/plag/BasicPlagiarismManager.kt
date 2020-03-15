@@ -1,4 +1,4 @@
-package org.flaxo.rest.manager.plagiarism
+package org.flaxo.rest.manager.plag
 
 import org.apache.commons.collections4.map.PassiveExpiringMap
 import org.apache.logging.log4j.LogManager
@@ -14,18 +14,14 @@ import org.flaxo.rest.manager.CourseNotFoundException
 import org.flaxo.rest.manager.PlagiarismReportNotFoundException
 import org.flaxo.rest.manager.TaskNotFoundException
 import org.flaxo.rest.manager.UserNotFoundException
-import org.flaxo.rest.manager.moss.MossManager
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 /**
  * Basic plagiarism manager implementation.
- *
- * It uses MOSS for plagiarism analysis and generates hour-long graph access tokens which are stored in [analyses]
- * as (token, plagiarism report id) pairs.
  */
 class BasicPlagiarismManager(private val dataManager: DataManager,
-                             private val mossManager: MossManager
+                             private val plagiarismAnalysisManager: PlagiarismAnalysisManager
 ) : PlagiarismManager {
 
     private val analyses: MutableMap<String, Long> = PassiveExpiringMap(1 of TimeUnit.HOURS)
@@ -39,7 +35,7 @@ class BasicPlagiarismManager(private val dataManager: DataManager,
         val task = course.tasks.find { it.branch == taskBranch }
                 ?: throw TaskNotFoundException(userName, courseName, taskBranch)
 
-        return mossManager.analyse(task)
+        return plagiarismAnalysisManager.analyse(task)
     }
 
     override fun generateGraphAccessToken(userName: String, courseName: String, taskBranch: String): String {

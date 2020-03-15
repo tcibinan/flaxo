@@ -1,4 +1,4 @@
-package org.flaxo.rest.manager.plagiarism
+package org.flaxo.rest.manager.plag
 
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
@@ -20,7 +20,6 @@ import org.flaxo.rest.manager.CourseNotFoundException
 import org.flaxo.rest.manager.PlagiarismReportNotFoundException
 import org.flaxo.rest.manager.TaskNotFoundException
 import org.flaxo.rest.manager.UserNotFoundException
-import org.flaxo.rest.manager.moss.MossManager
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
@@ -61,9 +60,9 @@ class BasicPlagiarismManagerSpec : SubjectSpek<PlagiarismManager>({
         on { getPlagiarismReport(report.id) } doReturn (report)
         on { getPlagiarismReport(anotherReport.id) } doReturn (anotherReport)
     }
-    val mossManager: MossManager = mock {}
+    val plagiarismAnalysisManager: PlagiarismAnalysisManager = mock {}
 
-    subject { BasicPlagiarismManager(dataManager, mossManager) }
+    subject { BasicPlagiarismManager(dataManager, plagiarismAnalysisManager) }
 
     describe("plagiarism manager") {
         describe("plagiarism analysis") {
@@ -94,7 +93,7 @@ class BasicPlagiarismManagerSpec : SubjectSpek<PlagiarismManager>({
             on("analysing plagiarism") {
                 subject.analyse(user.name, course.name, task.branch)
                 it("should call delegate analysis to moss plagiarism manager") {
-                    verify(mossManager).analyse(task)
+                    verify(plagiarismAnalysisManager).analyse(task)
                 }
             }
         }

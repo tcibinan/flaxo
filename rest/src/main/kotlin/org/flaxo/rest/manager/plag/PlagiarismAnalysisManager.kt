@@ -1,12 +1,12 @@
-package org.flaxo.rest.manager.moss
+package org.flaxo.rest.manager.plag
 
 import org.flaxo.common.data.PlagiarismReport
 import org.flaxo.model.data.Task
 
 /**
- * Moss plagiarism analysis manager.
+ * Plagiarism analysis manager.
  */
-interface MossManager {
+interface PlagiarismAnalysisManager {
 
     /**
      * Analyses plagiarism of the given [task].

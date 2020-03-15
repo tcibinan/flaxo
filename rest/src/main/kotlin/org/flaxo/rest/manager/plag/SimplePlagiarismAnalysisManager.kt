@@ -1,4 +1,4 @@
-package org.flaxo.rest.manager.moss
+package org.flaxo.rest.manager.plag
 
 import org.apache.logging.log4j.LogManager
 import org.flaxo.common.data.PlagiarismReport
@@ -6,14 +6,13 @@ import org.flaxo.model.DataManager
 import org.flaxo.model.data.PlagiarismMatch
 import org.flaxo.model.data.Task
 import org.flaxo.rest.friendlyId
-import org.flaxo.rest.manager.plagiarism.PlagiarismAnalyser
 
 /**
  * Moss manager implementation.
  */
-class SimpleMossManager(private val dataManager: DataManager,
-                        private val plagiarismAnalyser: PlagiarismAnalyser
-) : MossManager {
+class SimplePlagiarismAnalysisManager(private val dataManager: DataManager,
+                                      private val plagiarismAnalyser: PlagiarismAnalyser
+) : PlagiarismAnalysisManager {
 
     override fun analyse(task: Task): PlagiarismReport {
         val mossResult = plagiarismAnalyser.analyse(task)
@@ -42,6 +41,6 @@ class SimpleMossManager(private val dataManager: DataManager,
     }
 
     companion object {
-        private val logger = LogManager.getLogger(SimpleMossManager::class.java)
+        private val logger = LogManager.getLogger(SimplePlagiarismAnalysisManager::class.java)
     }
 }
