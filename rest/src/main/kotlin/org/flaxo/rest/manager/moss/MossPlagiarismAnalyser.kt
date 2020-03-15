@@ -1,11 +1,11 @@
-package org.flaxo.rest.manager.plagiarism
+package org.flaxo.rest.manager.moss
 
 import org.apache.logging.log4j.LogManager
 import org.flaxo.model.data.Task
 import org.flaxo.moss.MossResult
 import org.flaxo.moss.MossSubmissionAnalyser
 import org.flaxo.rest.friendlyId
-import org.flaxo.rest.manager.moss.MossSubmissionExtractor
+import org.flaxo.rest.manager.plag.PlagiarismAnalyser
 
 /**
  * Moss plagiarism analyzer.

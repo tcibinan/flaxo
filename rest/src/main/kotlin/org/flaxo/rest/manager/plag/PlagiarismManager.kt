@@ -1,4 +1,4 @@
-package org.flaxo.rest.manager.plagiarism
+package org.flaxo.rest.manager.plag
 
 import org.flaxo.common.data.PlagiarismReport
 import org.flaxo.common.data.plagiarism.PlagiarismGraph
