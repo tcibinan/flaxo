@@ -101,6 +101,7 @@ a.github-profile:hover {
 
 .report-cell {
     text-align: center;
+    height: 40px;
 }
 
 .report {
@@ -180,8 +181,23 @@ a.github-profile:hover {
     color: #c9302c;
 }
 
+.report-row {
+}
+
+.report-row.report-row-completed {
+    filter: grayscale(1) opacity(0.5);
+}
+
+.report-row.report-row-changed .score-input-container {
+    box-shadow: 0 0 10px rgba(255, 255, 90, 1);
+}
+
 .report-cell .score-input:disabled {
     cursor: not-allowed;
+}
+
+.report-cell .score-input-suggestion {
+    width: 42px;
 }
 
 .report-cell .review-toggle-btn {

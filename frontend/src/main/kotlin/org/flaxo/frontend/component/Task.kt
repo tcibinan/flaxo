@@ -124,8 +124,17 @@ private class TaskComponent(props: TaskProps) : RComponent<TaskProps, TaskState>
                     }
                     taskStatistics(props.course, props.task,
                             state.plagiarismReport,
+                            state.scores,
                             onSolutionScoreUpdate = { student, score ->
-                                setState { scores += Pair(student, score) }
+                                val solutionScore = props.task.solutions
+                                        .filter { it.student == student }
+                                        .map { it.score }
+                                        .firstOrNull()
+                                if (solutionScore != score) {
+                                    setState { scores += Pair(student, score ?: 0) }
+                                } else {
+                                    setState { scores -= student }
+                                }
                             },
                             onReviewAddition = { student, review ->
                                 setState { reviews += Pair(student, review) }

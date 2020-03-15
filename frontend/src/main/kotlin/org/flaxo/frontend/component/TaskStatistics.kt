@@ -3,6 +3,7 @@ package org.flaxo.frontend.component
 import kotlinx.html.TABLE
 import kotlinx.html.TR
 import kotlinx.html.ThScope
+import kotlinx.html.classes
 import org.flaxo.frontend.component.report.buildReport
 import org.flaxo.frontend.component.report.codeStyleReport
 import org.flaxo.frontend.component.report.deadlineReport
@@ -13,7 +14,6 @@ import org.flaxo.common.data.PlagiarismReport
 import org.flaxo.common.data.Solution
 import org.flaxo.common.data.SolutionReview
 import org.flaxo.common.data.Task
-import org.flaxo.frontend.component.report.approveCheckBox
 import org.flaxo.frontend.github.githubPullRequestUrl
 import react.RBuilder
 import react.RComponent
@@ -34,13 +34,15 @@ import react.dom.tr
 fun RBuilder.taskStatistics(course: Course,
                             task: Task,
                             plagiarismReport: PlagiarismReport?,
-                            onSolutionScoreUpdate: (String, Int) -> Unit,
+                            scores: Map<String, Int>,
+                            onSolutionScoreUpdate: (String, Int?) -> Unit,
                             onReviewAddition: (String, SolutionReview) -> Unit
 ) = child(TaskStatistics::class) {
     attrs {
         this.course = course
         this.task = task
         this.plagiarismReport = plagiarismReport
+        this.scores = scores
         this.onStudentScoreUpdate = onSolutionScoreUpdate
         this.onReviewAddition = onReviewAddition
     }
@@ -49,7 +51,8 @@ fun RBuilder.taskStatistics(course: Course,
 private class TaskStatisticsProps(var course: Course,
                                   var task: Task,
                                   var plagiarismReport: PlagiarismReport?,
-                                  var onStudentScoreUpdate: (String, Int) -> Unit,
+                                  var scores: Map<String, Int>,
+                                  var onStudentScoreUpdate: (String, Int?) -> Unit,
                                   var onReviewAddition: (String, SolutionReview) -> Unit
 ) : RProps
 
@@ -74,7 +77,6 @@ private class TaskStatistics(props: TaskStatisticsProps) : RComponent<TaskStatis
                     th(scope = ThScope.col) { +"Plagiarism" }
                     th(scope = ThScope.col) { +"Deadline" }
                     th(scope = ThScope.col) { +"Result" }
-                    th(scope = ThScope.col) { +"Approved" }
                 }
             }
 
@@ -86,7 +88,14 @@ private class TaskStatistics(props: TaskStatisticsProps) : RComponent<TaskStatis
                         .mapNotNull { student -> props.task.solutions.find { it.student == student } }
                         .takeIf { it.isNotEmpty() }
                         ?.forEachIndexed { row, solution ->
-                            tr {
+                            tr(classes = "report-row") {
+                                val propsScore = props.scores[solution.student]
+                                val solutionScore = solution.score
+                                if (propsScore != null && propsScore != solutionScore) {
+                                    attrs.classes += "report-row-changed"
+                                } else if (solutionScore != null) {
+                                    attrs.classes += "report-row-completed"
+                                }
                                 studentNumberAndName(solution, row)
                                 td(classes = "report-cell") {
                                     buildReport(solution)
@@ -103,10 +112,6 @@ private class TaskStatistics(props: TaskStatisticsProps) : RComponent<TaskStatis
                                 td(classes = "report-cell") {
                                     scoreInput(props.task, solution,
                                             onStudentScoreUpdate = props.onStudentScoreUpdate)
-                                }
-                                td(classes = "report-cell") {
-                                    approveCheckBox(props.task, solution,
-                                            onReviewAddition = props.onReviewAddition)
                                 }
                             }
                         }

@@ -21,7 +21,7 @@ import kotlin.browser.document
 
 fun RBuilder.scoreInput(task: Task,
                         solution: Solution,
-                        onStudentScoreUpdate: (String, Int) -> Unit
+                        onStudentScoreUpdate: (String, Int?) -> Unit
 ) {
     val buildReport = solution.buildReports.lastOrNull()
     val codeStyleReport = solution.codeStyleReports.lastOrNull()
@@ -30,24 +30,24 @@ fun RBuilder.scoreInput(task: Task,
     val scoreInputId = "scoreInput${solution.task}${solution.student}"
     val suggestedScoreAppendId = "suggestedScore${solution.task}${solution.student}"
 
-    div(classes = "input-group input-group-sm") {
-        input(classes = "form-control score-input", type = InputType.number) {
-            attrs {
-                id = scoreInputId
-                onChangeFunction = { event ->
-                    val target = event.target as HTMLInputElement
-                    onStudentScoreUpdate(solution.student, target.value.toIntOrNull() ?: 0)
-                }
-                min = "0"
-                max = "100"
-                defaultValue = solution.score?.toString() ?: ""
-                attributes["aria-describedby"] = suggestedScoreAppendId
-                disabled = solution.commits.isEmpty()
-            }
-        }
+    div(classes = "input-group input-group-sm score-input-container") {
         if (solution.commits.isNotEmpty()) {
+            input(classes = "form-control score-input", type = InputType.number) {
+                attrs {
+                    id = scoreInputId
+                    onChangeFunction = { event ->
+                        val target = event.target as HTMLInputElement
+                        onStudentScoreUpdate(solution.student, target.value.toIntOrNull())
+                    }
+                    min = "0"
+                    max = "100"
+                    defaultValue = solution.score?.toString() ?: ""
+                    attributes["aria-describedby"] = suggestedScoreAppendId
+                    disabled = solution.commits.isEmpty()
+                }
+            }
             div(classes = "input-group-append") {
-                button(classes = "btn btn-outline-info") {
+                button(classes = "btn btn-outline-info score-input-suggestion") {
                     attrs {
                         id = suggestedScoreAppendId
                         onClickFunction = { _ ->
