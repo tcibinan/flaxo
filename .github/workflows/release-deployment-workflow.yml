@@ -83,7 +83,7 @@ jobs:
           POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
           GITPLAG_POSTGRES_DB: ${{ secrets.GITPLAG_POSTGRES_DB }}
           DATA2GRAPH_TAG: 0.4
-          GITPLAG_TAG: 0.5.2
+          GITPLAG_TAG: 0.5.4
           DATA_DIR: /root/flaxo-automation/db
           LOGS_DIR: /root/flaxo-automation/logs
           GITPLAG_DIR: /root/flaxo-automation/gitplag
