@@ -93,8 +93,6 @@ private class TaskStatistics(props: TaskStatisticsProps) : RComponent<TaskStatis
                                 val solutionScore = solution.score
                                 if (propsScore != null && propsScore != solutionScore) {
                                     attrs.classes += "report-row-changed"
-                                } else if (solutionScore != null) {
-                                    attrs.classes += "report-row-completed"
                                 }
                                 studentNumberAndName(solution, row)
                                 td(classes = "report-cell") {
